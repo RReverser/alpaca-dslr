@@ -19,7 +19,7 @@ use axum::{Router, routing::{get, post}};
 			<% for (let [propName, prop] of Object.entries(schema.properties)) { %>
 				<%= doc(getTypeDescription(prop)) %>
 				#[serde(rename = "<%= propName %>")]
-				<%= toPropName(propName) %>: <%= handleType(prop) %>,
+				<%= toPropName(propName) %>: <%= handleOptType(prop, schema.required?.includes(propName)) %>,
 			<% } %>
 		}
 	<% } else { %>
@@ -58,7 +58,7 @@ mod schemas {
 				<% for (let param of params) { %>
 					<%= doc(getTypeDescription(param)) %>
 					#[serde(rename = "<%= param.name %>")]
-					<%= toPropName(param.name) %>: <%= param.required ? '' : 'Option<' %><%= handleType(param.schema) %><%= param.required ? '' : '>' %>,
+					<%= toPropName(param.name) %>: <%= handleOptType(param.schema, param.required) %>,
 				<% } %>
 			}
 		<% } %>

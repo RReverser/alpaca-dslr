@@ -64,6 +64,10 @@ let rendered = render(
       console.warn(`Unhandled property type`, prop);
       return '()';
     },
+    handleOptType: function (prop, required) {
+      let type = this.handleType(prop);
+      return required ? type : `Option<${type}>`;
+    },
     getRequestBody: function getRequestBody(method) {
       if (!method.requestBody) {
         return;

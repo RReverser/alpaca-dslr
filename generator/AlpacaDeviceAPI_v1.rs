@@ -49,43 +49,43 @@ mod schemas {
         0 = Unknown, 1 = Short(int16), 2 = Integer (int32), 3 = Double (Double precision real number).
         */
         #[serde(rename = "Type")]
-        type_: i32,
+        type_: Option<i32>,
 
         /**
         The array's rank, will be 2 (single plane image (monochrome)) or 3 (multi-plane image).
         */
         #[serde(rename = "Rank")]
-        rank: i32,
+        rank: Option<i32>,
 
         /**
         Returned integer or double value
         */
         #[serde(rename = "Value")]
-        value: Vec<Vec<f64>>,
+        value: Option<Vec<Vec<f64>>>,
 
         /**
         Client's transaction ID (0 to 4294967295), as supplied by the client in the command request.
         */
         #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: u32,
+        client_transaction_id: Option<u32>,
 
         /**
         Server's transaction ID (0 to 4294967295), should be unique for each client transaction so that log messages on the client can be associated with logs on the device.
         */
         #[serde(rename = "ServerTransactionID")]
-        server_transaction_id: u32,
+        server_transaction_id: Option<u32>,
 
         /**
         Zero for a successful transaction, or a non-zero integer (-2147483648 to 2147483647) if the device encountered an issue. Devices must use ASCOM reserved error numbers whenever appropriate so that clients can take informed actions. E.g. returning 0x401 (1025) to indicate that an invalid value was received (see Alpaca API definition and developer documentation for further information).
         */
         #[serde(rename = "ErrorNumber")]
-        error_number: i32,
+        error_number: Option<i32>,
 
         /**
         Empty string for a successful transaction, or a message describing the issue that was encountered.
         */
         #[serde(rename = "ErrorMessage")]
-        error_message: String,
+        error_message: Option<String>,
     }
 
     #[derive(Serialize)]
@@ -95,31 +95,31 @@ mod schemas {
         True or False value
         */
         #[serde(rename = "Value")]
-        value: bool,
+        value: Option<bool>,
 
         /**
         Client's transaction ID (0 to 4294967295), as supplied by the client in the command request.
         */
         #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: u32,
+        client_transaction_id: Option<u32>,
 
         /**
         Server's transaction ID (0 to 4294967295), should be unique for each client transaction so that log messages on the client can be associated with logs on the device.
         */
         #[serde(rename = "ServerTransactionID")]
-        server_transaction_id: u32,
+        server_transaction_id: Option<u32>,
 
         /**
         Zero for a successful transaction, or a non-zero integer (-2147483648 to 2147483647) if the device encountered an issue. Devices must use ASCOM reserved error numbers whenever appropriate so that clients can take informed actions. E.g. returning 0x401 (1025) to indicate that an invalid value was received (see Alpaca API definition and developer documentation for further information).
         */
         #[serde(rename = "ErrorNumber")]
-        error_number: i32,
+        error_number: Option<i32>,
 
         /**
         Empty string for a successful transaction, or a message describing the issue that was encountered. If an error message is returned, a non zero error number must also be returned.
         */
         #[serde(rename = "ErrorMessage")]
-        error_message: String,
+        error_message: Option<String>,
     }
 
     #[derive(Serialize)]
@@ -129,31 +129,31 @@ mod schemas {
         Returned double value
         */
         #[serde(rename = "Value")]
-        value: f64,
+        value: Option<f64>,
 
         /**
         Client's transaction ID (0 to 4294967295), as supplied by the client in the command request.
         */
         #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: u32,
+        client_transaction_id: Option<u32>,
 
         /**
         Server's transaction ID (0 to 4294967295), should be unique for each client transaction so that log messages on the client can be associated with logs on the device.
         */
         #[serde(rename = "ServerTransactionID")]
-        server_transaction_id: u32,
+        server_transaction_id: Option<u32>,
 
         /**
         Zero for a successful transaction, or a non-zero integer (-2147483648 to 2147483647) if the device encountered an issue. Devices must use ASCOM reserved error numbers whenever appropriate so that clients can take informed actions. E.g. returning 0x401 (1025) to indicate that an invalid value was received (see Alpaca API definition and developer documentation for further information).
         */
         #[serde(rename = "ErrorNumber")]
-        error_number: i32,
+        error_number: Option<i32>,
 
         /**
         Empty string for a successful transaction, or a message describing the issue that was encountered. If an error message is returned, a non zero error number must also be returned.
         */
         #[serde(rename = "ErrorMessage")]
-        error_message: String,
+        error_message: Option<String>,
     }
 
     #[derive(Serialize)]
@@ -163,31 +163,31 @@ mod schemas {
         Returned integer value
         */
         #[serde(rename = "Value")]
-        value: i32,
+        value: Option<i32>,
 
         /**
         Client's transaction ID (0 to 4294967295), as supplied by the client in the command request.
         */
         #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: u32,
+        client_transaction_id: Option<u32>,
 
         /**
         Server's transaction ID (0 to 4294967295), should be unique for each client transaction so that log messages on the client can be associated with logs on the device.
         */
         #[serde(rename = "ServerTransactionID")]
-        server_transaction_id: u32,
+        server_transaction_id: Option<u32>,
 
         /**
         Zero for a successful transaction, or a non-zero integer (-2147483648 to 2147483647) if the device encountered an issue. Devices must use ASCOM reserved error numbers whenever appropriate so that clients can take informed actions. E.g. returning 0x401 (1025) to indicate that an invalid value was received (see Alpaca API definition and developer documentation for further information).
         */
         #[serde(rename = "ErrorNumber")]
-        error_number: i32,
+        error_number: Option<i32>,
 
         /**
         Empty string for a successful transaction, or a message describing the issue that was encountered. If an error message is returned, a non zero error number must also be returned.
         */
         #[serde(rename = "ErrorMessage")]
-        error_message: String,
+        error_message: Option<String>,
     }
 
     #[derive(Serialize)]
@@ -197,31 +197,31 @@ mod schemas {
         Array of integer values.
         */
         #[serde(rename = "Value")]
-        value: Vec<i32>,
+        value: Option<Vec<i32>>,
 
         /**
         Client's transaction ID (0 to 4294967295), as supplied by the client in the command request.
         */
         #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: u32,
+        client_transaction_id: Option<u32>,
 
         /**
         Server's transaction ID (0 to 4294967295), should be unique for each client transaction so that log messages on the client can be associated with logs on the device.
         */
         #[serde(rename = "ServerTransactionID")]
-        server_transaction_id: u32,
+        server_transaction_id: Option<u32>,
 
         /**
         Zero for a successful transaction, or a non-zero integer (-2147483648 to 2147483647) if the device encountered an issue. Devices must use ASCOM reserved error numbers whenever appropriate so that clients can take informed actions. E.g. returning 0x401 (1025) to indicate that an invalid value was received (see Alpaca API definition and developer documentation for further information).
         */
         #[serde(rename = "ErrorNumber")]
-        error_number: i32,
+        error_number: Option<i32>,
 
         /**
         Empty string for a successful transaction, or a message describing the issue that was encountered. If an error message is returned, a non zero error number must also be returned.
         */
         #[serde(rename = "ErrorMessage")]
-        error_message: String,
+        error_message: Option<String>,
     }
 
     #[derive(Serialize)]
@@ -231,25 +231,25 @@ mod schemas {
         Client's transaction ID (0 to 4294967295), as supplied by the client in the command request.
         */
         #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: u32,
+        client_transaction_id: Option<u32>,
 
         /**
         Server's transaction ID (0 to 4294967295), should be unique for each client transaction so that log messages on the client can be associated with logs on the device.
         */
         #[serde(rename = "ServerTransactionID")]
-        server_transaction_id: u32,
+        server_transaction_id: Option<u32>,
 
         /**
         Zero for a successful transaction, or a non-zero integer (-2147483648 to 2147483647) if the device encountered an issue. Devices must use ASCOM reserved error numbers whenever appropriate so that clients can take informed actions. E.g. returning 0x401 (1025) to indicate that an invalid value was received (see Alpaca API definition and developer documentation for further information).
         */
         #[serde(rename = "ErrorNumber")]
-        error_number: i32,
+        error_number: Option<i32>,
 
         /**
         Empty string for a successful transaction, or a message describing the issue that was encountered. If an error message is returned, a non zero error number must also be returned.
         */
         #[serde(rename = "ErrorMessage")]
-        error_message: String,
+        error_message: Option<String>,
     }
 
     #[derive(Serialize)]
@@ -259,31 +259,31 @@ mod schemas {
         String response from the device.
         */
         #[serde(rename = "Value")]
-        value: String,
+        value: Option<String>,
 
         /**
         Client's transaction ID (0 to 4294967295), as supplied by the client in the command request.
         */
         #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: u32,
+        client_transaction_id: Option<u32>,
 
         /**
         Server's transaction ID (0 to 4294967295), should be unique for each client transaction so that log messages on the client can be associated with logs on the device.
         */
         #[serde(rename = "ServerTransactionID")]
-        server_transaction_id: u32,
+        server_transaction_id: Option<u32>,
 
         /**
         Zero for a successful transaction, or a non-zero integer (-2147483648 to 2147483647) if the device encountered an issue. Devices must use ASCOM reserved error numbers whenever appropriate so that clients can take informed actions. E.g. returning 0x401 (1025) to indicate that an invalid value was received (see Alpaca API definition and developer documentation for further information).
         */
         #[serde(rename = "ErrorNumber")]
-        error_number: i32,
+        error_number: Option<i32>,
 
         /**
         Empty string for a successful transaction, or a message describing the issue that was encountered. If an error message is returned, a non zero error number must also be returned.
         */
         #[serde(rename = "ErrorMessage")]
-        error_message: String,
+        error_message: Option<String>,
     }
 
     #[derive(Serialize)]
@@ -293,31 +293,31 @@ mod schemas {
         Array of string values.
         */
         #[serde(rename = "Value")]
-        value: Vec<String>,
+        value: Option<Vec<String>>,
 
         /**
         Client's transaction ID (0 to 4294967295), as supplied by the client in the command request.
         */
         #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: u32,
+        client_transaction_id: Option<u32>,
 
         /**
         Server's transaction ID (0 to 4294967295), should be unique for each client transaction so that log messages on the client can be associated with logs on the device.
         */
         #[serde(rename = "ServerTransactionID")]
-        server_transaction_id: u32,
+        server_transaction_id: Option<u32>,
 
         /**
         Zero for a successful transaction, or a non-zero integer (-2147483648 to 2147483647) if the device encountered an issue. Devices must use ASCOM reserved error numbers whenever appropriate so that clients can take informed actions. E.g. returning 0x401 (1025) to indicate that an invalid value was received (see Alpaca API definition and developer documentation for further information).
         */
         #[serde(rename = "ErrorNumber")]
-        error_number: i32,
+        error_number: Option<i32>,
 
         /**
         Empty string for a successful transaction, or a message describing the issue that was encountered. If an error message is returned, a non zero error number must also be returned.
         */
         #[serde(rename = "ErrorMessage")]
-        error_message: String,
+        error_message: Option<String>,
     }
 
     #[derive(Serialize)]
@@ -327,31 +327,31 @@ mod schemas {
         Array of AxisRate objects
         */
         #[serde(rename = "Value")]
-        value: Vec<()>,
+        value: Option<Vec<()>>,
 
         /**
         Client's transaction ID (0 to 4294967295), as supplied by the client in the command request.
         */
         #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: u32,
+        client_transaction_id: Option<u32>,
 
         /**
         Server's transaction ID (0 to 4294967295), should be unique for each client transaction so that log messages on the client can be associated with logs on the device.
         */
         #[serde(rename = "ServerTransactionID")]
-        server_transaction_id: u32,
+        server_transaction_id: Option<u32>,
 
         /**
         Zero for a successful transaction, or a non-zero integer (-2147483648 to 2147483647) if the device encountered an issue. Devices must use ASCOM reserved error numbers whenever appropriate so that clients can take informed actions. E.g. returning 0x401 (1025) to indicate that an invalid value was received (see Alpaca API definition and developer documentation for further information).
         */
         #[serde(rename = "ErrorNumber")]
-        error_number: i32,
+        error_number: Option<i32>,
 
         /**
         Empty string for a successful transaction, or a message describing the issue that was encountered. If an error message is returned, a non zero error number must also be returned.
         */
         #[serde(rename = "ErrorMessage")]
-        error_message: String,
+        error_message: Option<String>,
     }
 
     #[derive(Serialize)]
@@ -377,31 +377,31 @@ mod schemas {
         Array of DriveRate values
         */
         #[serde(rename = "Value")]
-        value: Vec<f64>,
+        value: Option<Vec<f64>>,
 
         /**
         Client's transaction ID (0 to 4294967295), as supplied by the client in the command request.
         */
         #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: u32,
+        client_transaction_id: Option<u32>,
 
         /**
         Server's transaction ID (0 to 4294967295), should be unique for each client transaction so that log messages on the client can be associated with logs on the device.
         */
         #[serde(rename = "ServerTransactionID")]
-        server_transaction_id: u32,
+        server_transaction_id: Option<u32>,
 
         /**
         Zero for a successful transaction, or a non-zero integer (-2147483648 to 2147483647) if the device encountered an issue. Devices must use ASCOM reserved error numbers whenever appropriate so that clients can take informed actions. E.g. returning 0x401 (1025) to indicate that an invalid value was received (see Alpaca API definition and developer documentation for further information).
         */
         #[serde(rename = "ErrorNumber")]
-        error_number: i32,
+        error_number: Option<i32>,
 
         /**
         Empty string for a successful transaction, or a message describing the issue that was encountered. If an error message is returned, a non zero error number must also be returned.
         */
         #[serde(rename = "ErrorMessage")]
-        error_message: String,
+        error_message: Option<String>,
     }
 
     #[derive(Serialize)]
@@ -445,13 +445,13 @@ struct PutActionBodyParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: u32,
+    client_id: Option<u32>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: u32,
+    client_transaction_id: Option<u32>,
 }
 
 /**
@@ -524,13 +524,13 @@ struct PutCommandblindBodyParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: u32,
+    client_id: Option<u32>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: u32,
+    client_transaction_id: Option<u32>,
 }
 
 /**
@@ -590,13 +590,13 @@ struct PutCommandboolBodyParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: u32,
+    client_id: Option<u32>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: u32,
+    client_transaction_id: Option<u32>,
 }
 
 /**
@@ -656,13 +656,13 @@ struct PutCommandstringBodyParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: u32,
+    client_id: Option<u32>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: u32,
+    client_transaction_id: Option<u32>,
 }
 
 /**
@@ -756,13 +756,13 @@ struct PutConnectedBodyParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: u32,
+    client_id: Option<u32>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: u32,
+    client_transaction_id: Option<u32>,
 }
 
 /**
@@ -1175,13 +1175,13 @@ struct PutCameraBinxBodyParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: u32,
+    client_id: Option<u32>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: u32,
+    client_transaction_id: Option<u32>,
 }
 
 /**
@@ -1261,13 +1261,13 @@ struct PutCameraBinyBodyParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: u32,
+    client_id: Option<u32>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: u32,
+    client_transaction_id: Option<u32>,
 }
 
 /**
@@ -1776,13 +1776,13 @@ struct PutCameraCooleronBodyParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: u32,
+    client_id: Option<u32>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: u32,
+    client_transaction_id: Option<u32>,
 }
 
 /**
@@ -2062,13 +2062,13 @@ struct PutCameraFastreadoutBodyParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: u32,
+    client_id: Option<u32>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: u32,
+    client_transaction_id: Option<u32>,
 }
 
 /**
@@ -2187,13 +2187,13 @@ struct PutCameraGainBodyParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: u32,
+    client_id: Option<u32>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: u32,
+    client_transaction_id: Option<u32>,
 }
 
 /**
@@ -2899,13 +2899,13 @@ struct PutCameraNumxBodyParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: u32,
+    client_id: Option<u32>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: u32,
+    client_transaction_id: Option<u32>,
 }
 
 /**
@@ -2985,13 +2985,13 @@ struct PutCameraNumyBodyParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: u32,
+    client_id: Option<u32>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: u32,
+    client_transaction_id: Option<u32>,
 }
 
 /**
@@ -3071,13 +3071,13 @@ struct PutCameraOffsetBodyParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: u32,
+    client_id: Option<u32>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: u32,
+    client_transaction_id: Option<u32>,
 }
 
 /**
@@ -3391,13 +3391,13 @@ struct PutCameraReadoutmodeBodyParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: u32,
+    client_id: Option<u32>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: u32,
+    client_transaction_id: Option<u32>,
 }
 
 /**
@@ -3608,13 +3608,13 @@ struct PutCameraSetccdtemperatureBodyParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: u32,
+    client_id: Option<u32>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: u32,
+    client_transaction_id: Option<u32>,
 }
 
 /**
@@ -3694,13 +3694,13 @@ struct PutCameraStartxBodyParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: u32,
+    client_id: Option<u32>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: u32,
+    client_transaction_id: Option<u32>,
 }
 
 /**
@@ -3780,13 +3780,13 @@ struct PutCameraStartyBodyParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: u32,
+    client_id: Option<u32>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: u32,
+    client_transaction_id: Option<u32>,
 }
 
 /**
@@ -3871,13 +3871,13 @@ struct PutCameraSubexposuredurationBodyParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: u32,
+    client_id: Option<u32>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: u32,
+    client_transaction_id: Option<u32>,
 }
 
 /**
@@ -3917,13 +3917,13 @@ struct PutCameraAbortexposureBodyParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: u32,
+    client_id: Option<u32>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: u32,
+    client_transaction_id: Option<u32>,
 }
 
 /**
@@ -3969,13 +3969,13 @@ struct PutCameraPulseguideBodyParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: u32,
+    client_id: Option<u32>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: u32,
+    client_transaction_id: Option<u32>,
 }
 
 /**
@@ -4029,13 +4029,13 @@ struct PutCameraStartexposureBodyParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: u32,
+    client_id: Option<u32>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: u32,
+    client_transaction_id: Option<u32>,
 }
 
 /**
@@ -4077,13 +4077,13 @@ struct PutCameraStopexposureBodyParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: u32,
+    client_id: Option<u32>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: u32,
+    client_transaction_id: Option<u32>,
 }
 
 /**
@@ -4273,13 +4273,13 @@ struct PutCovercalibratorCalibratoroffBodyParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: u32,
+    client_id: Option<u32>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: u32,
+    client_transaction_id: Option<u32>,
 }
 
 /**
@@ -4313,19 +4313,19 @@ struct PutCovercalibratorCalibratoronBodyParams {
     The required brightness in the range 0 to MaxBrightness
     */
     #[serde(rename = "Brightness")]
-    brightness: i32,
+    brightness: Option<i32>,
 
     /**
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: u32,
+    client_id: Option<u32>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: u32,
+    client_transaction_id: Option<u32>,
 }
 
 /**
@@ -4365,13 +4365,13 @@ struct PutCovercalibratorClosecoverBodyParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: u32,
+    client_id: Option<u32>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: u32,
+    client_transaction_id: Option<u32>,
 }
 
 /**
@@ -4405,13 +4405,13 @@ struct PutCovercalibratorHaltcoverBodyParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: u32,
+    client_id: Option<u32>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: u32,
+    client_transaction_id: Option<u32>,
 }
 
 /**
@@ -4445,13 +4445,13 @@ struct PutCovercalibratorOpencoverBodyParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: u32,
+    client_id: Option<u32>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: u32,
+    client_transaction_id: Option<u32>,
 }
 
 /**
@@ -4997,13 +4997,13 @@ struct PutDomeSlavedBodyParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: u32,
+    client_id: Option<u32>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: u32,
+    client_transaction_id: Option<u32>,
 }
 
 /**
@@ -5077,13 +5077,13 @@ struct PutDomeAbortslewBodyParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: u32,
+    client_id: Option<u32>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: u32,
+    client_transaction_id: Option<u32>,
 }
 
 /**
@@ -5112,13 +5112,13 @@ struct PutDomeCloseshutterBodyParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: u32,
+    client_id: Option<u32>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: u32,
+    client_transaction_id: Option<u32>,
 }
 
 /**
@@ -5152,13 +5152,13 @@ struct PutDomeFindhomeBodyParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: u32,
+    client_id: Option<u32>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: u32,
+    client_transaction_id: Option<u32>,
 }
 
 /**
@@ -5187,13 +5187,13 @@ struct PutDomeOpenshutterBodyParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: u32,
+    client_id: Option<u32>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: u32,
+    client_transaction_id: Option<u32>,
 }
 
 /**
@@ -5223,13 +5223,13 @@ struct PutDomeParkBodyParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: u32,
+    client_id: Option<u32>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: u32,
+    client_transaction_id: Option<u32>,
 }
 
 /**
@@ -5258,13 +5258,13 @@ struct PutDomeSetparkBodyParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: u32,
+    client_id: Option<u32>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: u32,
+    client_transaction_id: Option<u32>,
 }
 
 /**
@@ -5299,13 +5299,13 @@ struct PutDomeSlewtoaltitudeBodyParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: u32,
+    client_id: Option<u32>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: u32,
+    client_transaction_id: Option<u32>,
 }
 
 /**
@@ -5351,13 +5351,13 @@ struct PutDomeSlewtoazimuthBodyParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: u32,
+    client_id: Option<u32>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: u32,
+    client_transaction_id: Option<u32>,
 }
 
 /**
@@ -5403,13 +5403,13 @@ struct PutDomeSynctoazimuthBodyParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: u32,
+    client_id: Option<u32>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: u32,
+    client_transaction_id: Option<u32>,
 }
 
 /**
@@ -5572,13 +5572,13 @@ struct PutFilterwheelPositionBodyParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: u32,
+    client_id: Option<u32>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: u32,
+    client_transaction_id: Option<u32>,
 }
 
 /**
@@ -5892,13 +5892,13 @@ struct PutFocuserTempcompBodyParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "Client")]
-    client: u32,
+    client: Option<u32>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionIDForm")]
-    client_transaction_idform: u32,
+    client_transaction_idform: Option<u32>,
 }
 
 /**
@@ -6016,13 +6016,13 @@ struct PutFocuserHaltBodyParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: u32,
+    client_id: Option<u32>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: u32,
+    client_transaction_id: Option<u32>,
 }
 
 /**
@@ -6057,13 +6057,13 @@ struct PutFocuserMoveBodyParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: u32,
+    client_id: Option<u32>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: u32,
+    client_transaction_id: Option<u32>,
 }
 
 /**
@@ -6148,13 +6148,13 @@ struct PutObservingconditionsAverageperiodBodyParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: u32,
+    client_id: Option<u32>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: u32,
+    client_transaction_id: Option<u32>,
 }
 
 /**
@@ -6701,13 +6701,13 @@ struct PutObservingconditionsRefreshBodyParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: u32,
+    client_id: Option<u32>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: u32,
+    client_transaction_id: Option<u32>,
 }
 
 /**
@@ -7039,13 +7039,13 @@ struct PutRotatorReverseBodyParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: u32,
+    client_id: Option<u32>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: u32,
+    client_transaction_id: Option<u32>,
 }
 
 /**
@@ -7163,13 +7163,13 @@ struct PutRotatorHaltBodyParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: u32,
+    client_id: Option<u32>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: u32,
+    client_transaction_id: Option<u32>,
 }
 
 /**
@@ -7204,13 +7204,13 @@ struct PutRotatorMoveBodyParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: u32,
+    client_id: Option<u32>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: u32,
+    client_transaction_id: Option<u32>,
 }
 
 /**
@@ -7256,13 +7256,13 @@ struct PutRotatorMoveabsoluteBodyParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: u32,
+    client_id: Option<u32>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: u32,
+    client_transaction_id: Option<u32>,
 }
 
 /**
@@ -7308,13 +7308,13 @@ struct PutRotatorMovemechanicalBodyParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: u32,
+    client_id: Option<u32>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: u32,
+    client_transaction_id: Option<u32>,
 }
 
 /**
@@ -7360,13 +7360,13 @@ struct PutRotatorSyncBodyParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: u32,
+    client_id: Option<u32>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: u32,
+    client_transaction_id: Option<u32>,
 }
 
 /**
@@ -7811,13 +7811,13 @@ struct PutSwitchSetswitchBodyParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: u32,
+    client_id: Option<u32>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: u32,
+    client_transaction_id: Option<u32>,
 }
 
 /**
@@ -7871,13 +7871,13 @@ struct PutSwitchSetswitchnameBodyParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: u32,
+    client_id: Option<u32>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: u32,
+    client_transaction_id: Option<u32>,
 }
 
 /**
@@ -7931,13 +7931,13 @@ struct PutSwitchSetswitchvalueBodyParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: u32,
+    client_id: Option<u32>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: u32,
+    client_transaction_id: Option<u32>,
 }
 
 /**
@@ -9005,13 +9005,13 @@ struct PutTelescopeDeclinationrateBodyParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: u32,
+    client_id: Option<u32>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: u32,
+    client_transaction_id: Option<u32>,
 }
 
 /**
@@ -9096,13 +9096,13 @@ struct PutTelescopeDoesrefractionBodyParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: u32,
+    client_id: Option<u32>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: u32,
+    client_transaction_id: Option<u32>,
 }
 
 /**
@@ -9265,13 +9265,13 @@ struct PutTelescopeGuideratedeclinationBodyParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: u32,
+    client_id: Option<u32>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: u32,
+    client_transaction_id: Option<u32>,
 }
 
 /**
@@ -9356,13 +9356,13 @@ struct PutTelescopeGuideraterightascensionBodyParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: u32,
+    client_id: Option<u32>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: u32,
+    client_transaction_id: Option<u32>,
 }
 
 /**
@@ -9525,13 +9525,13 @@ struct PutTelescopeRightascensionrateBodyParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: u32,
+    client_id: Option<u32>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: u32,
+    client_transaction_id: Option<u32>,
 }
 
 /**
@@ -9616,13 +9616,13 @@ struct PutTelescopeSideofpierBodyParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: u32,
+    client_id: Option<u32>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: u32,
+    client_transaction_id: Option<u32>,
 }
 
 /**
@@ -9746,13 +9746,13 @@ struct PutTelescopeSiteelevationBodyParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: u32,
+    client_id: Option<u32>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: u32,
+    client_transaction_id: Option<u32>,
 }
 
 /**
@@ -9837,13 +9837,13 @@ struct PutTelescopeSitelatitudeBodyParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: u32,
+    client_id: Option<u32>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: u32,
+    client_transaction_id: Option<u32>,
 }
 
 /**
@@ -9928,13 +9928,13 @@ struct PutTelescopeSitelongitudeBodyParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: u32,
+    client_id: Option<u32>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: u32,
+    client_transaction_id: Option<u32>,
 }
 
 /**
@@ -10058,13 +10058,13 @@ struct PutTelescopeSlewsettletimeBodyParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: u32,
+    client_id: Option<u32>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: u32,
+    client_transaction_id: Option<u32>,
 }
 
 /**
@@ -10149,13 +10149,13 @@ struct PutTelescopeTargetdeclinationBodyParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: u32,
+    client_id: Option<u32>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: u32,
+    client_transaction_id: Option<u32>,
 }
 
 /**
@@ -10240,13 +10240,13 @@ struct PutTelescopeTargetrightascensionBodyParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: u32,
+    client_id: Option<u32>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: u32,
+    client_transaction_id: Option<u32>,
 }
 
 /**
@@ -10331,13 +10331,13 @@ struct PutTelescopeTrackingBodyParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: u32,
+    client_id: Option<u32>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: u32,
+    client_transaction_id: Option<u32>,
 }
 
 /**
@@ -10422,13 +10422,13 @@ struct PutTelescopeTrackingrateBodyParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: u32,
+    client_id: Option<u32>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: u32,
+    client_transaction_id: Option<u32>,
 }
 
 /**
@@ -10552,13 +10552,13 @@ struct PutTelescopeUtcdateBodyParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: u32,
+    client_id: Option<u32>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: u32,
+    client_transaction_id: Option<u32>,
 }
 
 /**
@@ -10598,13 +10598,13 @@ struct PutTelescopeAbortslewBodyParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: u32,
+    client_id: Option<u32>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: u32,
+    client_transaction_id: Option<u32>,
 }
 
 /**
@@ -10799,13 +10799,13 @@ struct PutTelescopeFindhomeBodyParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: u32,
+    client_id: Option<u32>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: u32,
+    client_transaction_id: Option<u32>,
 }
 
 /**
@@ -10851,13 +10851,13 @@ struct PutTelescopeMoveaxisBodyParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: u32,
+    client_id: Option<u32>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: u32,
+    client_transaction_id: Option<u32>,
 }
 
 /**
@@ -10899,13 +10899,13 @@ struct PutTelescopeParkBodyParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: u32,
+    client_id: Option<u32>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: u32,
+    client_transaction_id: Option<u32>,
 }
 
 /**
@@ -10946,13 +10946,13 @@ struct PutTelescopePulseguideBodyParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: u32,
+    client_id: Option<u32>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: u32,
+    client_transaction_id: Option<u32>,
 }
 
 /**
@@ -10994,13 +10994,13 @@ struct PutTelescopeSetparkBodyParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: u32,
+    client_id: Option<u32>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: u32,
+    client_transaction_id: Option<u32>,
 }
 
 /**
@@ -11046,13 +11046,13 @@ struct PutTelescopeSlewtoaltazBodyParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: u32,
+    client_id: Option<u32>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: u32,
+    client_transaction_id: Option<u32>,
 }
 
 /**
@@ -11106,13 +11106,13 @@ struct PutTelescopeSlewtoaltazasyncBodyParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: u32,
+    client_id: Option<u32>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: u32,
+    client_transaction_id: Option<u32>,
 }
 
 /**
@@ -11166,13 +11166,13 @@ struct PutTelescopeSlewtocoordinatesBodyParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: u32,
+    client_id: Option<u32>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: u32,
+    client_transaction_id: Option<u32>,
 }
 
 /**
@@ -11226,13 +11226,13 @@ struct PutTelescopeSlewtocoordinatesasyncBodyParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: u32,
+    client_id: Option<u32>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: u32,
+    client_transaction_id: Option<u32>,
 }
 
 /**
@@ -11274,13 +11274,13 @@ struct PutTelescopeSlewtotargetBodyParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: u32,
+    client_id: Option<u32>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: u32,
+    client_transaction_id: Option<u32>,
 }
 
 /**
@@ -11314,13 +11314,13 @@ struct PutTelescopeSlewtotargetasyncBodyParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: u32,
+    client_id: Option<u32>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: u32,
+    client_transaction_id: Option<u32>,
 }
 
 /**
@@ -11366,13 +11366,13 @@ struct PutTelescopeSynctoaltazBodyParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: u32,
+    client_id: Option<u32>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: u32,
+    client_transaction_id: Option<u32>,
 }
 
 /**
@@ -11426,13 +11426,13 @@ struct PutTelescopeSynctocoordinatesBodyParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: u32,
+    client_id: Option<u32>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: u32,
+    client_transaction_id: Option<u32>,
 }
 
 /**
@@ -11474,13 +11474,13 @@ struct PutTelescopeSynctotargetBodyParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: u32,
+    client_id: Option<u32>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: u32,
+    client_transaction_id: Option<u32>,
 }
 
 /**
@@ -11514,13 +11514,13 @@ struct PutTelescopeUnparkBodyParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: u32,
+    client_id: Option<u32>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: u32,
+    client_transaction_id: Option<u32>,
 }
 
 /**
