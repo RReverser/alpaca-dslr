@@ -36,10 +36,13 @@ function doc(description) {
 
 let registeredSchemas = new Map();
 
-for (let groupName of ['parameters', 'schemas']) {
-  for (let [name, schema] of Object.entries(api.components[groupName])) {
-    registeredSchemas.set(schema, `${groupName}::${name}`);
-  }
+for (let [name, {schema}] of Object.entries(api.components.parameters)) {
+  name = toTypeName(name);
+  registeredSchemas.set(schema, `parameters::${name}`);
+}
+
+for (let [name, schema] of Object.entries(api.components.schemas)) {
+  registeredSchemas.set(schema, `schemas::${name}`);
 }
 
 for (let [name, body] of Object.entries(api.components.requestBodies)) {
@@ -48,10 +51,12 @@ for (let [name, body] of Object.entries(api.components.requestBodies)) {
   registeredSchemas.set(schema, `request_bodies::${name}`);
 }
 
-function handleType(schema, schemaName) {
-  let registeredSchemaName = registeredSchemas.get(schema);
-  if (registeredSchemaName && registeredSchemaName !== schemaName) {
-    return registeredSchemaName;
+function handleType(schema, ignoreRefs) {
+  if (!ignoreRefs) {
+    let registeredSchemaName = registeredSchemas.get(schema);
+    if (registeredSchemaName) {
+      return registeredSchemaName;
+    }
   }
   switch (schema.type) {
     case 'integer':
@@ -124,9 +129,8 @@ function getContent(owner) {
 %>
 
 <% function handleSchema(schemaName, schema) { %>
-  struct <%= schemaName %>
   <% if (schema.type === 'object') { %>
-    {
+    struct <%= schemaName %> {
       <% for (let [propName, prop] of Object.entries(schema.properties)) { %>
         <%= doc(getTypeDescription(prop)) %>
         #[serde(rename = "<%= propName %>")]
@@ -134,14 +138,16 @@ function getContent(owner) {
       <% } %>
     }
   <% } else { %>
-    (<%= handleType(schema, schemaName) %>);
+    #[repr(transparent)]
+    struct <%= schemaName %>(<%= handleType(schema, schemaName, true) %>);
   <% } %>
 <% } %>
 
 mod parameters {
-  <% for (let [schemaName, {schema}] of Object.entries(api.components.parameters)) { %>
+  <% for (let [schemaName, {description, schema}] of Object.entries(api.components.parameters)) { %>
+    <%= doc(description) %>
     #[derive(Deserialize)]
-    <%= handleSchema(schemaName, schema) %>
+    <%= handleSchema(toTypeName(schemaName), schema) %>
   <% } %>
 }
 

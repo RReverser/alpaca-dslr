@@ -42,36 +42,60 @@ use axum::{
 
 mod parameters {
 
+    /**
+    One of the recognised ASCOM device types e.g. telescope (must be lower case)
+    */
     #[derive(Deserialize)]
+    #[repr(transparent)]
+    struct DeviceType(String);
 
-    struct device_type(String);
-
+    /**
+    Zero based device number as set on the server (0 to 4294967295)
+    */
     #[derive(Deserialize)]
+    #[repr(transparent)]
+    struct DeviceNumber(u32);
 
-    struct device_number(u32);
-
+    /**
+    Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
+    */
     #[derive(Deserialize)]
+    #[repr(transparent)]
+    struct ClientIdquery(u32);
 
-    struct ClientIDQuery(u32);
-
+    /**
+    Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
+    */
     #[derive(Deserialize)]
+    #[repr(transparent)]
+    struct ClientTransactionIdquery(u32);
 
-    struct ClientTransactionIDQuery(u32);
-
+    /**
+    Right Ascension coordinate (0.0 to 23.99999999 hours)
+    */
     #[derive(Deserialize)]
-
+    #[repr(transparent)]
     struct RightAscensionQuery(f64);
 
+    /**
+    Declination coordinate (-90.0 to +90.0 degrees)
+    */
     #[derive(Deserialize)]
-
+    #[repr(transparent)]
     struct DeclinationQuery(f64);
 
+    /**
+    The axis about which rate information is desired. 0 = axisPrimary, 1 = axisSecondary, 2 = axisTertiary.
+    */
     #[derive(Deserialize)]
-
+    #[repr(transparent)]
     struct AxisQuery(i32);
 
+    /**
+    The device number (0 to MaxSwitch - 1)
+    */
     #[derive(Deserialize)]
-
+    #[repr(transparent)]
     struct SwitchNumberQuery(i32);
 }
 
@@ -440,8 +464,8 @@ mod schemas {
     }
 
     #[derive(Serialize)]
-
-    struct DriveRate(schemas::DriveRate);
+    #[repr(transparent)]
+    struct DriveRate(f64);
 }
 
 mod request_bodies {
@@ -581,13 +605,13 @@ struct PutActionPathParams {
     One of the recognised ASCOM device types e.g. telescope (must be lower case)
     */
     #[serde(rename = "device_type")]
-    device_type: String,
+    device_type: parameters::DeviceType,
 
     /**
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -660,13 +684,13 @@ struct PutCommandblindPathParams {
     One of the recognised ASCOM device types e.g. telescope (must be lower case)
     */
     #[serde(rename = "device_type")]
-    device_type: String,
+    device_type: parameters::DeviceType,
 
     /**
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 type PutCommandblindBodyParams = request_bodies::PutDevicetypeDevicenumberCommandblind;
@@ -699,13 +723,13 @@ struct PutCommandboolPathParams {
     One of the recognised ASCOM device types e.g. telescope (must be lower case)
     */
     #[serde(rename = "device_type")]
-    device_type: String,
+    device_type: parameters::DeviceType,
 
     /**
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 type PutCommandboolBodyParams = request_bodies::PutDevicetypeDevicenumberCommandblind;
@@ -738,13 +762,13 @@ struct PutCommandstringPathParams {
     One of the recognised ASCOM device types e.g. telescope (must be lower case)
     */
     #[serde(rename = "device_type")]
-    device_type: String,
+    device_type: parameters::DeviceType,
 
     /**
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 type PutCommandstringBodyParams = request_bodies::PutDevicetypeDevicenumberCommandblind;
@@ -777,13 +801,13 @@ struct GetConnectedPathParams {
     One of the recognised ASCOM device types e.g. telescope (must be lower case)
     */
     #[serde(rename = "device_type")]
-    device_type: String,
+    device_type: parameters::DeviceType,
 
     /**
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -793,13 +817,13 @@ struct GetConnectedQueryParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
+    client_id: Option<parameters::ClientIdquery>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
+    client_transaction_id: Option<parameters::ClientTransactionIdquery>,
 }
 
 /**
@@ -822,13 +846,13 @@ struct PutConnectedPathParams {
     One of the recognised ASCOM device types e.g. telescope (must be lower case)
     */
     #[serde(rename = "device_type")]
-    device_type: String,
+    device_type: parameters::DeviceType,
 
     /**
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -880,13 +904,13 @@ struct GetDescriptionPathParams {
     One of the recognised ASCOM device types e.g. telescope (must be lower case)
     */
     #[serde(rename = "device_type")]
-    device_type: String,
+    device_type: parameters::DeviceType,
 
     /**
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -896,13 +920,13 @@ struct GetDescriptionQueryParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
+    client_id: Option<parameters::ClientIdquery>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
+    client_transaction_id: Option<parameters::ClientTransactionIdquery>,
 }
 
 /**
@@ -925,13 +949,13 @@ struct GetDriverinfoPathParams {
     One of the recognised ASCOM device types e.g. telescope (must be lower case)
     */
     #[serde(rename = "device_type")]
-    device_type: String,
+    device_type: parameters::DeviceType,
 
     /**
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -941,13 +965,13 @@ struct GetDriverinfoQueryParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
+    client_id: Option<parameters::ClientIdquery>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
+    client_transaction_id: Option<parameters::ClientTransactionIdquery>,
 }
 
 /**
@@ -970,13 +994,13 @@ struct GetDriverversionPathParams {
     One of the recognised ASCOM device types e.g. telescope (must be lower case)
     */
     #[serde(rename = "device_type")]
-    device_type: String,
+    device_type: parameters::DeviceType,
 
     /**
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -986,13 +1010,13 @@ struct GetDriverversionQueryParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
+    client_id: Option<parameters::ClientIdquery>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
+    client_transaction_id: Option<parameters::ClientTransactionIdquery>,
 }
 
 /**
@@ -1015,13 +1039,13 @@ struct GetInterfaceversionPathParams {
     One of the recognised ASCOM device types e.g. telescope (must be lower case)
     */
     #[serde(rename = "device_type")]
-    device_type: String,
+    device_type: parameters::DeviceType,
 
     /**
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -1031,13 +1055,13 @@ struct GetInterfaceversionQueryParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
+    client_id: Option<parameters::ClientIdquery>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
+    client_transaction_id: Option<parameters::ClientTransactionIdquery>,
 }
 
 /**
@@ -1060,13 +1084,13 @@ struct GetNamePathParams {
     One of the recognised ASCOM device types e.g. telescope (must be lower case)
     */
     #[serde(rename = "device_type")]
-    device_type: String,
+    device_type: parameters::DeviceType,
 
     /**
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -1076,13 +1100,13 @@ struct GetNameQueryParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
+    client_id: Option<parameters::ClientIdquery>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
+    client_transaction_id: Option<parameters::ClientTransactionIdquery>,
 }
 
 /**
@@ -1100,13 +1124,13 @@ struct GetSupportedactionsPathParams {
     One of the recognised ASCOM device types e.g. telescope (must be lower case)
     */
     #[serde(rename = "device_type")]
-    device_type: String,
+    device_type: parameters::DeviceType,
 
     /**
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -1116,13 +1140,13 @@ struct GetSupportedactionsQueryParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
+    client_id: Option<parameters::ClientIdquery>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
+    client_transaction_id: Option<parameters::ClientTransactionIdquery>,
 }
 
 /**
@@ -1145,7 +1169,7 @@ struct GetCameraBayeroffsetxPathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -1155,13 +1179,13 @@ struct GetCameraBayeroffsetxQueryParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
+    client_id: Option<parameters::ClientIdquery>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
+    client_transaction_id: Option<parameters::ClientTransactionIdquery>,
 }
 
 /**
@@ -1184,7 +1208,7 @@ struct GetCameraBayeroffsetyPathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -1194,13 +1218,13 @@ struct GetCameraBayeroffsetyQueryParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
+    client_id: Option<parameters::ClientIdquery>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
+    client_transaction_id: Option<parameters::ClientTransactionIdquery>,
 }
 
 /**
@@ -1223,7 +1247,7 @@ struct GetCameraBinxPathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -1233,13 +1257,13 @@ struct GetCameraBinxQueryParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
+    client_id: Option<parameters::ClientIdquery>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
+    client_transaction_id: Option<parameters::ClientTransactionIdquery>,
 }
 
 /**
@@ -1262,7 +1286,7 @@ struct PutCameraBinxPathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -1314,7 +1338,7 @@ struct GetCameraBinyPathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -1324,13 +1348,13 @@ struct GetCameraBinyQueryParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
+    client_id: Option<parameters::ClientIdquery>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
+    client_transaction_id: Option<parameters::ClientTransactionIdquery>,
 }
 
 /**
@@ -1353,7 +1377,7 @@ struct PutCameraBinyPathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -1405,7 +1429,7 @@ struct GetCameraCamerastatePathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -1415,13 +1439,13 @@ struct GetCameraCamerastateQueryParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
+    client_id: Option<parameters::ClientIdquery>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
+    client_transaction_id: Option<parameters::ClientTransactionIdquery>,
 }
 
 /**
@@ -1444,7 +1468,7 @@ struct GetCameraCameraxsizePathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -1454,13 +1478,13 @@ struct GetCameraCameraxsizeQueryParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
+    client_id: Option<parameters::ClientIdquery>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
+    client_transaction_id: Option<parameters::ClientTransactionIdquery>,
 }
 
 /**
@@ -1483,7 +1507,7 @@ struct GetCameraCameraysizePathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -1493,13 +1517,13 @@ struct GetCameraCameraysizeQueryParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
+    client_id: Option<parameters::ClientIdquery>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
+    client_transaction_id: Option<parameters::ClientTransactionIdquery>,
 }
 
 /**
@@ -1522,7 +1546,7 @@ struct GetCameraCanabortexposurePathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -1532,13 +1556,13 @@ struct GetCameraCanabortexposureQueryParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
+    client_id: Option<parameters::ClientIdquery>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
+    client_transaction_id: Option<parameters::ClientTransactionIdquery>,
 }
 
 /**
@@ -1561,7 +1585,7 @@ struct GetCameraCanasymmetricbinPathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -1571,13 +1595,13 @@ struct GetCameraCanasymmetricbinQueryParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
+    client_id: Option<parameters::ClientIdquery>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
+    client_transaction_id: Option<parameters::ClientTransactionIdquery>,
 }
 
 /**
@@ -1600,7 +1624,7 @@ struct GetCameraCanfastreadoutPathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -1610,13 +1634,13 @@ struct GetCameraCanfastreadoutQueryParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
+    client_id: Option<parameters::ClientIdquery>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
+    client_transaction_id: Option<parameters::ClientTransactionIdquery>,
 }
 
 /**
@@ -1639,7 +1663,7 @@ struct GetCameraCangetcoolerpowerPathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -1649,13 +1673,13 @@ struct GetCameraCangetcoolerpowerQueryParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
+    client_id: Option<parameters::ClientIdquery>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
+    client_transaction_id: Option<parameters::ClientTransactionIdquery>,
 }
 
 /**
@@ -1678,7 +1702,7 @@ struct GetCameraCanpulseguidePathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -1688,13 +1712,13 @@ struct GetCameraCanpulseguideQueryParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
+    client_id: Option<parameters::ClientIdquery>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
+    client_transaction_id: Option<parameters::ClientTransactionIdquery>,
 }
 
 /**
@@ -1717,7 +1741,7 @@ struct GetCameraCansetccdtemperaturePathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -1727,13 +1751,13 @@ struct GetCameraCansetccdtemperatureQueryParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
+    client_id: Option<parameters::ClientIdquery>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
+    client_transaction_id: Option<parameters::ClientTransactionIdquery>,
 }
 
 /**
@@ -1756,7 +1780,7 @@ struct GetCameraCanstopexposurePathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -1766,13 +1790,13 @@ struct GetCameraCanstopexposureQueryParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
+    client_id: Option<parameters::ClientIdquery>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
+    client_transaction_id: Option<parameters::ClientTransactionIdquery>,
 }
 
 /**
@@ -1795,7 +1819,7 @@ struct GetCameraCcdtemperaturePathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -1805,13 +1829,13 @@ struct GetCameraCcdtemperatureQueryParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
+    client_id: Option<parameters::ClientIdquery>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
+    client_transaction_id: Option<parameters::ClientTransactionIdquery>,
 }
 
 /**
@@ -1834,7 +1858,7 @@ struct GetCameraCooleronPathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -1844,13 +1868,13 @@ struct GetCameraCooleronQueryParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
+    client_id: Option<parameters::ClientIdquery>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
+    client_transaction_id: Option<parameters::ClientTransactionIdquery>,
 }
 
 /**
@@ -1873,7 +1897,7 @@ struct PutCameraCooleronPathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -1925,7 +1949,7 @@ struct GetCameraCoolerpowerPathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -1935,13 +1959,13 @@ struct GetCameraCoolerpowerQueryParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
+    client_id: Option<parameters::ClientIdquery>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
+    client_transaction_id: Option<parameters::ClientTransactionIdquery>,
 }
 
 /**
@@ -1964,7 +1988,7 @@ struct GetCameraElectronsperaduPathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -1974,13 +1998,13 @@ struct GetCameraElectronsperaduQueryParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
+    client_id: Option<parameters::ClientIdquery>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
+    client_transaction_id: Option<parameters::ClientTransactionIdquery>,
 }
 
 /**
@@ -2003,7 +2027,7 @@ struct GetCameraExposuremaxPathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -2013,13 +2037,13 @@ struct GetCameraExposuremaxQueryParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
+    client_id: Option<parameters::ClientIdquery>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
+    client_transaction_id: Option<parameters::ClientTransactionIdquery>,
 }
 
 /**
@@ -2042,7 +2066,7 @@ struct GetCameraExposureminPathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -2052,13 +2076,13 @@ struct GetCameraExposureminQueryParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
+    client_id: Option<parameters::ClientIdquery>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
+    client_transaction_id: Option<parameters::ClientTransactionIdquery>,
 }
 
 /**
@@ -2081,7 +2105,7 @@ struct GetCameraExposureresolutionPathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -2091,13 +2115,13 @@ struct GetCameraExposureresolutionQueryParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
+    client_id: Option<parameters::ClientIdquery>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
+    client_transaction_id: Option<parameters::ClientTransactionIdquery>,
 }
 
 /**
@@ -2120,7 +2144,7 @@ struct GetCameraFastreadoutPathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -2130,13 +2154,13 @@ struct GetCameraFastreadoutQueryParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
+    client_id: Option<parameters::ClientIdquery>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
+    client_transaction_id: Option<parameters::ClientTransactionIdquery>,
 }
 
 /**
@@ -2159,7 +2183,7 @@ struct PutCameraFastreadoutPathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -2211,7 +2235,7 @@ struct GetCameraFullwellcapacityPathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -2221,13 +2245,13 @@ struct GetCameraFullwellcapacityQueryParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
+    client_id: Option<parameters::ClientIdquery>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
+    client_transaction_id: Option<parameters::ClientTransactionIdquery>,
 }
 
 /**
@@ -2250,7 +2274,7 @@ struct GetCameraGainPathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -2260,13 +2284,13 @@ struct GetCameraGainQueryParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
+    client_id: Option<parameters::ClientIdquery>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
+    client_transaction_id: Option<parameters::ClientTransactionIdquery>,
 }
 
 /**
@@ -2289,7 +2313,7 @@ struct PutCameraGainPathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -2341,7 +2365,7 @@ struct GetCameraGainmaxPathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -2351,13 +2375,13 @@ struct GetCameraGainmaxQueryParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
+    client_id: Option<parameters::ClientIdquery>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
+    client_transaction_id: Option<parameters::ClientTransactionIdquery>,
 }
 
 /**
@@ -2380,7 +2404,7 @@ struct GetCameraGainminPathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -2390,13 +2414,13 @@ struct GetCameraGainminQueryParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
+    client_id: Option<parameters::ClientIdquery>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
+    client_transaction_id: Option<parameters::ClientTransactionIdquery>,
 }
 
 /**
@@ -2419,7 +2443,7 @@ struct GetCameraGainsPathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -2429,13 +2453,13 @@ struct GetCameraGainsQueryParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
+    client_id: Option<parameters::ClientIdquery>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
+    client_transaction_id: Option<parameters::ClientTransactionIdquery>,
 }
 
 /**
@@ -2458,7 +2482,7 @@ struct GetCameraHasshutterPathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -2468,13 +2492,13 @@ struct GetCameraHasshutterQueryParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
+    client_id: Option<parameters::ClientIdquery>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
+    client_transaction_id: Option<parameters::ClientTransactionIdquery>,
 }
 
 /**
@@ -2497,7 +2521,7 @@ struct GetCameraHeatsinktemperaturePathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -2507,13 +2531,13 @@ struct GetCameraHeatsinktemperatureQueryParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
+    client_id: Option<parameters::ClientIdquery>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
+    client_transaction_id: Option<parameters::ClientTransactionIdquery>,
 }
 
 /**
@@ -2536,7 +2560,7 @@ struct GetCameraImagearrayPathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -2546,13 +2570,13 @@ struct GetCameraImagearrayQueryParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
+    client_id: Option<parameters::ClientIdquery>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
+    client_transaction_id: Option<parameters::ClientTransactionIdquery>,
 }
 
 /**
@@ -2630,7 +2654,7 @@ struct GetCameraImagearrayvariantPathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -2640,13 +2664,13 @@ struct GetCameraImagearrayvariantQueryParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
+    client_id: Option<parameters::ClientIdquery>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
+    client_transaction_id: Option<parameters::ClientTransactionIdquery>,
 }
 
 /**
@@ -2724,7 +2748,7 @@ struct GetCameraImagereadyPathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -2734,13 +2758,13 @@ struct GetCameraImagereadyQueryParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
+    client_id: Option<parameters::ClientIdquery>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
+    client_transaction_id: Option<parameters::ClientTransactionIdquery>,
 }
 
 /**
@@ -2763,7 +2787,7 @@ struct GetCameraIspulseguidingPathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -2773,13 +2797,13 @@ struct GetCameraIspulseguidingQueryParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
+    client_id: Option<parameters::ClientIdquery>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
+    client_transaction_id: Option<parameters::ClientTransactionIdquery>,
 }
 
 /**
@@ -2802,7 +2826,7 @@ struct GetCameraLastexposuredurationPathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -2812,13 +2836,13 @@ struct GetCameraLastexposuredurationQueryParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
+    client_id: Option<parameters::ClientIdquery>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
+    client_transaction_id: Option<parameters::ClientTransactionIdquery>,
 }
 
 /**
@@ -2841,7 +2865,7 @@ struct GetCameraLastexposurestarttimePathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -2851,13 +2875,13 @@ struct GetCameraLastexposurestarttimeQueryParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
+    client_id: Option<parameters::ClientIdquery>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
+    client_transaction_id: Option<parameters::ClientTransactionIdquery>,
 }
 
 /**
@@ -2880,7 +2904,7 @@ struct GetCameraMaxaduPathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -2890,13 +2914,13 @@ struct GetCameraMaxaduQueryParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
+    client_id: Option<parameters::ClientIdquery>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
+    client_transaction_id: Option<parameters::ClientTransactionIdquery>,
 }
 
 /**
@@ -2919,7 +2943,7 @@ struct GetCameraMaxbinxPathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -2929,13 +2953,13 @@ struct GetCameraMaxbinxQueryParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
+    client_id: Option<parameters::ClientIdquery>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
+    client_transaction_id: Option<parameters::ClientTransactionIdquery>,
 }
 
 /**
@@ -2958,7 +2982,7 @@ struct GetCameraMaxbinyPathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -2968,13 +2992,13 @@ struct GetCameraMaxbinyQueryParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
+    client_id: Option<parameters::ClientIdquery>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
+    client_transaction_id: Option<parameters::ClientTransactionIdquery>,
 }
 
 /**
@@ -2997,7 +3021,7 @@ struct GetCameraNumxPathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -3007,13 +3031,13 @@ struct GetCameraNumxQueryParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
+    client_id: Option<parameters::ClientIdquery>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
+    client_transaction_id: Option<parameters::ClientTransactionIdquery>,
 }
 
 /**
@@ -3036,7 +3060,7 @@ struct PutCameraNumxPathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -3088,7 +3112,7 @@ struct GetCameraNumyPathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -3098,13 +3122,13 @@ struct GetCameraNumyQueryParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
+    client_id: Option<parameters::ClientIdquery>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
+    client_transaction_id: Option<parameters::ClientTransactionIdquery>,
 }
 
 /**
@@ -3127,7 +3151,7 @@ struct PutCameraNumyPathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -3179,7 +3203,7 @@ struct GetCameraOffsetPathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -3189,13 +3213,13 @@ struct GetCameraOffsetQueryParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
+    client_id: Option<parameters::ClientIdquery>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
+    client_transaction_id: Option<parameters::ClientTransactionIdquery>,
 }
 
 /**
@@ -3218,7 +3242,7 @@ struct PutCameraOffsetPathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -3270,7 +3294,7 @@ struct GetCameraOffsetmaxPathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -3280,13 +3304,13 @@ struct GetCameraOffsetmaxQueryParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
+    client_id: Option<parameters::ClientIdquery>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
+    client_transaction_id: Option<parameters::ClientTransactionIdquery>,
 }
 
 /**
@@ -3309,7 +3333,7 @@ struct GetCameraOffsetminPathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -3319,13 +3343,13 @@ struct GetCameraOffsetminQueryParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
+    client_id: Option<parameters::ClientIdquery>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
+    client_transaction_id: Option<parameters::ClientTransactionIdquery>,
 }
 
 /**
@@ -3348,7 +3372,7 @@ struct GetCameraOffsetsPathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -3358,13 +3382,13 @@ struct GetCameraOffsetsQueryParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
+    client_id: Option<parameters::ClientIdquery>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
+    client_transaction_id: Option<parameters::ClientTransactionIdquery>,
 }
 
 /**
@@ -3387,7 +3411,7 @@ struct GetCameraPercentcompletedPathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -3397,13 +3421,13 @@ struct GetCameraPercentcompletedQueryParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
+    client_id: Option<parameters::ClientIdquery>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
+    client_transaction_id: Option<parameters::ClientTransactionIdquery>,
 }
 
 /**
@@ -3426,7 +3450,7 @@ struct GetCameraPixelsizexPathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -3436,13 +3460,13 @@ struct GetCameraPixelsizexQueryParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
+    client_id: Option<parameters::ClientIdquery>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
+    client_transaction_id: Option<parameters::ClientTransactionIdquery>,
 }
 
 /**
@@ -3465,7 +3489,7 @@ struct GetCameraPixelsizeyPathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -3475,13 +3499,13 @@ struct GetCameraPixelsizeyQueryParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
+    client_id: Option<parameters::ClientIdquery>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
+    client_transaction_id: Option<parameters::ClientTransactionIdquery>,
 }
 
 /**
@@ -3504,7 +3528,7 @@ struct GetCameraReadoutmodePathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -3514,13 +3538,13 @@ struct GetCameraReadoutmodeQueryParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
+    client_id: Option<parameters::ClientIdquery>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
+    client_transaction_id: Option<parameters::ClientTransactionIdquery>,
 }
 
 /**
@@ -3543,7 +3567,7 @@ struct PutCameraReadoutmodePathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -3595,7 +3619,7 @@ struct GetCameraReadoutmodesPathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -3605,13 +3629,13 @@ struct GetCameraReadoutmodesQueryParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
+    client_id: Option<parameters::ClientIdquery>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
+    client_transaction_id: Option<parameters::ClientTransactionIdquery>,
 }
 
 /**
@@ -3634,7 +3658,7 @@ struct GetCameraSensornamePathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -3644,13 +3668,13 @@ struct GetCameraSensornameQueryParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
+    client_id: Option<parameters::ClientIdquery>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
+    client_transaction_id: Option<parameters::ClientTransactionIdquery>,
 }
 
 /**
@@ -3673,7 +3697,7 @@ struct GetCameraSensortypePathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -3683,13 +3707,13 @@ struct GetCameraSensortypeQueryParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
+    client_id: Option<parameters::ClientIdquery>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
+    client_transaction_id: Option<parameters::ClientTransactionIdquery>,
 }
 
 /**
@@ -3721,7 +3745,7 @@ struct GetCameraSetccdtemperaturePathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -3731,13 +3755,13 @@ struct GetCameraSetccdtemperatureQueryParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
+    client_id: Option<parameters::ClientIdquery>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
+    client_transaction_id: Option<parameters::ClientTransactionIdquery>,
 }
 
 /**
@@ -3760,7 +3784,7 @@ struct PutCameraSetccdtemperaturePathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -3812,7 +3836,7 @@ struct GetCameraStartxPathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -3822,13 +3846,13 @@ struct GetCameraStartxQueryParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
+    client_id: Option<parameters::ClientIdquery>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
+    client_transaction_id: Option<parameters::ClientTransactionIdquery>,
 }
 
 /**
@@ -3851,7 +3875,7 @@ struct PutCameraStartxPathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -3903,7 +3927,7 @@ struct GetCameraStartyPathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -3913,13 +3937,13 @@ struct GetCameraStartyQueryParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
+    client_id: Option<parameters::ClientIdquery>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
+    client_transaction_id: Option<parameters::ClientTransactionIdquery>,
 }
 
 /**
@@ -3942,7 +3966,7 @@ struct PutCameraStartyPathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -3994,7 +4018,7 @@ struct GetCameraSubexposuredurationPathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -4004,13 +4028,13 @@ struct GetCameraSubexposuredurationQueryParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
+    client_id: Option<parameters::ClientIdquery>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
+    client_transaction_id: Option<parameters::ClientTransactionIdquery>,
 }
 
 /**
@@ -4033,7 +4057,7 @@ struct PutCameraSubexposuredurationPathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -4085,7 +4109,7 @@ struct PutCameraAbortexposurePathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 type PutCameraAbortexposureBodyParams = request_bodies::PutStandardClientParameters;
@@ -4110,7 +4134,7 @@ struct PutCameraPulseguidePathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -4170,7 +4194,7 @@ struct PutCameraStartexposurePathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -4230,7 +4254,7 @@ struct PutCameraStopexposurePathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 type PutCameraStopexposureBodyParams = request_bodies::PutStandardClientParameters;
@@ -4255,7 +4279,7 @@ struct GetCovercalibratorBrightnessPathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -4265,13 +4289,13 @@ struct GetCovercalibratorBrightnessQueryParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
+    client_id: Option<parameters::ClientIdquery>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
+    client_transaction_id: Option<parameters::ClientTransactionIdquery>,
 }
 
 /**
@@ -4294,7 +4318,7 @@ struct GetCovercalibratorCalibratorstatePathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -4304,13 +4328,13 @@ struct GetCovercalibratorCalibratorstateQueryParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
+    client_id: Option<parameters::ClientIdquery>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
+    client_transaction_id: Option<parameters::ClientTransactionIdquery>,
 }
 
 /**
@@ -4333,7 +4357,7 @@ struct GetCovercalibratorCoverstatePathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -4343,13 +4367,13 @@ struct GetCovercalibratorCoverstateQueryParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
+    client_id: Option<parameters::ClientIdquery>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
+    client_transaction_id: Option<parameters::ClientTransactionIdquery>,
 }
 
 /**
@@ -4372,7 +4396,7 @@ struct GetCovercalibratorMaxbrightnessPathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -4382,13 +4406,13 @@ struct GetCovercalibratorMaxbrightnessQueryParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
+    client_id: Option<parameters::ClientIdquery>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
+    client_transaction_id: Option<parameters::ClientTransactionIdquery>,
 }
 
 /**
@@ -4411,7 +4435,7 @@ struct PutCovercalibratorCalibratoroffPathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 type PutCovercalibratorCalibratoroffBodyParams = request_bodies::PutStandardClientParameters;
@@ -4436,7 +4460,7 @@ struct PutCovercalibratorCalibratoronPathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -4488,7 +4512,7 @@ struct PutCovercalibratorClosecoverPathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 type PutCovercalibratorClosecoverBodyParams = request_bodies::PutStandardClientParameters;
@@ -4513,7 +4537,7 @@ struct PutCovercalibratorHaltcoverPathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 type PutCovercalibratorHaltcoverBodyParams = request_bodies::PutStandardClientParameters;
@@ -4538,7 +4562,7 @@ struct PutCovercalibratorOpencoverPathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 type PutCovercalibratorOpencoverBodyParams = request_bodies::PutStandardClientParameters;
@@ -4563,7 +4587,7 @@ struct GetDomeAltitudePathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -4573,13 +4597,13 @@ struct GetDomeAltitudeQueryParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
+    client_id: Option<parameters::ClientIdquery>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
+    client_transaction_id: Option<parameters::ClientTransactionIdquery>,
 }
 
 /**
@@ -4602,7 +4626,7 @@ struct GetDomeAthomePathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -4612,13 +4636,13 @@ struct GetDomeAthomeQueryParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
+    client_id: Option<parameters::ClientIdquery>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
+    client_transaction_id: Option<parameters::ClientTransactionIdquery>,
 }
 
 /**
@@ -4641,7 +4665,7 @@ struct GetDomeAtparkPathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -4651,13 +4675,13 @@ struct GetDomeAtparkQueryParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
+    client_id: Option<parameters::ClientIdquery>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
+    client_transaction_id: Option<parameters::ClientTransactionIdquery>,
 }
 
 /**
@@ -4680,7 +4704,7 @@ struct GetDomeAzimuthPathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -4690,13 +4714,13 @@ struct GetDomeAzimuthQueryParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
+    client_id: Option<parameters::ClientIdquery>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
+    client_transaction_id: Option<parameters::ClientTransactionIdquery>,
 }
 
 /**
@@ -4719,7 +4743,7 @@ struct GetDomeCanfindhomePathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -4729,13 +4753,13 @@ struct GetDomeCanfindhomeQueryParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
+    client_id: Option<parameters::ClientIdquery>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
+    client_transaction_id: Option<parameters::ClientTransactionIdquery>,
 }
 
 /**
@@ -4758,7 +4782,7 @@ struct GetDomeCanparkPathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -4768,13 +4792,13 @@ struct GetDomeCanparkQueryParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
+    client_id: Option<parameters::ClientIdquery>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
+    client_transaction_id: Option<parameters::ClientTransactionIdquery>,
 }
 
 /**
@@ -4797,7 +4821,7 @@ struct GetDomeCansetaltitudePathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -4807,13 +4831,13 @@ struct GetDomeCansetaltitudeQueryParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
+    client_id: Option<parameters::ClientIdquery>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
+    client_transaction_id: Option<parameters::ClientTransactionIdquery>,
 }
 
 /**
@@ -4836,7 +4860,7 @@ struct GetDomeCansetazimuthPathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -4846,13 +4870,13 @@ struct GetDomeCansetazimuthQueryParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
+    client_id: Option<parameters::ClientIdquery>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
+    client_transaction_id: Option<parameters::ClientTransactionIdquery>,
 }
 
 /**
@@ -4875,7 +4899,7 @@ struct GetDomeCansetparkPathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -4885,13 +4909,13 @@ struct GetDomeCansetparkQueryParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
+    client_id: Option<parameters::ClientIdquery>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
+    client_transaction_id: Option<parameters::ClientTransactionIdquery>,
 }
 
 /**
@@ -4914,7 +4938,7 @@ struct GetDomeCansetshutterPathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -4924,13 +4948,13 @@ struct GetDomeCansetshutterQueryParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
+    client_id: Option<parameters::ClientIdquery>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
+    client_transaction_id: Option<parameters::ClientTransactionIdquery>,
 }
 
 /**
@@ -4953,7 +4977,7 @@ struct GetDomeCanslavePathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -4963,13 +4987,13 @@ struct GetDomeCanslaveQueryParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
+    client_id: Option<parameters::ClientIdquery>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
+    client_transaction_id: Option<parameters::ClientTransactionIdquery>,
 }
 
 /**
@@ -4992,7 +5016,7 @@ struct GetDomeCansyncazimuthPathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -5002,13 +5026,13 @@ struct GetDomeCansyncazimuthQueryParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
+    client_id: Option<parameters::ClientIdquery>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
+    client_transaction_id: Option<parameters::ClientTransactionIdquery>,
 }
 
 /**
@@ -5031,7 +5055,7 @@ struct GetDomeShutterstatusPathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -5041,13 +5065,13 @@ struct GetDomeShutterstatusQueryParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
+    client_id: Option<parameters::ClientIdquery>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
+    client_transaction_id: Option<parameters::ClientTransactionIdquery>,
 }
 
 /**
@@ -5070,7 +5094,7 @@ struct GetDomeSlavedPathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -5080,13 +5104,13 @@ struct GetDomeSlavedQueryParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
+    client_id: Option<parameters::ClientIdquery>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
+    client_transaction_id: Option<parameters::ClientTransactionIdquery>,
 }
 
 /**
@@ -5109,7 +5133,7 @@ struct PutDomeSlavedPathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -5161,7 +5185,7 @@ struct GetDomeSlewingPathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -5171,13 +5195,13 @@ struct GetDomeSlewingQueryParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
+    client_id: Option<parameters::ClientIdquery>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
+    client_transaction_id: Option<parameters::ClientTransactionIdquery>,
 }
 
 /**
@@ -5200,7 +5224,7 @@ struct PutDomeAbortslewPathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 type PutDomeAbortslewBodyParams = request_bodies::PutStandardClientParameters;
@@ -5225,7 +5249,7 @@ struct PutDomeCloseshutterPathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 type PutDomeCloseshutterBodyParams = request_bodies::PutStandardClientParameters;
@@ -5250,7 +5274,7 @@ struct PutDomeFindhomePathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 type PutDomeFindhomeBodyParams = request_bodies::PutStandardClientParameters;
@@ -5275,7 +5299,7 @@ struct PutDomeOpenshutterPathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 type PutDomeOpenshutterBodyParams = request_bodies::PutStandardClientParameters;
@@ -5300,7 +5324,7 @@ struct PutDomeParkPathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 type PutDomeParkBodyParams = request_bodies::PutStandardClientParameters;
@@ -5320,7 +5344,7 @@ struct PutDomeSetparkPathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 type PutDomeSetparkBodyParams = request_bodies::PutStandardClientParameters;
@@ -5345,7 +5369,7 @@ struct PutDomeSlewtoaltitudePathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -5397,7 +5421,7 @@ struct PutDomeSlewtoazimuthPathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 type PutDomeSlewtoazimuthBodyParams = request_bodies::PutDomeDevicenumberSlewtoazimuth;
@@ -5428,7 +5452,7 @@ struct PutDomeSynctoazimuthPathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 type PutDomeSynctoazimuthBodyParams = request_bodies::PutDomeDevicenumberSlewtoazimuth;
@@ -5459,7 +5483,7 @@ struct GetFilterwheelFocusoffsetsPathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -5469,13 +5493,13 @@ struct GetFilterwheelFocusoffsetsQueryParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
+    client_id: Option<parameters::ClientIdquery>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
+    client_transaction_id: Option<parameters::ClientTransactionIdquery>,
 }
 
 /**
@@ -5498,7 +5522,7 @@ struct GetFilterwheelNamesPathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -5508,13 +5532,13 @@ struct GetFilterwheelNamesQueryParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
+    client_id: Option<parameters::ClientIdquery>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
+    client_transaction_id: Option<parameters::ClientTransactionIdquery>,
 }
 
 /**
@@ -5537,7 +5561,7 @@ struct GetFilterwheelPositionPathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -5547,13 +5571,13 @@ struct GetFilterwheelPositionQueryParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
+    client_id: Option<parameters::ClientIdquery>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
+    client_transaction_id: Option<parameters::ClientTransactionIdquery>,
 }
 
 /**
@@ -5576,7 +5600,7 @@ struct PutFilterwheelPositionPathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -5628,7 +5652,7 @@ struct GetFocuserAbsolutePathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -5638,13 +5662,13 @@ struct GetFocuserAbsoluteQueryParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
+    client_id: Option<parameters::ClientIdquery>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
+    client_transaction_id: Option<parameters::ClientTransactionIdquery>,
 }
 
 /**
@@ -5667,7 +5691,7 @@ struct GetFocuserIsmovingPathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -5677,13 +5701,13 @@ struct GetFocuserIsmovingQueryParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
+    client_id: Option<parameters::ClientIdquery>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
+    client_transaction_id: Option<parameters::ClientTransactionIdquery>,
 }
 
 /**
@@ -5706,7 +5730,7 @@ struct GetFocuserMaxincrementPathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -5716,13 +5740,13 @@ struct GetFocuserMaxincrementQueryParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
+    client_id: Option<parameters::ClientIdquery>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
+    client_transaction_id: Option<parameters::ClientTransactionIdquery>,
 }
 
 /**
@@ -5745,7 +5769,7 @@ struct GetFocuserMaxstepPathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -5755,13 +5779,13 @@ struct GetFocuserMaxstepQueryParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
+    client_id: Option<parameters::ClientIdquery>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
+    client_transaction_id: Option<parameters::ClientTransactionIdquery>,
 }
 
 /**
@@ -5784,7 +5808,7 @@ struct GetFocuserPositionPathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -5794,13 +5818,13 @@ struct GetFocuserPositionQueryParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
+    client_id: Option<parameters::ClientIdquery>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
+    client_transaction_id: Option<parameters::ClientTransactionIdquery>,
 }
 
 /**
@@ -5823,7 +5847,7 @@ struct GetFocuserStepsizePathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -5833,13 +5857,13 @@ struct GetFocuserStepsizeQueryParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
+    client_id: Option<parameters::ClientIdquery>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
+    client_transaction_id: Option<parameters::ClientTransactionIdquery>,
 }
 
 /**
@@ -5862,7 +5886,7 @@ struct GetFocuserTempcompPathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -5872,13 +5896,13 @@ struct GetFocuserTempcompQueryParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
+    client_id: Option<parameters::ClientIdquery>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
+    client_transaction_id: Option<parameters::ClientTransactionIdquery>,
 }
 
 /**
@@ -5953,7 +5977,7 @@ struct GetFocuserTempcompavailablePathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -5963,13 +5987,13 @@ struct GetFocuserTempcompavailableQueryParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
+    client_id: Option<parameters::ClientIdquery>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
+    client_transaction_id: Option<parameters::ClientTransactionIdquery>,
 }
 
 /**
@@ -5992,7 +6016,7 @@ struct GetFocuserTemperaturePathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -6002,13 +6026,13 @@ struct GetFocuserTemperatureQueryParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
+    client_id: Option<parameters::ClientIdquery>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
+    client_transaction_id: Option<parameters::ClientTransactionIdquery>,
 }
 
 /**
@@ -6031,7 +6055,7 @@ struct PutFocuserHaltPathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 type PutFocuserHaltBodyParams = request_bodies::PutStandardClientParameters;
@@ -6056,7 +6080,7 @@ struct PutFocuserMovePathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -6108,7 +6132,7 @@ struct GetObservingconditionsAverageperiodPathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -6118,13 +6142,13 @@ struct GetObservingconditionsAverageperiodQueryParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
+    client_id: Option<parameters::ClientIdquery>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
+    client_transaction_id: Option<parameters::ClientTransactionIdquery>,
 }
 
 /**
@@ -6147,7 +6171,7 @@ struct PutObservingconditionsAverageperiodPathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -6199,7 +6223,7 @@ struct GetObservingconditionsCloudcoverPathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -6209,13 +6233,13 @@ struct GetObservingconditionsCloudcoverQueryParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
+    client_id: Option<parameters::ClientIdquery>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
+    client_transaction_id: Option<parameters::ClientTransactionIdquery>,
 }
 
 /**
@@ -6238,7 +6262,7 @@ struct GetObservingconditionsDewpointPathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -6248,13 +6272,13 @@ struct GetObservingconditionsDewpointQueryParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
+    client_id: Option<parameters::ClientIdquery>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
+    client_transaction_id: Option<parameters::ClientTransactionIdquery>,
 }
 
 /**
@@ -6277,7 +6301,7 @@ struct GetObservingconditionsHumidityPathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -6287,13 +6311,13 @@ struct GetObservingconditionsHumidityQueryParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
+    client_id: Option<parameters::ClientIdquery>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
+    client_transaction_id: Option<parameters::ClientTransactionIdquery>,
 }
 
 /**
@@ -6316,7 +6340,7 @@ struct GetObservingconditionsPressurePathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -6326,13 +6350,13 @@ struct GetObservingconditionsPressureQueryParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
+    client_id: Option<parameters::ClientIdquery>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
+    client_transaction_id: Option<parameters::ClientTransactionIdquery>,
 }
 
 /**
@@ -6355,7 +6379,7 @@ struct GetObservingconditionsRainratePathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -6365,13 +6389,13 @@ struct GetObservingconditionsRainrateQueryParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
+    client_id: Option<parameters::ClientIdquery>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
+    client_transaction_id: Option<parameters::ClientTransactionIdquery>,
 }
 
 /**
@@ -6394,7 +6418,7 @@ struct GetObservingconditionsSkybrightnessPathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -6404,13 +6428,13 @@ struct GetObservingconditionsSkybrightnessQueryParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
+    client_id: Option<parameters::ClientIdquery>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
+    client_transaction_id: Option<parameters::ClientTransactionIdquery>,
 }
 
 /**
@@ -6433,7 +6457,7 @@ struct GetObservingconditionsSkyqualityPathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -6443,13 +6467,13 @@ struct GetObservingconditionsSkyqualityQueryParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
+    client_id: Option<parameters::ClientIdquery>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
+    client_transaction_id: Option<parameters::ClientTransactionIdquery>,
 }
 
 /**
@@ -6472,7 +6496,7 @@ struct GetObservingconditionsSkytemperaturePathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -6482,13 +6506,13 @@ struct GetObservingconditionsSkytemperatureQueryParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
+    client_id: Option<parameters::ClientIdquery>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
+    client_transaction_id: Option<parameters::ClientTransactionIdquery>,
 }
 
 /**
@@ -6511,7 +6535,7 @@ struct GetObservingconditionsStarfwhmPathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -6521,13 +6545,13 @@ struct GetObservingconditionsStarfwhmQueryParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
+    client_id: Option<parameters::ClientIdquery>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
+    client_transaction_id: Option<parameters::ClientTransactionIdquery>,
 }
 
 /**
@@ -6550,7 +6574,7 @@ struct GetObservingconditionsTemperaturePathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -6560,13 +6584,13 @@ struct GetObservingconditionsTemperatureQueryParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
+    client_id: Option<parameters::ClientIdquery>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
+    client_transaction_id: Option<parameters::ClientTransactionIdquery>,
 }
 
 /**
@@ -6589,7 +6613,7 @@ struct GetObservingconditionsWinddirectionPathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -6599,13 +6623,13 @@ struct GetObservingconditionsWinddirectionQueryParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
+    client_id: Option<parameters::ClientIdquery>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
+    client_transaction_id: Option<parameters::ClientTransactionIdquery>,
 }
 
 /**
@@ -6628,7 +6652,7 @@ struct GetObservingconditionsWindgustPathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -6638,13 +6662,13 @@ struct GetObservingconditionsWindgustQueryParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
+    client_id: Option<parameters::ClientIdquery>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
+    client_transaction_id: Option<parameters::ClientTransactionIdquery>,
 }
 
 /**
@@ -6667,7 +6691,7 @@ struct GetObservingconditionsWindspeedPathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -6677,13 +6701,13 @@ struct GetObservingconditionsWindspeedQueryParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
+    client_id: Option<parameters::ClientIdquery>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
+    client_transaction_id: Option<parameters::ClientTransactionIdquery>,
 }
 
 /**
@@ -6706,7 +6730,7 @@ struct PutObservingconditionsRefreshPathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 type PutObservingconditionsRefreshBodyParams = request_bodies::PutStandardClientParameters;
@@ -6731,7 +6755,7 @@ struct GetObservingconditionsSensordescriptionPathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -6747,13 +6771,13 @@ struct GetObservingconditionsSensordescriptionQueryParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
+    client_id: Option<parameters::ClientIdquery>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
+    client_transaction_id: Option<parameters::ClientTransactionIdquery>,
 }
 
 /**
@@ -6782,7 +6806,7 @@ struct GetObservingconditionsTimesincelastupdatePathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -6798,13 +6822,13 @@ struct GetObservingconditionsTimesincelastupdateQueryParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
+    client_id: Option<parameters::ClientIdquery>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
+    client_transaction_id: Option<parameters::ClientTransactionIdquery>,
 }
 
 /**
@@ -6833,7 +6857,7 @@ struct GetRotatorCanreversePathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -6843,13 +6867,13 @@ struct GetRotatorCanreverseQueryParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
+    client_id: Option<parameters::ClientIdquery>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
+    client_transaction_id: Option<parameters::ClientTransactionIdquery>,
 }
 
 /**
@@ -6872,7 +6896,7 @@ struct GetRotatorIsmovingPathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -6882,13 +6906,13 @@ struct GetRotatorIsmovingQueryParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
+    client_id: Option<parameters::ClientIdquery>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
+    client_transaction_id: Option<parameters::ClientTransactionIdquery>,
 }
 
 /**
@@ -6911,7 +6935,7 @@ struct GetRotatorMechanicalpositionPathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -6921,13 +6945,13 @@ struct GetRotatorMechanicalpositionQueryParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
+    client_id: Option<parameters::ClientIdquery>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
+    client_transaction_id: Option<parameters::ClientTransactionIdquery>,
 }
 
 /**
@@ -6950,7 +6974,7 @@ struct GetRotatorPositionPathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -6960,13 +6984,13 @@ struct GetRotatorPositionQueryParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
+    client_id: Option<parameters::ClientIdquery>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
+    client_transaction_id: Option<parameters::ClientTransactionIdquery>,
 }
 
 /**
@@ -6989,7 +7013,7 @@ struct GetRotatorReversePathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -6999,13 +7023,13 @@ struct GetRotatorReverseQueryParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
+    client_id: Option<parameters::ClientIdquery>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
+    client_transaction_id: Option<parameters::ClientTransactionIdquery>,
 }
 
 /**
@@ -7028,7 +7052,7 @@ struct PutRotatorReversePathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -7080,7 +7104,7 @@ struct GetRotatorStepsizePathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -7090,13 +7114,13 @@ struct GetRotatorStepsizeQueryParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
+    client_id: Option<parameters::ClientIdquery>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
+    client_transaction_id: Option<parameters::ClientTransactionIdquery>,
 }
 
 /**
@@ -7119,7 +7143,7 @@ struct GetRotatorTargetpositionPathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -7129,13 +7153,13 @@ struct GetRotatorTargetpositionQueryParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
+    client_id: Option<parameters::ClientIdquery>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
+    client_transaction_id: Option<parameters::ClientTransactionIdquery>,
 }
 
 /**
@@ -7158,7 +7182,7 @@ struct PutRotatorHaltPathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 type PutRotatorHaltBodyParams = request_bodies::PutStandardClientParameters;
@@ -7183,7 +7207,7 @@ struct PutRotatorMovePathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -7235,7 +7259,7 @@ struct PutRotatorMoveabsolutePathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -7287,7 +7311,7 @@ struct PutRotatorMovemechanicalPathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -7339,7 +7363,7 @@ struct PutRotatorSyncPathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -7391,7 +7415,7 @@ struct GetSafetymonitorIssafePathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -7401,13 +7425,13 @@ struct GetSafetymonitorIssafeQueryParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
+    client_id: Option<parameters::ClientIdquery>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
+    client_transaction_id: Option<parameters::ClientTransactionIdquery>,
 }
 
 /**
@@ -7430,7 +7454,7 @@ struct GetSwitchMaxswitchPathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -7440,13 +7464,13 @@ struct GetSwitchMaxswitchQueryParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
+    client_id: Option<parameters::ClientIdquery>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
+    client_transaction_id: Option<parameters::ClientTransactionIdquery>,
 }
 
 /**
@@ -7469,7 +7493,7 @@ struct GetSwitchCanwritePathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -7479,19 +7503,19 @@ struct GetSwitchCanwriteQueryParams {
     The device number (0 to MaxSwitch - 1)
     */
     #[serde(rename = "Id")]
-    id: i32,
+    id: parameters::SwitchNumberQuery,
 
     /**
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
+    client_id: Option<parameters::ClientIdquery>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
+    client_transaction_id: Option<parameters::ClientTransactionIdquery>,
 }
 
 /**
@@ -7514,7 +7538,7 @@ struct GetSwitchGetswitchPathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -7524,19 +7548,19 @@ struct GetSwitchGetswitchQueryParams {
     The device number (0 to MaxSwitch - 1)
     */
     #[serde(rename = "Id")]
-    id: i32,
+    id: parameters::SwitchNumberQuery,
 
     /**
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
+    client_id: Option<parameters::ClientIdquery>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
+    client_transaction_id: Option<parameters::ClientTransactionIdquery>,
 }
 
 /**
@@ -7559,7 +7583,7 @@ struct GetSwitchGetswitchdescriptionPathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -7569,19 +7593,19 @@ struct GetSwitchGetswitchdescriptionQueryParams {
     The device number (0 to MaxSwitch - 1)
     */
     #[serde(rename = "Id")]
-    id: i32,
+    id: parameters::SwitchNumberQuery,
 
     /**
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
+    client_id: Option<parameters::ClientIdquery>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
+    client_transaction_id: Option<parameters::ClientTransactionIdquery>,
 }
 
 /**
@@ -7604,7 +7628,7 @@ struct GetSwitchGetswitchnamePathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -7614,19 +7638,19 @@ struct GetSwitchGetswitchnameQueryParams {
     The device number (0 to MaxSwitch - 1)
     */
     #[serde(rename = "Id")]
-    id: i32,
+    id: parameters::SwitchNumberQuery,
 
     /**
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
+    client_id: Option<parameters::ClientIdquery>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
+    client_transaction_id: Option<parameters::ClientTransactionIdquery>,
 }
 
 /**
@@ -7649,7 +7673,7 @@ struct GetSwitchGetswitchvaluePathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -7659,19 +7683,19 @@ struct GetSwitchGetswitchvalueQueryParams {
     The device number (0 to MaxSwitch - 1)
     */
     #[serde(rename = "Id")]
-    id: i32,
+    id: parameters::SwitchNumberQuery,
 
     /**
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
+    client_id: Option<parameters::ClientIdquery>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
+    client_transaction_id: Option<parameters::ClientTransactionIdquery>,
 }
 
 /**
@@ -7694,7 +7718,7 @@ struct GetSwitchMinswitchvaluePathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -7704,19 +7728,19 @@ struct GetSwitchMinswitchvalueQueryParams {
     The device number (0 to MaxSwitch - 1)
     */
     #[serde(rename = "Id")]
-    id: i32,
+    id: parameters::SwitchNumberQuery,
 
     /**
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
+    client_id: Option<parameters::ClientIdquery>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
+    client_transaction_id: Option<parameters::ClientTransactionIdquery>,
 }
 
 /**
@@ -7739,7 +7763,7 @@ struct GetSwitchMaxswitchvaluePathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -7749,19 +7773,19 @@ struct GetSwitchMaxswitchvalueQueryParams {
     The device number (0 to MaxSwitch - 1)
     */
     #[serde(rename = "Id")]
-    id: i32,
+    id: parameters::SwitchNumberQuery,
 
     /**
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
+    client_id: Option<parameters::ClientIdquery>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
+    client_transaction_id: Option<parameters::ClientTransactionIdquery>,
 }
 
 /**
@@ -7784,7 +7808,7 @@ struct PutSwitchSetswitchPathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -7844,7 +7868,7 @@ struct PutSwitchSetswitchnamePathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -7904,7 +7928,7 @@ struct PutSwitchSetswitchvaluePathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -7964,7 +7988,7 @@ struct GetSwitchSwitchstepPathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -7974,19 +7998,19 @@ struct GetSwitchSwitchstepQueryParams {
     The device number (0 to MaxSwitch - 1)
     */
     #[serde(rename = "Id")]
-    id: i32,
+    id: parameters::SwitchNumberQuery,
 
     /**
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
+    client_id: Option<parameters::ClientIdquery>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
+    client_transaction_id: Option<parameters::ClientTransactionIdquery>,
 }
 
 /**
@@ -8009,7 +8033,7 @@ struct GetTelescopeAlignmentmodePathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -8019,13 +8043,13 @@ struct GetTelescopeAlignmentmodeQueryParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
+    client_id: Option<parameters::ClientIdquery>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
+    client_transaction_id: Option<parameters::ClientTransactionIdquery>,
 }
 
 /**
@@ -8048,7 +8072,7 @@ struct GetTelescopeAltitudePathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -8058,13 +8082,13 @@ struct GetTelescopeAltitudeQueryParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
+    client_id: Option<parameters::ClientIdquery>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
+    client_transaction_id: Option<parameters::ClientTransactionIdquery>,
 }
 
 /**
@@ -8087,7 +8111,7 @@ struct GetTelescopeApertureareaPathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -8097,13 +8121,13 @@ struct GetTelescopeApertureareaQueryParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
+    client_id: Option<parameters::ClientIdquery>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
+    client_transaction_id: Option<parameters::ClientTransactionIdquery>,
 }
 
 /**
@@ -8126,7 +8150,7 @@ struct GetTelescopeAperturediameterPathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -8136,13 +8160,13 @@ struct GetTelescopeAperturediameterQueryParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
+    client_id: Option<parameters::ClientIdquery>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
+    client_transaction_id: Option<parameters::ClientTransactionIdquery>,
 }
 
 /**
@@ -8165,7 +8189,7 @@ struct GetTelescopeAthomePathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -8175,13 +8199,13 @@ struct GetTelescopeAthomeQueryParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
+    client_id: Option<parameters::ClientIdquery>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
+    client_transaction_id: Option<parameters::ClientTransactionIdquery>,
 }
 
 /**
@@ -8204,7 +8228,7 @@ struct GetTelescopeAtparkPathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -8214,13 +8238,13 @@ struct GetTelescopeAtparkQueryParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
+    client_id: Option<parameters::ClientIdquery>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
+    client_transaction_id: Option<parameters::ClientTransactionIdquery>,
 }
 
 /**
@@ -8243,7 +8267,7 @@ struct GetTelescopeAzimuthPathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -8253,13 +8277,13 @@ struct GetTelescopeAzimuthQueryParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
+    client_id: Option<parameters::ClientIdquery>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
+    client_transaction_id: Option<parameters::ClientTransactionIdquery>,
 }
 
 /**
@@ -8282,7 +8306,7 @@ struct GetTelescopeCanfindhomePathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -8292,13 +8316,13 @@ struct GetTelescopeCanfindhomeQueryParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
+    client_id: Option<parameters::ClientIdquery>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
+    client_transaction_id: Option<parameters::ClientTransactionIdquery>,
 }
 
 /**
@@ -8321,7 +8345,7 @@ struct GetTelescopeCanparkPathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -8331,13 +8355,13 @@ struct GetTelescopeCanparkQueryParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
+    client_id: Option<parameters::ClientIdquery>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
+    client_transaction_id: Option<parameters::ClientTransactionIdquery>,
 }
 
 /**
@@ -8360,7 +8384,7 @@ struct GetTelescopeCanpulseguidePathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -8370,13 +8394,13 @@ struct GetTelescopeCanpulseguideQueryParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
+    client_id: Option<parameters::ClientIdquery>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
+    client_transaction_id: Option<parameters::ClientTransactionIdquery>,
 }
 
 /**
@@ -8399,7 +8423,7 @@ struct GetTelescopeCansetdeclinationratePathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -8409,13 +8433,13 @@ struct GetTelescopeCansetdeclinationrateQueryParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
+    client_id: Option<parameters::ClientIdquery>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
+    client_transaction_id: Option<parameters::ClientTransactionIdquery>,
 }
 
 /**
@@ -8438,7 +8462,7 @@ struct GetTelescopeCansetguideratesPathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -8448,13 +8472,13 @@ struct GetTelescopeCansetguideratesQueryParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
+    client_id: Option<parameters::ClientIdquery>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
+    client_transaction_id: Option<parameters::ClientTransactionIdquery>,
 }
 
 /**
@@ -8477,7 +8501,7 @@ struct GetTelescopeCansetparkPathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -8487,13 +8511,13 @@ struct GetTelescopeCansetparkQueryParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
+    client_id: Option<parameters::ClientIdquery>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
+    client_transaction_id: Option<parameters::ClientTransactionIdquery>,
 }
 
 /**
@@ -8516,7 +8540,7 @@ struct GetTelescopeCansetpiersidePathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -8526,13 +8550,13 @@ struct GetTelescopeCansetpiersideQueryParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
+    client_id: Option<parameters::ClientIdquery>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
+    client_transaction_id: Option<parameters::ClientTransactionIdquery>,
 }
 
 /**
@@ -8555,7 +8579,7 @@ struct GetTelescopeCansetrightascensionratePathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -8565,13 +8589,13 @@ struct GetTelescopeCansetrightascensionrateQueryParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
+    client_id: Option<parameters::ClientIdquery>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
+    client_transaction_id: Option<parameters::ClientTransactionIdquery>,
 }
 
 /**
@@ -8594,7 +8618,7 @@ struct GetTelescopeCansettrackingPathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -8604,13 +8628,13 @@ struct GetTelescopeCansettrackingQueryParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
+    client_id: Option<parameters::ClientIdquery>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
+    client_transaction_id: Option<parameters::ClientTransactionIdquery>,
 }
 
 /**
@@ -8633,7 +8657,7 @@ struct GetTelescopeCanslewPathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -8643,13 +8667,13 @@ struct GetTelescopeCanslewQueryParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
+    client_id: Option<parameters::ClientIdquery>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
+    client_transaction_id: Option<parameters::ClientTransactionIdquery>,
 }
 
 /**
@@ -8672,7 +8696,7 @@ struct GetTelescopeCanslewaltazPathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -8682,13 +8706,13 @@ struct GetTelescopeCanslewaltazQueryParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
+    client_id: Option<parameters::ClientIdquery>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
+    client_transaction_id: Option<parameters::ClientTransactionIdquery>,
 }
 
 /**
@@ -8711,7 +8735,7 @@ struct GetTelescopeCanslewaltazasyncPathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -8721,13 +8745,13 @@ struct GetTelescopeCanslewaltazasyncQueryParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
+    client_id: Option<parameters::ClientIdquery>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
+    client_transaction_id: Option<parameters::ClientTransactionIdquery>,
 }
 
 /**
@@ -8750,7 +8774,7 @@ struct GetTelescopeCanslewasyncPathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -8760,13 +8784,13 @@ struct GetTelescopeCanslewasyncQueryParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
+    client_id: Option<parameters::ClientIdquery>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
+    client_transaction_id: Option<parameters::ClientTransactionIdquery>,
 }
 
 /**
@@ -8789,7 +8813,7 @@ struct GetTelescopeCansyncPathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -8799,13 +8823,13 @@ struct GetTelescopeCansyncQueryParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
+    client_id: Option<parameters::ClientIdquery>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
+    client_transaction_id: Option<parameters::ClientTransactionIdquery>,
 }
 
 /**
@@ -8828,7 +8852,7 @@ struct GetTelescopeCansyncaltazPathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -8838,13 +8862,13 @@ struct GetTelescopeCansyncaltazQueryParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
+    client_id: Option<parameters::ClientIdquery>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
+    client_transaction_id: Option<parameters::ClientTransactionIdquery>,
 }
 
 /**
@@ -8867,7 +8891,7 @@ struct GetTelescopeCanunparkPathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -8877,13 +8901,13 @@ struct GetTelescopeCanunparkQueryParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
+    client_id: Option<parameters::ClientIdquery>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
+    client_transaction_id: Option<parameters::ClientTransactionIdquery>,
 }
 
 /**
@@ -8906,7 +8930,7 @@ struct GetTelescopeDeclinationPathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -8916,13 +8940,13 @@ struct GetTelescopeDeclinationQueryParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
+    client_id: Option<parameters::ClientIdquery>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
+    client_transaction_id: Option<parameters::ClientTransactionIdquery>,
 }
 
 /**
@@ -8945,7 +8969,7 @@ struct GetTelescopeDeclinationratePathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -8955,13 +8979,13 @@ struct GetTelescopeDeclinationrateQueryParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
+    client_id: Option<parameters::ClientIdquery>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
+    client_transaction_id: Option<parameters::ClientTransactionIdquery>,
 }
 
 /**
@@ -8984,7 +9008,7 @@ struct PutTelescopeDeclinationratePathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -9036,7 +9060,7 @@ struct GetTelescopeDoesrefractionPathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -9046,13 +9070,13 @@ struct GetTelescopeDoesrefractionQueryParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
+    client_id: Option<parameters::ClientIdquery>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
+    client_transaction_id: Option<parameters::ClientTransactionIdquery>,
 }
 
 /**
@@ -9075,7 +9099,7 @@ struct PutTelescopeDoesrefractionPathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -9127,7 +9151,7 @@ struct GetTelescopeEquatorialsystemPathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -9137,13 +9161,13 @@ struct GetTelescopeEquatorialsystemQueryParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
+    client_id: Option<parameters::ClientIdquery>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
+    client_transaction_id: Option<parameters::ClientTransactionIdquery>,
 }
 
 /**
@@ -9166,7 +9190,7 @@ struct GetTelescopeFocallengthPathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -9176,13 +9200,13 @@ struct GetTelescopeFocallengthQueryParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
+    client_id: Option<parameters::ClientIdquery>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
+    client_transaction_id: Option<parameters::ClientTransactionIdquery>,
 }
 
 /**
@@ -9205,7 +9229,7 @@ struct GetTelescopeGuideratedeclinationPathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -9215,13 +9239,13 @@ struct GetTelescopeGuideratedeclinationQueryParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
+    client_id: Option<parameters::ClientIdquery>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
+    client_transaction_id: Option<parameters::ClientTransactionIdquery>,
 }
 
 /**
@@ -9244,7 +9268,7 @@ struct PutTelescopeGuideratedeclinationPathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -9296,7 +9320,7 @@ struct GetTelescopeGuideraterightascensionPathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -9306,13 +9330,13 @@ struct GetTelescopeGuideraterightascensionQueryParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
+    client_id: Option<parameters::ClientIdquery>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
+    client_transaction_id: Option<parameters::ClientTransactionIdquery>,
 }
 
 /**
@@ -9335,7 +9359,7 @@ struct PutTelescopeGuideraterightascensionPathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -9387,7 +9411,7 @@ struct GetTelescopeIspulseguidingPathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -9397,13 +9421,13 @@ struct GetTelescopeIspulseguidingQueryParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
+    client_id: Option<parameters::ClientIdquery>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
+    client_transaction_id: Option<parameters::ClientTransactionIdquery>,
 }
 
 /**
@@ -9426,7 +9450,7 @@ struct GetTelescopeRightascensionPathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -9436,13 +9460,13 @@ struct GetTelescopeRightascensionQueryParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
+    client_id: Option<parameters::ClientIdquery>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
+    client_transaction_id: Option<parameters::ClientTransactionIdquery>,
 }
 
 /**
@@ -9465,7 +9489,7 @@ struct GetTelescopeRightascensionratePathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -9475,13 +9499,13 @@ struct GetTelescopeRightascensionrateQueryParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
+    client_id: Option<parameters::ClientIdquery>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
+    client_transaction_id: Option<parameters::ClientTransactionIdquery>,
 }
 
 /**
@@ -9504,7 +9528,7 @@ struct PutTelescopeRightascensionratePathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -9556,7 +9580,7 @@ struct GetTelescopeSideofpierPathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -9566,13 +9590,13 @@ struct GetTelescopeSideofpierQueryParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
+    client_id: Option<parameters::ClientIdquery>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
+    client_transaction_id: Option<parameters::ClientTransactionIdquery>,
 }
 
 /**
@@ -9595,7 +9619,7 @@ struct PutTelescopeSideofpierPathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -9647,7 +9671,7 @@ struct GetTelescopeSiderealtimePathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -9657,13 +9681,13 @@ struct GetTelescopeSiderealtimeQueryParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
+    client_id: Option<parameters::ClientIdquery>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
+    client_transaction_id: Option<parameters::ClientTransactionIdquery>,
 }
 
 /**
@@ -9686,7 +9710,7 @@ struct GetTelescopeSiteelevationPathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -9696,13 +9720,13 @@ struct GetTelescopeSiteelevationQueryParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
+    client_id: Option<parameters::ClientIdquery>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
+    client_transaction_id: Option<parameters::ClientTransactionIdquery>,
 }
 
 /**
@@ -9725,7 +9749,7 @@ struct PutTelescopeSiteelevationPathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -9777,7 +9801,7 @@ struct GetTelescopeSitelatitudePathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -9787,13 +9811,13 @@ struct GetTelescopeSitelatitudeQueryParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
+    client_id: Option<parameters::ClientIdquery>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
+    client_transaction_id: Option<parameters::ClientTransactionIdquery>,
 }
 
 /**
@@ -9816,7 +9840,7 @@ struct PutTelescopeSitelatitudePathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -9868,7 +9892,7 @@ struct GetTelescopeSitelongitudePathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -9878,13 +9902,13 @@ struct GetTelescopeSitelongitudeQueryParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
+    client_id: Option<parameters::ClientIdquery>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
+    client_transaction_id: Option<parameters::ClientTransactionIdquery>,
 }
 
 /**
@@ -9907,7 +9931,7 @@ struct PutTelescopeSitelongitudePathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -9959,7 +9983,7 @@ struct GetTelescopeSlewingPathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -9969,13 +9993,13 @@ struct GetTelescopeSlewingQueryParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
+    client_id: Option<parameters::ClientIdquery>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
+    client_transaction_id: Option<parameters::ClientTransactionIdquery>,
 }
 
 /**
@@ -9998,7 +10022,7 @@ struct GetTelescopeSlewsettletimePathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -10008,13 +10032,13 @@ struct GetTelescopeSlewsettletimeQueryParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
+    client_id: Option<parameters::ClientIdquery>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
+    client_transaction_id: Option<parameters::ClientTransactionIdquery>,
 }
 
 /**
@@ -10037,7 +10061,7 @@ struct PutTelescopeSlewsettletimePathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -10089,7 +10113,7 @@ struct GetTelescopeTargetdeclinationPathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -10099,13 +10123,13 @@ struct GetTelescopeTargetdeclinationQueryParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
+    client_id: Option<parameters::ClientIdquery>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
+    client_transaction_id: Option<parameters::ClientTransactionIdquery>,
 }
 
 /**
@@ -10128,7 +10152,7 @@ struct PutTelescopeTargetdeclinationPathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -10180,7 +10204,7 @@ struct GetTelescopeTargetrightascensionPathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -10190,13 +10214,13 @@ struct GetTelescopeTargetrightascensionQueryParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
+    client_id: Option<parameters::ClientIdquery>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
+    client_transaction_id: Option<parameters::ClientTransactionIdquery>,
 }
 
 /**
@@ -10219,7 +10243,7 @@ struct PutTelescopeTargetrightascensionPathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -10271,7 +10295,7 @@ struct GetTelescopeTrackingPathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -10281,13 +10305,13 @@ struct GetTelescopeTrackingQueryParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
+    client_id: Option<parameters::ClientIdquery>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
+    client_transaction_id: Option<parameters::ClientTransactionIdquery>,
 }
 
 /**
@@ -10310,7 +10334,7 @@ struct PutTelescopeTrackingPathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -10362,7 +10386,7 @@ struct GetTelescopeTrackingratePathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -10372,13 +10396,13 @@ struct GetTelescopeTrackingrateQueryParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
+    client_id: Option<parameters::ClientIdquery>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
+    client_transaction_id: Option<parameters::ClientTransactionIdquery>,
 }
 
 /**
@@ -10401,7 +10425,7 @@ struct PutTelescopeTrackingratePathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -10453,7 +10477,7 @@ struct GetTelescopeTrackingratesPathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -10463,13 +10487,13 @@ struct GetTelescopeTrackingratesQueryParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
+    client_id: Option<parameters::ClientIdquery>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
+    client_transaction_id: Option<parameters::ClientTransactionIdquery>,
 }
 
 /**
@@ -10492,7 +10516,7 @@ struct GetTelescopeUtcdatePathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -10502,13 +10526,13 @@ struct GetTelescopeUtcdateQueryParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
+    client_id: Option<parameters::ClientIdquery>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
+    client_transaction_id: Option<parameters::ClientTransactionIdquery>,
 }
 
 /**
@@ -10531,7 +10555,7 @@ struct PutTelescopeUtcdatePathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -10583,7 +10607,7 @@ struct PutTelescopeAbortslewPathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 type PutTelescopeAbortslewBodyParams = request_bodies::PutStandardClientParameters;
@@ -10608,7 +10632,7 @@ struct GetTelescopeAxisratesPathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -10618,19 +10642,19 @@ struct GetTelescopeAxisratesQueryParams {
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
+    client_id: Option<parameters::ClientIdquery>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
+    client_transaction_id: Option<parameters::ClientTransactionIdquery>,
 
     /**
     The axis about which rate information is desired. 0 = axisPrimary, 1 = axisSecondary, 2 = axisTertiary.
     */
     #[serde(rename = "Axis")]
-    axis: i32,
+    axis: parameters::AxisQuery,
 }
 
 /**
@@ -10659,7 +10683,7 @@ struct GetTelescopeCanmoveaxisPathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -10669,19 +10693,19 @@ struct GetTelescopeCanmoveaxisQueryParams {
     The axis about which rate information is desired. 0 = axisPrimary, 1 = axisSecondary, 2 = axisTertiary.
     */
     #[serde(rename = "Axis")]
-    axis: i32,
+    axis: parameters::AxisQuery,
 
     /**
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
+    client_id: Option<parameters::ClientIdquery>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
+    client_transaction_id: Option<parameters::ClientTransactionIdquery>,
 }
 
 /**
@@ -10710,7 +10734,7 @@ struct GetTelescopeDestinationsideofpierPathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -10720,25 +10744,25 @@ struct GetTelescopeDestinationsideofpierQueryParams {
     Right Ascension coordinate (0.0 to 23.99999999 hours)
     */
     #[serde(rename = "RightAscension")]
-    right_ascension: f64,
+    right_ascension: parameters::RightAscensionQuery,
 
     /**
     Declination coordinate (-90.0 to +90.0 degrees)
     */
     #[serde(rename = "Declination")]
-    declination: f64,
+    declination: parameters::DeclinationQuery,
 
     /**
     Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     */
     #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
+    client_id: Option<parameters::ClientIdquery>,
 
     /**
     Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     */
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
+    client_transaction_id: Option<parameters::ClientTransactionIdquery>,
 }
 
 /**
@@ -10769,7 +10793,7 @@ struct PutTelescopeFindhomePathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 type PutTelescopeFindhomeBodyParams = request_bodies::PutStandardClientParameters;
@@ -10794,7 +10818,7 @@ struct PutTelescopeMoveaxisPathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -10854,7 +10878,7 @@ struct PutTelescopeParkPathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 type PutTelescopeParkBodyParams = request_bodies::PutStandardClientParameters;
@@ -10879,7 +10903,7 @@ struct PutTelescopePulseguidePathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -10939,7 +10963,7 @@ struct PutTelescopeSetparkPathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 type PutTelescopeSetparkBodyParams = request_bodies::PutStandardClientParameters;
@@ -10964,7 +10988,7 @@ struct PutTelescopeSlewtoaltazPathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 type PutTelescopeSlewtoaltazBodyParams = request_bodies::PutTelescopeDevicenumberSlewtoaltaz;
@@ -10997,7 +11021,7 @@ struct PutTelescopeSlewtoaltazasyncPathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 type PutTelescopeSlewtoaltazasyncBodyParams = request_bodies::PutTelescopeDevicenumberSlewtoaltaz;
@@ -11030,7 +11054,7 @@ struct PutTelescopeSlewtocoordinatesPathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 type PutTelescopeSlewtocoordinatesBodyParams = request_bodies::PutTelescopeDevicenumberSlewtocoordinates;
@@ -11063,7 +11087,7 @@ struct PutTelescopeSlewtocoordinatesasyncPathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 type PutTelescopeSlewtocoordinatesasyncBodyParams = request_bodies::PutTelescopeDevicenumberSlewtocoordinates;
@@ -11096,7 +11120,7 @@ struct PutTelescopeSlewtotargetPathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 type PutTelescopeSlewtotargetBodyParams = request_bodies::PutStandardClientParameters;
@@ -11121,7 +11145,7 @@ struct PutTelescopeSlewtotargetasyncPathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 type PutTelescopeSlewtotargetasyncBodyParams = request_bodies::PutStandardClientParameters;
@@ -11146,7 +11170,7 @@ struct PutTelescopeSynctoaltazPathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 type PutTelescopeSynctoaltazBodyParams = request_bodies::PutTelescopeDevicenumberSlewtoaltaz;
@@ -11179,7 +11203,7 @@ struct PutTelescopeSynctocoordinatesPathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 type PutTelescopeSynctocoordinatesBodyParams = request_bodies::PutTelescopeDevicenumberSlewtocoordinates;
@@ -11212,7 +11236,7 @@ struct PutTelescopeSynctotargetPathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 type PutTelescopeSynctotargetBodyParams = request_bodies::PutStandardClientParameters;
@@ -11237,7 +11261,7 @@ struct PutTelescopeUnparkPathParams {
     Zero based device number as set on the server (0 to 4294967295)
     */
     #[serde(rename = "device_number")]
-    device_number: u32,
+    device_number: parameters::DeviceNumber,
 }
 
 type PutTelescopeUnparkBodyParams = request_bodies::PutStandardClientParameters;
