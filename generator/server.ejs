@@ -34,9 +34,19 @@ function doc(description) {
   }
 }
 
-let registeredSchemas = new Map(Object.entries(api.components.schemas).map(
-  ([name, schema]) => [schema, name]
-));
+let registeredSchemas = new Map();
+
+for (let groupName of ['parameters', 'schemas']) {
+  for (let [name, schema] of Object.entries(api.components[groupName])) {
+    registeredSchemas.set(schema, `${groupName}::${name}`);
+  }
+}
+
+for (let [name, body] of Object.entries(api.components.requestBodies)) {
+  name = toTypeName(name);
+  let { schema } = getContent(body);
+  registeredSchemas.set(schema, `request_bodies::${name}`);
+}
 
 function handleType(schema, schemaName) {
   let registeredSchemaName = registeredSchemas.get(schema);
@@ -128,10 +138,26 @@ function getContent(owner) {
   <% } %>
 <% } %>
 
+mod parameters {
+  <% for (let [schemaName, {schema}] of Object.entries(api.components.parameters)) { %>
+    #[derive(Deserialize)]
+    <%= handleSchema(schemaName, schema) %>
+  <% } %>
+}
+
 mod schemas {
   <% for (let [schemaName, schema] of Object.entries(api.components.schemas)) { %>
     #[derive(Serialize)]
     <%= handleSchema(schemaName, schema) %>
+  <% } %>
+}
+
+mod request_bodies {
+  <% for (let [schemaName, body] of Object.entries(api.components.requestBodies)) { %>
+    <% let { type, schema } = getContent(body); %>
+    #[derive(Deserialize, FromRequest)]
+    #[from_request(via(<%= type %>))]
+    <%= handleSchema(toTypeName(schemaName), schema) %>
   <% } %>
 }
 
@@ -167,11 +193,18 @@ mod schemas {
     <%
       if (method.requestBody) {
         let methodBody = getContent(method.requestBody);
+        let registeredName = registeredSchemas.get(methodBody.schema);
+        if (!registeredName) {
     %>
-        #[derive(Deserialize, FromRequest)]
-        #[from_request(via(<%= methodBody.type %>))]
-        <%= handleSchema(toTypeName(fnName) + 'BodyParams', methodBody.schema) %>
+          #[derive(Deserialize, FromRequest)]
+          #[from_request(via(<%= methodBody.type %>))]
+          <%= handleSchema(toTypeName(fnName) + 'BodyParams', methodBody.schema) %>
     <%
+        } else {
+    %>
+          type <%= toTypeName(fnName) %>BodyParams = <%= registeredName %>;
+    <%
+        }
         groupedMethodParams.set('Body', Object.keys(methodBody.schema.properties).map(name => ({ name })));
       }
     %>

@@ -40,6 +40,41 @@ use axum::{
     Router,
 };
 
+mod parameters {
+
+    #[derive(Deserialize)]
+
+    struct device_type(String);
+
+    #[derive(Deserialize)]
+
+    struct device_number(u32);
+
+    #[derive(Deserialize)]
+
+    struct ClientIDQuery(u32);
+
+    #[derive(Deserialize)]
+
+    struct ClientTransactionIDQuery(u32);
+
+    #[derive(Deserialize)]
+
+    struct RightAscensionQuery(f64);
+
+    #[derive(Deserialize)]
+
+    struct DeclinationQuery(f64);
+
+    #[derive(Deserialize)]
+
+    struct AxisQuery(i32);
+
+    #[derive(Deserialize)]
+
+    struct SwitchNumberQuery(i32);
+}
+
 mod schemas {
 
     #[derive(Serialize)]
@@ -327,7 +362,7 @@ mod schemas {
         Array of AxisRate objects
         */
         #[serde(rename = "Value")]
-        value: Option<Vec<AxisRate>>,
+        value: Option<Vec<schemas::AxisRate>>,
 
         /**
         Client's transaction ID (0 to 4294967295), as supplied by the client in the command request.
@@ -377,7 +412,7 @@ mod schemas {
         Array of DriveRate values
         */
         #[serde(rename = "Value")]
-        value: Option<Vec<DriveRate>>,
+        value: Option<Vec<schemas::DriveRate>>,
 
         /**
         Client's transaction ID (0 to 4294967295), as supplied by the client in the command request.
@@ -406,7 +441,137 @@ mod schemas {
 
     #[derive(Serialize)]
 
-    struct DriveRate(f64);
+    struct DriveRate(schemas::DriveRate);
+}
+
+mod request_bodies {
+
+    #[derive(Deserialize, FromRequest)]
+    #[from_request(via(Form))]
+
+    struct PutDevicetypeDevicenumberCommandblind {
+        /**
+        The literal command string to be transmitted.
+        */
+        #[serde(rename = "Command")]
+        command: String,
+
+        /**
+        If set to true the string is transmitted 'as-is', if set to false then protocol framing characters may be added prior to transmission
+        */
+        #[serde(rename = "Raw")]
+        raw: String,
+
+        /**
+        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
+        */
+        #[serde(rename = "ClientID")]
+        client_id: Option<u32>,
+
+        /**
+        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
+        */
+        #[serde(rename = "ClientTransactionID")]
+        client_transaction_id: Option<u32>,
+    }
+
+    #[derive(Deserialize, FromRequest)]
+    #[from_request(via(Form))]
+
+    struct PutStandardClientParameters {
+        /**
+        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
+        */
+        #[serde(rename = "ClientID")]
+        client_id: Option<u32>,
+
+        /**
+        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
+        */
+        #[serde(rename = "ClientTransactionID")]
+        client_transaction_id: Option<u32>,
+    }
+
+    #[derive(Deserialize, FromRequest)]
+    #[from_request(via(Form))]
+
+    struct PutDomeDevicenumberSlewtoazimuth {
+        /**
+        Target dome azimuth (degrees, North zero and increasing clockwise. i.e., 90 East, 180 South, 270 West)
+        */
+        #[serde(rename = "Azimuth")]
+        azimuth: f64,
+
+        /**
+        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
+        */
+        #[serde(rename = "ClientID")]
+        client_id: Option<u32>,
+
+        /**
+        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
+        */
+        #[serde(rename = "ClientTransactionID")]
+        client_transaction_id: Option<u32>,
+    }
+
+    #[derive(Deserialize, FromRequest)]
+    #[from_request(via(Form))]
+
+    struct PutTelescopeDevicenumberSlewtoaltaz {
+        /**
+        Azimuth coordinate (degrees, North-referenced, positive East/clockwise)
+        */
+        #[serde(rename = "Azimuth")]
+        azimuth: f64,
+
+        /**
+        Altitude coordinate (degrees, positive up)
+        */
+        #[serde(rename = "Altitude")]
+        altitude: f64,
+
+        /**
+        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
+        */
+        #[serde(rename = "ClientID")]
+        client_id: Option<u32>,
+
+        /**
+        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
+        */
+        #[serde(rename = "ClientTransactionID")]
+        client_transaction_id: Option<u32>,
+    }
+
+    #[derive(Deserialize, FromRequest)]
+    #[from_request(via(Form))]
+
+    struct PutTelescopeDevicenumberSlewtocoordinates {
+        /**
+        Right Ascension coordinate (hours)
+        */
+        #[serde(rename = "RightAscension")]
+        right_ascension: f64,
+
+        /**
+        Declination coordinate (degrees)
+        */
+        #[serde(rename = "Declination")]
+        declination: f64,
+
+        /**
+        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
+        */
+        #[serde(rename = "ClientID")]
+        client_id: Option<u32>,
+
+        /**
+        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
+        */
+        #[serde(rename = "ClientTransactionID")]
+        client_transaction_id: Option<u32>,
+    }
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -485,7 +650,7 @@ fn put_action(
 
         client_transaction_id,
     }: PutActionBodyParams,
-) -> Json<StringResponse> {
+) -> Json<schemas::StringResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -504,34 +669,7 @@ struct PutCommandblindPathParams {
     device_number: u32,
 }
 
-#[derive(Deserialize, FromRequest)]
-#[from_request(via(Form))]
-
-struct PutCommandblindBodyParams {
-    /**
-    The literal command string to be transmitted.
-    */
-    #[serde(rename = "Command")]
-    command: String,
-
-    /**
-    If set to true the string is transmitted 'as-is', if set to false then protocol framing characters may be added prior to transmission
-    */
-    #[serde(rename = "Raw")]
-    raw: String,
-
-    /**
-    Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-    */
-    #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
-
-    /**
-    Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-    */
-    #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
-}
+type PutCommandblindBodyParams = request_bodies::PutDevicetypeDevicenumberCommandblind;
 
 /**
 Transmits an arbitrary string to the device
@@ -551,7 +689,7 @@ fn put_commandblind(
 
         client_transaction_id,
     }: PutCommandblindBodyParams,
-) -> Json<MethodResponse> {
+) -> Json<schemas::MethodResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -570,34 +708,7 @@ struct PutCommandboolPathParams {
     device_number: u32,
 }
 
-#[derive(Deserialize, FromRequest)]
-#[from_request(via(Form))]
-
-struct PutCommandboolBodyParams {
-    /**
-    The literal command string to be transmitted.
-    */
-    #[serde(rename = "Command")]
-    command: String,
-
-    /**
-    If set to true the string is transmitted 'as-is', if set to false then protocol framing characters may be added prior to transmission
-    */
-    #[serde(rename = "Raw")]
-    raw: String,
-
-    /**
-    Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-    */
-    #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
-
-    /**
-    Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-    */
-    #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
-}
+type PutCommandboolBodyParams = request_bodies::PutDevicetypeDevicenumberCommandblind;
 
 /**
 Transmits an arbitrary string to the device and returns a boolean value from the device.
@@ -617,7 +728,7 @@ fn put_commandbool(
 
         client_transaction_id,
     }: PutCommandboolBodyParams,
-) -> Json<BoolResponse> {
+) -> Json<schemas::BoolResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -636,34 +747,7 @@ struct PutCommandstringPathParams {
     device_number: u32,
 }
 
-#[derive(Deserialize, FromRequest)]
-#[from_request(via(Form))]
-
-struct PutCommandstringBodyParams {
-    /**
-    The literal command string to be transmitted.
-    */
-    #[serde(rename = "Command")]
-    command: String,
-
-    /**
-    If set to true the string is transmitted 'as-is', if set to false then protocol framing characters may be added prior to transmission
-    */
-    #[serde(rename = "Raw")]
-    raw: String,
-
-    /**
-    Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-    */
-    #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
-
-    /**
-    Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-    */
-    #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
-}
+type PutCommandstringBodyParams = request_bodies::PutDevicetypeDevicenumberCommandblind;
 
 /**
 Transmits an arbitrary string to the device and returns a string value from the device.
@@ -683,7 +767,7 @@ fn put_commandstring(
 
         client_transaction_id,
     }: PutCommandstringBodyParams,
-) -> Json<StringResponse> {
+) -> Json<schemas::StringResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -728,7 +812,7 @@ fn get_connected(
     GetConnectedPathParams { device_type, device_number }: GetConnectedPathParams,
 
     GetConnectedQueryParams { client_id, client_transaction_id }: GetConnectedQueryParams,
-) -> Json<BoolResponse> {
+) -> Json<schemas::BoolResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -786,7 +870,7 @@ fn put_connected(
 
         client_transaction_id,
     }: PutConnectedBodyParams,
-) -> Json<MethodResponse> {
+) -> Json<schemas::MethodResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -831,7 +915,7 @@ fn get_description(
     GetDescriptionPathParams { device_type, device_number }: GetDescriptionPathParams,
 
     GetDescriptionQueryParams { client_id, client_transaction_id }: GetDescriptionQueryParams,
-) -> Json<StringResponse> {
+) -> Json<schemas::StringResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -876,7 +960,7 @@ fn get_driverinfo(
     GetDriverinfoPathParams { device_type, device_number }: GetDriverinfoPathParams,
 
     GetDriverinfoQueryParams { client_id, client_transaction_id }: GetDriverinfoQueryParams,
-) -> Json<StringResponse> {
+) -> Json<schemas::StringResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -921,7 +1005,7 @@ fn get_driverversion(
     GetDriverversionPathParams { device_type, device_number }: GetDriverversionPathParams,
 
     GetDriverversionQueryParams { client_id, client_transaction_id }: GetDriverversionQueryParams,
-) -> Json<StringResponse> {
+) -> Json<schemas::StringResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -966,7 +1050,7 @@ fn get_interfaceversion(
     GetInterfaceversionPathParams { device_type, device_number }: GetInterfaceversionPathParams,
 
     GetInterfaceversionQueryParams { client_id, client_transaction_id }: GetInterfaceversionQueryParams,
-) -> Json<IntResponse> {
+) -> Json<schemas::IntResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -1007,7 +1091,7 @@ Device name
 The name of the device
 */
 #[get("/<device_type>/<device_number>/name")]
-fn get_name(GetNamePathParams { device_type, device_number }: GetNamePathParams, GetNameQueryParams { client_id, client_transaction_id }: GetNameQueryParams) -> Json<StringResponse> {}
+fn get_name(GetNamePathParams { device_type, device_number }: GetNamePathParams, GetNameQueryParams { client_id, client_transaction_id }: GetNameQueryParams) -> Json<schemas::StringResponse> {}
 
 #[derive(Deserialize, FromRequest)]
 #[from_request(via(Path))]
@@ -1051,7 +1135,7 @@ fn get_supportedactions(
     GetSupportedactionsPathParams { device_type, device_number }: GetSupportedactionsPathParams,
 
     GetSupportedactionsQueryParams { client_id, client_transaction_id }: GetSupportedactionsQueryParams,
-) -> Json<StringArrayResponse> {
+) -> Json<schemas::StringArrayResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -1090,7 +1174,7 @@ fn get_camera_bayeroffsetx(
     GetCameraBayeroffsetxPathParams { device_number }: GetCameraBayeroffsetxPathParams,
 
     GetCameraBayeroffsetxQueryParams { client_id, client_transaction_id }: GetCameraBayeroffsetxQueryParams,
-) -> Json<IntResponse> {
+) -> Json<schemas::IntResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -1129,7 +1213,7 @@ fn get_camera_bayeroffsety(
     GetCameraBayeroffsetyPathParams { device_number }: GetCameraBayeroffsetyPathParams,
 
     GetCameraBayeroffsetyQueryParams { client_id, client_transaction_id }: GetCameraBayeroffsetyQueryParams,
-) -> Json<IntResponse> {
+) -> Json<schemas::IntResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -1164,7 +1248,12 @@ Returns the binning factor for the X axis.
 Returns the binning factor for the X axis.
 */
 #[get("/camera/<device_number>/binx")]
-fn get_camera_binx(GetCameraBinxPathParams { device_number }: GetCameraBinxPathParams, GetCameraBinxQueryParams { client_id, client_transaction_id }: GetCameraBinxQueryParams) -> Json<IntResponse> {}
+fn get_camera_binx(
+    GetCameraBinxPathParams { device_number }: GetCameraBinxPathParams,
+
+    GetCameraBinxQueryParams { client_id, client_transaction_id }: GetCameraBinxQueryParams,
+) -> Json<schemas::IntResponse> {
+}
 
 #[derive(Deserialize, FromRequest)]
 #[from_request(via(Path))]
@@ -1215,7 +1304,7 @@ fn put_camera_binx(
 
         client_transaction_id,
     }: PutCameraBinxBodyParams,
-) -> Json<MethodResponse> {
+) -> Json<schemas::MethodResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -1250,7 +1339,12 @@ Returns the binning factor for the Y axis.
 Returns the binning factor for the Y axis.
 */
 #[get("/camera/<device_number>/biny")]
-fn get_camera_biny(GetCameraBinyPathParams { device_number }: GetCameraBinyPathParams, GetCameraBinyQueryParams { client_id, client_transaction_id }: GetCameraBinyQueryParams) -> Json<IntResponse> {}
+fn get_camera_biny(
+    GetCameraBinyPathParams { device_number }: GetCameraBinyPathParams,
+
+    GetCameraBinyQueryParams { client_id, client_transaction_id }: GetCameraBinyQueryParams,
+) -> Json<schemas::IntResponse> {
+}
 
 #[derive(Deserialize, FromRequest)]
 #[from_request(via(Path))]
@@ -1301,7 +1395,7 @@ fn put_camera_biny(
 
         client_transaction_id,
     }: PutCameraBinyBodyParams,
-) -> Json<MethodResponse> {
+) -> Json<schemas::MethodResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -1340,7 +1434,7 @@ fn get_camera_camerastate(
     GetCameraCamerastatePathParams { device_number }: GetCameraCamerastatePathParams,
 
     GetCameraCamerastateQueryParams { client_id, client_transaction_id }: GetCameraCamerastateQueryParams,
-) -> Json<IntResponse> {
+) -> Json<schemas::IntResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -1379,7 +1473,7 @@ fn get_camera_cameraxsize(
     GetCameraCameraxsizePathParams { device_number }: GetCameraCameraxsizePathParams,
 
     GetCameraCameraxsizeQueryParams { client_id, client_transaction_id }: GetCameraCameraxsizeQueryParams,
-) -> Json<IntResponse> {
+) -> Json<schemas::IntResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -1418,7 +1512,7 @@ fn get_camera_cameraysize(
     GetCameraCameraysizePathParams { device_number }: GetCameraCameraysizePathParams,
 
     GetCameraCameraysizeQueryParams { client_id, client_transaction_id }: GetCameraCameraysizeQueryParams,
-) -> Json<IntResponse> {
+) -> Json<schemas::IntResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -1457,7 +1551,7 @@ fn get_camera_canabortexposure(
     GetCameraCanabortexposurePathParams { device_number }: GetCameraCanabortexposurePathParams,
 
     GetCameraCanabortexposureQueryParams { client_id, client_transaction_id }: GetCameraCanabortexposureQueryParams,
-) -> Json<BoolResponse> {
+) -> Json<schemas::BoolResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -1496,7 +1590,7 @@ fn get_camera_canasymmetricbin(
     GetCameraCanasymmetricbinPathParams { device_number }: GetCameraCanasymmetricbinPathParams,
 
     GetCameraCanasymmetricbinQueryParams { client_id, client_transaction_id }: GetCameraCanasymmetricbinQueryParams,
-) -> Json<BoolResponse> {
+) -> Json<schemas::BoolResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -1535,7 +1629,7 @@ fn get_camera_canfastreadout(
     GetCameraCanfastreadoutPathParams { device_number }: GetCameraCanfastreadoutPathParams,
 
     GetCameraCanfastreadoutQueryParams { client_id, client_transaction_id }: GetCameraCanfastreadoutQueryParams,
-) -> Json<BoolResponse> {
+) -> Json<schemas::BoolResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -1574,7 +1668,7 @@ fn get_camera_cangetcoolerpower(
     GetCameraCangetcoolerpowerPathParams { device_number }: GetCameraCangetcoolerpowerPathParams,
 
     GetCameraCangetcoolerpowerQueryParams { client_id, client_transaction_id }: GetCameraCangetcoolerpowerQueryParams,
-) -> Json<BoolResponse> {
+) -> Json<schemas::BoolResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -1613,7 +1707,7 @@ fn get_camera_canpulseguide(
     GetCameraCanpulseguidePathParams { device_number }: GetCameraCanpulseguidePathParams,
 
     GetCameraCanpulseguideQueryParams { client_id, client_transaction_id }: GetCameraCanpulseguideQueryParams,
-) -> Json<BoolResponse> {
+) -> Json<schemas::BoolResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -1652,7 +1746,7 @@ fn get_camera_cansetccdtemperature(
     GetCameraCansetccdtemperaturePathParams { device_number }: GetCameraCansetccdtemperaturePathParams,
 
     GetCameraCansetccdtemperatureQueryParams { client_id, client_transaction_id }: GetCameraCansetccdtemperatureQueryParams,
-) -> Json<BoolResponse> {
+) -> Json<schemas::BoolResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -1691,7 +1785,7 @@ fn get_camera_canstopexposure(
     GetCameraCanstopexposurePathParams { device_number }: GetCameraCanstopexposurePathParams,
 
     GetCameraCanstopexposureQueryParams { client_id, client_transaction_id }: GetCameraCanstopexposureQueryParams,
-) -> Json<BoolResponse> {
+) -> Json<schemas::BoolResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -1730,7 +1824,7 @@ fn get_camera_ccdtemperature(
     GetCameraCcdtemperaturePathParams { device_number }: GetCameraCcdtemperaturePathParams,
 
     GetCameraCcdtemperatureQueryParams { client_id, client_transaction_id }: GetCameraCcdtemperatureQueryParams,
-) -> Json<DoubleResponse> {
+) -> Json<schemas::DoubleResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -1769,7 +1863,7 @@ fn get_camera_cooleron(
     GetCameraCooleronPathParams { device_number }: GetCameraCooleronPathParams,
 
     GetCameraCooleronQueryParams { client_id, client_transaction_id }: GetCameraCooleronQueryParams,
-) -> Json<BoolResponse> {
+) -> Json<schemas::BoolResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -1821,7 +1915,7 @@ fn put_camera_cooleron(
 
         client_transaction_id,
     }: PutCameraCooleronBodyParams,
-) -> Json<MethodResponse> {
+) -> Json<schemas::MethodResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -1860,7 +1954,7 @@ fn get_camera_coolerpower(
     GetCameraCoolerpowerPathParams { device_number }: GetCameraCoolerpowerPathParams,
 
     GetCameraCoolerpowerQueryParams { client_id, client_transaction_id }: GetCameraCoolerpowerQueryParams,
-) -> Json<DoubleResponse> {
+) -> Json<schemas::DoubleResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -1899,7 +1993,7 @@ fn get_camera_electronsperadu(
     GetCameraElectronsperaduPathParams { device_number }: GetCameraElectronsperaduPathParams,
 
     GetCameraElectronsperaduQueryParams { client_id, client_transaction_id }: GetCameraElectronsperaduQueryParams,
-) -> Json<DoubleResponse> {
+) -> Json<schemas::DoubleResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -1938,7 +2032,7 @@ fn get_camera_exposuremax(
     GetCameraExposuremaxPathParams { device_number }: GetCameraExposuremaxPathParams,
 
     GetCameraExposuremaxQueryParams { client_id, client_transaction_id }: GetCameraExposuremaxQueryParams,
-) -> Json<DoubleResponse> {
+) -> Json<schemas::DoubleResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -1977,7 +2071,7 @@ fn get_camera_exposuremin(
     GetCameraExposureminPathParams { device_number }: GetCameraExposureminPathParams,
 
     GetCameraExposureminQueryParams { client_id, client_transaction_id }: GetCameraExposureminQueryParams,
-) -> Json<DoubleResponse> {
+) -> Json<schemas::DoubleResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -2016,7 +2110,7 @@ fn get_camera_exposureresolution(
     GetCameraExposureresolutionPathParams { device_number }: GetCameraExposureresolutionPathParams,
 
     GetCameraExposureresolutionQueryParams { client_id, client_transaction_id }: GetCameraExposureresolutionQueryParams,
-) -> Json<DoubleResponse> {
+) -> Json<schemas::DoubleResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -2055,7 +2149,7 @@ fn get_camera_fastreadout(
     GetCameraFastreadoutPathParams { device_number }: GetCameraFastreadoutPathParams,
 
     GetCameraFastreadoutQueryParams { client_id, client_transaction_id }: GetCameraFastreadoutQueryParams,
-) -> Json<BoolResponse> {
+) -> Json<schemas::BoolResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -2107,7 +2201,7 @@ fn put_camera_fastreadout(
 
         client_transaction_id,
     }: PutCameraFastreadoutBodyParams,
-) -> Json<MethodResponse> {
+) -> Json<schemas::MethodResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -2146,7 +2240,7 @@ fn get_camera_fullwellcapacity(
     GetCameraFullwellcapacityPathParams { device_number }: GetCameraFullwellcapacityPathParams,
 
     GetCameraFullwellcapacityQueryParams { client_id, client_transaction_id }: GetCameraFullwellcapacityQueryParams,
-) -> Json<DoubleResponse> {
+) -> Json<schemas::DoubleResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -2181,7 +2275,12 @@ Returns the camera's gain
 The camera's gain (GAIN VALUE MODE) OR the index of the selected camera gain description in the Gains array (GAINS INDEX MODE).
 */
 #[get("/camera/<device_number>/gain")]
-fn get_camera_gain(GetCameraGainPathParams { device_number }: GetCameraGainPathParams, GetCameraGainQueryParams { client_id, client_transaction_id }: GetCameraGainQueryParams) -> Json<IntResponse> {}
+fn get_camera_gain(
+    GetCameraGainPathParams { device_number }: GetCameraGainPathParams,
+
+    GetCameraGainQueryParams { client_id, client_transaction_id }: GetCameraGainQueryParams,
+) -> Json<schemas::IntResponse> {
+}
 
 #[derive(Deserialize, FromRequest)]
 #[from_request(via(Path))]
@@ -2232,7 +2331,7 @@ fn put_camera_gain(
 
         client_transaction_id,
     }: PutCameraGainBodyParams,
-) -> Json<MethodResponse> {
+) -> Json<schemas::MethodResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -2271,7 +2370,7 @@ fn get_camera_gainmax(
     GetCameraGainmaxPathParams { device_number }: GetCameraGainmaxPathParams,
 
     GetCameraGainmaxQueryParams { client_id, client_transaction_id }: GetCameraGainmaxQueryParams,
-) -> Json<IntResponse> {
+) -> Json<schemas::IntResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -2310,7 +2409,7 @@ fn get_camera_gainmin(
     GetCameraGainminPathParams { device_number }: GetCameraGainminPathParams,
 
     GetCameraGainminQueryParams { client_id, client_transaction_id }: GetCameraGainminQueryParams,
-) -> Json<IntResponse> {
+) -> Json<schemas::IntResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -2349,7 +2448,7 @@ fn get_camera_gains(
     GetCameraGainsPathParams { device_number }: GetCameraGainsPathParams,
 
     GetCameraGainsQueryParams { client_id, client_transaction_id }: GetCameraGainsQueryParams,
-) -> Json<StringArrayResponse> {
+) -> Json<schemas::StringArrayResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -2388,7 +2487,7 @@ fn get_camera_hasshutter(
     GetCameraHasshutterPathParams { device_number }: GetCameraHasshutterPathParams,
 
     GetCameraHasshutterQueryParams { client_id, client_transaction_id }: GetCameraHasshutterQueryParams,
-) -> Json<BoolResponse> {
+) -> Json<schemas::BoolResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -2427,7 +2526,7 @@ fn get_camera_heatsinktemperature(
     GetCameraHeatsinktemperaturePathParams { device_number }: GetCameraHeatsinktemperaturePathParams,
 
     GetCameraHeatsinktemperatureQueryParams { client_id, client_transaction_id }: GetCameraHeatsinktemperatureQueryParams,
-) -> Json<DoubleResponse> {
+) -> Json<schemas::DoubleResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -2521,7 +2620,7 @@ fn get_camera_imagearray(
     GetCameraImagearrayPathParams { device_number }: GetCameraImagearrayPathParams,
 
     GetCameraImagearrayQueryParams { client_id, client_transaction_id }: GetCameraImagearrayQueryParams,
-) -> Json<ImageArrayResponse> {
+) -> Json<schemas::ImageArrayResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -2615,7 +2714,7 @@ fn get_camera_imagearrayvariant(
     GetCameraImagearrayvariantPathParams { device_number }: GetCameraImagearrayvariantPathParams,
 
     GetCameraImagearrayvariantQueryParams { client_id, client_transaction_id }: GetCameraImagearrayvariantQueryParams,
-) -> Json<ImageArrayResponse> {
+) -> Json<schemas::ImageArrayResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -2654,7 +2753,7 @@ fn get_camera_imageready(
     GetCameraImagereadyPathParams { device_number }: GetCameraImagereadyPathParams,
 
     GetCameraImagereadyQueryParams { client_id, client_transaction_id }: GetCameraImagereadyQueryParams,
-) -> Json<BoolResponse> {
+) -> Json<schemas::BoolResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -2693,7 +2792,7 @@ fn get_camera_ispulseguiding(
     GetCameraIspulseguidingPathParams { device_number }: GetCameraIspulseguidingPathParams,
 
     GetCameraIspulseguidingQueryParams { client_id, client_transaction_id }: GetCameraIspulseguidingQueryParams,
-) -> Json<BoolResponse> {
+) -> Json<schemas::BoolResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -2732,7 +2831,7 @@ fn get_camera_lastexposureduration(
     GetCameraLastexposuredurationPathParams { device_number }: GetCameraLastexposuredurationPathParams,
 
     GetCameraLastexposuredurationQueryParams { client_id, client_transaction_id }: GetCameraLastexposuredurationQueryParams,
-) -> Json<DoubleResponse> {
+) -> Json<schemas::DoubleResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -2771,7 +2870,7 @@ fn get_camera_lastexposurestarttime(
     GetCameraLastexposurestarttimePathParams { device_number }: GetCameraLastexposurestarttimePathParams,
 
     GetCameraLastexposurestarttimeQueryParams { client_id, client_transaction_id }: GetCameraLastexposurestarttimeQueryParams,
-) -> Json<StringResponse> {
+) -> Json<schemas::StringResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -2810,7 +2909,7 @@ fn get_camera_maxadu(
     GetCameraMaxaduPathParams { device_number }: GetCameraMaxaduPathParams,
 
     GetCameraMaxaduQueryParams { client_id, client_transaction_id }: GetCameraMaxaduQueryParams,
-) -> Json<IntResponse> {
+) -> Json<schemas::IntResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -2849,7 +2948,7 @@ fn get_camera_maxbinx(
     GetCameraMaxbinxPathParams { device_number }: GetCameraMaxbinxPathParams,
 
     GetCameraMaxbinxQueryParams { client_id, client_transaction_id }: GetCameraMaxbinxQueryParams,
-) -> Json<IntResponse> {
+) -> Json<schemas::IntResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -2888,7 +2987,7 @@ fn get_camera_maxbiny(
     GetCameraMaxbinyPathParams { device_number }: GetCameraMaxbinyPathParams,
 
     GetCameraMaxbinyQueryParams { client_id, client_transaction_id }: GetCameraMaxbinyQueryParams,
-) -> Json<IntResponse> {
+) -> Json<schemas::IntResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -2923,7 +3022,12 @@ Returns the current subframe width
 Returns the current subframe width, if binning is active, value is in binned pixels.
 */
 #[get("/camera/<device_number>/numx")]
-fn get_camera_numx(GetCameraNumxPathParams { device_number }: GetCameraNumxPathParams, GetCameraNumxQueryParams { client_id, client_transaction_id }: GetCameraNumxQueryParams) -> Json<IntResponse> {}
+fn get_camera_numx(
+    GetCameraNumxPathParams { device_number }: GetCameraNumxPathParams,
+
+    GetCameraNumxQueryParams { client_id, client_transaction_id }: GetCameraNumxQueryParams,
+) -> Json<schemas::IntResponse> {
+}
 
 #[derive(Deserialize, FromRequest)]
 #[from_request(via(Path))]
@@ -2974,7 +3078,7 @@ fn put_camera_numx(
 
         client_transaction_id,
     }: PutCameraNumxBodyParams,
-) -> Json<MethodResponse> {
+) -> Json<schemas::MethodResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -3009,7 +3113,12 @@ Returns the current subframe height
 Returns the current subframe height, if binning is active, value is in binned pixels.
 */
 #[get("/camera/<device_number>/numy")]
-fn get_camera_numy(GetCameraNumyPathParams { device_number }: GetCameraNumyPathParams, GetCameraNumyQueryParams { client_id, client_transaction_id }: GetCameraNumyQueryParams) -> Json<IntResponse> {}
+fn get_camera_numy(
+    GetCameraNumyPathParams { device_number }: GetCameraNumyPathParams,
+
+    GetCameraNumyQueryParams { client_id, client_transaction_id }: GetCameraNumyQueryParams,
+) -> Json<schemas::IntResponse> {
+}
 
 #[derive(Deserialize, FromRequest)]
 #[from_request(via(Path))]
@@ -3060,7 +3169,7 @@ fn put_camera_numy(
 
         client_transaction_id,
     }: PutCameraNumyBodyParams,
-) -> Json<MethodResponse> {
+) -> Json<schemas::MethodResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -3099,7 +3208,7 @@ fn get_camera_offset(
     GetCameraOffsetPathParams { device_number }: GetCameraOffsetPathParams,
 
     GetCameraOffsetQueryParams { client_id, client_transaction_id }: GetCameraOffsetQueryParams,
-) -> Json<IntResponse> {
+) -> Json<schemas::IntResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -3151,7 +3260,7 @@ fn put_camera_offset(
 
         client_transaction_id,
     }: PutCameraOffsetBodyParams,
-) -> Json<MethodResponse> {
+) -> Json<schemas::MethodResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -3190,7 +3299,7 @@ fn get_camera_offsetmax(
     GetCameraOffsetmaxPathParams { device_number }: GetCameraOffsetmaxPathParams,
 
     GetCameraOffsetmaxQueryParams { client_id, client_transaction_id }: GetCameraOffsetmaxQueryParams,
-) -> Json<IntResponse> {
+) -> Json<schemas::IntResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -3229,7 +3338,7 @@ fn get_camera_offsetmin(
     GetCameraOffsetminPathParams { device_number }: GetCameraOffsetminPathParams,
 
     GetCameraOffsetminQueryParams { client_id, client_transaction_id }: GetCameraOffsetminQueryParams,
-) -> Json<IntResponse> {
+) -> Json<schemas::IntResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -3268,7 +3377,7 @@ fn get_camera_offsets(
     GetCameraOffsetsPathParams { device_number }: GetCameraOffsetsPathParams,
 
     GetCameraOffsetsQueryParams { client_id, client_transaction_id }: GetCameraOffsetsQueryParams,
-) -> Json<StringArrayResponse> {
+) -> Json<schemas::StringArrayResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -3307,7 +3416,7 @@ fn get_camera_percentcompleted(
     GetCameraPercentcompletedPathParams { device_number }: GetCameraPercentcompletedPathParams,
 
     GetCameraPercentcompletedQueryParams { client_id, client_transaction_id }: GetCameraPercentcompletedQueryParams,
-) -> Json<IntResponse> {
+) -> Json<schemas::IntResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -3346,7 +3455,7 @@ fn get_camera_pixelsizex(
     GetCameraPixelsizexPathParams { device_number }: GetCameraPixelsizexPathParams,
 
     GetCameraPixelsizexQueryParams { client_id, client_transaction_id }: GetCameraPixelsizexQueryParams,
-) -> Json<DoubleResponse> {
+) -> Json<schemas::DoubleResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -3385,7 +3494,7 @@ fn get_camera_pixelsizey(
     GetCameraPixelsizeyPathParams { device_number }: GetCameraPixelsizeyPathParams,
 
     GetCameraPixelsizeyQueryParams { client_id, client_transaction_id }: GetCameraPixelsizeyQueryParams,
-) -> Json<DoubleResponse> {
+) -> Json<schemas::DoubleResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -3424,7 +3533,7 @@ fn get_camera_readoutmode(
     GetCameraReadoutmodePathParams { device_number }: GetCameraReadoutmodePathParams,
 
     GetCameraReadoutmodeQueryParams { client_id, client_transaction_id }: GetCameraReadoutmodeQueryParams,
-) -> Json<IntResponse> {
+) -> Json<schemas::IntResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -3476,7 +3585,7 @@ fn put_camera_readoutmode(
 
         client_transaction_id,
     }: PutCameraReadoutmodeBodyParams,
-) -> Json<MethodResponse> {
+) -> Json<schemas::MethodResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -3515,7 +3624,7 @@ fn get_camera_readoutmodes(
     GetCameraReadoutmodesPathParams { device_number }: GetCameraReadoutmodesPathParams,
 
     GetCameraReadoutmodesQueryParams { client_id, client_transaction_id }: GetCameraReadoutmodesQueryParams,
-) -> Json<StringArrayResponse> {
+) -> Json<schemas::StringArrayResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -3554,7 +3663,7 @@ fn get_camera_sensorname(
     GetCameraSensornamePathParams { device_number }: GetCameraSensornamePathParams,
 
     GetCameraSensornameQueryParams { client_id, client_transaction_id }: GetCameraSensornameQueryParams,
-) -> Json<StringResponse> {
+) -> Json<schemas::StringResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -3602,7 +3711,7 @@ fn get_camera_sensortype(
     GetCameraSensortypePathParams { device_number }: GetCameraSensortypePathParams,
 
     GetCameraSensortypeQueryParams { client_id, client_transaction_id }: GetCameraSensortypeQueryParams,
-) -> Json<IntResponse> {
+) -> Json<schemas::IntResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -3641,7 +3750,7 @@ fn get_camera_setccdtemperature(
     GetCameraSetccdtemperaturePathParams { device_number }: GetCameraSetccdtemperaturePathParams,
 
     GetCameraSetccdtemperatureQueryParams { client_id, client_transaction_id }: GetCameraSetccdtemperatureQueryParams,
-) -> Json<DoubleResponse> {
+) -> Json<schemas::DoubleResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -3693,7 +3802,7 @@ fn put_camera_setccdtemperature(
 
         client_transaction_id,
     }: PutCameraSetccdtemperatureBodyParams,
-) -> Json<MethodResponse> {
+) -> Json<schemas::MethodResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -3732,7 +3841,7 @@ fn get_camera_startx(
     GetCameraStartxPathParams { device_number }: GetCameraStartxPathParams,
 
     GetCameraStartxQueryParams { client_id, client_transaction_id }: GetCameraStartxQueryParams,
-) -> Json<IntResponse> {
+) -> Json<schemas::IntResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -3784,7 +3893,7 @@ fn put_camera_startx(
 
         client_transaction_id,
     }: PutCameraStartxBodyParams,
-) -> Json<MethodResponse> {
+) -> Json<schemas::MethodResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -3823,7 +3932,7 @@ fn get_camera_starty(
     GetCameraStartyPathParams { device_number }: GetCameraStartyPathParams,
 
     GetCameraStartyQueryParams { client_id, client_transaction_id }: GetCameraStartyQueryParams,
-) -> Json<IntResponse> {
+) -> Json<schemas::IntResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -3875,7 +3984,7 @@ fn put_camera_starty(
 
         client_transaction_id,
     }: PutCameraStartyBodyParams,
-) -> Json<MethodResponse> {
+) -> Json<schemas::MethodResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -3914,7 +4023,7 @@ fn get_camera_subexposureduration(
     GetCameraSubexposuredurationPathParams { device_number }: GetCameraSubexposuredurationPathParams,
 
     GetCameraSubexposuredurationQueryParams { client_id, client_transaction_id }: GetCameraSubexposuredurationQueryParams,
-) -> Json<DoubleResponse> {
+) -> Json<schemas::DoubleResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -3966,7 +4075,7 @@ fn put_camera_subexposureduration(
 
         client_transaction_id,
     }: PutCameraSubexposuredurationBodyParams,
-) -> Json<MethodResponse> {
+) -> Json<schemas::MethodResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -3979,22 +4088,7 @@ struct PutCameraAbortexposurePathParams {
     device_number: u32,
 }
 
-#[derive(Deserialize, FromRequest)]
-#[from_request(via(Form))]
-
-struct PutCameraAbortexposureBodyParams {
-    /**
-    Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-    */
-    #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
-
-    /**
-    Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-    */
-    #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
-}
+type PutCameraAbortexposureBodyParams = request_bodies::PutStandardClientParameters;
 
 /**
 Aborts the current exposure
@@ -4006,7 +4100,7 @@ fn put_camera_abortexposure(
     PutCameraAbortexposurePathParams { device_number }: PutCameraAbortexposurePathParams,
 
     PutCameraAbortexposureBodyParams { client_id, client_transaction_id }: PutCameraAbortexposureBodyParams,
-) -> Json<MethodResponse> {
+) -> Json<schemas::MethodResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -4066,7 +4160,7 @@ fn put_camera_pulseguide(
 
         client_transaction_id,
     }: PutCameraPulseguideBodyParams,
-) -> Json<MethodResponse> {
+) -> Json<schemas::MethodResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -4126,7 +4220,7 @@ fn put_camera_startexposure(
 
         client_transaction_id,
     }: PutCameraStartexposureBodyParams,
-) -> Json<MethodResponse> {
+) -> Json<schemas::MethodResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -4139,22 +4233,7 @@ struct PutCameraStopexposurePathParams {
     device_number: u32,
 }
 
-#[derive(Deserialize, FromRequest)]
-#[from_request(via(Form))]
-
-struct PutCameraStopexposureBodyParams {
-    /**
-    Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-    */
-    #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
-
-    /**
-    Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-    */
-    #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
-}
+type PutCameraStopexposureBodyParams = request_bodies::PutStandardClientParameters;
 
 /**
 Stops the current exposure
@@ -4166,7 +4245,7 @@ fn put_camera_stopexposure(
     PutCameraStopexposurePathParams { device_number }: PutCameraStopexposurePathParams,
 
     PutCameraStopexposureBodyParams { client_id, client_transaction_id }: PutCameraStopexposureBodyParams,
-) -> Json<MethodResponse> {
+) -> Json<schemas::MethodResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -4205,7 +4284,7 @@ fn get_covercalibrator_brightness(
     GetCovercalibratorBrightnessPathParams { device_number }: GetCovercalibratorBrightnessPathParams,
 
     GetCovercalibratorBrightnessQueryParams { client_id, client_transaction_id }: GetCovercalibratorBrightnessQueryParams,
-) -> Json<IntResponse> {
+) -> Json<schemas::IntResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -4244,7 +4323,7 @@ fn get_covercalibrator_calibratorstate(
     GetCovercalibratorCalibratorstatePathParams { device_number }: GetCovercalibratorCalibratorstatePathParams,
 
     GetCovercalibratorCalibratorstateQueryParams { client_id, client_transaction_id }: GetCovercalibratorCalibratorstateQueryParams,
-) -> Json<IntResponse> {
+) -> Json<schemas::IntResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -4283,7 +4362,7 @@ fn get_covercalibrator_coverstate(
     GetCovercalibratorCoverstatePathParams { device_number }: GetCovercalibratorCoverstatePathParams,
 
     GetCovercalibratorCoverstateQueryParams { client_id, client_transaction_id }: GetCovercalibratorCoverstateQueryParams,
-) -> Json<IntResponse> {
+) -> Json<schemas::IntResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -4322,7 +4401,7 @@ fn get_covercalibrator_maxbrightness(
     GetCovercalibratorMaxbrightnessPathParams { device_number }: GetCovercalibratorMaxbrightnessPathParams,
 
     GetCovercalibratorMaxbrightnessQueryParams { client_id, client_transaction_id }: GetCovercalibratorMaxbrightnessQueryParams,
-) -> Json<IntResponse> {
+) -> Json<schemas::IntResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -4335,22 +4414,7 @@ struct PutCovercalibratorCalibratoroffPathParams {
     device_number: u32,
 }
 
-#[derive(Deserialize, FromRequest)]
-#[from_request(via(Form))]
-
-struct PutCovercalibratorCalibratoroffBodyParams {
-    /**
-    Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-    */
-    #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
-
-    /**
-    Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-    */
-    #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
-}
+type PutCovercalibratorCalibratoroffBodyParams = request_bodies::PutStandardClientParameters;
 
 /**
 Turns the calibrator off
@@ -4362,7 +4426,7 @@ fn put_covercalibrator_calibratoroff(
     PutCovercalibratorCalibratoroffPathParams { device_number }: PutCovercalibratorCalibratoroffPathParams,
 
     PutCovercalibratorCalibratoroffBodyParams { client_id, client_transaction_id }: PutCovercalibratorCalibratoroffBodyParams,
-) -> Json<MethodResponse> {
+) -> Json<schemas::MethodResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -4414,7 +4478,7 @@ fn put_covercalibrator_calibratoron(
 
         client_transaction_id,
     }: PutCovercalibratorCalibratoronBodyParams,
-) -> Json<MethodResponse> {
+) -> Json<schemas::MethodResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -4427,22 +4491,7 @@ struct PutCovercalibratorClosecoverPathParams {
     device_number: u32,
 }
 
-#[derive(Deserialize, FromRequest)]
-#[from_request(via(Form))]
-
-struct PutCovercalibratorClosecoverBodyParams {
-    /**
-    Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-    */
-    #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
-
-    /**
-    Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-    */
-    #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
-}
+type PutCovercalibratorClosecoverBodyParams = request_bodies::PutStandardClientParameters;
 
 /**
 Initiates cover closing
@@ -4454,7 +4503,7 @@ fn put_covercalibrator_closecover(
     PutCovercalibratorClosecoverPathParams { device_number }: PutCovercalibratorClosecoverPathParams,
 
     PutCovercalibratorClosecoverBodyParams { client_id, client_transaction_id }: PutCovercalibratorClosecoverBodyParams,
-) -> Json<MethodResponse> {
+) -> Json<schemas::MethodResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -4467,22 +4516,7 @@ struct PutCovercalibratorHaltcoverPathParams {
     device_number: u32,
 }
 
-#[derive(Deserialize, FromRequest)]
-#[from_request(via(Form))]
-
-struct PutCovercalibratorHaltcoverBodyParams {
-    /**
-    Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-    */
-    #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
-
-    /**
-    Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-    */
-    #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
-}
+type PutCovercalibratorHaltcoverBodyParams = request_bodies::PutStandardClientParameters;
 
 /**
 Stops any cover movement that may be in progress
@@ -4494,7 +4528,7 @@ fn put_covercalibrator_haltcover(
     PutCovercalibratorHaltcoverPathParams { device_number }: PutCovercalibratorHaltcoverPathParams,
 
     PutCovercalibratorHaltcoverBodyParams { client_id, client_transaction_id }: PutCovercalibratorHaltcoverBodyParams,
-) -> Json<MethodResponse> {
+) -> Json<schemas::MethodResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -4507,22 +4541,7 @@ struct PutCovercalibratorOpencoverPathParams {
     device_number: u32,
 }
 
-#[derive(Deserialize, FromRequest)]
-#[from_request(via(Form))]
-
-struct PutCovercalibratorOpencoverBodyParams {
-    /**
-    Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-    */
-    #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
-
-    /**
-    Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-    */
-    #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
-}
+type PutCovercalibratorOpencoverBodyParams = request_bodies::PutStandardClientParameters;
 
 /**
 Initiates cover opening
@@ -4534,7 +4553,7 @@ fn put_covercalibrator_opencover(
     PutCovercalibratorOpencoverPathParams { device_number }: PutCovercalibratorOpencoverPathParams,
 
     PutCovercalibratorOpencoverBodyParams { client_id, client_transaction_id }: PutCovercalibratorOpencoverBodyParams,
-) -> Json<MethodResponse> {
+) -> Json<schemas::MethodResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -4573,7 +4592,7 @@ fn get_dome_altitude(
     GetDomeAltitudePathParams { device_number }: GetDomeAltitudePathParams,
 
     GetDomeAltitudeQueryParams { client_id, client_transaction_id }: GetDomeAltitudeQueryParams,
-) -> Json<DoubleResponse> {
+) -> Json<schemas::DoubleResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -4608,7 +4627,12 @@ Indicates whether the dome is in the home position.
 Indicates whether the dome is in the home position. This is normally used following a FindHome()  operation. The value is reset with any azimuth slew operation that moves the dome away from the home position. AtHome may also become true durng normal slew operations, if the dome passes through the home position and the dome controller hardware is capable of detecting that; or at the end of a slew operation if the dome comes to rest at the home position.
 */
 #[get("/dome/<device_number>/athome")]
-fn get_dome_athome(GetDomeAthomePathParams { device_number }: GetDomeAthomePathParams, GetDomeAthomeQueryParams { client_id, client_transaction_id }: GetDomeAthomeQueryParams) -> Json<BoolResponse> {}
+fn get_dome_athome(
+    GetDomeAthomePathParams { device_number }: GetDomeAthomePathParams,
+
+    GetDomeAthomeQueryParams { client_id, client_transaction_id }: GetDomeAthomeQueryParams,
+) -> Json<schemas::BoolResponse> {
+}
 
 #[derive(Deserialize, FromRequest)]
 #[from_request(via(Path))]
@@ -4642,7 +4666,12 @@ Indicates whether the telescope is at the park position
 True if the dome is in the programmed park position. Set only following a Park() operation and reset with any slew operation.
 */
 #[get("/dome/<device_number>/atpark")]
-fn get_dome_atpark(GetDomeAtparkPathParams { device_number }: GetDomeAtparkPathParams, GetDomeAtparkQueryParams { client_id, client_transaction_id }: GetDomeAtparkQueryParams) -> Json<BoolResponse> {}
+fn get_dome_atpark(
+    GetDomeAtparkPathParams { device_number }: GetDomeAtparkPathParams,
+
+    GetDomeAtparkQueryParams { client_id, client_transaction_id }: GetDomeAtparkQueryParams,
+) -> Json<schemas::BoolResponse> {
+}
 
 #[derive(Deserialize, FromRequest)]
 #[from_request(via(Path))]
@@ -4680,7 +4709,7 @@ fn get_dome_azimuth(
     GetDomeAzimuthPathParams { device_number }: GetDomeAzimuthPathParams,
 
     GetDomeAzimuthQueryParams { client_id, client_transaction_id }: GetDomeAzimuthQueryParams,
-) -> Json<DoubleResponse> {
+) -> Json<schemas::DoubleResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -4719,7 +4748,7 @@ fn get_dome_canfindhome(
     GetDomeCanfindhomePathParams { device_number }: GetDomeCanfindhomePathParams,
 
     GetDomeCanfindhomeQueryParams { client_id, client_transaction_id }: GetDomeCanfindhomeQueryParams,
-) -> Json<BoolResponse> {
+) -> Json<schemas::BoolResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -4758,7 +4787,7 @@ fn get_dome_canpark(
     GetDomeCanparkPathParams { device_number }: GetDomeCanparkPathParams,
 
     GetDomeCanparkQueryParams { client_id, client_transaction_id }: GetDomeCanparkQueryParams,
-) -> Json<BoolResponse> {
+) -> Json<schemas::BoolResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -4797,7 +4826,7 @@ fn get_dome_cansetaltitude(
     GetDomeCansetaltitudePathParams { device_number }: GetDomeCansetaltitudePathParams,
 
     GetDomeCansetaltitudeQueryParams { client_id, client_transaction_id }: GetDomeCansetaltitudeQueryParams,
-) -> Json<BoolResponse> {
+) -> Json<schemas::BoolResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -4836,7 +4865,7 @@ fn get_dome_cansetazimuth(
     GetDomeCansetazimuthPathParams { device_number }: GetDomeCansetazimuthPathParams,
 
     GetDomeCansetazimuthQueryParams { client_id, client_transaction_id }: GetDomeCansetazimuthQueryParams,
-) -> Json<BoolResponse> {
+) -> Json<schemas::BoolResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -4875,7 +4904,7 @@ fn get_dome_cansetpark(
     GetDomeCansetparkPathParams { device_number }: GetDomeCansetparkPathParams,
 
     GetDomeCansetparkQueryParams { client_id, client_transaction_id }: GetDomeCansetparkQueryParams,
-) -> Json<BoolResponse> {
+) -> Json<schemas::BoolResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -4914,7 +4943,7 @@ fn get_dome_cansetshutter(
     GetDomeCansetshutterPathParams { device_number }: GetDomeCansetshutterPathParams,
 
     GetDomeCansetshutterQueryParams { client_id, client_transaction_id }: GetDomeCansetshutterQueryParams,
-) -> Json<BoolResponse> {
+) -> Json<schemas::BoolResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -4953,7 +4982,7 @@ fn get_dome_canslave(
     GetDomeCanslavePathParams { device_number }: GetDomeCanslavePathParams,
 
     GetDomeCanslaveQueryParams { client_id, client_transaction_id }: GetDomeCanslaveQueryParams,
-) -> Json<BoolResponse> {
+) -> Json<schemas::BoolResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -4992,7 +5021,7 @@ fn get_dome_cansyncazimuth(
     GetDomeCansyncazimuthPathParams { device_number }: GetDomeCansyncazimuthPathParams,
 
     GetDomeCansyncazimuthQueryParams { client_id, client_transaction_id }: GetDomeCansyncazimuthQueryParams,
-) -> Json<BoolResponse> {
+) -> Json<schemas::BoolResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -5031,7 +5060,7 @@ fn get_dome_shutterstatus(
     GetDomeShutterstatusPathParams { device_number }: GetDomeShutterstatusPathParams,
 
     GetDomeShutterstatusQueryParams { client_id, client_transaction_id }: GetDomeShutterstatusQueryParams,
-) -> Json<IntResponse> {
+) -> Json<schemas::IntResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -5066,7 +5095,12 @@ Indicates whether the dome is slaved to the telescope
 True if the dome is slaved to the telescope in its hardware, else False.
 */
 #[get("/dome/<device_number>/slaved")]
-fn get_dome_slaved(GetDomeSlavedPathParams { device_number }: GetDomeSlavedPathParams, GetDomeSlavedQueryParams { client_id, client_transaction_id }: GetDomeSlavedQueryParams) -> Json<BoolResponse> {}
+fn get_dome_slaved(
+    GetDomeSlavedPathParams { device_number }: GetDomeSlavedPathParams,
+
+    GetDomeSlavedQueryParams { client_id, client_transaction_id }: GetDomeSlavedQueryParams,
+) -> Json<schemas::BoolResponse> {
+}
 
 #[derive(Deserialize, FromRequest)]
 #[from_request(via(Path))]
@@ -5117,7 +5151,7 @@ fn put_dome_slaved(
 
         client_transaction_id,
     }: PutDomeSlavedBodyParams,
-) -> Json<MethodResponse> {
+) -> Json<schemas::MethodResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -5156,7 +5190,7 @@ fn get_dome_slewing(
     GetDomeSlewingPathParams { device_number }: GetDomeSlewingPathParams,
 
     GetDomeSlewingQueryParams { client_id, client_transaction_id }: GetDomeSlewingQueryParams,
-) -> Json<BoolResponse> {
+) -> Json<schemas::BoolResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -5169,22 +5203,7 @@ struct PutDomeAbortslewPathParams {
     device_number: u32,
 }
 
-#[derive(Deserialize, FromRequest)]
-#[from_request(via(Form))]
-
-struct PutDomeAbortslewBodyParams {
-    /**
-    Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-    */
-    #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
-
-    /**
-    Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-    */
-    #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
-}
+type PutDomeAbortslewBodyParams = request_bodies::PutStandardClientParameters;
 
 /**
 Immediately cancel current dome operation.
@@ -5196,7 +5215,7 @@ fn put_dome_abortslew(
     PutDomeAbortslewPathParams { device_number }: PutDomeAbortslewPathParams,
 
     PutDomeAbortslewBodyParams { client_id, client_transaction_id }: PutDomeAbortslewBodyParams,
-) -> Json<MethodResponse> {
+) -> Json<schemas::MethodResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -5209,22 +5228,7 @@ struct PutDomeCloseshutterPathParams {
     device_number: u32,
 }
 
-#[derive(Deserialize, FromRequest)]
-#[from_request(via(Form))]
-
-struct PutDomeCloseshutterBodyParams {
-    /**
-    Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-    */
-    #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
-
-    /**
-    Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-    */
-    #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
-}
+type PutDomeCloseshutterBodyParams = request_bodies::PutStandardClientParameters;
 
 /**
 Close the shutter or otherwise shield telescope from the sky.
@@ -5236,7 +5240,7 @@ fn put_dome_closeshutter(
     PutDomeCloseshutterPathParams { device_number }: PutDomeCloseshutterPathParams,
 
     PutDomeCloseshutterBodyParams { client_id, client_transaction_id }: PutDomeCloseshutterBodyParams,
-) -> Json<MethodResponse> {
+) -> Json<schemas::MethodResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -5249,22 +5253,7 @@ struct PutDomeFindhomePathParams {
     device_number: u32,
 }
 
-#[derive(Deserialize, FromRequest)]
-#[from_request(via(Form))]
-
-struct PutDomeFindhomeBodyParams {
-    /**
-    Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-    */
-    #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
-
-    /**
-    Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-    */
-    #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
-}
+type PutDomeFindhomeBodyParams = request_bodies::PutStandardClientParameters;
 
 /**
 Start operation to search for the dome home position.
@@ -5276,7 +5265,7 @@ fn put_dome_findhome(
     PutDomeFindhomePathParams { device_number }: PutDomeFindhomePathParams,
 
     PutDomeFindhomeBodyParams { client_id, client_transaction_id }: PutDomeFindhomeBodyParams,
-) -> Json<MethodResponse> {
+) -> Json<schemas::MethodResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -5289,22 +5278,7 @@ struct PutDomeOpenshutterPathParams {
     device_number: u32,
 }
 
-#[derive(Deserialize, FromRequest)]
-#[from_request(via(Form))]
-
-struct PutDomeOpenshutterBodyParams {
-    /**
-    Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-    */
-    #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
-
-    /**
-    Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-    */
-    #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
-}
+type PutDomeOpenshutterBodyParams = request_bodies::PutStandardClientParameters;
 
 /**
 Open shutter or otherwise expose telescope to the sky.
@@ -5316,7 +5290,7 @@ fn put_dome_openshutter(
     PutDomeOpenshutterPathParams { device_number }: PutDomeOpenshutterPathParams,
 
     PutDomeOpenshutterBodyParams { client_id, client_transaction_id }: PutDomeOpenshutterBodyParams,
-) -> Json<MethodResponse> {
+) -> Json<schemas::MethodResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -5329,22 +5303,7 @@ struct PutDomeParkPathParams {
     device_number: u32,
 }
 
-#[derive(Deserialize, FromRequest)]
-#[from_request(via(Form))]
-
-struct PutDomeParkBodyParams {
-    /**
-    Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-    */
-    #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
-
-    /**
-    Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-    */
-    #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
-}
+type PutDomeParkBodyParams = request_bodies::PutStandardClientParameters;
 
 /**
 Rotate dome in azimuth to park position.
@@ -5352,7 +5311,7 @@ Rotate dome in azimuth to park position.
 After assuming programmed park position, sets AtPark flag.
 */
 #[put("/dome/<device_number>/park")]
-fn put_dome_park(PutDomeParkPathParams { device_number }: PutDomeParkPathParams, PutDomeParkBodyParams { client_id, client_transaction_id }: PutDomeParkBodyParams) -> Json<MethodResponse> {}
+fn put_dome_park(PutDomeParkPathParams { device_number }: PutDomeParkPathParams, PutDomeParkBodyParams { client_id, client_transaction_id }: PutDomeParkBodyParams) -> Json<schemas::MethodResponse> {}
 
 #[derive(Deserialize, FromRequest)]
 #[from_request(via(Path))]
@@ -5364,22 +5323,7 @@ struct PutDomeSetparkPathParams {
     device_number: u32,
 }
 
-#[derive(Deserialize, FromRequest)]
-#[from_request(via(Form))]
-
-struct PutDomeSetparkBodyParams {
-    /**
-    Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-    */
-    #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
-
-    /**
-    Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-    */
-    #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
-}
+type PutDomeSetparkBodyParams = request_bodies::PutStandardClientParameters;
 
 /**
 Set the current azimuth, altitude position of dome to be the park position
@@ -5391,7 +5335,7 @@ fn put_dome_setpark(
     PutDomeSetparkPathParams { device_number }: PutDomeSetparkPathParams,
 
     PutDomeSetparkBodyParams { client_id, client_transaction_id }: PutDomeSetparkBodyParams,
-) -> Json<MethodResponse> {
+) -> Json<schemas::MethodResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -5443,7 +5387,7 @@ fn put_dome_slewtoaltitude(
 
         client_transaction_id,
     }: PutDomeSlewtoaltitudeBodyParams,
-) -> Json<MethodResponse> {
+) -> Json<schemas::MethodResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -5456,28 +5400,7 @@ struct PutDomeSlewtoazimuthPathParams {
     device_number: u32,
 }
 
-#[derive(Deserialize, FromRequest)]
-#[from_request(via(Form))]
-
-struct PutDomeSlewtoazimuthBodyParams {
-    /**
-    Target dome azimuth (degrees, North zero and increasing clockwise. i.e., 90 East, 180 South, 270 West)
-    */
-    #[serde(rename = "Azimuth")]
-    azimuth: f64,
-
-    /**
-    Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-    */
-    #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
-
-    /**
-    Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-    */
-    #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
-}
+type PutDomeSlewtoazimuthBodyParams = request_bodies::PutDomeDevicenumberSlewtoazimuth;
 
 /**
 Slew the dome to the given azimuth position.
@@ -5495,7 +5418,7 @@ fn put_dome_slewtoazimuth(
 
         client_transaction_id,
     }: PutDomeSlewtoazimuthBodyParams,
-) -> Json<MethodResponse> {
+) -> Json<schemas::MethodResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -5508,28 +5431,7 @@ struct PutDomeSynctoazimuthPathParams {
     device_number: u32,
 }
 
-#[derive(Deserialize, FromRequest)]
-#[from_request(via(Form))]
-
-struct PutDomeSynctoazimuthBodyParams {
-    /**
-    Target dome azimuth (degrees, North zero and increasing clockwise. i.e., 90 East, 180 South, 270 West)
-    */
-    #[serde(rename = "Azimuth")]
-    azimuth: f64,
-
-    /**
-    Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-    */
-    #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
-
-    /**
-    Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-    */
-    #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
-}
+type PutDomeSynctoazimuthBodyParams = request_bodies::PutDomeDevicenumberSlewtoazimuth;
 
 /**
 Synchronize the current position of the dome to the given azimuth.
@@ -5547,7 +5449,7 @@ fn put_dome_synctoazimuth(
 
         client_transaction_id,
     }: PutDomeSynctoazimuthBodyParams,
-) -> Json<MethodResponse> {
+) -> Json<schemas::MethodResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -5586,7 +5488,7 @@ fn get_filterwheel_focusoffsets(
     GetFilterwheelFocusoffsetsPathParams { device_number }: GetFilterwheelFocusoffsetsPathParams,
 
     GetFilterwheelFocusoffsetsQueryParams { client_id, client_transaction_id }: GetFilterwheelFocusoffsetsQueryParams,
-) -> Json<IntArrayResponse> {
+) -> Json<schemas::IntArrayResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -5625,7 +5527,7 @@ fn get_filterwheel_names(
     GetFilterwheelNamesPathParams { device_number }: GetFilterwheelNamesPathParams,
 
     GetFilterwheelNamesQueryParams { client_id, client_transaction_id }: GetFilterwheelNamesQueryParams,
-) -> Json<StringArrayResponse> {
+) -> Json<schemas::StringArrayResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -5664,7 +5566,7 @@ fn get_filterwheel_position(
     GetFilterwheelPositionPathParams { device_number }: GetFilterwheelPositionPathParams,
 
     GetFilterwheelPositionQueryParams { client_id, client_transaction_id }: GetFilterwheelPositionQueryParams,
-) -> Json<IntResponse> {
+) -> Json<schemas::IntResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -5716,7 +5618,7 @@ fn put_filterwheel_position(
 
         client_transaction_id,
     }: PutFilterwheelPositionBodyParams,
-) -> Json<MethodResponse> {
+) -> Json<schemas::MethodResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -5755,7 +5657,7 @@ fn get_focuser_absolute(
     GetFocuserAbsolutePathParams { device_number }: GetFocuserAbsolutePathParams,
 
     GetFocuserAbsoluteQueryParams { client_id, client_transaction_id }: GetFocuserAbsoluteQueryParams,
-) -> Json<BoolResponse> {
+) -> Json<schemas::BoolResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -5794,7 +5696,7 @@ fn get_focuser_ismoving(
     GetFocuserIsmovingPathParams { device_number }: GetFocuserIsmovingPathParams,
 
     GetFocuserIsmovingQueryParams { client_id, client_transaction_id }: GetFocuserIsmovingQueryParams,
-) -> Json<BoolResponse> {
+) -> Json<schemas::BoolResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -5833,7 +5735,7 @@ fn get_focuser_maxincrement(
     GetFocuserMaxincrementPathParams { device_number }: GetFocuserMaxincrementPathParams,
 
     GetFocuserMaxincrementQueryParams { client_id, client_transaction_id }: GetFocuserMaxincrementQueryParams,
-) -> Json<IntResponse> {
+) -> Json<schemas::IntResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -5872,7 +5774,7 @@ fn get_focuser_maxstep(
     GetFocuserMaxstepPathParams { device_number }: GetFocuserMaxstepPathParams,
 
     GetFocuserMaxstepQueryParams { client_id, client_transaction_id }: GetFocuserMaxstepQueryParams,
-) -> Json<IntResponse> {
+) -> Json<schemas::IntResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -5911,7 +5813,7 @@ fn get_focuser_position(
     GetFocuserPositionPathParams { device_number }: GetFocuserPositionPathParams,
 
     GetFocuserPositionQueryParams { client_id, client_transaction_id }: GetFocuserPositionQueryParams,
-) -> Json<IntResponse> {
+) -> Json<schemas::IntResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -5950,7 +5852,7 @@ fn get_focuser_stepsize(
     GetFocuserStepsizePathParams { device_number }: GetFocuserStepsizePathParams,
 
     GetFocuserStepsizeQueryParams { client_id, client_transaction_id }: GetFocuserStepsizeQueryParams,
-) -> Json<DoubleResponse> {
+) -> Json<schemas::DoubleResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -5989,7 +5891,7 @@ fn get_focuser_tempcomp(
     GetFocuserTempcompPathParams { device_number }: GetFocuserTempcompPathParams,
 
     GetFocuserTempcompQueryParams { client_id, client_transaction_id }: GetFocuserTempcompQueryParams,
-) -> Json<BoolResponse> {
+) -> Json<schemas::BoolResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -6041,7 +5943,7 @@ fn put_focuser_tempcomp(
 
         client_transaction_idform,
     }: PutFocuserTempcompBodyParams,
-) -> Json<MethodResponse> {
+) -> Json<schemas::MethodResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -6080,7 +5982,7 @@ fn get_focuser_tempcompavailable(
     GetFocuserTempcompavailablePathParams { device_number }: GetFocuserTempcompavailablePathParams,
 
     GetFocuserTempcompavailableQueryParams { client_id, client_transaction_id }: GetFocuserTempcompavailableQueryParams,
-) -> Json<BoolResponse> {
+) -> Json<schemas::BoolResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -6119,7 +6021,7 @@ fn get_focuser_temperature(
     GetFocuserTemperaturePathParams { device_number }: GetFocuserTemperaturePathParams,
 
     GetFocuserTemperatureQueryParams { client_id, client_transaction_id }: GetFocuserTemperatureQueryParams,
-) -> Json<DoubleResponse> {
+) -> Json<schemas::DoubleResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -6132,22 +6034,7 @@ struct PutFocuserHaltPathParams {
     device_number: u32,
 }
 
-#[derive(Deserialize, FromRequest)]
-#[from_request(via(Form))]
-
-struct PutFocuserHaltBodyParams {
-    /**
-    Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-    */
-    #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
-
-    /**
-    Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-    */
-    #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
-}
+type PutFocuserHaltBodyParams = request_bodies::PutStandardClientParameters;
 
 /**
 Immediatley stops focuser motion.
@@ -6159,7 +6046,7 @@ fn put_focuser_halt(
     PutFocuserHaltPathParams { device_number }: PutFocuserHaltPathParams,
 
     PutFocuserHaltBodyParams { client_id, client_transaction_id }: PutFocuserHaltBodyParams,
-) -> Json<MethodResponse> {
+) -> Json<schemas::MethodResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -6211,7 +6098,7 @@ fn put_focuser_move(
 
         client_transaction_id,
     }: PutFocuserMoveBodyParams,
-) -> Json<MethodResponse> {
+) -> Json<schemas::MethodResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -6250,7 +6137,7 @@ fn get_observingconditions_averageperiod(
     GetObservingconditionsAverageperiodPathParams { device_number }: GetObservingconditionsAverageperiodPathParams,
 
     GetObservingconditionsAverageperiodQueryParams { client_id, client_transaction_id }: GetObservingconditionsAverageperiodQueryParams,
-) -> Json<DoubleResponse> {
+) -> Json<schemas::DoubleResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -6302,7 +6189,7 @@ fn put_observingconditions_averageperiod(
 
         client_transaction_id,
     }: PutObservingconditionsAverageperiodBodyParams,
-) -> Json<MethodResponse> {
+) -> Json<schemas::MethodResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -6341,7 +6228,7 @@ fn get_observingconditions_cloudcover(
     GetObservingconditionsCloudcoverPathParams { device_number }: GetObservingconditionsCloudcoverPathParams,
 
     GetObservingconditionsCloudcoverQueryParams { client_id, client_transaction_id }: GetObservingconditionsCloudcoverQueryParams,
-) -> Json<DoubleResponse> {
+) -> Json<schemas::DoubleResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -6380,7 +6267,7 @@ fn get_observingconditions_dewpoint(
     GetObservingconditionsDewpointPathParams { device_number }: GetObservingconditionsDewpointPathParams,
 
     GetObservingconditionsDewpointQueryParams { client_id, client_transaction_id }: GetObservingconditionsDewpointQueryParams,
-) -> Json<DoubleResponse> {
+) -> Json<schemas::DoubleResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -6419,7 +6306,7 @@ fn get_observingconditions_humidity(
     GetObservingconditionsHumidityPathParams { device_number }: GetObservingconditionsHumidityPathParams,
 
     GetObservingconditionsHumidityQueryParams { client_id, client_transaction_id }: GetObservingconditionsHumidityQueryParams,
-) -> Json<DoubleResponse> {
+) -> Json<schemas::DoubleResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -6458,7 +6345,7 @@ fn get_observingconditions_pressure(
     GetObservingconditionsPressurePathParams { device_number }: GetObservingconditionsPressurePathParams,
 
     GetObservingconditionsPressureQueryParams { client_id, client_transaction_id }: GetObservingconditionsPressureQueryParams,
-) -> Json<DoubleResponse> {
+) -> Json<schemas::DoubleResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -6497,7 +6384,7 @@ fn get_observingconditions_rainrate(
     GetObservingconditionsRainratePathParams { device_number }: GetObservingconditionsRainratePathParams,
 
     GetObservingconditionsRainrateQueryParams { client_id, client_transaction_id }: GetObservingconditionsRainrateQueryParams,
-) -> Json<DoubleResponse> {
+) -> Json<schemas::DoubleResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -6536,7 +6423,7 @@ fn get_observingconditions_skybrightness(
     GetObservingconditionsSkybrightnessPathParams { device_number }: GetObservingconditionsSkybrightnessPathParams,
 
     GetObservingconditionsSkybrightnessQueryParams { client_id, client_transaction_id }: GetObservingconditionsSkybrightnessQueryParams,
-) -> Json<DoubleResponse> {
+) -> Json<schemas::DoubleResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -6575,7 +6462,7 @@ fn get_observingconditions_skyquality(
     GetObservingconditionsSkyqualityPathParams { device_number }: GetObservingconditionsSkyqualityPathParams,
 
     GetObservingconditionsSkyqualityQueryParams { client_id, client_transaction_id }: GetObservingconditionsSkyqualityQueryParams,
-) -> Json<DoubleResponse> {
+) -> Json<schemas::DoubleResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -6614,7 +6501,7 @@ fn get_observingconditions_skytemperature(
     GetObservingconditionsSkytemperaturePathParams { device_number }: GetObservingconditionsSkytemperaturePathParams,
 
     GetObservingconditionsSkytemperatureQueryParams { client_id, client_transaction_id }: GetObservingconditionsSkytemperatureQueryParams,
-) -> Json<DoubleResponse> {
+) -> Json<schemas::DoubleResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -6653,7 +6540,7 @@ fn get_observingconditions_starfwhm(
     GetObservingconditionsStarfwhmPathParams { device_number }: GetObservingconditionsStarfwhmPathParams,
 
     GetObservingconditionsStarfwhmQueryParams { client_id, client_transaction_id }: GetObservingconditionsStarfwhmQueryParams,
-) -> Json<DoubleResponse> {
+) -> Json<schemas::DoubleResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -6692,7 +6579,7 @@ fn get_observingconditions_temperature(
     GetObservingconditionsTemperaturePathParams { device_number }: GetObservingconditionsTemperaturePathParams,
 
     GetObservingconditionsTemperatureQueryParams { client_id, client_transaction_id }: GetObservingconditionsTemperatureQueryParams,
-) -> Json<DoubleResponse> {
+) -> Json<schemas::DoubleResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -6731,7 +6618,7 @@ fn get_observingconditions_winddirection(
     GetObservingconditionsWinddirectionPathParams { device_number }: GetObservingconditionsWinddirectionPathParams,
 
     GetObservingconditionsWinddirectionQueryParams { client_id, client_transaction_id }: GetObservingconditionsWinddirectionQueryParams,
-) -> Json<DoubleResponse> {
+) -> Json<schemas::DoubleResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -6770,7 +6657,7 @@ fn get_observingconditions_windgust(
     GetObservingconditionsWindgustPathParams { device_number }: GetObservingconditionsWindgustPathParams,
 
     GetObservingconditionsWindgustQueryParams { client_id, client_transaction_id }: GetObservingconditionsWindgustQueryParams,
-) -> Json<DoubleResponse> {
+) -> Json<schemas::DoubleResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -6809,7 +6696,7 @@ fn get_observingconditions_windspeed(
     GetObservingconditionsWindspeedPathParams { device_number }: GetObservingconditionsWindspeedPathParams,
 
     GetObservingconditionsWindspeedQueryParams { client_id, client_transaction_id }: GetObservingconditionsWindspeedQueryParams,
-) -> Json<DoubleResponse> {
+) -> Json<schemas::DoubleResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -6822,22 +6709,7 @@ struct PutObservingconditionsRefreshPathParams {
     device_number: u32,
 }
 
-#[derive(Deserialize, FromRequest)]
-#[from_request(via(Form))]
-
-struct PutObservingconditionsRefreshBodyParams {
-    /**
-    Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-    */
-    #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
-
-    /**
-    Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-    */
-    #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
-}
+type PutObservingconditionsRefreshBodyParams = request_bodies::PutStandardClientParameters;
 
 /**
 Refreshes sensor values from hardware.
@@ -6849,7 +6721,7 @@ fn put_observingconditions_refresh(
     PutObservingconditionsRefreshPathParams { device_number }: PutObservingconditionsRefreshPathParams,
 
     PutObservingconditionsRefreshBodyParams { client_id, client_transaction_id }: PutObservingconditionsRefreshBodyParams,
-) -> Json<MethodResponse> {
+) -> Json<schemas::MethodResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -6900,7 +6772,7 @@ fn get_observingconditions_sensordescription(
 
         client_transaction_id,
     }: GetObservingconditionsSensordescriptionQueryParams,
-) -> Json<StringResponse> {
+) -> Json<schemas::StringResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -6951,7 +6823,7 @@ fn get_observingconditions_timesincelastupdate(
 
         client_transaction_id,
     }: GetObservingconditionsTimesincelastupdateQueryParams,
-) -> Json<DoubleResponse> {
+) -> Json<schemas::DoubleResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -6990,7 +6862,7 @@ fn get_rotator_canreverse(
     GetRotatorCanreversePathParams { device_number }: GetRotatorCanreversePathParams,
 
     GetRotatorCanreverseQueryParams { client_id, client_transaction_id }: GetRotatorCanreverseQueryParams,
-) -> Json<BoolResponse> {
+) -> Json<schemas::BoolResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -7029,7 +6901,7 @@ fn get_rotator_ismoving(
     GetRotatorIsmovingPathParams { device_number }: GetRotatorIsmovingPathParams,
 
     GetRotatorIsmovingQueryParams { client_id, client_transaction_id }: GetRotatorIsmovingQueryParams,
-) -> Json<BoolResponse> {
+) -> Json<schemas::BoolResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -7068,7 +6940,7 @@ fn get_rotator_mechanicalposition(
     GetRotatorMechanicalpositionPathParams { device_number }: GetRotatorMechanicalpositionPathParams,
 
     GetRotatorMechanicalpositionQueryParams { client_id, client_transaction_id }: GetRotatorMechanicalpositionQueryParams,
-) -> Json<DoubleResponse> {
+) -> Json<schemas::DoubleResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -7107,7 +6979,7 @@ fn get_rotator_position(
     GetRotatorPositionPathParams { device_number }: GetRotatorPositionPathParams,
 
     GetRotatorPositionQueryParams { client_id, client_transaction_id }: GetRotatorPositionQueryParams,
-) -> Json<DoubleResponse> {
+) -> Json<schemas::DoubleResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -7146,7 +7018,7 @@ fn get_rotator_reverse(
     GetRotatorReversePathParams { device_number }: GetRotatorReversePathParams,
 
     GetRotatorReverseQueryParams { client_id, client_transaction_id }: GetRotatorReverseQueryParams,
-) -> Json<BoolResponse> {
+) -> Json<schemas::BoolResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -7198,7 +7070,7 @@ fn put_rotator_reverse(
 
         client_transaction_id,
     }: PutRotatorReverseBodyParams,
-) -> Json<MethodResponse> {
+) -> Json<schemas::MethodResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -7237,7 +7109,7 @@ fn get_rotator_stepsize(
     GetRotatorStepsizePathParams { device_number }: GetRotatorStepsizePathParams,
 
     GetRotatorStepsizeQueryParams { client_id, client_transaction_id }: GetRotatorStepsizeQueryParams,
-) -> Json<DoubleResponse> {
+) -> Json<schemas::DoubleResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -7276,7 +7148,7 @@ fn get_rotator_targetposition(
     GetRotatorTargetpositionPathParams { device_number }: GetRotatorTargetpositionPathParams,
 
     GetRotatorTargetpositionQueryParams { client_id, client_transaction_id }: GetRotatorTargetpositionQueryParams,
-) -> Json<DoubleResponse> {
+) -> Json<schemas::DoubleResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -7289,22 +7161,7 @@ struct PutRotatorHaltPathParams {
     device_number: u32,
 }
 
-#[derive(Deserialize, FromRequest)]
-#[from_request(via(Form))]
-
-struct PutRotatorHaltBodyParams {
-    /**
-    Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-    */
-    #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
-
-    /**
-    Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-    */
-    #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
-}
+type PutRotatorHaltBodyParams = request_bodies::PutStandardClientParameters;
 
 /**
 Immediatley stops rotator motion.
@@ -7316,7 +7173,7 @@ fn put_rotator_halt(
     PutRotatorHaltPathParams { device_number }: PutRotatorHaltPathParams,
 
     PutRotatorHaltBodyParams { client_id, client_transaction_id }: PutRotatorHaltBodyParams,
-) -> Json<MethodResponse> {
+) -> Json<schemas::MethodResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -7368,7 +7225,7 @@ fn put_rotator_move(
 
         client_transaction_id,
     }: PutRotatorMoveBodyParams,
-) -> Json<MethodResponse> {
+) -> Json<schemas::MethodResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -7420,7 +7277,7 @@ fn put_rotator_moveabsolute(
 
         client_transaction_id,
     }: PutRotatorMoveabsoluteBodyParams,
-) -> Json<MethodResponse> {
+) -> Json<schemas::MethodResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -7472,7 +7329,7 @@ fn put_rotator_movemechanical(
 
         client_transaction_id,
     }: PutRotatorMovemechanicalBodyParams,
-) -> Json<MethodResponse> {
+) -> Json<schemas::MethodResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -7524,7 +7381,7 @@ fn put_rotator_sync(
 
         client_transaction_id,
     }: PutRotatorSyncBodyParams,
-) -> Json<MethodResponse> {
+) -> Json<schemas::MethodResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -7563,7 +7420,7 @@ fn get_safetymonitor_issafe(
     GetSafetymonitorIssafePathParams { device_number }: GetSafetymonitorIssafePathParams,
 
     GetSafetymonitorIssafeQueryParams { client_id, client_transaction_id }: GetSafetymonitorIssafeQueryParams,
-) -> Json<BoolResponse> {
+) -> Json<schemas::BoolResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -7602,7 +7459,7 @@ fn get_switch_maxswitch(
     GetSwitchMaxswitchPathParams { device_number }: GetSwitchMaxswitchPathParams,
 
     GetSwitchMaxswitchQueryParams { client_id, client_transaction_id }: GetSwitchMaxswitchQueryParams,
-) -> Json<IntResponse> {
+) -> Json<schemas::IntResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -7647,7 +7504,7 @@ fn get_switch_canwrite(
     GetSwitchCanwritePathParams { device_number }: GetSwitchCanwritePathParams,
 
     GetSwitchCanwriteQueryParams { id, client_id, client_transaction_id }: GetSwitchCanwriteQueryParams,
-) -> Json<BoolResponse> {
+) -> Json<schemas::BoolResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -7692,7 +7549,7 @@ fn get_switch_getswitch(
     GetSwitchGetswitchPathParams { device_number }: GetSwitchGetswitchPathParams,
 
     GetSwitchGetswitchQueryParams { id, client_id, client_transaction_id }: GetSwitchGetswitchQueryParams,
-) -> Json<BoolResponse> {
+) -> Json<schemas::BoolResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -7737,7 +7594,7 @@ fn get_switch_getswitchdescription(
     GetSwitchGetswitchdescriptionPathParams { device_number }: GetSwitchGetswitchdescriptionPathParams,
 
     GetSwitchGetswitchdescriptionQueryParams { id, client_id, client_transaction_id }: GetSwitchGetswitchdescriptionQueryParams,
-) -> Json<StringResponse> {
+) -> Json<schemas::StringResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -7782,7 +7639,7 @@ fn get_switch_getswitchname(
     GetSwitchGetswitchnamePathParams { device_number }: GetSwitchGetswitchnamePathParams,
 
     GetSwitchGetswitchnameQueryParams { id, client_id, client_transaction_id }: GetSwitchGetswitchnameQueryParams,
-) -> Json<StringResponse> {
+) -> Json<schemas::StringResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -7827,7 +7684,7 @@ fn get_switch_getswitchvalue(
     GetSwitchGetswitchvaluePathParams { device_number }: GetSwitchGetswitchvaluePathParams,
 
     GetSwitchGetswitchvalueQueryParams { id, client_id, client_transaction_id }: GetSwitchGetswitchvalueQueryParams,
-) -> Json<DoubleResponse> {
+) -> Json<schemas::DoubleResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -7872,7 +7729,7 @@ fn get_switch_minswitchvalue(
     GetSwitchMinswitchvaluePathParams { device_number }: GetSwitchMinswitchvaluePathParams,
 
     GetSwitchMinswitchvalueQueryParams { id, client_id, client_transaction_id }: GetSwitchMinswitchvalueQueryParams,
-) -> Json<DoubleResponse> {
+) -> Json<schemas::DoubleResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -7917,7 +7774,7 @@ fn get_switch_maxswitchvalue(
     GetSwitchMaxswitchvaluePathParams { device_number }: GetSwitchMaxswitchvaluePathParams,
 
     GetSwitchMaxswitchvalueQueryParams { id, client_id, client_transaction_id }: GetSwitchMaxswitchvalueQueryParams,
-) -> Json<DoubleResponse> {
+) -> Json<schemas::DoubleResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -7977,7 +7834,7 @@ fn put_switch_setswitch(
 
         client_transaction_id,
     }: PutSwitchSetswitchBodyParams,
-) -> Json<MethodResponse> {
+) -> Json<schemas::MethodResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -8037,7 +7894,7 @@ fn put_switch_setswitchname(
 
         client_transaction_id,
     }: PutSwitchSetswitchnameBodyParams,
-) -> Json<MethodResponse> {
+) -> Json<schemas::MethodResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -8097,7 +7954,7 @@ fn put_switch_setswitchvalue(
 
         client_transaction_id,
     }: PutSwitchSetswitchvalueBodyParams,
-) -> Json<MethodResponse> {
+) -> Json<schemas::MethodResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -8142,7 +7999,7 @@ fn get_switch_switchstep(
     GetSwitchSwitchstepPathParams { device_number }: GetSwitchSwitchstepPathParams,
 
     GetSwitchSwitchstepQueryParams { id, client_id, client_transaction_id }: GetSwitchSwitchstepQueryParams,
-) -> Json<DoubleResponse> {
+) -> Json<schemas::DoubleResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -8181,7 +8038,7 @@ fn get_telescope_alignmentmode(
     GetTelescopeAlignmentmodePathParams { device_number }: GetTelescopeAlignmentmodePathParams,
 
     GetTelescopeAlignmentmodeQueryParams { client_id, client_transaction_id }: GetTelescopeAlignmentmodeQueryParams,
-) -> Json<IntResponse> {
+) -> Json<schemas::IntResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -8220,7 +8077,7 @@ fn get_telescope_altitude(
     GetTelescopeAltitudePathParams { device_number }: GetTelescopeAltitudePathParams,
 
     GetTelescopeAltitudeQueryParams { client_id, client_transaction_id }: GetTelescopeAltitudeQueryParams,
-) -> Json<DoubleResponse> {
+) -> Json<schemas::DoubleResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -8259,7 +8116,7 @@ fn get_telescope_aperturearea(
     GetTelescopeApertureareaPathParams { device_number }: GetTelescopeApertureareaPathParams,
 
     GetTelescopeApertureareaQueryParams { client_id, client_transaction_id }: GetTelescopeApertureareaQueryParams,
-) -> Json<DoubleResponse> {
+) -> Json<schemas::DoubleResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -8298,7 +8155,7 @@ fn get_telescope_aperturediameter(
     GetTelescopeAperturediameterPathParams { device_number }: GetTelescopeAperturediameterPathParams,
 
     GetTelescopeAperturediameterQueryParams { client_id, client_transaction_id }: GetTelescopeAperturediameterQueryParams,
-) -> Json<DoubleResponse> {
+) -> Json<schemas::DoubleResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -8337,7 +8194,7 @@ fn get_telescope_athome(
     GetTelescopeAthomePathParams { device_number }: GetTelescopeAthomePathParams,
 
     GetTelescopeAthomeQueryParams { client_id, client_transaction_id }: GetTelescopeAthomeQueryParams,
-) -> Json<BoolResponse> {
+) -> Json<schemas::BoolResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -8376,7 +8233,7 @@ fn get_telescope_atpark(
     GetTelescopeAtparkPathParams { device_number }: GetTelescopeAtparkPathParams,
 
     GetTelescopeAtparkQueryParams { client_id, client_transaction_id }: GetTelescopeAtparkQueryParams,
-) -> Json<BoolResponse> {
+) -> Json<schemas::BoolResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -8415,7 +8272,7 @@ fn get_telescope_azimuth(
     GetTelescopeAzimuthPathParams { device_number }: GetTelescopeAzimuthPathParams,
 
     GetTelescopeAzimuthQueryParams { client_id, client_transaction_id }: GetTelescopeAzimuthQueryParams,
-) -> Json<DoubleResponse> {
+) -> Json<schemas::DoubleResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -8454,7 +8311,7 @@ fn get_telescope_canfindhome(
     GetTelescopeCanfindhomePathParams { device_number }: GetTelescopeCanfindhomePathParams,
 
     GetTelescopeCanfindhomeQueryParams { client_id, client_transaction_id }: GetTelescopeCanfindhomeQueryParams,
-) -> Json<BoolResponse> {
+) -> Json<schemas::BoolResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -8493,7 +8350,7 @@ fn get_telescope_canpark(
     GetTelescopeCanparkPathParams { device_number }: GetTelescopeCanparkPathParams,
 
     GetTelescopeCanparkQueryParams { client_id, client_transaction_id }: GetTelescopeCanparkQueryParams,
-) -> Json<BoolResponse> {
+) -> Json<schemas::BoolResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -8532,7 +8389,7 @@ fn get_telescope_canpulseguide(
     GetTelescopeCanpulseguidePathParams { device_number }: GetTelescopeCanpulseguidePathParams,
 
     GetTelescopeCanpulseguideQueryParams { client_id, client_transaction_id }: GetTelescopeCanpulseguideQueryParams,
-) -> Json<BoolResponse> {
+) -> Json<schemas::BoolResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -8571,7 +8428,7 @@ fn get_telescope_cansetdeclinationrate(
     GetTelescopeCansetdeclinationratePathParams { device_number }: GetTelescopeCansetdeclinationratePathParams,
 
     GetTelescopeCansetdeclinationrateQueryParams { client_id, client_transaction_id }: GetTelescopeCansetdeclinationrateQueryParams,
-) -> Json<BoolResponse> {
+) -> Json<schemas::BoolResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -8610,7 +8467,7 @@ fn get_telescope_cansetguiderates(
     GetTelescopeCansetguideratesPathParams { device_number }: GetTelescopeCansetguideratesPathParams,
 
     GetTelescopeCansetguideratesQueryParams { client_id, client_transaction_id }: GetTelescopeCansetguideratesQueryParams,
-) -> Json<BoolResponse> {
+) -> Json<schemas::BoolResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -8649,7 +8506,7 @@ fn get_telescope_cansetpark(
     GetTelescopeCansetparkPathParams { device_number }: GetTelescopeCansetparkPathParams,
 
     GetTelescopeCansetparkQueryParams { client_id, client_transaction_id }: GetTelescopeCansetparkQueryParams,
-) -> Json<BoolResponse> {
+) -> Json<schemas::BoolResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -8688,7 +8545,7 @@ fn get_telescope_cansetpierside(
     GetTelescopeCansetpiersidePathParams { device_number }: GetTelescopeCansetpiersidePathParams,
 
     GetTelescopeCansetpiersideQueryParams { client_id, client_transaction_id }: GetTelescopeCansetpiersideQueryParams,
-) -> Json<BoolResponse> {
+) -> Json<schemas::BoolResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -8727,7 +8584,7 @@ fn get_telescope_cansetrightascensionrate(
     GetTelescopeCansetrightascensionratePathParams { device_number }: GetTelescopeCansetrightascensionratePathParams,
 
     GetTelescopeCansetrightascensionrateQueryParams { client_id, client_transaction_id }: GetTelescopeCansetrightascensionrateQueryParams,
-) -> Json<BoolResponse> {
+) -> Json<schemas::BoolResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -8766,7 +8623,7 @@ fn get_telescope_cansettracking(
     GetTelescopeCansettrackingPathParams { device_number }: GetTelescopeCansettrackingPathParams,
 
     GetTelescopeCansettrackingQueryParams { client_id, client_transaction_id }: GetTelescopeCansettrackingQueryParams,
-) -> Json<BoolResponse> {
+) -> Json<schemas::BoolResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -8805,7 +8662,7 @@ fn get_telescope_canslew(
     GetTelescopeCanslewPathParams { device_number }: GetTelescopeCanslewPathParams,
 
     GetTelescopeCanslewQueryParams { client_id, client_transaction_id }: GetTelescopeCanslewQueryParams,
-) -> Json<BoolResponse> {
+) -> Json<schemas::BoolResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -8844,7 +8701,7 @@ fn get_telescope_canslewaltaz(
     GetTelescopeCanslewaltazPathParams { device_number }: GetTelescopeCanslewaltazPathParams,
 
     GetTelescopeCanslewaltazQueryParams { client_id, client_transaction_id }: GetTelescopeCanslewaltazQueryParams,
-) -> Json<BoolResponse> {
+) -> Json<schemas::BoolResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -8883,7 +8740,7 @@ fn get_telescope_canslewaltazasync(
     GetTelescopeCanslewaltazasyncPathParams { device_number }: GetTelescopeCanslewaltazasyncPathParams,
 
     GetTelescopeCanslewaltazasyncQueryParams { client_id, client_transaction_id }: GetTelescopeCanslewaltazasyncQueryParams,
-) -> Json<BoolResponse> {
+) -> Json<schemas::BoolResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -8922,7 +8779,7 @@ fn get_telescope_canslewasync(
     GetTelescopeCanslewasyncPathParams { device_number }: GetTelescopeCanslewasyncPathParams,
 
     GetTelescopeCanslewasyncQueryParams { client_id, client_transaction_id }: GetTelescopeCanslewasyncQueryParams,
-) -> Json<BoolResponse> {
+) -> Json<schemas::BoolResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -8961,7 +8818,7 @@ fn get_telescope_cansync(
     GetTelescopeCansyncPathParams { device_number }: GetTelescopeCansyncPathParams,
 
     GetTelescopeCansyncQueryParams { client_id, client_transaction_id }: GetTelescopeCansyncQueryParams,
-) -> Json<BoolResponse> {
+) -> Json<schemas::BoolResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -9000,7 +8857,7 @@ fn get_telescope_cansyncaltaz(
     GetTelescopeCansyncaltazPathParams { device_number }: GetTelescopeCansyncaltazPathParams,
 
     GetTelescopeCansyncaltazQueryParams { client_id, client_transaction_id }: GetTelescopeCansyncaltazQueryParams,
-) -> Json<BoolResponse> {
+) -> Json<schemas::BoolResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -9039,7 +8896,7 @@ fn get_telescope_canunpark(
     GetTelescopeCanunparkPathParams { device_number }: GetTelescopeCanunparkPathParams,
 
     GetTelescopeCanunparkQueryParams { client_id, client_transaction_id }: GetTelescopeCanunparkQueryParams,
-) -> Json<BoolResponse> {
+) -> Json<schemas::BoolResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -9078,7 +8935,7 @@ fn get_telescope_declination(
     GetTelescopeDeclinationPathParams { device_number }: GetTelescopeDeclinationPathParams,
 
     GetTelescopeDeclinationQueryParams { client_id, client_transaction_id }: GetTelescopeDeclinationQueryParams,
-) -> Json<DoubleResponse> {
+) -> Json<schemas::DoubleResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -9117,7 +8974,7 @@ fn get_telescope_declinationrate(
     GetTelescopeDeclinationratePathParams { device_number }: GetTelescopeDeclinationratePathParams,
 
     GetTelescopeDeclinationrateQueryParams { client_id, client_transaction_id }: GetTelescopeDeclinationrateQueryParams,
-) -> Json<DoubleResponse> {
+) -> Json<schemas::DoubleResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -9169,7 +9026,7 @@ fn put_telescope_declinationrate(
 
         client_transaction_id,
     }: PutTelescopeDeclinationrateBodyParams,
-) -> Json<MethodResponse> {
+) -> Json<schemas::MethodResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -9208,7 +9065,7 @@ fn get_telescope_doesrefraction(
     GetTelescopeDoesrefractionPathParams { device_number }: GetTelescopeDoesrefractionPathParams,
 
     GetTelescopeDoesrefractionQueryParams { client_id, client_transaction_id }: GetTelescopeDoesrefractionQueryParams,
-) -> Json<BoolResponse> {
+) -> Json<schemas::BoolResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -9260,7 +9117,7 @@ fn put_telescope_doesrefraction(
 
         client_transaction_id,
     }: PutTelescopeDoesrefractionBodyParams,
-) -> Json<MethodResponse> {
+) -> Json<schemas::MethodResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -9299,7 +9156,7 @@ fn get_telescope_equatorialsystem(
     GetTelescopeEquatorialsystemPathParams { device_number }: GetTelescopeEquatorialsystemPathParams,
 
     GetTelescopeEquatorialsystemQueryParams { client_id, client_transaction_id }: GetTelescopeEquatorialsystemQueryParams,
-) -> Json<IntResponse> {
+) -> Json<schemas::IntResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -9338,7 +9195,7 @@ fn get_telescope_focallength(
     GetTelescopeFocallengthPathParams { device_number }: GetTelescopeFocallengthPathParams,
 
     GetTelescopeFocallengthQueryParams { client_id, client_transaction_id }: GetTelescopeFocallengthQueryParams,
-) -> Json<DoubleResponse> {
+) -> Json<schemas::DoubleResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -9377,7 +9234,7 @@ fn get_telescope_guideratedeclination(
     GetTelescopeGuideratedeclinationPathParams { device_number }: GetTelescopeGuideratedeclinationPathParams,
 
     GetTelescopeGuideratedeclinationQueryParams { client_id, client_transaction_id }: GetTelescopeGuideratedeclinationQueryParams,
-) -> Json<DoubleResponse> {
+) -> Json<schemas::DoubleResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -9429,7 +9286,7 @@ fn put_telescope_guideratedeclination(
 
         client_transaction_id,
     }: PutTelescopeGuideratedeclinationBodyParams,
-) -> Json<MethodResponse> {
+) -> Json<schemas::MethodResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -9468,7 +9325,7 @@ fn get_telescope_guideraterightascension(
     GetTelescopeGuideraterightascensionPathParams { device_number }: GetTelescopeGuideraterightascensionPathParams,
 
     GetTelescopeGuideraterightascensionQueryParams { client_id, client_transaction_id }: GetTelescopeGuideraterightascensionQueryParams,
-) -> Json<DoubleResponse> {
+) -> Json<schemas::DoubleResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -9520,7 +9377,7 @@ fn put_telescope_guideraterightascension(
 
         client_transaction_id,
     }: PutTelescopeGuideraterightascensionBodyParams,
-) -> Json<MethodResponse> {
+) -> Json<schemas::MethodResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -9559,7 +9416,7 @@ fn get_telescope_ispulseguiding(
     GetTelescopeIspulseguidingPathParams { device_number }: GetTelescopeIspulseguidingPathParams,
 
     GetTelescopeIspulseguidingQueryParams { client_id, client_transaction_id }: GetTelescopeIspulseguidingQueryParams,
-) -> Json<BoolResponse> {
+) -> Json<schemas::BoolResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -9598,7 +9455,7 @@ fn get_telescope_rightascension(
     GetTelescopeRightascensionPathParams { device_number }: GetTelescopeRightascensionPathParams,
 
     GetTelescopeRightascensionQueryParams { client_id, client_transaction_id }: GetTelescopeRightascensionQueryParams,
-) -> Json<DoubleResponse> {
+) -> Json<schemas::DoubleResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -9637,7 +9494,7 @@ fn get_telescope_rightascensionrate(
     GetTelescopeRightascensionratePathParams { device_number }: GetTelescopeRightascensionratePathParams,
 
     GetTelescopeRightascensionrateQueryParams { client_id, client_transaction_id }: GetTelescopeRightascensionrateQueryParams,
-) -> Json<DoubleResponse> {
+) -> Json<schemas::DoubleResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -9689,7 +9546,7 @@ fn put_telescope_rightascensionrate(
 
         client_transaction_id,
     }: PutTelescopeRightascensionrateBodyParams,
-) -> Json<MethodResponse> {
+) -> Json<schemas::MethodResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -9728,7 +9585,7 @@ fn get_telescope_sideofpier(
     GetTelescopeSideofpierPathParams { device_number }: GetTelescopeSideofpierPathParams,
 
     GetTelescopeSideofpierQueryParams { client_id, client_transaction_id }: GetTelescopeSideofpierQueryParams,
-) -> Json<IntResponse> {
+) -> Json<schemas::IntResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -9780,7 +9637,7 @@ fn put_telescope_sideofpier(
 
         client_transaction_id,
     }: PutTelescopeSideofpierBodyParams,
-) -> Json<MethodResponse> {
+) -> Json<schemas::MethodResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -9819,7 +9676,7 @@ fn get_telescope_siderealtime(
     GetTelescopeSiderealtimePathParams { device_number }: GetTelescopeSiderealtimePathParams,
 
     GetTelescopeSiderealtimeQueryParams { client_id, client_transaction_id }: GetTelescopeSiderealtimeQueryParams,
-) -> Json<DoubleResponse> {
+) -> Json<schemas::DoubleResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -9858,7 +9715,7 @@ fn get_telescope_siteelevation(
     GetTelescopeSiteelevationPathParams { device_number }: GetTelescopeSiteelevationPathParams,
 
     GetTelescopeSiteelevationQueryParams { client_id, client_transaction_id }: GetTelescopeSiteelevationQueryParams,
-) -> Json<DoubleResponse> {
+) -> Json<schemas::DoubleResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -9910,7 +9767,7 @@ fn put_telescope_siteelevation(
 
         client_transaction_id,
     }: PutTelescopeSiteelevationBodyParams,
-) -> Json<MethodResponse> {
+) -> Json<schemas::MethodResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -9949,7 +9806,7 @@ fn get_telescope_sitelatitude(
     GetTelescopeSitelatitudePathParams { device_number }: GetTelescopeSitelatitudePathParams,
 
     GetTelescopeSitelatitudeQueryParams { client_id, client_transaction_id }: GetTelescopeSitelatitudeQueryParams,
-) -> Json<DoubleResponse> {
+) -> Json<schemas::DoubleResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -10001,7 +9858,7 @@ fn put_telescope_sitelatitude(
 
         client_transaction_id,
     }: PutTelescopeSitelatitudeBodyParams,
-) -> Json<MethodResponse> {
+) -> Json<schemas::MethodResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -10040,7 +9897,7 @@ fn get_telescope_sitelongitude(
     GetTelescopeSitelongitudePathParams { device_number }: GetTelescopeSitelongitudePathParams,
 
     GetTelescopeSitelongitudeQueryParams { client_id, client_transaction_id }: GetTelescopeSitelongitudeQueryParams,
-) -> Json<DoubleResponse> {
+) -> Json<schemas::DoubleResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -10092,7 +9949,7 @@ fn put_telescope_sitelongitude(
 
         client_transaction_id,
     }: PutTelescopeSitelongitudeBodyParams,
-) -> Json<MethodResponse> {
+) -> Json<schemas::MethodResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -10131,7 +9988,7 @@ fn get_telescope_slewing(
     GetTelescopeSlewingPathParams { device_number }: GetTelescopeSlewingPathParams,
 
     GetTelescopeSlewingQueryParams { client_id, client_transaction_id }: GetTelescopeSlewingQueryParams,
-) -> Json<BoolResponse> {
+) -> Json<schemas::BoolResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -10170,7 +10027,7 @@ fn get_telescope_slewsettletime(
     GetTelescopeSlewsettletimePathParams { device_number }: GetTelescopeSlewsettletimePathParams,
 
     GetTelescopeSlewsettletimeQueryParams { client_id, client_transaction_id }: GetTelescopeSlewsettletimeQueryParams,
-) -> Json<IntResponse> {
+) -> Json<schemas::IntResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -10222,7 +10079,7 @@ fn put_telescope_slewsettletime(
 
         client_transaction_id,
     }: PutTelescopeSlewsettletimeBodyParams,
-) -> Json<MethodResponse> {
+) -> Json<schemas::MethodResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -10261,7 +10118,7 @@ fn get_telescope_targetdeclination(
     GetTelescopeTargetdeclinationPathParams { device_number }: GetTelescopeTargetdeclinationPathParams,
 
     GetTelescopeTargetdeclinationQueryParams { client_id, client_transaction_id }: GetTelescopeTargetdeclinationQueryParams,
-) -> Json<DoubleResponse> {
+) -> Json<schemas::DoubleResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -10313,7 +10170,7 @@ fn put_telescope_targetdeclination(
 
         client_transaction_id,
     }: PutTelescopeTargetdeclinationBodyParams,
-) -> Json<MethodResponse> {
+) -> Json<schemas::MethodResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -10352,7 +10209,7 @@ fn get_telescope_targetrightascension(
     GetTelescopeTargetrightascensionPathParams { device_number }: GetTelescopeTargetrightascensionPathParams,
 
     GetTelescopeTargetrightascensionQueryParams { client_id, client_transaction_id }: GetTelescopeTargetrightascensionQueryParams,
-) -> Json<DoubleResponse> {
+) -> Json<schemas::DoubleResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -10404,7 +10261,7 @@ fn put_telescope_targetrightascension(
 
         client_transaction_id,
     }: PutTelescopeTargetrightascensionBodyParams,
-) -> Json<MethodResponse> {
+) -> Json<schemas::MethodResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -10443,7 +10300,7 @@ fn get_telescope_tracking(
     GetTelescopeTrackingPathParams { device_number }: GetTelescopeTrackingPathParams,
 
     GetTelescopeTrackingQueryParams { client_id, client_transaction_id }: GetTelescopeTrackingQueryParams,
-) -> Json<BoolResponse> {
+) -> Json<schemas::BoolResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -10495,7 +10352,7 @@ fn put_telescope_tracking(
 
         client_transaction_id,
     }: PutTelescopeTrackingBodyParams,
-) -> Json<MethodResponse> {
+) -> Json<schemas::MethodResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -10534,7 +10391,7 @@ fn get_telescope_trackingrate(
     GetTelescopeTrackingratePathParams { device_number }: GetTelescopeTrackingratePathParams,
 
     GetTelescopeTrackingrateQueryParams { client_id, client_transaction_id }: GetTelescopeTrackingrateQueryParams,
-) -> Json<IntResponse> {
+) -> Json<schemas::IntResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -10586,7 +10443,7 @@ fn put_telescope_trackingrate(
 
         client_transaction_id,
     }: PutTelescopeTrackingrateBodyParams,
-) -> Json<MethodResponse> {
+) -> Json<schemas::MethodResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -10625,7 +10482,7 @@ fn get_telescope_trackingrates(
     GetTelescopeTrackingratesPathParams { device_number }: GetTelescopeTrackingratesPathParams,
 
     GetTelescopeTrackingratesQueryParams { client_id, client_transaction_id }: GetTelescopeTrackingratesQueryParams,
-) -> Json<DriveRatesResponse> {
+) -> Json<schemas::DriveRatesResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -10664,7 +10521,7 @@ fn get_telescope_utcdate(
     GetTelescopeUtcdatePathParams { device_number }: GetTelescopeUtcdatePathParams,
 
     GetTelescopeUtcdateQueryParams { client_id, client_transaction_id }: GetTelescopeUtcdateQueryParams,
-) -> Json<StringResponse> {
+) -> Json<schemas::StringResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -10716,7 +10573,7 @@ fn put_telescope_utcdate(
 
         client_transaction_id,
     }: PutTelescopeUtcdateBodyParams,
-) -> Json<MethodResponse> {
+) -> Json<schemas::MethodResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -10729,22 +10586,7 @@ struct PutTelescopeAbortslewPathParams {
     device_number: u32,
 }
 
-#[derive(Deserialize, FromRequest)]
-#[from_request(via(Form))]
-
-struct PutTelescopeAbortslewBodyParams {
-    /**
-    Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-    */
-    #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
-
-    /**
-    Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-    */
-    #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
-}
+type PutTelescopeAbortslewBodyParams = request_bodies::PutStandardClientParameters;
 
 /**
 Immediatley stops a slew in progress.
@@ -10756,7 +10598,7 @@ fn put_telescope_abortslew(
     PutTelescopeAbortslewPathParams { device_number }: PutTelescopeAbortslewPathParams,
 
     PutTelescopeAbortslewBodyParams { client_id, client_transaction_id }: PutTelescopeAbortslewBodyParams,
-) -> Json<MethodResponse> {
+) -> Json<schemas::MethodResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -10807,7 +10649,7 @@ fn get_telescope_axisrates(
 
         axis,
     }: GetTelescopeAxisratesQueryParams,
-) -> Json<AxisRatesResponse> {
+) -> Json<schemas::AxisRatesResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -10858,7 +10700,7 @@ fn get_telescope_canmoveaxis(
 
         client_transaction_id,
     }: GetTelescopeCanmoveaxisQueryParams,
-) -> Json<BoolResponse> {
+) -> Json<schemas::BoolResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -10917,7 +10759,7 @@ fn get_telescope_destinationsideofpier(
 
         client_transaction_id,
     }: GetTelescopeDestinationsideofpierQueryParams,
-) -> Json<IntResponse> {
+) -> Json<schemas::IntResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -10930,22 +10772,7 @@ struct PutTelescopeFindhomePathParams {
     device_number: u32,
 }
 
-#[derive(Deserialize, FromRequest)]
-#[from_request(via(Form))]
-
-struct PutTelescopeFindhomeBodyParams {
-    /**
-    Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-    */
-    #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
-
-    /**
-    Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-    */
-    #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
-}
+type PutTelescopeFindhomeBodyParams = request_bodies::PutStandardClientParameters;
 
 /**
 Moves the mount to the "home" position.
@@ -10957,7 +10784,7 @@ fn put_telescope_findhome(
     PutTelescopeFindhomePathParams { device_number }: PutTelescopeFindhomePathParams,
 
     PutTelescopeFindhomeBodyParams { client_id, client_transaction_id }: PutTelescopeFindhomeBodyParams,
-) -> Json<MethodResponse> {
+) -> Json<schemas::MethodResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -11017,7 +10844,7 @@ fn put_telescope_moveaxis(
 
         client_transaction_id,
     }: PutTelescopeMoveaxisBodyParams,
-) -> Json<MethodResponse> {
+) -> Json<schemas::MethodResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -11030,22 +10857,7 @@ struct PutTelescopeParkPathParams {
     device_number: u32,
 }
 
-#[derive(Deserialize, FromRequest)]
-#[from_request(via(Form))]
-
-struct PutTelescopeParkBodyParams {
-    /**
-    Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-    */
-    #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
-
-    /**
-    Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-    */
-    #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
-}
+type PutTelescopeParkBodyParams = request_bodies::PutStandardClientParameters;
 
 /**
 Park the mount
@@ -11057,7 +10869,7 @@ fn put_telescope_park(
     PutTelescopeParkPathParams { device_number }: PutTelescopeParkPathParams,
 
     PutTelescopeParkBodyParams { client_id, client_transaction_id }: PutTelescopeParkBodyParams,
-) -> Json<MethodResponse> {
+) -> Json<schemas::MethodResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -11117,7 +10929,7 @@ fn put_telescope_pulseguide(
 
         client_transaction_id,
     }: PutTelescopePulseguideBodyParams,
-) -> Json<MethodResponse> {
+) -> Json<schemas::MethodResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -11130,22 +10942,7 @@ struct PutTelescopeSetparkPathParams {
     device_number: u32,
 }
 
-#[derive(Deserialize, FromRequest)]
-#[from_request(via(Form))]
-
-struct PutTelescopeSetparkBodyParams {
-    /**
-    Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-    */
-    #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
-
-    /**
-    Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-    */
-    #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
-}
+type PutTelescopeSetparkBodyParams = request_bodies::PutStandardClientParameters;
 
 /**
 Sets the telescope's park position
@@ -11157,7 +10954,7 @@ fn put_telescope_setpark(
     PutTelescopeSetparkPathParams { device_number }: PutTelescopeSetparkPathParams,
 
     PutTelescopeSetparkBodyParams { client_id, client_transaction_id }: PutTelescopeSetparkBodyParams,
-) -> Json<MethodResponse> {
+) -> Json<schemas::MethodResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -11170,34 +10967,7 @@ struct PutTelescopeSlewtoaltazPathParams {
     device_number: u32,
 }
 
-#[derive(Deserialize, FromRequest)]
-#[from_request(via(Form))]
-
-struct PutTelescopeSlewtoaltazBodyParams {
-    /**
-    Azimuth coordinate (degrees, North-referenced, positive East/clockwise)
-    */
-    #[serde(rename = "Azimuth")]
-    azimuth: f64,
-
-    /**
-    Altitude coordinate (degrees, positive up)
-    */
-    #[serde(rename = "Altitude")]
-    altitude: f64,
-
-    /**
-    Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-    */
-    #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
-
-    /**
-    Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-    */
-    #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
-}
+type PutTelescopeSlewtoaltazBodyParams = request_bodies::PutTelescopeDevicenumberSlewtoaltaz;
 
 /**
 Synchronously slew to the given local horizontal coordinates.
@@ -11217,7 +10987,7 @@ fn put_telescope_slewtoaltaz(
 
         client_transaction_id,
     }: PutTelescopeSlewtoaltazBodyParams,
-) -> Json<MethodResponse> {
+) -> Json<schemas::MethodResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -11230,34 +11000,7 @@ struct PutTelescopeSlewtoaltazasyncPathParams {
     device_number: u32,
 }
 
-#[derive(Deserialize, FromRequest)]
-#[from_request(via(Form))]
-
-struct PutTelescopeSlewtoaltazasyncBodyParams {
-    /**
-    Azimuth coordinate (degrees, North-referenced, positive East/clockwise)
-    */
-    #[serde(rename = "Azimuth")]
-    azimuth: f64,
-
-    /**
-    Altitude coordinate (degrees, positive up)
-    */
-    #[serde(rename = "Altitude")]
-    altitude: f64,
-
-    /**
-    Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-    */
-    #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
-
-    /**
-    Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-    */
-    #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
-}
+type PutTelescopeSlewtoaltazasyncBodyParams = request_bodies::PutTelescopeDevicenumberSlewtoaltaz;
 
 /**
 Asynchronously slew to the given local horizontal coordinates.
@@ -11277,7 +11020,7 @@ fn put_telescope_slewtoaltazasync(
 
         client_transaction_id,
     }: PutTelescopeSlewtoaltazasyncBodyParams,
-) -> Json<MethodResponse> {
+) -> Json<schemas::MethodResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -11290,34 +11033,7 @@ struct PutTelescopeSlewtocoordinatesPathParams {
     device_number: u32,
 }
 
-#[derive(Deserialize, FromRequest)]
-#[from_request(via(Form))]
-
-struct PutTelescopeSlewtocoordinatesBodyParams {
-    /**
-    Right Ascension coordinate (hours)
-    */
-    #[serde(rename = "RightAscension")]
-    right_ascension: f64,
-
-    /**
-    Declination coordinate (degrees)
-    */
-    #[serde(rename = "Declination")]
-    declination: f64,
-
-    /**
-    Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-    */
-    #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
-
-    /**
-    Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-    */
-    #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
-}
+type PutTelescopeSlewtocoordinatesBodyParams = request_bodies::PutTelescopeDevicenumberSlewtocoordinates;
 
 /**
 Synchronously slew to the given equatorial coordinates.
@@ -11337,7 +11053,7 @@ fn put_telescope_slewtocoordinates(
 
         client_transaction_id,
     }: PutTelescopeSlewtocoordinatesBodyParams,
-) -> Json<MethodResponse> {
+) -> Json<schemas::MethodResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -11350,34 +11066,7 @@ struct PutTelescopeSlewtocoordinatesasyncPathParams {
     device_number: u32,
 }
 
-#[derive(Deserialize, FromRequest)]
-#[from_request(via(Form))]
-
-struct PutTelescopeSlewtocoordinatesasyncBodyParams {
-    /**
-    Right Ascension coordinate (hours)
-    */
-    #[serde(rename = "RightAscension")]
-    right_ascension: f64,
-
-    /**
-    Declination coordinate (degrees)
-    */
-    #[serde(rename = "Declination")]
-    declination: f64,
-
-    /**
-    Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-    */
-    #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
-
-    /**
-    Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-    */
-    #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
-}
+type PutTelescopeSlewtocoordinatesasyncBodyParams = request_bodies::PutTelescopeDevicenumberSlewtocoordinates;
 
 /**
 Asynchronously slew to the given equatorial coordinates.
@@ -11397,7 +11086,7 @@ fn put_telescope_slewtocoordinatesasync(
 
         client_transaction_id,
     }: PutTelescopeSlewtocoordinatesasyncBodyParams,
-) -> Json<MethodResponse> {
+) -> Json<schemas::MethodResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -11410,22 +11099,7 @@ struct PutTelescopeSlewtotargetPathParams {
     device_number: u32,
 }
 
-#[derive(Deserialize, FromRequest)]
-#[from_request(via(Form))]
-
-struct PutTelescopeSlewtotargetBodyParams {
-    /**
-    Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-    */
-    #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
-
-    /**
-    Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-    */
-    #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
-}
+type PutTelescopeSlewtotargetBodyParams = request_bodies::PutStandardClientParameters;
 
 /**
 Synchronously slew to the TargetRightAscension and TargetDeclination coordinates.
@@ -11437,7 +11111,7 @@ fn put_telescope_slewtotarget(
     PutTelescopeSlewtotargetPathParams { device_number }: PutTelescopeSlewtotargetPathParams,
 
     PutTelescopeSlewtotargetBodyParams { client_id, client_transaction_id }: PutTelescopeSlewtotargetBodyParams,
-) -> Json<MethodResponse> {
+) -> Json<schemas::MethodResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -11450,22 +11124,7 @@ struct PutTelescopeSlewtotargetasyncPathParams {
     device_number: u32,
 }
 
-#[derive(Deserialize, FromRequest)]
-#[from_request(via(Form))]
-
-struct PutTelescopeSlewtotargetasyncBodyParams {
-    /**
-    Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-    */
-    #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
-
-    /**
-    Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-    */
-    #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
-}
+type PutTelescopeSlewtotargetasyncBodyParams = request_bodies::PutStandardClientParameters;
 
 /**
 Asynchronously slew to the TargetRightAscension and TargetDeclination coordinates.
@@ -11477,7 +11136,7 @@ fn put_telescope_slewtotargetasync(
     PutTelescopeSlewtotargetasyncPathParams { device_number }: PutTelescopeSlewtotargetasyncPathParams,
 
     PutTelescopeSlewtotargetasyncBodyParams { client_id, client_transaction_id }: PutTelescopeSlewtotargetasyncBodyParams,
-) -> Json<MethodResponse> {
+) -> Json<schemas::MethodResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -11490,34 +11149,7 @@ struct PutTelescopeSynctoaltazPathParams {
     device_number: u32,
 }
 
-#[derive(Deserialize, FromRequest)]
-#[from_request(via(Form))]
-
-struct PutTelescopeSynctoaltazBodyParams {
-    /**
-    Azimuth coordinate (degrees, North-referenced, positive East/clockwise)
-    */
-    #[serde(rename = "Azimuth")]
-    azimuth: f64,
-
-    /**
-    Altitude coordinate (degrees, positive up)
-    */
-    #[serde(rename = "Altitude")]
-    altitude: f64,
-
-    /**
-    Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-    */
-    #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
-
-    /**
-    Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-    */
-    #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
-}
+type PutTelescopeSynctoaltazBodyParams = request_bodies::PutTelescopeDevicenumberSlewtoaltaz;
 
 /**
 Syncs to the given local horizontal coordinates.
@@ -11537,7 +11169,7 @@ fn put_telescope_synctoaltaz(
 
         client_transaction_id,
     }: PutTelescopeSynctoaltazBodyParams,
-) -> Json<MethodResponse> {
+) -> Json<schemas::MethodResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -11550,34 +11182,7 @@ struct PutTelescopeSynctocoordinatesPathParams {
     device_number: u32,
 }
 
-#[derive(Deserialize, FromRequest)]
-#[from_request(via(Form))]
-
-struct PutTelescopeSynctocoordinatesBodyParams {
-    /**
-    Right Ascension coordinate (hours)
-    */
-    #[serde(rename = "RightAscension")]
-    right_ascension: f64,
-
-    /**
-    Declination coordinate (degrees)
-    */
-    #[serde(rename = "Declination")]
-    declination: f64,
-
-    /**
-    Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-    */
-    #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
-
-    /**
-    Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-    */
-    #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
-}
+type PutTelescopeSynctocoordinatesBodyParams = request_bodies::PutTelescopeDevicenumberSlewtocoordinates;
 
 /**
 Syncs to the given equatorial coordinates.
@@ -11597,7 +11202,7 @@ fn put_telescope_synctocoordinates(
 
         client_transaction_id,
     }: PutTelescopeSynctocoordinatesBodyParams,
-) -> Json<MethodResponse> {
+) -> Json<schemas::MethodResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -11610,22 +11215,7 @@ struct PutTelescopeSynctotargetPathParams {
     device_number: u32,
 }
 
-#[derive(Deserialize, FromRequest)]
-#[from_request(via(Form))]
-
-struct PutTelescopeSynctotargetBodyParams {
-    /**
-    Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-    */
-    #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
-
-    /**
-    Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-    */
-    #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
-}
+type PutTelescopeSynctotargetBodyParams = request_bodies::PutStandardClientParameters;
 
 /**
 Syncs to the TargetRightAscension and TargetDeclination coordinates.
@@ -11637,7 +11227,7 @@ fn put_telescope_synctotarget(
     PutTelescopeSynctotargetPathParams { device_number }: PutTelescopeSynctotargetPathParams,
 
     PutTelescopeSynctotargetBodyParams { client_id, client_transaction_id }: PutTelescopeSynctotargetBodyParams,
-) -> Json<MethodResponse> {
+) -> Json<schemas::MethodResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -11650,22 +11240,7 @@ struct PutTelescopeUnparkPathParams {
     device_number: u32,
 }
 
-#[derive(Deserialize, FromRequest)]
-#[from_request(via(Form))]
-
-struct PutTelescopeUnparkBodyParams {
-    /**
-    Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-    */
-    #[serde(rename = "ClientID")]
-    client_id: Option<u32>,
-
-    /**
-    Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-    */
-    #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: Option<u32>,
-}
+type PutTelescopeUnparkBodyParams = request_bodies::PutStandardClientParameters;
 
 /**
 Unparks the mount.
@@ -11677,7 +11252,7 @@ fn put_telescope_unpark(
     PutTelescopeUnparkPathParams { device_number }: PutTelescopeUnparkPathParams,
 
     PutTelescopeUnparkBodyParams { client_id, client_transaction_id }: PutTelescopeUnparkBodyParams,
-) -> Json<MethodResponse> {
+) -> Json<schemas::MethodResponse> {
 }
 
 #[actix_web::main]
