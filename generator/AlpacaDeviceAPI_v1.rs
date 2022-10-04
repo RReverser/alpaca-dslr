@@ -7879,7 +7879,7 @@ struct PutSwitchSetswitchnameBodyParams {
     The device number (0 to MaxSwitch - 1)
     */
     #[serde(rename = "Id")]
-    id: (),
+    id: i32,
 
     /**
     The name of the device
@@ -10829,7 +10829,7 @@ struct PutTelescopeMoveaxisBodyParams {
     The axis about which rate information is desired. 0 = axisPrimary, 1 = axisSecondary, 2 = axisTertiary.
     */
     #[serde(rename = "Axis")]
-    axis: (),
+    axis: i32,
 
     /**
     The rate of motion (deg/sec) about the specified axis

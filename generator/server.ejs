@@ -64,6 +64,7 @@ function handleType(schema, ignoreRefs) {
         case 'uint32':
           return 'u32';
         case 'int32':
+        case undefined: // assume that int32 is the default
           return 'i32';
       }
       break;
