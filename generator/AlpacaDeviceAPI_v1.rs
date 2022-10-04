@@ -327,7 +327,7 @@ mod schemas {
         Array of AxisRate objects
         */
         #[serde(rename = "Value")]
-        value: Option<Vec<()>>,
+        value: Option<Vec<AxisRate>>,
 
         /**
         Client's transaction ID (0 to 4294967295), as supplied by the client in the command request.
@@ -377,7 +377,7 @@ mod schemas {
         Array of DriveRate values
         */
         #[serde(rename = "Value")]
-        value: Option<Vec<f64>>,
+        value: Option<Vec<DriveRate>>,
 
         /**
         Client's transaction ID (0 to 4294967295), as supplied by the client in the command request.
@@ -485,7 +485,7 @@ fn put_action(
 
         client_transaction_id,
     }: PutActionBodyParams,
-) {
+) -> Json<StringResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -551,7 +551,7 @@ fn put_commandblind(
 
         client_transaction_id,
     }: PutCommandblindBodyParams,
-) {
+) -> Json<MethodResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -617,7 +617,7 @@ fn put_commandbool(
 
         client_transaction_id,
     }: PutCommandboolBodyParams,
-) {
+) -> Json<BoolResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -683,7 +683,7 @@ fn put_commandstring(
 
         client_transaction_id,
     }: PutCommandstringBodyParams,
-) {
+) -> Json<StringResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -724,7 +724,12 @@ Retrieves the connected state of the device
 Retrieves the connected state of the device
 */
 #[get("/<device_type>/<device_number>/connected")]
-fn get_connected(GetConnectedPathParams { device_type, device_number }: GetConnectedPathParams, GetConnectedQueryParams { client_id, client_transaction_id }: GetConnectedQueryParams) {}
+fn get_connected(
+    GetConnectedPathParams { device_type, device_number }: GetConnectedPathParams,
+
+    GetConnectedQueryParams { client_id, client_transaction_id }: GetConnectedQueryParams,
+) -> Json<BoolResponse> {
+}
 
 #[derive(Deserialize, FromRequest)]
 #[from_request(via(Path))]
@@ -781,7 +786,7 @@ fn put_connected(
 
         client_transaction_id,
     }: PutConnectedBodyParams,
-) {
+) -> Json<MethodResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -822,7 +827,12 @@ Device description
 The description of the device
 */
 #[get("/<device_type>/<device_number>/description")]
-fn get_description(GetDescriptionPathParams { device_type, device_number }: GetDescriptionPathParams, GetDescriptionQueryParams { client_id, client_transaction_id }: GetDescriptionQueryParams) {}
+fn get_description(
+    GetDescriptionPathParams { device_type, device_number }: GetDescriptionPathParams,
+
+    GetDescriptionQueryParams { client_id, client_transaction_id }: GetDescriptionQueryParams,
+) -> Json<StringResponse> {
+}
 
 #[derive(Deserialize, FromRequest)]
 #[from_request(via(Path))]
@@ -862,7 +872,12 @@ Device driver description
 The description of the driver
 */
 #[get("/<device_type>/<device_number>/driverinfo")]
-fn get_driverinfo(GetDriverinfoPathParams { device_type, device_number }: GetDriverinfoPathParams, GetDriverinfoQueryParams { client_id, client_transaction_id }: GetDriverinfoQueryParams) {}
+fn get_driverinfo(
+    GetDriverinfoPathParams { device_type, device_number }: GetDriverinfoPathParams,
+
+    GetDriverinfoQueryParams { client_id, client_transaction_id }: GetDriverinfoQueryParams,
+) -> Json<StringResponse> {
+}
 
 #[derive(Deserialize, FromRequest)]
 #[from_request(via(Path))]
@@ -906,7 +921,7 @@ fn get_driverversion(
     GetDriverversionPathParams { device_type, device_number }: GetDriverversionPathParams,
 
     GetDriverversionQueryParams { client_id, client_transaction_id }: GetDriverversionQueryParams,
-) {
+) -> Json<StringResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -951,7 +966,7 @@ fn get_interfaceversion(
     GetInterfaceversionPathParams { device_type, device_number }: GetInterfaceversionPathParams,
 
     GetInterfaceversionQueryParams { client_id, client_transaction_id }: GetInterfaceversionQueryParams,
-) {
+) -> Json<IntResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -992,7 +1007,7 @@ Device name
 The name of the device
 */
 #[get("/<device_type>/<device_number>/name")]
-fn get_name(GetNamePathParams { device_type, device_number }: GetNamePathParams, GetNameQueryParams { client_id, client_transaction_id }: GetNameQueryParams) {}
+fn get_name(GetNamePathParams { device_type, device_number }: GetNamePathParams, GetNameQueryParams { client_id, client_transaction_id }: GetNameQueryParams) -> Json<StringResponse> {}
 
 #[derive(Deserialize, FromRequest)]
 #[from_request(via(Path))]
@@ -1036,7 +1051,7 @@ fn get_supportedactions(
     GetSupportedactionsPathParams { device_type, device_number }: GetSupportedactionsPathParams,
 
     GetSupportedactionsQueryParams { client_id, client_transaction_id }: GetSupportedactionsQueryParams,
-) {
+) -> Json<StringArrayResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -1075,7 +1090,7 @@ fn get_camera_bayeroffsetx(
     GetCameraBayeroffsetxPathParams { device_number }: GetCameraBayeroffsetxPathParams,
 
     GetCameraBayeroffsetxQueryParams { client_id, client_transaction_id }: GetCameraBayeroffsetxQueryParams,
-) {
+) -> Json<IntResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -1114,7 +1129,7 @@ fn get_camera_bayeroffsety(
     GetCameraBayeroffsetyPathParams { device_number }: GetCameraBayeroffsetyPathParams,
 
     GetCameraBayeroffsetyQueryParams { client_id, client_transaction_id }: GetCameraBayeroffsetyQueryParams,
-) {
+) -> Json<IntResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -1149,7 +1164,7 @@ Returns the binning factor for the X axis.
 Returns the binning factor for the X axis.
 */
 #[get("/camera/<device_number>/binx")]
-fn get_camera_binx(GetCameraBinxPathParams { device_number }: GetCameraBinxPathParams, GetCameraBinxQueryParams { client_id, client_transaction_id }: GetCameraBinxQueryParams) {}
+fn get_camera_binx(GetCameraBinxPathParams { device_number }: GetCameraBinxPathParams, GetCameraBinxQueryParams { client_id, client_transaction_id }: GetCameraBinxQueryParams) -> Json<IntResponse> {}
 
 #[derive(Deserialize, FromRequest)]
 #[from_request(via(Path))]
@@ -1200,7 +1215,7 @@ fn put_camera_binx(
 
         client_transaction_id,
     }: PutCameraBinxBodyParams,
-) {
+) -> Json<MethodResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -1235,7 +1250,7 @@ Returns the binning factor for the Y axis.
 Returns the binning factor for the Y axis.
 */
 #[get("/camera/<device_number>/biny")]
-fn get_camera_biny(GetCameraBinyPathParams { device_number }: GetCameraBinyPathParams, GetCameraBinyQueryParams { client_id, client_transaction_id }: GetCameraBinyQueryParams) {}
+fn get_camera_biny(GetCameraBinyPathParams { device_number }: GetCameraBinyPathParams, GetCameraBinyQueryParams { client_id, client_transaction_id }: GetCameraBinyQueryParams) -> Json<IntResponse> {}
 
 #[derive(Deserialize, FromRequest)]
 #[from_request(via(Path))]
@@ -1286,7 +1301,7 @@ fn put_camera_biny(
 
         client_transaction_id,
     }: PutCameraBinyBodyParams,
-) {
+) -> Json<MethodResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -1325,7 +1340,7 @@ fn get_camera_camerastate(
     GetCameraCamerastatePathParams { device_number }: GetCameraCamerastatePathParams,
 
     GetCameraCamerastateQueryParams { client_id, client_transaction_id }: GetCameraCamerastateQueryParams,
-) {
+) -> Json<IntResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -1364,7 +1379,7 @@ fn get_camera_cameraxsize(
     GetCameraCameraxsizePathParams { device_number }: GetCameraCameraxsizePathParams,
 
     GetCameraCameraxsizeQueryParams { client_id, client_transaction_id }: GetCameraCameraxsizeQueryParams,
-) {
+) -> Json<IntResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -1403,7 +1418,7 @@ fn get_camera_cameraysize(
     GetCameraCameraysizePathParams { device_number }: GetCameraCameraysizePathParams,
 
     GetCameraCameraysizeQueryParams { client_id, client_transaction_id }: GetCameraCameraysizeQueryParams,
-) {
+) -> Json<IntResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -1442,7 +1457,7 @@ fn get_camera_canabortexposure(
     GetCameraCanabortexposurePathParams { device_number }: GetCameraCanabortexposurePathParams,
 
     GetCameraCanabortexposureQueryParams { client_id, client_transaction_id }: GetCameraCanabortexposureQueryParams,
-) {
+) -> Json<BoolResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -1481,7 +1496,7 @@ fn get_camera_canasymmetricbin(
     GetCameraCanasymmetricbinPathParams { device_number }: GetCameraCanasymmetricbinPathParams,
 
     GetCameraCanasymmetricbinQueryParams { client_id, client_transaction_id }: GetCameraCanasymmetricbinQueryParams,
-) {
+) -> Json<BoolResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -1520,7 +1535,7 @@ fn get_camera_canfastreadout(
     GetCameraCanfastreadoutPathParams { device_number }: GetCameraCanfastreadoutPathParams,
 
     GetCameraCanfastreadoutQueryParams { client_id, client_transaction_id }: GetCameraCanfastreadoutQueryParams,
-) {
+) -> Json<BoolResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -1559,7 +1574,7 @@ fn get_camera_cangetcoolerpower(
     GetCameraCangetcoolerpowerPathParams { device_number }: GetCameraCangetcoolerpowerPathParams,
 
     GetCameraCangetcoolerpowerQueryParams { client_id, client_transaction_id }: GetCameraCangetcoolerpowerQueryParams,
-) {
+) -> Json<BoolResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -1598,7 +1613,7 @@ fn get_camera_canpulseguide(
     GetCameraCanpulseguidePathParams { device_number }: GetCameraCanpulseguidePathParams,
 
     GetCameraCanpulseguideQueryParams { client_id, client_transaction_id }: GetCameraCanpulseguideQueryParams,
-) {
+) -> Json<BoolResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -1637,7 +1652,7 @@ fn get_camera_cansetccdtemperature(
     GetCameraCansetccdtemperaturePathParams { device_number }: GetCameraCansetccdtemperaturePathParams,
 
     GetCameraCansetccdtemperatureQueryParams { client_id, client_transaction_id }: GetCameraCansetccdtemperatureQueryParams,
-) {
+) -> Json<BoolResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -1676,7 +1691,7 @@ fn get_camera_canstopexposure(
     GetCameraCanstopexposurePathParams { device_number }: GetCameraCanstopexposurePathParams,
 
     GetCameraCanstopexposureQueryParams { client_id, client_transaction_id }: GetCameraCanstopexposureQueryParams,
-) {
+) -> Json<BoolResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -1715,7 +1730,7 @@ fn get_camera_ccdtemperature(
     GetCameraCcdtemperaturePathParams { device_number }: GetCameraCcdtemperaturePathParams,
 
     GetCameraCcdtemperatureQueryParams { client_id, client_transaction_id }: GetCameraCcdtemperatureQueryParams,
-) {
+) -> Json<DoubleResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -1750,7 +1765,12 @@ Returns the current cooler on/off state.
 Returns the current cooler on/off state.
 */
 #[get("/camera/<device_number>/cooleron")]
-fn get_camera_cooleron(GetCameraCooleronPathParams { device_number }: GetCameraCooleronPathParams, GetCameraCooleronQueryParams { client_id, client_transaction_id }: GetCameraCooleronQueryParams) {}
+fn get_camera_cooleron(
+    GetCameraCooleronPathParams { device_number }: GetCameraCooleronPathParams,
+
+    GetCameraCooleronQueryParams { client_id, client_transaction_id }: GetCameraCooleronQueryParams,
+) -> Json<BoolResponse> {
+}
 
 #[derive(Deserialize, FromRequest)]
 #[from_request(via(Path))]
@@ -1801,7 +1821,7 @@ fn put_camera_cooleron(
 
         client_transaction_id,
     }: PutCameraCooleronBodyParams,
-) {
+) -> Json<MethodResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -1840,7 +1860,7 @@ fn get_camera_coolerpower(
     GetCameraCoolerpowerPathParams { device_number }: GetCameraCoolerpowerPathParams,
 
     GetCameraCoolerpowerQueryParams { client_id, client_transaction_id }: GetCameraCoolerpowerQueryParams,
-) {
+) -> Json<DoubleResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -1879,7 +1899,7 @@ fn get_camera_electronsperadu(
     GetCameraElectronsperaduPathParams { device_number }: GetCameraElectronsperaduPathParams,
 
     GetCameraElectronsperaduQueryParams { client_id, client_transaction_id }: GetCameraElectronsperaduQueryParams,
-) {
+) -> Json<DoubleResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -1918,7 +1938,7 @@ fn get_camera_exposuremax(
     GetCameraExposuremaxPathParams { device_number }: GetCameraExposuremaxPathParams,
 
     GetCameraExposuremaxQueryParams { client_id, client_transaction_id }: GetCameraExposuremaxQueryParams,
-) {
+) -> Json<DoubleResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -1957,7 +1977,7 @@ fn get_camera_exposuremin(
     GetCameraExposureminPathParams { device_number }: GetCameraExposureminPathParams,
 
     GetCameraExposureminQueryParams { client_id, client_transaction_id }: GetCameraExposureminQueryParams,
-) {
+) -> Json<DoubleResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -1996,7 +2016,7 @@ fn get_camera_exposureresolution(
     GetCameraExposureresolutionPathParams { device_number }: GetCameraExposureresolutionPathParams,
 
     GetCameraExposureresolutionQueryParams { client_id, client_transaction_id }: GetCameraExposureresolutionQueryParams,
-) {
+) -> Json<DoubleResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -2035,7 +2055,7 @@ fn get_camera_fastreadout(
     GetCameraFastreadoutPathParams { device_number }: GetCameraFastreadoutPathParams,
 
     GetCameraFastreadoutQueryParams { client_id, client_transaction_id }: GetCameraFastreadoutQueryParams,
-) {
+) -> Json<BoolResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -2087,7 +2107,7 @@ fn put_camera_fastreadout(
 
         client_transaction_id,
     }: PutCameraFastreadoutBodyParams,
-) {
+) -> Json<MethodResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -2126,7 +2146,7 @@ fn get_camera_fullwellcapacity(
     GetCameraFullwellcapacityPathParams { device_number }: GetCameraFullwellcapacityPathParams,
 
     GetCameraFullwellcapacityQueryParams { client_id, client_transaction_id }: GetCameraFullwellcapacityQueryParams,
-) {
+) -> Json<DoubleResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -2161,7 +2181,7 @@ Returns the camera's gain
 The camera's gain (GAIN VALUE MODE) OR the index of the selected camera gain description in the Gains array (GAINS INDEX MODE).
 */
 #[get("/camera/<device_number>/gain")]
-fn get_camera_gain(GetCameraGainPathParams { device_number }: GetCameraGainPathParams, GetCameraGainQueryParams { client_id, client_transaction_id }: GetCameraGainQueryParams) {}
+fn get_camera_gain(GetCameraGainPathParams { device_number }: GetCameraGainPathParams, GetCameraGainQueryParams { client_id, client_transaction_id }: GetCameraGainQueryParams) -> Json<IntResponse> {}
 
 #[derive(Deserialize, FromRequest)]
 #[from_request(via(Path))]
@@ -2212,7 +2232,7 @@ fn put_camera_gain(
 
         client_transaction_id,
     }: PutCameraGainBodyParams,
-) {
+) -> Json<MethodResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -2247,7 +2267,12 @@ Maximum Gain value of that this camera supports
 Returns the maximum value of Gain.
 */
 #[get("/camera/<device_number>/gainmax")]
-fn get_camera_gainmax(GetCameraGainmaxPathParams { device_number }: GetCameraGainmaxPathParams, GetCameraGainmaxQueryParams { client_id, client_transaction_id }: GetCameraGainmaxQueryParams) {}
+fn get_camera_gainmax(
+    GetCameraGainmaxPathParams { device_number }: GetCameraGainmaxPathParams,
+
+    GetCameraGainmaxQueryParams { client_id, client_transaction_id }: GetCameraGainmaxQueryParams,
+) -> Json<IntResponse> {
+}
 
 #[derive(Deserialize, FromRequest)]
 #[from_request(via(Path))]
@@ -2281,7 +2306,12 @@ Minimum Gain value of that this camera supports
 Returns the Minimum value of Gain.
 */
 #[get("/camera/<device_number>/gainmin")]
-fn get_camera_gainmin(GetCameraGainminPathParams { device_number }: GetCameraGainminPathParams, GetCameraGainminQueryParams { client_id, client_transaction_id }: GetCameraGainminQueryParams) {}
+fn get_camera_gainmin(
+    GetCameraGainminPathParams { device_number }: GetCameraGainminPathParams,
+
+    GetCameraGainminQueryParams { client_id, client_transaction_id }: GetCameraGainminQueryParams,
+) -> Json<IntResponse> {
+}
 
 #[derive(Deserialize, FromRequest)]
 #[from_request(via(Path))]
@@ -2315,7 +2345,12 @@ List of Gain names supported by the camera
 Returns the Gains supported by the camera.
 */
 #[get("/camera/<device_number>/gains")]
-fn get_camera_gains(GetCameraGainsPathParams { device_number }: GetCameraGainsPathParams, GetCameraGainsQueryParams { client_id, client_transaction_id }: GetCameraGainsQueryParams) {}
+fn get_camera_gains(
+    GetCameraGainsPathParams { device_number }: GetCameraGainsPathParams,
+
+    GetCameraGainsQueryParams { client_id, client_transaction_id }: GetCameraGainsQueryParams,
+) -> Json<StringArrayResponse> {
+}
 
 #[derive(Deserialize, FromRequest)]
 #[from_request(via(Path))]
@@ -2353,7 +2388,7 @@ fn get_camera_hasshutter(
     GetCameraHasshutterPathParams { device_number }: GetCameraHasshutterPathParams,
 
     GetCameraHasshutterQueryParams { client_id, client_transaction_id }: GetCameraHasshutterQueryParams,
-) {
+) -> Json<BoolResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -2392,7 +2427,7 @@ fn get_camera_heatsinktemperature(
     GetCameraHeatsinktemperaturePathParams { device_number }: GetCameraHeatsinktemperaturePathParams,
 
     GetCameraHeatsinktemperatureQueryParams { client_id, client_transaction_id }: GetCameraHeatsinktemperatureQueryParams,
-) {
+) -> Json<DoubleResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -2486,7 +2521,7 @@ fn get_camera_imagearray(
     GetCameraImagearrayPathParams { device_number }: GetCameraImagearrayPathParams,
 
     GetCameraImagearrayQueryParams { client_id, client_transaction_id }: GetCameraImagearrayQueryParams,
-) {
+) -> Json<ImageArrayResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -2580,7 +2615,7 @@ fn get_camera_imagearrayvariant(
     GetCameraImagearrayvariantPathParams { device_number }: GetCameraImagearrayvariantPathParams,
 
     GetCameraImagearrayvariantQueryParams { client_id, client_transaction_id }: GetCameraImagearrayvariantQueryParams,
-) {
+) -> Json<ImageArrayResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -2619,7 +2654,7 @@ fn get_camera_imageready(
     GetCameraImagereadyPathParams { device_number }: GetCameraImagereadyPathParams,
 
     GetCameraImagereadyQueryParams { client_id, client_transaction_id }: GetCameraImagereadyQueryParams,
-) {
+) -> Json<BoolResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -2658,7 +2693,7 @@ fn get_camera_ispulseguiding(
     GetCameraIspulseguidingPathParams { device_number }: GetCameraIspulseguidingPathParams,
 
     GetCameraIspulseguidingQueryParams { client_id, client_transaction_id }: GetCameraIspulseguidingQueryParams,
-) {
+) -> Json<BoolResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -2697,7 +2732,7 @@ fn get_camera_lastexposureduration(
     GetCameraLastexposuredurationPathParams { device_number }: GetCameraLastexposuredurationPathParams,
 
     GetCameraLastexposuredurationQueryParams { client_id, client_transaction_id }: GetCameraLastexposuredurationQueryParams,
-) {
+) -> Json<DoubleResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -2736,7 +2771,7 @@ fn get_camera_lastexposurestarttime(
     GetCameraLastexposurestarttimePathParams { device_number }: GetCameraLastexposurestarttimePathParams,
 
     GetCameraLastexposurestarttimeQueryParams { client_id, client_transaction_id }: GetCameraLastexposurestarttimeQueryParams,
-) {
+) -> Json<StringResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -2771,7 +2806,12 @@ Camera's maximum ADU value
 Reports the maximum ADU value the camera can produce.
 */
 #[get("/camera/<device_number>/maxadu")]
-fn get_camera_maxadu(GetCameraMaxaduPathParams { device_number }: GetCameraMaxaduPathParams, GetCameraMaxaduQueryParams { client_id, client_transaction_id }: GetCameraMaxaduQueryParams) {}
+fn get_camera_maxadu(
+    GetCameraMaxaduPathParams { device_number }: GetCameraMaxaduPathParams,
+
+    GetCameraMaxaduQueryParams { client_id, client_transaction_id }: GetCameraMaxaduQueryParams,
+) -> Json<IntResponse> {
+}
 
 #[derive(Deserialize, FromRequest)]
 #[from_request(via(Path))]
@@ -2805,7 +2845,12 @@ Maximum  binning for the camera X axis
 Returns the maximum allowed binning for the X camera axis
 */
 #[get("/camera/<device_number>/maxbinx")]
-fn get_camera_maxbinx(GetCameraMaxbinxPathParams { device_number }: GetCameraMaxbinxPathParams, GetCameraMaxbinxQueryParams { client_id, client_transaction_id }: GetCameraMaxbinxQueryParams) {}
+fn get_camera_maxbinx(
+    GetCameraMaxbinxPathParams { device_number }: GetCameraMaxbinxPathParams,
+
+    GetCameraMaxbinxQueryParams { client_id, client_transaction_id }: GetCameraMaxbinxQueryParams,
+) -> Json<IntResponse> {
+}
 
 #[derive(Deserialize, FromRequest)]
 #[from_request(via(Path))]
@@ -2839,7 +2884,12 @@ Maximum  binning for the camera Y axis
 Returns the maximum allowed binning for the Y camera axis
 */
 #[get("/camera/<device_number>/maxbiny")]
-fn get_camera_maxbiny(GetCameraMaxbinyPathParams { device_number }: GetCameraMaxbinyPathParams, GetCameraMaxbinyQueryParams { client_id, client_transaction_id }: GetCameraMaxbinyQueryParams) {}
+fn get_camera_maxbiny(
+    GetCameraMaxbinyPathParams { device_number }: GetCameraMaxbinyPathParams,
+
+    GetCameraMaxbinyQueryParams { client_id, client_transaction_id }: GetCameraMaxbinyQueryParams,
+) -> Json<IntResponse> {
+}
 
 #[derive(Deserialize, FromRequest)]
 #[from_request(via(Path))]
@@ -2873,7 +2923,7 @@ Returns the current subframe width
 Returns the current subframe width, if binning is active, value is in binned pixels.
 */
 #[get("/camera/<device_number>/numx")]
-fn get_camera_numx(GetCameraNumxPathParams { device_number }: GetCameraNumxPathParams, GetCameraNumxQueryParams { client_id, client_transaction_id }: GetCameraNumxQueryParams) {}
+fn get_camera_numx(GetCameraNumxPathParams { device_number }: GetCameraNumxPathParams, GetCameraNumxQueryParams { client_id, client_transaction_id }: GetCameraNumxQueryParams) -> Json<IntResponse> {}
 
 #[derive(Deserialize, FromRequest)]
 #[from_request(via(Path))]
@@ -2924,7 +2974,7 @@ fn put_camera_numx(
 
         client_transaction_id,
     }: PutCameraNumxBodyParams,
-) {
+) -> Json<MethodResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -2959,7 +3009,7 @@ Returns the current subframe height
 Returns the current subframe height, if binning is active, value is in binned pixels.
 */
 #[get("/camera/<device_number>/numy")]
-fn get_camera_numy(GetCameraNumyPathParams { device_number }: GetCameraNumyPathParams, GetCameraNumyQueryParams { client_id, client_transaction_id }: GetCameraNumyQueryParams) {}
+fn get_camera_numy(GetCameraNumyPathParams { device_number }: GetCameraNumyPathParams, GetCameraNumyQueryParams { client_id, client_transaction_id }: GetCameraNumyQueryParams) -> Json<IntResponse> {}
 
 #[derive(Deserialize, FromRequest)]
 #[from_request(via(Path))]
@@ -3010,7 +3060,7 @@ fn put_camera_numy(
 
         client_transaction_id,
     }: PutCameraNumyBodyParams,
-) {
+) -> Json<MethodResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -3045,7 +3095,12 @@ Returns the camera's offset
 Returns the camera's offset (OFFSET VALUE MODE) OR the index of the selected camera offset description in the offsets array (OFFSETS INDEX MODE).
 */
 #[get("/camera/<device_number>/offset")]
-fn get_camera_offset(GetCameraOffsetPathParams { device_number }: GetCameraOffsetPathParams, GetCameraOffsetQueryParams { client_id, client_transaction_id }: GetCameraOffsetQueryParams) {}
+fn get_camera_offset(
+    GetCameraOffsetPathParams { device_number }: GetCameraOffsetPathParams,
+
+    GetCameraOffsetQueryParams { client_id, client_transaction_id }: GetCameraOffsetQueryParams,
+) -> Json<IntResponse> {
+}
 
 #[derive(Deserialize, FromRequest)]
 #[from_request(via(Path))]
@@ -3096,7 +3151,7 @@ fn put_camera_offset(
 
         client_transaction_id,
     }: PutCameraOffsetBodyParams,
-) {
+) -> Json<MethodResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -3135,7 +3190,7 @@ fn get_camera_offsetmax(
     GetCameraOffsetmaxPathParams { device_number }: GetCameraOffsetmaxPathParams,
 
     GetCameraOffsetmaxQueryParams { client_id, client_transaction_id }: GetCameraOffsetmaxQueryParams,
-) {
+) -> Json<IntResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -3174,7 +3229,7 @@ fn get_camera_offsetmin(
     GetCameraOffsetminPathParams { device_number }: GetCameraOffsetminPathParams,
 
     GetCameraOffsetminQueryParams { client_id, client_transaction_id }: GetCameraOffsetminQueryParams,
-) {
+) -> Json<IntResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -3209,7 +3264,12 @@ List of offset names supported by the camera
 Returns the offsets supported by the camera.
 */
 #[get("/camera/<device_number>/offsets")]
-fn get_camera_offsets(GetCameraOffsetsPathParams { device_number }: GetCameraOffsetsPathParams, GetCameraOffsetsQueryParams { client_id, client_transaction_id }: GetCameraOffsetsQueryParams) {}
+fn get_camera_offsets(
+    GetCameraOffsetsPathParams { device_number }: GetCameraOffsetsPathParams,
+
+    GetCameraOffsetsQueryParams { client_id, client_transaction_id }: GetCameraOffsetsQueryParams,
+) -> Json<StringArrayResponse> {
+}
 
 #[derive(Deserialize, FromRequest)]
 #[from_request(via(Path))]
@@ -3247,7 +3307,7 @@ fn get_camera_percentcompleted(
     GetCameraPercentcompletedPathParams { device_number }: GetCameraPercentcompletedPathParams,
 
     GetCameraPercentcompletedQueryParams { client_id, client_transaction_id }: GetCameraPercentcompletedQueryParams,
-) {
+) -> Json<IntResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -3286,7 +3346,7 @@ fn get_camera_pixelsizex(
     GetCameraPixelsizexPathParams { device_number }: GetCameraPixelsizexPathParams,
 
     GetCameraPixelsizexQueryParams { client_id, client_transaction_id }: GetCameraPixelsizexQueryParams,
-) {
+) -> Json<DoubleResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -3325,7 +3385,7 @@ fn get_camera_pixelsizey(
     GetCameraPixelsizeyPathParams { device_number }: GetCameraPixelsizeyPathParams,
 
     GetCameraPixelsizeyQueryParams { client_id, client_transaction_id }: GetCameraPixelsizeyQueryParams,
-) {
+) -> Json<DoubleResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -3364,7 +3424,7 @@ fn get_camera_readoutmode(
     GetCameraReadoutmodePathParams { device_number }: GetCameraReadoutmodePathParams,
 
     GetCameraReadoutmodeQueryParams { client_id, client_transaction_id }: GetCameraReadoutmodeQueryParams,
-) {
+) -> Json<IntResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -3416,7 +3476,7 @@ fn put_camera_readoutmode(
 
         client_transaction_id,
     }: PutCameraReadoutmodeBodyParams,
-) {
+) -> Json<MethodResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -3455,7 +3515,7 @@ fn get_camera_readoutmodes(
     GetCameraReadoutmodesPathParams { device_number }: GetCameraReadoutmodesPathParams,
 
     GetCameraReadoutmodesQueryParams { client_id, client_transaction_id }: GetCameraReadoutmodesQueryParams,
-) {
+) -> Json<StringArrayResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -3494,7 +3554,7 @@ fn get_camera_sensorname(
     GetCameraSensornamePathParams { device_number }: GetCameraSensornamePathParams,
 
     GetCameraSensornameQueryParams { client_id, client_transaction_id }: GetCameraSensornameQueryParams,
-) {
+) -> Json<StringResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -3542,7 +3602,7 @@ fn get_camera_sensortype(
     GetCameraSensortypePathParams { device_number }: GetCameraSensortypePathParams,
 
     GetCameraSensortypeQueryParams { client_id, client_transaction_id }: GetCameraSensortypeQueryParams,
-) {
+) -> Json<IntResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -3581,7 +3641,7 @@ fn get_camera_setccdtemperature(
     GetCameraSetccdtemperaturePathParams { device_number }: GetCameraSetccdtemperaturePathParams,
 
     GetCameraSetccdtemperatureQueryParams { client_id, client_transaction_id }: GetCameraSetccdtemperatureQueryParams,
-) {
+) -> Json<DoubleResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -3633,7 +3693,7 @@ fn put_camera_setccdtemperature(
 
         client_transaction_id,
     }: PutCameraSetccdtemperatureBodyParams,
-) {
+) -> Json<MethodResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -3668,7 +3728,12 @@ Return the current subframe X axis start position
 Sets the subframe start position for the X axis (0 based) and returns the current value. If binning is active, value is in binned pixels.
 */
 #[get("/camera/<device_number>/startx")]
-fn get_camera_startx(GetCameraStartxPathParams { device_number }: GetCameraStartxPathParams, GetCameraStartxQueryParams { client_id, client_transaction_id }: GetCameraStartxQueryParams) {}
+fn get_camera_startx(
+    GetCameraStartxPathParams { device_number }: GetCameraStartxPathParams,
+
+    GetCameraStartxQueryParams { client_id, client_transaction_id }: GetCameraStartxQueryParams,
+) -> Json<IntResponse> {
+}
 
 #[derive(Deserialize, FromRequest)]
 #[from_request(via(Path))]
@@ -3719,7 +3784,7 @@ fn put_camera_startx(
 
         client_transaction_id,
     }: PutCameraStartxBodyParams,
-) {
+) -> Json<MethodResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -3754,7 +3819,12 @@ Return the current subframe Y axis start position
 Sets the subframe start position for the Y axis (0 based) and returns the current value. If binning is active, value is in binned pixels.
 */
 #[get("/camera/<device_number>/starty")]
-fn get_camera_starty(GetCameraStartyPathParams { device_number }: GetCameraStartyPathParams, GetCameraStartyQueryParams { client_id, client_transaction_id }: GetCameraStartyQueryParams) {}
+fn get_camera_starty(
+    GetCameraStartyPathParams { device_number }: GetCameraStartyPathParams,
+
+    GetCameraStartyQueryParams { client_id, client_transaction_id }: GetCameraStartyQueryParams,
+) -> Json<IntResponse> {
+}
 
 #[derive(Deserialize, FromRequest)]
 #[from_request(via(Path))]
@@ -3805,7 +3875,7 @@ fn put_camera_starty(
 
         client_transaction_id,
     }: PutCameraStartyBodyParams,
-) {
+) -> Json<MethodResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -3844,7 +3914,7 @@ fn get_camera_subexposureduration(
     GetCameraSubexposuredurationPathParams { device_number }: GetCameraSubexposuredurationPathParams,
 
     GetCameraSubexposuredurationQueryParams { client_id, client_transaction_id }: GetCameraSubexposuredurationQueryParams,
-) {
+) -> Json<DoubleResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -3896,7 +3966,7 @@ fn put_camera_subexposureduration(
 
         client_transaction_id,
     }: PutCameraSubexposuredurationBodyParams,
-) {
+) -> Json<MethodResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -3936,7 +4006,7 @@ fn put_camera_abortexposure(
     PutCameraAbortexposurePathParams { device_number }: PutCameraAbortexposurePathParams,
 
     PutCameraAbortexposureBodyParams { client_id, client_transaction_id }: PutCameraAbortexposureBodyParams,
-) {
+) -> Json<MethodResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -3996,7 +4066,7 @@ fn put_camera_pulseguide(
 
         client_transaction_id,
     }: PutCameraPulseguideBodyParams,
-) {
+) -> Json<MethodResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -4056,7 +4126,7 @@ fn put_camera_startexposure(
 
         client_transaction_id,
     }: PutCameraStartexposureBodyParams,
-) {
+) -> Json<MethodResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -4096,7 +4166,7 @@ fn put_camera_stopexposure(
     PutCameraStopexposurePathParams { device_number }: PutCameraStopexposurePathParams,
 
     PutCameraStopexposureBodyParams { client_id, client_transaction_id }: PutCameraStopexposureBodyParams,
-) {
+) -> Json<MethodResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -4135,7 +4205,7 @@ fn get_covercalibrator_brightness(
     GetCovercalibratorBrightnessPathParams { device_number }: GetCovercalibratorBrightnessPathParams,
 
     GetCovercalibratorBrightnessQueryParams { client_id, client_transaction_id }: GetCovercalibratorBrightnessQueryParams,
-) {
+) -> Json<IntResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -4174,7 +4244,7 @@ fn get_covercalibrator_calibratorstate(
     GetCovercalibratorCalibratorstatePathParams { device_number }: GetCovercalibratorCalibratorstatePathParams,
 
     GetCovercalibratorCalibratorstateQueryParams { client_id, client_transaction_id }: GetCovercalibratorCalibratorstateQueryParams,
-) {
+) -> Json<IntResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -4213,7 +4283,7 @@ fn get_covercalibrator_coverstate(
     GetCovercalibratorCoverstatePathParams { device_number }: GetCovercalibratorCoverstatePathParams,
 
     GetCovercalibratorCoverstateQueryParams { client_id, client_transaction_id }: GetCovercalibratorCoverstateQueryParams,
-) {
+) -> Json<IntResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -4252,7 +4322,7 @@ fn get_covercalibrator_maxbrightness(
     GetCovercalibratorMaxbrightnessPathParams { device_number }: GetCovercalibratorMaxbrightnessPathParams,
 
     GetCovercalibratorMaxbrightnessQueryParams { client_id, client_transaction_id }: GetCovercalibratorMaxbrightnessQueryParams,
-) {
+) -> Json<IntResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -4292,7 +4362,7 @@ fn put_covercalibrator_calibratoroff(
     PutCovercalibratorCalibratoroffPathParams { device_number }: PutCovercalibratorCalibratoroffPathParams,
 
     PutCovercalibratorCalibratoroffBodyParams { client_id, client_transaction_id }: PutCovercalibratorCalibratoroffBodyParams,
-) {
+) -> Json<MethodResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -4344,7 +4414,7 @@ fn put_covercalibrator_calibratoron(
 
         client_transaction_id,
     }: PutCovercalibratorCalibratoronBodyParams,
-) {
+) -> Json<MethodResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -4384,7 +4454,7 @@ fn put_covercalibrator_closecover(
     PutCovercalibratorClosecoverPathParams { device_number }: PutCovercalibratorClosecoverPathParams,
 
     PutCovercalibratorClosecoverBodyParams { client_id, client_transaction_id }: PutCovercalibratorClosecoverBodyParams,
-) {
+) -> Json<MethodResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -4424,7 +4494,7 @@ fn put_covercalibrator_haltcover(
     PutCovercalibratorHaltcoverPathParams { device_number }: PutCovercalibratorHaltcoverPathParams,
 
     PutCovercalibratorHaltcoverBodyParams { client_id, client_transaction_id }: PutCovercalibratorHaltcoverBodyParams,
-) {
+) -> Json<MethodResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -4464,7 +4534,7 @@ fn put_covercalibrator_opencover(
     PutCovercalibratorOpencoverPathParams { device_number }: PutCovercalibratorOpencoverPathParams,
 
     PutCovercalibratorOpencoverBodyParams { client_id, client_transaction_id }: PutCovercalibratorOpencoverBodyParams,
-) {
+) -> Json<MethodResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -4499,7 +4569,12 @@ The dome altitude
 The dome altitude (degrees, horizon zero and increasing positive to 90 zenith).
 */
 #[get("/dome/<device_number>/altitude")]
-fn get_dome_altitude(GetDomeAltitudePathParams { device_number }: GetDomeAltitudePathParams, GetDomeAltitudeQueryParams { client_id, client_transaction_id }: GetDomeAltitudeQueryParams) {}
+fn get_dome_altitude(
+    GetDomeAltitudePathParams { device_number }: GetDomeAltitudePathParams,
+
+    GetDomeAltitudeQueryParams { client_id, client_transaction_id }: GetDomeAltitudeQueryParams,
+) -> Json<DoubleResponse> {
+}
 
 #[derive(Deserialize, FromRequest)]
 #[from_request(via(Path))]
@@ -4533,7 +4608,7 @@ Indicates whether the dome is in the home position.
 Indicates whether the dome is in the home position. This is normally used following a FindHome()  operation. The value is reset with any azimuth slew operation that moves the dome away from the home position. AtHome may also become true durng normal slew operations, if the dome passes through the home position and the dome controller hardware is capable of detecting that; or at the end of a slew operation if the dome comes to rest at the home position.
 */
 #[get("/dome/<device_number>/athome")]
-fn get_dome_athome(GetDomeAthomePathParams { device_number }: GetDomeAthomePathParams, GetDomeAthomeQueryParams { client_id, client_transaction_id }: GetDomeAthomeQueryParams) {}
+fn get_dome_athome(GetDomeAthomePathParams { device_number }: GetDomeAthomePathParams, GetDomeAthomeQueryParams { client_id, client_transaction_id }: GetDomeAthomeQueryParams) -> Json<BoolResponse> {}
 
 #[derive(Deserialize, FromRequest)]
 #[from_request(via(Path))]
@@ -4567,7 +4642,7 @@ Indicates whether the telescope is at the park position
 True if the dome is in the programmed park position. Set only following a Park() operation and reset with any slew operation.
 */
 #[get("/dome/<device_number>/atpark")]
-fn get_dome_atpark(GetDomeAtparkPathParams { device_number }: GetDomeAtparkPathParams, GetDomeAtparkQueryParams { client_id, client_transaction_id }: GetDomeAtparkQueryParams) {}
+fn get_dome_atpark(GetDomeAtparkPathParams { device_number }: GetDomeAtparkPathParams, GetDomeAtparkQueryParams { client_id, client_transaction_id }: GetDomeAtparkQueryParams) -> Json<BoolResponse> {}
 
 #[derive(Deserialize, FromRequest)]
 #[from_request(via(Path))]
@@ -4601,7 +4676,12 @@ The dome azimuth
 Returns the dome azimuth (degrees, North zero and increasing clockwise, i.e., 90 East, 180 South, 270 West)
 */
 #[get("/dome/<device_number>/azimuth")]
-fn get_dome_azimuth(GetDomeAzimuthPathParams { device_number }: GetDomeAzimuthPathParams, GetDomeAzimuthQueryParams { client_id, client_transaction_id }: GetDomeAzimuthQueryParams) {}
+fn get_dome_azimuth(
+    GetDomeAzimuthPathParams { device_number }: GetDomeAzimuthPathParams,
+
+    GetDomeAzimuthQueryParams { client_id, client_transaction_id }: GetDomeAzimuthQueryParams,
+) -> Json<DoubleResponse> {
+}
 
 #[derive(Deserialize, FromRequest)]
 #[from_request(via(Path))]
@@ -4639,7 +4719,7 @@ fn get_dome_canfindhome(
     GetDomeCanfindhomePathParams { device_number }: GetDomeCanfindhomePathParams,
 
     GetDomeCanfindhomeQueryParams { client_id, client_transaction_id }: GetDomeCanfindhomeQueryParams,
-) {
+) -> Json<BoolResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -4674,7 +4754,12 @@ Indicates whether the dome can be parked.
 True if the dome is capable of programmed parking (Park() method)
 */
 #[get("/dome/<device_number>/canpark")]
-fn get_dome_canpark(GetDomeCanparkPathParams { device_number }: GetDomeCanparkPathParams, GetDomeCanparkQueryParams { client_id, client_transaction_id }: GetDomeCanparkQueryParams) {}
+fn get_dome_canpark(
+    GetDomeCanparkPathParams { device_number }: GetDomeCanparkPathParams,
+
+    GetDomeCanparkQueryParams { client_id, client_transaction_id }: GetDomeCanparkQueryParams,
+) -> Json<BoolResponse> {
+}
 
 #[derive(Deserialize, FromRequest)]
 #[from_request(via(Path))]
@@ -4712,7 +4797,7 @@ fn get_dome_cansetaltitude(
     GetDomeCansetaltitudePathParams { device_number }: GetDomeCansetaltitudePathParams,
 
     GetDomeCansetaltitudeQueryParams { client_id, client_transaction_id }: GetDomeCansetaltitudeQueryParams,
-) {
+) -> Json<BoolResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -4751,7 +4836,7 @@ fn get_dome_cansetazimuth(
     GetDomeCansetazimuthPathParams { device_number }: GetDomeCansetazimuthPathParams,
 
     GetDomeCansetazimuthQueryParams { client_id, client_transaction_id }: GetDomeCansetazimuthQueryParams,
-) {
+) -> Json<BoolResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -4786,7 +4871,12 @@ Indicates whether the dome park position can be set
 True if driver is capable of setting the dome park position.
 */
 #[get("/dome/<device_number>/cansetpark")]
-fn get_dome_cansetpark(GetDomeCansetparkPathParams { device_number }: GetDomeCansetparkPathParams, GetDomeCansetparkQueryParams { client_id, client_transaction_id }: GetDomeCansetparkQueryParams) {}
+fn get_dome_cansetpark(
+    GetDomeCansetparkPathParams { device_number }: GetDomeCansetparkPathParams,
+
+    GetDomeCansetparkQueryParams { client_id, client_transaction_id }: GetDomeCansetparkQueryParams,
+) -> Json<BoolResponse> {
+}
 
 #[derive(Deserialize, FromRequest)]
 #[from_request(via(Path))]
@@ -4824,7 +4914,7 @@ fn get_dome_cansetshutter(
     GetDomeCansetshutterPathParams { device_number }: GetDomeCansetshutterPathParams,
 
     GetDomeCansetshutterQueryParams { client_id, client_transaction_id }: GetDomeCansetshutterQueryParams,
-) {
+) -> Json<BoolResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -4859,7 +4949,12 @@ Indicates whether the dome supports slaving to a telescope
 True if driver is capable of slaving to a telescope.
 */
 #[get("/dome/<device_number>/canslave")]
-fn get_dome_canslave(GetDomeCanslavePathParams { device_number }: GetDomeCanslavePathParams, GetDomeCanslaveQueryParams { client_id, client_transaction_id }: GetDomeCanslaveQueryParams) {}
+fn get_dome_canslave(
+    GetDomeCanslavePathParams { device_number }: GetDomeCanslavePathParams,
+
+    GetDomeCanslaveQueryParams { client_id, client_transaction_id }: GetDomeCanslaveQueryParams,
+) -> Json<BoolResponse> {
+}
 
 #[derive(Deserialize, FromRequest)]
 #[from_request(via(Path))]
@@ -4897,7 +4992,7 @@ fn get_dome_cansyncazimuth(
     GetDomeCansyncazimuthPathParams { device_number }: GetDomeCansyncazimuthPathParams,
 
     GetDomeCansyncazimuthQueryParams { client_id, client_transaction_id }: GetDomeCansyncazimuthQueryParams,
-) {
+) -> Json<BoolResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -4936,7 +5031,7 @@ fn get_dome_shutterstatus(
     GetDomeShutterstatusPathParams { device_number }: GetDomeShutterstatusPathParams,
 
     GetDomeShutterstatusQueryParams { client_id, client_transaction_id }: GetDomeShutterstatusQueryParams,
-) {
+) -> Json<IntResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -4971,7 +5066,7 @@ Indicates whether the dome is slaved to the telescope
 True if the dome is slaved to the telescope in its hardware, else False.
 */
 #[get("/dome/<device_number>/slaved")]
-fn get_dome_slaved(GetDomeSlavedPathParams { device_number }: GetDomeSlavedPathParams, GetDomeSlavedQueryParams { client_id, client_transaction_id }: GetDomeSlavedQueryParams) {}
+fn get_dome_slaved(GetDomeSlavedPathParams { device_number }: GetDomeSlavedPathParams, GetDomeSlavedQueryParams { client_id, client_transaction_id }: GetDomeSlavedQueryParams) -> Json<BoolResponse> {}
 
 #[derive(Deserialize, FromRequest)]
 #[from_request(via(Path))]
@@ -5022,7 +5117,7 @@ fn put_dome_slaved(
 
         client_transaction_id,
     }: PutDomeSlavedBodyParams,
-) {
+) -> Json<MethodResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -5057,7 +5152,12 @@ Indicates whether the any part of the dome is moving
 True if any part of the dome is currently moving, False if all dome components are steady.
 */
 #[get("/dome/<device_number>/slewing")]
-fn get_dome_slewing(GetDomeSlewingPathParams { device_number }: GetDomeSlewingPathParams, GetDomeSlewingQueryParams { client_id, client_transaction_id }: GetDomeSlewingQueryParams) {}
+fn get_dome_slewing(
+    GetDomeSlewingPathParams { device_number }: GetDomeSlewingPathParams,
+
+    GetDomeSlewingQueryParams { client_id, client_transaction_id }: GetDomeSlewingQueryParams,
+) -> Json<BoolResponse> {
+}
 
 #[derive(Deserialize, FromRequest)]
 #[from_request(via(Path))]
@@ -5092,7 +5192,12 @@ Immediately cancel current dome operation.
 Calling this method will immediately disable hardware slewing (Slaved will become False).
 */
 #[put("/dome/<device_number>/abortslew")]
-fn put_dome_abortslew(PutDomeAbortslewPathParams { device_number }: PutDomeAbortslewPathParams, PutDomeAbortslewBodyParams { client_id, client_transaction_id }: PutDomeAbortslewBodyParams) {}
+fn put_dome_abortslew(
+    PutDomeAbortslewPathParams { device_number }: PutDomeAbortslewPathParams,
+
+    PutDomeAbortslewBodyParams { client_id, client_transaction_id }: PutDomeAbortslewBodyParams,
+) -> Json<MethodResponse> {
+}
 
 #[derive(Deserialize, FromRequest)]
 #[from_request(via(Path))]
@@ -5131,7 +5236,7 @@ fn put_dome_closeshutter(
     PutDomeCloseshutterPathParams { device_number }: PutDomeCloseshutterPathParams,
 
     PutDomeCloseshutterBodyParams { client_id, client_transaction_id }: PutDomeCloseshutterBodyParams,
-) {
+) -> Json<MethodResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -5167,7 +5272,12 @@ Start operation to search for the dome home position.
 After Home position is established initializes Azimuth to the default value and sets the AtHome flag.
 */
 #[put("/dome/<device_number>/findhome")]
-fn put_dome_findhome(PutDomeFindhomePathParams { device_number }: PutDomeFindhomePathParams, PutDomeFindhomeBodyParams { client_id, client_transaction_id }: PutDomeFindhomeBodyParams) {}
+fn put_dome_findhome(
+    PutDomeFindhomePathParams { device_number }: PutDomeFindhomePathParams,
+
+    PutDomeFindhomeBodyParams { client_id, client_transaction_id }: PutDomeFindhomeBodyParams,
+) -> Json<MethodResponse> {
+}
 
 #[derive(Deserialize, FromRequest)]
 #[from_request(via(Path))]
@@ -5202,7 +5312,11 @@ Open shutter or otherwise expose telescope to the sky.
 Open shutter or otherwise expose telescope to the sky.
 */
 #[put("/dome/<device_number>/openshutter")]
-fn put_dome_openshutter(PutDomeOpenshutterPathParams { device_number }: PutDomeOpenshutterPathParams, PutDomeOpenshutterBodyParams { client_id, client_transaction_id }: PutDomeOpenshutterBodyParams) {
+fn put_dome_openshutter(
+    PutDomeOpenshutterPathParams { device_number }: PutDomeOpenshutterPathParams,
+
+    PutDomeOpenshutterBodyParams { client_id, client_transaction_id }: PutDomeOpenshutterBodyParams,
+) -> Json<MethodResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -5238,7 +5352,7 @@ Rotate dome in azimuth to park position.
 After assuming programmed park position, sets AtPark flag.
 */
 #[put("/dome/<device_number>/park")]
-fn put_dome_park(PutDomeParkPathParams { device_number }: PutDomeParkPathParams, PutDomeParkBodyParams { client_id, client_transaction_id }: PutDomeParkBodyParams) {}
+fn put_dome_park(PutDomeParkPathParams { device_number }: PutDomeParkPathParams, PutDomeParkBodyParams { client_id, client_transaction_id }: PutDomeParkBodyParams) -> Json<MethodResponse> {}
 
 #[derive(Deserialize, FromRequest)]
 #[from_request(via(Path))]
@@ -5273,7 +5387,12 @@ Set the current azimuth, altitude position of dome to be the park position
 Set the current azimuth, altitude position of dome to be the park position.
 */
 #[put("/dome/<device_number>/setpark")]
-fn put_dome_setpark(PutDomeSetparkPathParams { device_number }: PutDomeSetparkPathParams, PutDomeSetparkBodyParams { client_id, client_transaction_id }: PutDomeSetparkBodyParams) {}
+fn put_dome_setpark(
+    PutDomeSetparkPathParams { device_number }: PutDomeSetparkPathParams,
+
+    PutDomeSetparkBodyParams { client_id, client_transaction_id }: PutDomeSetparkBodyParams,
+) -> Json<MethodResponse> {
+}
 
 #[derive(Deserialize, FromRequest)]
 #[from_request(via(Path))]
@@ -5324,7 +5443,7 @@ fn put_dome_slewtoaltitude(
 
         client_transaction_id,
     }: PutDomeSlewtoaltitudeBodyParams,
-) {
+) -> Json<MethodResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -5376,7 +5495,7 @@ fn put_dome_slewtoazimuth(
 
         client_transaction_id,
     }: PutDomeSlewtoazimuthBodyParams,
-) {
+) -> Json<MethodResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -5428,7 +5547,7 @@ fn put_dome_synctoazimuth(
 
         client_transaction_id,
     }: PutDomeSynctoazimuthBodyParams,
-) {
+) -> Json<MethodResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -5467,7 +5586,7 @@ fn get_filterwheel_focusoffsets(
     GetFilterwheelFocusoffsetsPathParams { device_number }: GetFilterwheelFocusoffsetsPathParams,
 
     GetFilterwheelFocusoffsetsQueryParams { client_id, client_transaction_id }: GetFilterwheelFocusoffsetsQueryParams,
-) {
+) -> Json<IntArrayResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -5506,7 +5625,7 @@ fn get_filterwheel_names(
     GetFilterwheelNamesPathParams { device_number }: GetFilterwheelNamesPathParams,
 
     GetFilterwheelNamesQueryParams { client_id, client_transaction_id }: GetFilterwheelNamesQueryParams,
-) {
+) -> Json<StringArrayResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -5545,7 +5664,7 @@ fn get_filterwheel_position(
     GetFilterwheelPositionPathParams { device_number }: GetFilterwheelPositionPathParams,
 
     GetFilterwheelPositionQueryParams { client_id, client_transaction_id }: GetFilterwheelPositionQueryParams,
-) {
+) -> Json<IntResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -5597,7 +5716,7 @@ fn put_filterwheel_position(
 
         client_transaction_id,
     }: PutFilterwheelPositionBodyParams,
-) {
+) -> Json<MethodResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -5636,7 +5755,7 @@ fn get_focuser_absolute(
     GetFocuserAbsolutePathParams { device_number }: GetFocuserAbsolutePathParams,
 
     GetFocuserAbsoluteQueryParams { client_id, client_transaction_id }: GetFocuserAbsoluteQueryParams,
-) {
+) -> Json<BoolResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -5675,7 +5794,7 @@ fn get_focuser_ismoving(
     GetFocuserIsmovingPathParams { device_number }: GetFocuserIsmovingPathParams,
 
     GetFocuserIsmovingQueryParams { client_id, client_transaction_id }: GetFocuserIsmovingQueryParams,
-) {
+) -> Json<BoolResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -5714,7 +5833,7 @@ fn get_focuser_maxincrement(
     GetFocuserMaxincrementPathParams { device_number }: GetFocuserMaxincrementPathParams,
 
     GetFocuserMaxincrementQueryParams { client_id, client_transaction_id }: GetFocuserMaxincrementQueryParams,
-) {
+) -> Json<IntResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -5749,7 +5868,12 @@ Returns the focuser's maximum step size.
 Maximum step position permitted.
 */
 #[get("/focuser/<device_number>/maxstep")]
-fn get_focuser_maxstep(GetFocuserMaxstepPathParams { device_number }: GetFocuserMaxstepPathParams, GetFocuserMaxstepQueryParams { client_id, client_transaction_id }: GetFocuserMaxstepQueryParams) {}
+fn get_focuser_maxstep(
+    GetFocuserMaxstepPathParams { device_number }: GetFocuserMaxstepPathParams,
+
+    GetFocuserMaxstepQueryParams { client_id, client_transaction_id }: GetFocuserMaxstepQueryParams,
+) -> Json<IntResponse> {
+}
 
 #[derive(Deserialize, FromRequest)]
 #[from_request(via(Path))]
@@ -5787,7 +5911,7 @@ fn get_focuser_position(
     GetFocuserPositionPathParams { device_number }: GetFocuserPositionPathParams,
 
     GetFocuserPositionQueryParams { client_id, client_transaction_id }: GetFocuserPositionQueryParams,
-) {
+) -> Json<IntResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -5826,7 +5950,7 @@ fn get_focuser_stepsize(
     GetFocuserStepsizePathParams { device_number }: GetFocuserStepsizePathParams,
 
     GetFocuserStepsizeQueryParams { client_id, client_transaction_id }: GetFocuserStepsizeQueryParams,
-) {
+) -> Json<DoubleResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -5865,7 +5989,7 @@ fn get_focuser_tempcomp(
     GetFocuserTempcompPathParams { device_number }: GetFocuserTempcompPathParams,
 
     GetFocuserTempcompQueryParams { client_id, client_transaction_id }: GetFocuserTempcompQueryParams,
-) {
+) -> Json<BoolResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -5917,7 +6041,7 @@ fn put_focuser_tempcomp(
 
         client_transaction_idform,
     }: PutFocuserTempcompBodyParams,
-) {
+) -> Json<MethodResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -5956,7 +6080,7 @@ fn get_focuser_tempcompavailable(
     GetFocuserTempcompavailablePathParams { device_number }: GetFocuserTempcompavailablePathParams,
 
     GetFocuserTempcompavailableQueryParams { client_id, client_transaction_id }: GetFocuserTempcompavailableQueryParams,
-) {
+) -> Json<BoolResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -5995,7 +6119,7 @@ fn get_focuser_temperature(
     GetFocuserTemperaturePathParams { device_number }: GetFocuserTemperaturePathParams,
 
     GetFocuserTemperatureQueryParams { client_id, client_transaction_id }: GetFocuserTemperatureQueryParams,
-) {
+) -> Json<DoubleResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -6031,7 +6155,12 @@ Immediatley stops focuser motion.
 Immediately stop any focuser motion due to a previous Move(Int32) method call.
 */
 #[put("/focuser/<device_number>/halt")]
-fn put_focuser_halt(PutFocuserHaltPathParams { device_number }: PutFocuserHaltPathParams, PutFocuserHaltBodyParams { client_id, client_transaction_id }: PutFocuserHaltBodyParams) {}
+fn put_focuser_halt(
+    PutFocuserHaltPathParams { device_number }: PutFocuserHaltPathParams,
+
+    PutFocuserHaltBodyParams { client_id, client_transaction_id }: PutFocuserHaltBodyParams,
+) -> Json<MethodResponse> {
+}
 
 #[derive(Deserialize, FromRequest)]
 #[from_request(via(Path))]
@@ -6082,7 +6211,7 @@ fn put_focuser_move(
 
         client_transaction_id,
     }: PutFocuserMoveBodyParams,
-) {
+) -> Json<MethodResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -6121,7 +6250,7 @@ fn get_observingconditions_averageperiod(
     GetObservingconditionsAverageperiodPathParams { device_number }: GetObservingconditionsAverageperiodPathParams,
 
     GetObservingconditionsAverageperiodQueryParams { client_id, client_transaction_id }: GetObservingconditionsAverageperiodQueryParams,
-) {
+) -> Json<DoubleResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -6173,7 +6302,7 @@ fn put_observingconditions_averageperiod(
 
         client_transaction_id,
     }: PutObservingconditionsAverageperiodBodyParams,
-) {
+) -> Json<MethodResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -6212,7 +6341,7 @@ fn get_observingconditions_cloudcover(
     GetObservingconditionsCloudcoverPathParams { device_number }: GetObservingconditionsCloudcoverPathParams,
 
     GetObservingconditionsCloudcoverQueryParams { client_id, client_transaction_id }: GetObservingconditionsCloudcoverQueryParams,
-) {
+) -> Json<DoubleResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -6251,7 +6380,7 @@ fn get_observingconditions_dewpoint(
     GetObservingconditionsDewpointPathParams { device_number }: GetObservingconditionsDewpointPathParams,
 
     GetObservingconditionsDewpointQueryParams { client_id, client_transaction_id }: GetObservingconditionsDewpointQueryParams,
-) {
+) -> Json<DoubleResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -6290,7 +6419,7 @@ fn get_observingconditions_humidity(
     GetObservingconditionsHumidityPathParams { device_number }: GetObservingconditionsHumidityPathParams,
 
     GetObservingconditionsHumidityQueryParams { client_id, client_transaction_id }: GetObservingconditionsHumidityQueryParams,
-) {
+) -> Json<DoubleResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -6329,7 +6458,7 @@ fn get_observingconditions_pressure(
     GetObservingconditionsPressurePathParams { device_number }: GetObservingconditionsPressurePathParams,
 
     GetObservingconditionsPressureQueryParams { client_id, client_transaction_id }: GetObservingconditionsPressureQueryParams,
-) {
+) -> Json<DoubleResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -6368,7 +6497,7 @@ fn get_observingconditions_rainrate(
     GetObservingconditionsRainratePathParams { device_number }: GetObservingconditionsRainratePathParams,
 
     GetObservingconditionsRainrateQueryParams { client_id, client_transaction_id }: GetObservingconditionsRainrateQueryParams,
-) {
+) -> Json<DoubleResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -6407,7 +6536,7 @@ fn get_observingconditions_skybrightness(
     GetObservingconditionsSkybrightnessPathParams { device_number }: GetObservingconditionsSkybrightnessPathParams,
 
     GetObservingconditionsSkybrightnessQueryParams { client_id, client_transaction_id }: GetObservingconditionsSkybrightnessQueryParams,
-) {
+) -> Json<DoubleResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -6446,7 +6575,7 @@ fn get_observingconditions_skyquality(
     GetObservingconditionsSkyqualityPathParams { device_number }: GetObservingconditionsSkyqualityPathParams,
 
     GetObservingconditionsSkyqualityQueryParams { client_id, client_transaction_id }: GetObservingconditionsSkyqualityQueryParams,
-) {
+) -> Json<DoubleResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -6485,7 +6614,7 @@ fn get_observingconditions_skytemperature(
     GetObservingconditionsSkytemperaturePathParams { device_number }: GetObservingconditionsSkytemperaturePathParams,
 
     GetObservingconditionsSkytemperatureQueryParams { client_id, client_transaction_id }: GetObservingconditionsSkytemperatureQueryParams,
-) {
+) -> Json<DoubleResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -6524,7 +6653,7 @@ fn get_observingconditions_starfwhm(
     GetObservingconditionsStarfwhmPathParams { device_number }: GetObservingconditionsStarfwhmPathParams,
 
     GetObservingconditionsStarfwhmQueryParams { client_id, client_transaction_id }: GetObservingconditionsStarfwhmQueryParams,
-) {
+) -> Json<DoubleResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -6563,7 +6692,7 @@ fn get_observingconditions_temperature(
     GetObservingconditionsTemperaturePathParams { device_number }: GetObservingconditionsTemperaturePathParams,
 
     GetObservingconditionsTemperatureQueryParams { client_id, client_transaction_id }: GetObservingconditionsTemperatureQueryParams,
-) {
+) -> Json<DoubleResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -6602,7 +6731,7 @@ fn get_observingconditions_winddirection(
     GetObservingconditionsWinddirectionPathParams { device_number }: GetObservingconditionsWinddirectionPathParams,
 
     GetObservingconditionsWinddirectionQueryParams { client_id, client_transaction_id }: GetObservingconditionsWinddirectionQueryParams,
-) {
+) -> Json<DoubleResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -6641,7 +6770,7 @@ fn get_observingconditions_windgust(
     GetObservingconditionsWindgustPathParams { device_number }: GetObservingconditionsWindgustPathParams,
 
     GetObservingconditionsWindgustQueryParams { client_id, client_transaction_id }: GetObservingconditionsWindgustQueryParams,
-) {
+) -> Json<DoubleResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -6680,7 +6809,7 @@ fn get_observingconditions_windspeed(
     GetObservingconditionsWindspeedPathParams { device_number }: GetObservingconditionsWindspeedPathParams,
 
     GetObservingconditionsWindspeedQueryParams { client_id, client_transaction_id }: GetObservingconditionsWindspeedQueryParams,
-) {
+) -> Json<DoubleResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -6720,7 +6849,7 @@ fn put_observingconditions_refresh(
     PutObservingconditionsRefreshPathParams { device_number }: PutObservingconditionsRefreshPathParams,
 
     PutObservingconditionsRefreshBodyParams { client_id, client_transaction_id }: PutObservingconditionsRefreshBodyParams,
-) {
+) -> Json<MethodResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -6771,7 +6900,7 @@ fn get_observingconditions_sensordescription(
 
         client_transaction_id,
     }: GetObservingconditionsSensordescriptionQueryParams,
-) {
+) -> Json<StringResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -6822,7 +6951,7 @@ fn get_observingconditions_timesincelastupdate(
 
         client_transaction_id,
     }: GetObservingconditionsTimesincelastupdateQueryParams,
-) {
+) -> Json<DoubleResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -6861,7 +6990,7 @@ fn get_rotator_canreverse(
     GetRotatorCanreversePathParams { device_number }: GetRotatorCanreversePathParams,
 
     GetRotatorCanreverseQueryParams { client_id, client_transaction_id }: GetRotatorCanreverseQueryParams,
-) {
+) -> Json<BoolResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -6900,7 +7029,7 @@ fn get_rotator_ismoving(
     GetRotatorIsmovingPathParams { device_number }: GetRotatorIsmovingPathParams,
 
     GetRotatorIsmovingQueryParams { client_id, client_transaction_id }: GetRotatorIsmovingQueryParams,
-) {
+) -> Json<BoolResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -6939,7 +7068,7 @@ fn get_rotator_mechanicalposition(
     GetRotatorMechanicalpositionPathParams { device_number }: GetRotatorMechanicalpositionPathParams,
 
     GetRotatorMechanicalpositionQueryParams { client_id, client_transaction_id }: GetRotatorMechanicalpositionQueryParams,
-) {
+) -> Json<DoubleResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -6978,7 +7107,7 @@ fn get_rotator_position(
     GetRotatorPositionPathParams { device_number }: GetRotatorPositionPathParams,
 
     GetRotatorPositionQueryParams { client_id, client_transaction_id }: GetRotatorPositionQueryParams,
-) {
+) -> Json<DoubleResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -7013,7 +7142,12 @@ Returns the rotator’s Reverse state.
 Returns the rotator’s Reverse state.
 */
 #[get("/rotator/<device_number>/reverse")]
-fn get_rotator_reverse(GetRotatorReversePathParams { device_number }: GetRotatorReversePathParams, GetRotatorReverseQueryParams { client_id, client_transaction_id }: GetRotatorReverseQueryParams) {}
+fn get_rotator_reverse(
+    GetRotatorReversePathParams { device_number }: GetRotatorReversePathParams,
+
+    GetRotatorReverseQueryParams { client_id, client_transaction_id }: GetRotatorReverseQueryParams,
+) -> Json<BoolResponse> {
+}
 
 #[derive(Deserialize, FromRequest)]
 #[from_request(via(Path))]
@@ -7064,7 +7198,7 @@ fn put_rotator_reverse(
 
         client_transaction_id,
     }: PutRotatorReverseBodyParams,
-) {
+) -> Json<MethodResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -7103,7 +7237,7 @@ fn get_rotator_stepsize(
     GetRotatorStepsizePathParams { device_number }: GetRotatorStepsizePathParams,
 
     GetRotatorStepsizeQueryParams { client_id, client_transaction_id }: GetRotatorStepsizeQueryParams,
-) {
+) -> Json<DoubleResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -7142,7 +7276,7 @@ fn get_rotator_targetposition(
     GetRotatorTargetpositionPathParams { device_number }: GetRotatorTargetpositionPathParams,
 
     GetRotatorTargetpositionQueryParams { client_id, client_transaction_id }: GetRotatorTargetpositionQueryParams,
-) {
+) -> Json<DoubleResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -7178,7 +7312,12 @@ Immediatley stops rotator motion.
 Immediately stop any Rotator motion due to a previous Move or MoveAbsolute method call.
 */
 #[put("/rotator/<device_number>/halt")]
-fn put_rotator_halt(PutRotatorHaltPathParams { device_number }: PutRotatorHaltPathParams, PutRotatorHaltBodyParams { client_id, client_transaction_id }: PutRotatorHaltBodyParams) {}
+fn put_rotator_halt(
+    PutRotatorHaltPathParams { device_number }: PutRotatorHaltPathParams,
+
+    PutRotatorHaltBodyParams { client_id, client_transaction_id }: PutRotatorHaltBodyParams,
+) -> Json<MethodResponse> {
+}
 
 #[derive(Deserialize, FromRequest)]
 #[from_request(via(Path))]
@@ -7229,7 +7368,7 @@ fn put_rotator_move(
 
         client_transaction_id,
     }: PutRotatorMoveBodyParams,
-) {
+) -> Json<MethodResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -7281,7 +7420,7 @@ fn put_rotator_moveabsolute(
 
         client_transaction_id,
     }: PutRotatorMoveabsoluteBodyParams,
-) {
+) -> Json<MethodResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -7333,7 +7472,7 @@ fn put_rotator_movemechanical(
 
         client_transaction_id,
     }: PutRotatorMovemechanicalBodyParams,
-) {
+) -> Json<MethodResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -7385,7 +7524,7 @@ fn put_rotator_sync(
 
         client_transaction_id,
     }: PutRotatorSyncBodyParams,
-) {
+) -> Json<MethodResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -7424,7 +7563,7 @@ fn get_safetymonitor_issafe(
     GetSafetymonitorIssafePathParams { device_number }: GetSafetymonitorIssafePathParams,
 
     GetSafetymonitorIssafeQueryParams { client_id, client_transaction_id }: GetSafetymonitorIssafeQueryParams,
-) {
+) -> Json<BoolResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -7463,7 +7602,7 @@ fn get_switch_maxswitch(
     GetSwitchMaxswitchPathParams { device_number }: GetSwitchMaxswitchPathParams,
 
     GetSwitchMaxswitchQueryParams { client_id, client_transaction_id }: GetSwitchMaxswitchQueryParams,
-) {
+) -> Json<IntResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -7508,7 +7647,7 @@ fn get_switch_canwrite(
     GetSwitchCanwritePathParams { device_number }: GetSwitchCanwritePathParams,
 
     GetSwitchCanwriteQueryParams { id, client_id, client_transaction_id }: GetSwitchCanwriteQueryParams,
-) {
+) -> Json<BoolResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -7553,7 +7692,7 @@ fn get_switch_getswitch(
     GetSwitchGetswitchPathParams { device_number }: GetSwitchGetswitchPathParams,
 
     GetSwitchGetswitchQueryParams { id, client_id, client_transaction_id }: GetSwitchGetswitchQueryParams,
-) {
+) -> Json<BoolResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -7598,7 +7737,7 @@ fn get_switch_getswitchdescription(
     GetSwitchGetswitchdescriptionPathParams { device_number }: GetSwitchGetswitchdescriptionPathParams,
 
     GetSwitchGetswitchdescriptionQueryParams { id, client_id, client_transaction_id }: GetSwitchGetswitchdescriptionQueryParams,
-) {
+) -> Json<StringResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -7643,7 +7782,7 @@ fn get_switch_getswitchname(
     GetSwitchGetswitchnamePathParams { device_number }: GetSwitchGetswitchnamePathParams,
 
     GetSwitchGetswitchnameQueryParams { id, client_id, client_transaction_id }: GetSwitchGetswitchnameQueryParams,
-) {
+) -> Json<StringResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -7688,7 +7827,7 @@ fn get_switch_getswitchvalue(
     GetSwitchGetswitchvaluePathParams { device_number }: GetSwitchGetswitchvaluePathParams,
 
     GetSwitchGetswitchvalueQueryParams { id, client_id, client_transaction_id }: GetSwitchGetswitchvalueQueryParams,
-) {
+) -> Json<DoubleResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -7733,7 +7872,7 @@ fn get_switch_minswitchvalue(
     GetSwitchMinswitchvaluePathParams { device_number }: GetSwitchMinswitchvaluePathParams,
 
     GetSwitchMinswitchvalueQueryParams { id, client_id, client_transaction_id }: GetSwitchMinswitchvalueQueryParams,
-) {
+) -> Json<DoubleResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -7778,7 +7917,7 @@ fn get_switch_maxswitchvalue(
     GetSwitchMaxswitchvaluePathParams { device_number }: GetSwitchMaxswitchvaluePathParams,
 
     GetSwitchMaxswitchvalueQueryParams { id, client_id, client_transaction_id }: GetSwitchMaxswitchvalueQueryParams,
-) {
+) -> Json<DoubleResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -7838,7 +7977,7 @@ fn put_switch_setswitch(
 
         client_transaction_id,
     }: PutSwitchSetswitchBodyParams,
-) {
+) -> Json<MethodResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -7898,7 +8037,7 @@ fn put_switch_setswitchname(
 
         client_transaction_id,
     }: PutSwitchSetswitchnameBodyParams,
-) {
+) -> Json<MethodResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -7958,7 +8097,7 @@ fn put_switch_setswitchvalue(
 
         client_transaction_id,
     }: PutSwitchSetswitchvalueBodyParams,
-) {
+) -> Json<MethodResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -8003,7 +8142,7 @@ fn get_switch_switchstep(
     GetSwitchSwitchstepPathParams { device_number }: GetSwitchSwitchstepPathParams,
 
     GetSwitchSwitchstepQueryParams { id, client_id, client_transaction_id }: GetSwitchSwitchstepQueryParams,
-) {
+) -> Json<DoubleResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -8042,7 +8181,7 @@ fn get_telescope_alignmentmode(
     GetTelescopeAlignmentmodePathParams { device_number }: GetTelescopeAlignmentmodePathParams,
 
     GetTelescopeAlignmentmodeQueryParams { client_id, client_transaction_id }: GetTelescopeAlignmentmodeQueryParams,
-) {
+) -> Json<IntResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -8081,7 +8220,7 @@ fn get_telescope_altitude(
     GetTelescopeAltitudePathParams { device_number }: GetTelescopeAltitudePathParams,
 
     GetTelescopeAltitudeQueryParams { client_id, client_transaction_id }: GetTelescopeAltitudeQueryParams,
-) {
+) -> Json<DoubleResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -8120,7 +8259,7 @@ fn get_telescope_aperturearea(
     GetTelescopeApertureareaPathParams { device_number }: GetTelescopeApertureareaPathParams,
 
     GetTelescopeApertureareaQueryParams { client_id, client_transaction_id }: GetTelescopeApertureareaQueryParams,
-) {
+) -> Json<DoubleResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -8159,7 +8298,7 @@ fn get_telescope_aperturediameter(
     GetTelescopeAperturediameterPathParams { device_number }: GetTelescopeAperturediameterPathParams,
 
     GetTelescopeAperturediameterQueryParams { client_id, client_transaction_id }: GetTelescopeAperturediameterQueryParams,
-) {
+) -> Json<DoubleResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -8198,7 +8337,7 @@ fn get_telescope_athome(
     GetTelescopeAthomePathParams { device_number }: GetTelescopeAthomePathParams,
 
     GetTelescopeAthomeQueryParams { client_id, client_transaction_id }: GetTelescopeAthomeQueryParams,
-) {
+) -> Json<BoolResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -8237,7 +8376,7 @@ fn get_telescope_atpark(
     GetTelescopeAtparkPathParams { device_number }: GetTelescopeAtparkPathParams,
 
     GetTelescopeAtparkQueryParams { client_id, client_transaction_id }: GetTelescopeAtparkQueryParams,
-) {
+) -> Json<BoolResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -8276,7 +8415,7 @@ fn get_telescope_azimuth(
     GetTelescopeAzimuthPathParams { device_number }: GetTelescopeAzimuthPathParams,
 
     GetTelescopeAzimuthQueryParams { client_id, client_transaction_id }: GetTelescopeAzimuthQueryParams,
-) {
+) -> Json<DoubleResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -8315,7 +8454,7 @@ fn get_telescope_canfindhome(
     GetTelescopeCanfindhomePathParams { device_number }: GetTelescopeCanfindhomePathParams,
 
     GetTelescopeCanfindhomeQueryParams { client_id, client_transaction_id }: GetTelescopeCanfindhomeQueryParams,
-) {
+) -> Json<BoolResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -8354,7 +8493,7 @@ fn get_telescope_canpark(
     GetTelescopeCanparkPathParams { device_number }: GetTelescopeCanparkPathParams,
 
     GetTelescopeCanparkQueryParams { client_id, client_transaction_id }: GetTelescopeCanparkQueryParams,
-) {
+) -> Json<BoolResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -8393,7 +8532,7 @@ fn get_telescope_canpulseguide(
     GetTelescopeCanpulseguidePathParams { device_number }: GetTelescopeCanpulseguidePathParams,
 
     GetTelescopeCanpulseguideQueryParams { client_id, client_transaction_id }: GetTelescopeCanpulseguideQueryParams,
-) {
+) -> Json<BoolResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -8432,7 +8571,7 @@ fn get_telescope_cansetdeclinationrate(
     GetTelescopeCansetdeclinationratePathParams { device_number }: GetTelescopeCansetdeclinationratePathParams,
 
     GetTelescopeCansetdeclinationrateQueryParams { client_id, client_transaction_id }: GetTelescopeCansetdeclinationrateQueryParams,
-) {
+) -> Json<BoolResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -8471,7 +8610,7 @@ fn get_telescope_cansetguiderates(
     GetTelescopeCansetguideratesPathParams { device_number }: GetTelescopeCansetguideratesPathParams,
 
     GetTelescopeCansetguideratesQueryParams { client_id, client_transaction_id }: GetTelescopeCansetguideratesQueryParams,
-) {
+) -> Json<BoolResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -8510,7 +8649,7 @@ fn get_telescope_cansetpark(
     GetTelescopeCansetparkPathParams { device_number }: GetTelescopeCansetparkPathParams,
 
     GetTelescopeCansetparkQueryParams { client_id, client_transaction_id }: GetTelescopeCansetparkQueryParams,
-) {
+) -> Json<BoolResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -8549,7 +8688,7 @@ fn get_telescope_cansetpierside(
     GetTelescopeCansetpiersidePathParams { device_number }: GetTelescopeCansetpiersidePathParams,
 
     GetTelescopeCansetpiersideQueryParams { client_id, client_transaction_id }: GetTelescopeCansetpiersideQueryParams,
-) {
+) -> Json<BoolResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -8588,7 +8727,7 @@ fn get_telescope_cansetrightascensionrate(
     GetTelescopeCansetrightascensionratePathParams { device_number }: GetTelescopeCansetrightascensionratePathParams,
 
     GetTelescopeCansetrightascensionrateQueryParams { client_id, client_transaction_id }: GetTelescopeCansetrightascensionrateQueryParams,
-) {
+) -> Json<BoolResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -8627,7 +8766,7 @@ fn get_telescope_cansettracking(
     GetTelescopeCansettrackingPathParams { device_number }: GetTelescopeCansettrackingPathParams,
 
     GetTelescopeCansettrackingQueryParams { client_id, client_transaction_id }: GetTelescopeCansettrackingQueryParams,
-) {
+) -> Json<BoolResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -8666,7 +8805,7 @@ fn get_telescope_canslew(
     GetTelescopeCanslewPathParams { device_number }: GetTelescopeCanslewPathParams,
 
     GetTelescopeCanslewQueryParams { client_id, client_transaction_id }: GetTelescopeCanslewQueryParams,
-) {
+) -> Json<BoolResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -8705,7 +8844,7 @@ fn get_telescope_canslewaltaz(
     GetTelescopeCanslewaltazPathParams { device_number }: GetTelescopeCanslewaltazPathParams,
 
     GetTelescopeCanslewaltazQueryParams { client_id, client_transaction_id }: GetTelescopeCanslewaltazQueryParams,
-) {
+) -> Json<BoolResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -8744,7 +8883,7 @@ fn get_telescope_canslewaltazasync(
     GetTelescopeCanslewaltazasyncPathParams { device_number }: GetTelescopeCanslewaltazasyncPathParams,
 
     GetTelescopeCanslewaltazasyncQueryParams { client_id, client_transaction_id }: GetTelescopeCanslewaltazasyncQueryParams,
-) {
+) -> Json<BoolResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -8783,7 +8922,7 @@ fn get_telescope_canslewasync(
     GetTelescopeCanslewasyncPathParams { device_number }: GetTelescopeCanslewasyncPathParams,
 
     GetTelescopeCanslewasyncQueryParams { client_id, client_transaction_id }: GetTelescopeCanslewasyncQueryParams,
-) {
+) -> Json<BoolResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -8822,7 +8961,7 @@ fn get_telescope_cansync(
     GetTelescopeCansyncPathParams { device_number }: GetTelescopeCansyncPathParams,
 
     GetTelescopeCansyncQueryParams { client_id, client_transaction_id }: GetTelescopeCansyncQueryParams,
-) {
+) -> Json<BoolResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -8861,7 +9000,7 @@ fn get_telescope_cansyncaltaz(
     GetTelescopeCansyncaltazPathParams { device_number }: GetTelescopeCansyncaltazPathParams,
 
     GetTelescopeCansyncaltazQueryParams { client_id, client_transaction_id }: GetTelescopeCansyncaltazQueryParams,
-) {
+) -> Json<BoolResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -8900,7 +9039,7 @@ fn get_telescope_canunpark(
     GetTelescopeCanunparkPathParams { device_number }: GetTelescopeCanunparkPathParams,
 
     GetTelescopeCanunparkQueryParams { client_id, client_transaction_id }: GetTelescopeCanunparkQueryParams,
-) {
+) -> Json<BoolResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -8939,7 +9078,7 @@ fn get_telescope_declination(
     GetTelescopeDeclinationPathParams { device_number }: GetTelescopeDeclinationPathParams,
 
     GetTelescopeDeclinationQueryParams { client_id, client_transaction_id }: GetTelescopeDeclinationQueryParams,
-) {
+) -> Json<DoubleResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -8978,7 +9117,7 @@ fn get_telescope_declinationrate(
     GetTelescopeDeclinationratePathParams { device_number }: GetTelescopeDeclinationratePathParams,
 
     GetTelescopeDeclinationrateQueryParams { client_id, client_transaction_id }: GetTelescopeDeclinationrateQueryParams,
-) {
+) -> Json<DoubleResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -9030,7 +9169,7 @@ fn put_telescope_declinationrate(
 
         client_transaction_id,
     }: PutTelescopeDeclinationrateBodyParams,
-) {
+) -> Json<MethodResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -9069,7 +9208,7 @@ fn get_telescope_doesrefraction(
     GetTelescopeDoesrefractionPathParams { device_number }: GetTelescopeDoesrefractionPathParams,
 
     GetTelescopeDoesrefractionQueryParams { client_id, client_transaction_id }: GetTelescopeDoesrefractionQueryParams,
-) {
+) -> Json<BoolResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -9121,7 +9260,7 @@ fn put_telescope_doesrefraction(
 
         client_transaction_id,
     }: PutTelescopeDoesrefractionBodyParams,
-) {
+) -> Json<MethodResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -9160,7 +9299,7 @@ fn get_telescope_equatorialsystem(
     GetTelescopeEquatorialsystemPathParams { device_number }: GetTelescopeEquatorialsystemPathParams,
 
     GetTelescopeEquatorialsystemQueryParams { client_id, client_transaction_id }: GetTelescopeEquatorialsystemQueryParams,
-) {
+) -> Json<IntResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -9199,7 +9338,7 @@ fn get_telescope_focallength(
     GetTelescopeFocallengthPathParams { device_number }: GetTelescopeFocallengthPathParams,
 
     GetTelescopeFocallengthQueryParams { client_id, client_transaction_id }: GetTelescopeFocallengthQueryParams,
-) {
+) -> Json<DoubleResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -9238,7 +9377,7 @@ fn get_telescope_guideratedeclination(
     GetTelescopeGuideratedeclinationPathParams { device_number }: GetTelescopeGuideratedeclinationPathParams,
 
     GetTelescopeGuideratedeclinationQueryParams { client_id, client_transaction_id }: GetTelescopeGuideratedeclinationQueryParams,
-) {
+) -> Json<DoubleResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -9290,7 +9429,7 @@ fn put_telescope_guideratedeclination(
 
         client_transaction_id,
     }: PutTelescopeGuideratedeclinationBodyParams,
-) {
+) -> Json<MethodResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -9329,7 +9468,7 @@ fn get_telescope_guideraterightascension(
     GetTelescopeGuideraterightascensionPathParams { device_number }: GetTelescopeGuideraterightascensionPathParams,
 
     GetTelescopeGuideraterightascensionQueryParams { client_id, client_transaction_id }: GetTelescopeGuideraterightascensionQueryParams,
-) {
+) -> Json<DoubleResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -9381,7 +9520,7 @@ fn put_telescope_guideraterightascension(
 
         client_transaction_id,
     }: PutTelescopeGuideraterightascensionBodyParams,
-) {
+) -> Json<MethodResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -9420,7 +9559,7 @@ fn get_telescope_ispulseguiding(
     GetTelescopeIspulseguidingPathParams { device_number }: GetTelescopeIspulseguidingPathParams,
 
     GetTelescopeIspulseguidingQueryParams { client_id, client_transaction_id }: GetTelescopeIspulseguidingQueryParams,
-) {
+) -> Json<BoolResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -9459,7 +9598,7 @@ fn get_telescope_rightascension(
     GetTelescopeRightascensionPathParams { device_number }: GetTelescopeRightascensionPathParams,
 
     GetTelescopeRightascensionQueryParams { client_id, client_transaction_id }: GetTelescopeRightascensionQueryParams,
-) {
+) -> Json<DoubleResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -9498,7 +9637,7 @@ fn get_telescope_rightascensionrate(
     GetTelescopeRightascensionratePathParams { device_number }: GetTelescopeRightascensionratePathParams,
 
     GetTelescopeRightascensionrateQueryParams { client_id, client_transaction_id }: GetTelescopeRightascensionrateQueryParams,
-) {
+) -> Json<DoubleResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -9550,7 +9689,7 @@ fn put_telescope_rightascensionrate(
 
         client_transaction_id,
     }: PutTelescopeRightascensionrateBodyParams,
-) {
+) -> Json<MethodResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -9589,7 +9728,7 @@ fn get_telescope_sideofpier(
     GetTelescopeSideofpierPathParams { device_number }: GetTelescopeSideofpierPathParams,
 
     GetTelescopeSideofpierQueryParams { client_id, client_transaction_id }: GetTelescopeSideofpierQueryParams,
-) {
+) -> Json<IntResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -9641,7 +9780,7 @@ fn put_telescope_sideofpier(
 
         client_transaction_id,
     }: PutTelescopeSideofpierBodyParams,
-) {
+) -> Json<MethodResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -9680,7 +9819,7 @@ fn get_telescope_siderealtime(
     GetTelescopeSiderealtimePathParams { device_number }: GetTelescopeSiderealtimePathParams,
 
     GetTelescopeSiderealtimeQueryParams { client_id, client_transaction_id }: GetTelescopeSiderealtimeQueryParams,
-) {
+) -> Json<DoubleResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -9719,7 +9858,7 @@ fn get_telescope_siteelevation(
     GetTelescopeSiteelevationPathParams { device_number }: GetTelescopeSiteelevationPathParams,
 
     GetTelescopeSiteelevationQueryParams { client_id, client_transaction_id }: GetTelescopeSiteelevationQueryParams,
-) {
+) -> Json<DoubleResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -9771,7 +9910,7 @@ fn put_telescope_siteelevation(
 
         client_transaction_id,
     }: PutTelescopeSiteelevationBodyParams,
-) {
+) -> Json<MethodResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -9810,7 +9949,7 @@ fn get_telescope_sitelatitude(
     GetTelescopeSitelatitudePathParams { device_number }: GetTelescopeSitelatitudePathParams,
 
     GetTelescopeSitelatitudeQueryParams { client_id, client_transaction_id }: GetTelescopeSitelatitudeQueryParams,
-) {
+) -> Json<DoubleResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -9862,7 +10001,7 @@ fn put_telescope_sitelatitude(
 
         client_transaction_id,
     }: PutTelescopeSitelatitudeBodyParams,
-) {
+) -> Json<MethodResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -9901,7 +10040,7 @@ fn get_telescope_sitelongitude(
     GetTelescopeSitelongitudePathParams { device_number }: GetTelescopeSitelongitudePathParams,
 
     GetTelescopeSitelongitudeQueryParams { client_id, client_transaction_id }: GetTelescopeSitelongitudeQueryParams,
-) {
+) -> Json<DoubleResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -9953,7 +10092,7 @@ fn put_telescope_sitelongitude(
 
         client_transaction_id,
     }: PutTelescopeSitelongitudeBodyParams,
-) {
+) -> Json<MethodResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -9992,7 +10131,7 @@ fn get_telescope_slewing(
     GetTelescopeSlewingPathParams { device_number }: GetTelescopeSlewingPathParams,
 
     GetTelescopeSlewingQueryParams { client_id, client_transaction_id }: GetTelescopeSlewingQueryParams,
-) {
+) -> Json<BoolResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -10031,7 +10170,7 @@ fn get_telescope_slewsettletime(
     GetTelescopeSlewsettletimePathParams { device_number }: GetTelescopeSlewsettletimePathParams,
 
     GetTelescopeSlewsettletimeQueryParams { client_id, client_transaction_id }: GetTelescopeSlewsettletimeQueryParams,
-) {
+) -> Json<IntResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -10083,7 +10222,7 @@ fn put_telescope_slewsettletime(
 
         client_transaction_id,
     }: PutTelescopeSlewsettletimeBodyParams,
-) {
+) -> Json<MethodResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -10122,7 +10261,7 @@ fn get_telescope_targetdeclination(
     GetTelescopeTargetdeclinationPathParams { device_number }: GetTelescopeTargetdeclinationPathParams,
 
     GetTelescopeTargetdeclinationQueryParams { client_id, client_transaction_id }: GetTelescopeTargetdeclinationQueryParams,
-) {
+) -> Json<DoubleResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -10174,7 +10313,7 @@ fn put_telescope_targetdeclination(
 
         client_transaction_id,
     }: PutTelescopeTargetdeclinationBodyParams,
-) {
+) -> Json<MethodResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -10213,7 +10352,7 @@ fn get_telescope_targetrightascension(
     GetTelescopeTargetrightascensionPathParams { device_number }: GetTelescopeTargetrightascensionPathParams,
 
     GetTelescopeTargetrightascensionQueryParams { client_id, client_transaction_id }: GetTelescopeTargetrightascensionQueryParams,
-) {
+) -> Json<DoubleResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -10265,7 +10404,7 @@ fn put_telescope_targetrightascension(
 
         client_transaction_id,
     }: PutTelescopeTargetrightascensionBodyParams,
-) {
+) -> Json<MethodResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -10304,7 +10443,7 @@ fn get_telescope_tracking(
     GetTelescopeTrackingPathParams { device_number }: GetTelescopeTrackingPathParams,
 
     GetTelescopeTrackingQueryParams { client_id, client_transaction_id }: GetTelescopeTrackingQueryParams,
-) {
+) -> Json<BoolResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -10356,7 +10495,7 @@ fn put_telescope_tracking(
 
         client_transaction_id,
     }: PutTelescopeTrackingBodyParams,
-) {
+) -> Json<MethodResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -10395,7 +10534,7 @@ fn get_telescope_trackingrate(
     GetTelescopeTrackingratePathParams { device_number }: GetTelescopeTrackingratePathParams,
 
     GetTelescopeTrackingrateQueryParams { client_id, client_transaction_id }: GetTelescopeTrackingrateQueryParams,
-) {
+) -> Json<IntResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -10447,7 +10586,7 @@ fn put_telescope_trackingrate(
 
         client_transaction_id,
     }: PutTelescopeTrackingrateBodyParams,
-) {
+) -> Json<MethodResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -10486,7 +10625,7 @@ fn get_telescope_trackingrates(
     GetTelescopeTrackingratesPathParams { device_number }: GetTelescopeTrackingratesPathParams,
 
     GetTelescopeTrackingratesQueryParams { client_id, client_transaction_id }: GetTelescopeTrackingratesQueryParams,
-) {
+) -> Json<DriveRatesResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -10525,7 +10664,7 @@ fn get_telescope_utcdate(
     GetTelescopeUtcdatePathParams { device_number }: GetTelescopeUtcdatePathParams,
 
     GetTelescopeUtcdateQueryParams { client_id, client_transaction_id }: GetTelescopeUtcdateQueryParams,
-) {
+) -> Json<StringResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -10577,7 +10716,7 @@ fn put_telescope_utcdate(
 
         client_transaction_id,
     }: PutTelescopeUtcdateBodyParams,
-) {
+) -> Json<MethodResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -10617,7 +10756,7 @@ fn put_telescope_abortslew(
     PutTelescopeAbortslewPathParams { device_number }: PutTelescopeAbortslewPathParams,
 
     PutTelescopeAbortslewBodyParams { client_id, client_transaction_id }: PutTelescopeAbortslewBodyParams,
-) {
+) -> Json<MethodResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -10668,7 +10807,7 @@ fn get_telescope_axisrates(
 
         axis,
     }: GetTelescopeAxisratesQueryParams,
-) {
+) -> Json<AxisRatesResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -10719,7 +10858,7 @@ fn get_telescope_canmoveaxis(
 
         client_transaction_id,
     }: GetTelescopeCanmoveaxisQueryParams,
-) {
+) -> Json<BoolResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -10778,7 +10917,7 @@ fn get_telescope_destinationsideofpier(
 
         client_transaction_id,
     }: GetTelescopeDestinationsideofpierQueryParams,
-) {
+) -> Json<IntResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -10818,7 +10957,7 @@ fn put_telescope_findhome(
     PutTelescopeFindhomePathParams { device_number }: PutTelescopeFindhomePathParams,
 
     PutTelescopeFindhomeBodyParams { client_id, client_transaction_id }: PutTelescopeFindhomeBodyParams,
-) {
+) -> Json<MethodResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -10878,7 +11017,7 @@ fn put_telescope_moveaxis(
 
         client_transaction_id,
     }: PutTelescopeMoveaxisBodyParams,
-) {
+) -> Json<MethodResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -10914,7 +11053,12 @@ Park the mount
 Move the telescope to its park position, stop all motion (or restrict to a small safe range), and set AtPark to True. )
 */
 #[put("/telescope/<device_number>/park")]
-fn put_telescope_park(PutTelescopeParkPathParams { device_number }: PutTelescopeParkPathParams, PutTelescopeParkBodyParams { client_id, client_transaction_id }: PutTelescopeParkBodyParams) {}
+fn put_telescope_park(
+    PutTelescopeParkPathParams { device_number }: PutTelescopeParkPathParams,
+
+    PutTelescopeParkBodyParams { client_id, client_transaction_id }: PutTelescopeParkBodyParams,
+) -> Json<MethodResponse> {
+}
 
 #[derive(Deserialize, FromRequest)]
 #[from_request(via(Path))]
@@ -10973,7 +11117,7 @@ fn put_telescope_pulseguide(
 
         client_transaction_id,
     }: PutTelescopePulseguideBodyParams,
-) {
+) -> Json<MethodResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -11013,7 +11157,7 @@ fn put_telescope_setpark(
     PutTelescopeSetparkPathParams { device_number }: PutTelescopeSetparkPathParams,
 
     PutTelescopeSetparkBodyParams { client_id, client_transaction_id }: PutTelescopeSetparkBodyParams,
-) {
+) -> Json<MethodResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -11073,7 +11217,7 @@ fn put_telescope_slewtoaltaz(
 
         client_transaction_id,
     }: PutTelescopeSlewtoaltazBodyParams,
-) {
+) -> Json<MethodResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -11133,7 +11277,7 @@ fn put_telescope_slewtoaltazasync(
 
         client_transaction_id,
     }: PutTelescopeSlewtoaltazasyncBodyParams,
-) {
+) -> Json<MethodResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -11193,7 +11337,7 @@ fn put_telescope_slewtocoordinates(
 
         client_transaction_id,
     }: PutTelescopeSlewtocoordinatesBodyParams,
-) {
+) -> Json<MethodResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -11253,7 +11397,7 @@ fn put_telescope_slewtocoordinatesasync(
 
         client_transaction_id,
     }: PutTelescopeSlewtocoordinatesasyncBodyParams,
-) {
+) -> Json<MethodResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -11293,7 +11437,7 @@ fn put_telescope_slewtotarget(
     PutTelescopeSlewtotargetPathParams { device_number }: PutTelescopeSlewtotargetPathParams,
 
     PutTelescopeSlewtotargetBodyParams { client_id, client_transaction_id }: PutTelescopeSlewtotargetBodyParams,
-) {
+) -> Json<MethodResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -11333,7 +11477,7 @@ fn put_telescope_slewtotargetasync(
     PutTelescopeSlewtotargetasyncPathParams { device_number }: PutTelescopeSlewtotargetasyncPathParams,
 
     PutTelescopeSlewtotargetasyncBodyParams { client_id, client_transaction_id }: PutTelescopeSlewtotargetasyncBodyParams,
-) {
+) -> Json<MethodResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -11393,7 +11537,7 @@ fn put_telescope_synctoaltaz(
 
         client_transaction_id,
     }: PutTelescopeSynctoaltazBodyParams,
-) {
+) -> Json<MethodResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -11453,7 +11597,7 @@ fn put_telescope_synctocoordinates(
 
         client_transaction_id,
     }: PutTelescopeSynctocoordinatesBodyParams,
-) {
+) -> Json<MethodResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -11493,7 +11637,7 @@ fn put_telescope_synctotarget(
     PutTelescopeSynctotargetPathParams { device_number }: PutTelescopeSynctotargetPathParams,
 
     PutTelescopeSynctotargetBodyParams { client_id, client_transaction_id }: PutTelescopeSynctotargetBodyParams,
-) {
+) -> Json<MethodResponse> {
 }
 
 #[derive(Deserialize, FromRequest)]
@@ -11529,7 +11673,11 @@ Unparks the mount.
 Takes telescope out of the Parked state. )
 */
 #[put("/telescope/<device_number>/unpark")]
-fn put_telescope_unpark(PutTelescopeUnparkPathParams { device_number }: PutTelescopeUnparkPathParams, PutTelescopeUnparkBodyParams { client_id, client_transaction_id }: PutTelescopeUnparkBodyParams) {
+fn put_telescope_unpark(
+    PutTelescopeUnparkPathParams { device_number }: PutTelescopeUnparkPathParams,
+
+    PutTelescopeUnparkBodyParams { client_id, client_transaction_id }: PutTelescopeUnparkBodyParams,
+) -> Json<MethodResponse> {
 }
 
 #[actix_web::main]

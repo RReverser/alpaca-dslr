@@ -6,103 +6,204 @@
 
 use axum::{Router, routing::{get, post}};
 
-<% function doc(description) {
-	if (description) {
-		return `/**\n${description}\n*/`;
-	}
-} %>
+<%
+let path2id = Object.fromEntries(
+  Object.keys(api.paths || {}).map(path => [
+    path,
+    path
+      .split('/')
+      .slice(1)
+      .filter(x => !/^\{.*\}$/.test(x))
+      .join('_')
+  ])
+);
+
+const toTypeName = toPascalCase;
+
+function toPropName(name) {
+  let converted = toSnakeCase(name);
+  if (converted === 'type') {
+    converted += '_';
+  }
+  return converted;
+}
+
+function doc(description) {
+  if (description) {
+    return `/**\n${description}\n*/`;
+  }
+}
+
+let registeredSchemas = new Map(Object.entries(api.components.schemas).map(
+  ([name, schema]) => [schema, name]
+));
+
+function handleType(schema, schemaName) {
+  let registeredSchemaName = registeredSchemas.get(schema);
+  if (registeredSchemaName && registeredSchemaName !== schemaName) {
+    return registeredSchemaName;
+  }
+  switch (schema.type) {
+    case 'integer':
+      switch (schema.format) {
+        case 'uint32':
+          return 'u32';
+        case 'int32':
+          return 'i32';
+      }
+      break;
+    case 'array':
+      return `Vec<${handleType(schema.items)}>`;
+    case 'number':
+      return 'f64';
+    case 'string':
+      return 'String';
+    case 'boolean':
+      return 'bool';
+  }
+  console.warn(`Unhandled schema type`, schema);
+  return '()';
+}
+
+function handleOptType(schema, required) {
+  let type = handleType(schema);
+  return required ? type : `Option<${type}>`;
+}
+
+function getTypeDescription(schema) {
+  if ('description' in schema) {
+    return schema.description;
+  }
+  if (schema.type === 'array') {
+    return getTypeDescription(schema.items);
+  }
+  return '';
+}
+
+function getContent(owner) {
+  let { content } = owner;
+  let keys = Object.keys(content || {});
+  if (!content || !keys.length) {
+    console.warn('Missing content', owner);
+    return;
+  }
+  if (keys.length > 1) {
+    console.warn('Content with multiple types', owner);
+    return;
+  }
+  let contentType = keys[0],
+    type;
+  switch (contentType) {
+    case 'application/json':
+      type = 'Json';
+      break;
+    case 'application/x-www-form-urlencoded':
+      type = 'Form';
+      break;
+    default:
+      console.warn('Content with unsupported type', owner);
+      return;
+  }
+  let { schema } = content[contentType];
+  if (!schema || schema.type !== 'object') {
+    console.warn('Content with unsupported schema', owner);
+    return;
+  }
+  return { type, schema };
+}
+%>
 
 <% function handleSchema(schemaName, schema) { %>
-	struct <%= schemaName %>
-	<% if (schema.type === 'object') { %>
-		{
-			<% for (let [propName, prop] of Object.entries(schema.properties)) { %>
-				<%= doc(getTypeDescription(prop)) %>
-				#[serde(rename = "<%= propName %>")]
-				<%= toPropName(propName) %>: <%= handleOptType(prop, schema.required?.includes(propName)) %>,
-			<% } %>
-		}
-	<% } else { %>
-		(<%= handleType(schema) %>);
-	<% } %>
+  struct <%= schemaName %>
+  <% if (schema.type === 'object') { %>
+    {
+      <% for (let [propName, prop] of Object.entries(schema.properties)) { %>
+        <%= doc(getTypeDescription(prop)) %>
+        #[serde(rename = "<%= propName %>")]
+        <%= toPropName(propName) %>: <%= handleOptType(prop, schema.required?.includes(propName)) %>,
+      <% } %>
+    }
+  <% } else { %>
+    (<%= handleType(schema, schemaName) %>);
+  <% } %>
 <% } %>
 
 mod schemas {
-	<% for (let [schemaName, schema] of Object.entries(api.components.schemas)) { %>
-		#[derive(Serialize)]
-		<%= handleSchema(schemaName, schema) %>
-	<% } %>
+  <% for (let [schemaName, schema] of Object.entries(api.components.schemas)) { %>
+    #[derive(Serialize)]
+    <%= handleSchema(schemaName, schema) %>
+  <% } %>
 }
 
 <% for (let [pathUrl, path] of Object.entries(api.paths)) { %>
-	<% for (let [methodName, method] of Object.entries(path)) { %>
-		<%
-			let fnName = `${methodName}_${path2id[pathUrl]}`;
+  <% for (let [methodName, method] of Object.entries(path)) { %>
+    <%
+      let fnName = `${methodName}_${path2id[pathUrl]}`;
 
-			let groupedMethodParams = new Map();
-			for (let param of method.parameters) {
-				let groupName = toTypeName(param.in);
-				let group = groupedMethodParams.get(groupName);
-				if (!group) {
-					group = [];
-					groupedMethodParams.set(groupName, group);
-				}
-				group.push(param);
-			}
-		%>
+      let groupedMethodParams = new Map();
+      for (let param of method.parameters) {
+        let groupName = toTypeName(param.in);
+        let group = groupedMethodParams.get(groupName);
+        if (!group) {
+          group = [];
+          groupedMethodParams.set(groupName, group);
+        }
+        group.push(param);
+      }
+    %>
 
-		<% for (let [groupName, params] of groupedMethodParams) { %>
-			#[derive(Deserialize, FromRequest)]
-			#[from_request(via(<%= groupName %>))]
-			struct <%= toTypeName(fnName) %><%= groupName %>Params {
-				<% for (let param of params) { %>
-					<%= doc(getTypeDescription(param)) %>
-					#[serde(rename = "<%= param.name %>")]
-					<%= toPropName(param.name) %>: <%= handleOptType(param.schema, param.required) %>,
-				<% } %>
-			}
-		<% } %>
+    <% for (let [groupName, params] of groupedMethodParams) { %>
+      #[derive(Deserialize, FromRequest)]
+      #[from_request(via(<%= groupName %>))]
+      struct <%= toTypeName(fnName) %><%= groupName %>Params {
+        <% for (let param of params) { %>
+          <%= doc(param.description) %>
+          #[serde(rename = "<%= param.name %>")]
+          <%= toPropName(param.name) %>: <%= handleOptType(param.schema, param.required) %>,
+        <% } %>
+      }
+    <% } %>
 
-		<%
-			let methodBody = getRequestBody(method);
-			if (methodBody) {
-		%>
-				#[derive(Deserialize, FromRequest)]
-				#[from_request(via(<%= methodBody.type %>))]
-				<%= handleSchema(toTypeName(fnName) + 'BodyParams', methodBody.schema) %>
-		<%
-				groupedMethodParams.set('Body', Object.keys(methodBody.schema.properties).map(name => ({ name })));
-			}
-		%>
+    <%
+      if (method.requestBody) {
+        let methodBody = getContent(method.requestBody);
+    %>
+        #[derive(Deserialize, FromRequest)]
+        #[from_request(via(<%= methodBody.type %>))]
+        <%= handleSchema(toTypeName(fnName) + 'BodyParams', methodBody.schema) %>
+    <%
+        groupedMethodParams.set('Body', Object.keys(methodBody.schema.properties).map(name => ({ name })));
+      }
+    %>
 
-		<%= doc(`${method.summary}${method.description && `\n\n${method.description}`}`) %>
-		#[<%= methodName %>("<%= pathUrl.replaceAll(/\{(.*?)\}/g, '<$1>') %>")]
-		fn <%= methodName %>_<%= path2id[pathUrl] %>(
-			<% for (let [groupName, params] of groupedMethodParams) { %>
-				<%= toTypeName(fnName) %><%= groupName %>Params {
-					<% for (let param of params) { %>
-						<%= toPropName(param.name) %>,
-					<% } %>
-				}: <%= toTypeName(fnName) %><%= groupName %>Params,
-			<% } %>
-		) {
+    <%= doc(`${method.summary}${method.description && `\n\n${method.description}`}`) %>
+    #[<%= methodName %>("<%= pathUrl.replaceAll(/\{(.*?)\}/g, '<$1>') %>")]
+    fn <%= methodName %>_<%= path2id[pathUrl] %>(
+      <% for (let [groupName, params] of groupedMethodParams) { %>
+        <%= toTypeName(fnName) %><%= groupName %>Params {
+          <% for (let param of params) { %>
+            <%= toPropName(param.name) %>,
+          <% } %>
+        }: <%= toTypeName(fnName) %><%= groupName %>Params,
+      <% } %>
+    ) -> <% let response = getContent(method.responses[200]); %><%= `${response.type}<${handleType(response.schema)}>` %> {
 
-		}
-	<% } %>
+    }
+  <% } %>
 
 <% } %>
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
-	HttpServer::new(|| {
-		App::new()
-		<% for (let [pathUrl, path] of Object.entries(api.paths)) { %>
-			<% for (let methodName in path) { %>
-				.service(<%= methodName %>_<%= path2id[pathUrl] %>)
-			<% } %>
-		<% } %>
-	})
-	.bind(("127.0.0.1", 8080))?
-	.run()
-	.await
+  HttpServer::new(|| {
+    App::new()
+    <% for (let [pathUrl, path] of Object.entries(api.paths)) { %>
+      <% for (let methodName in path) { %>
+        .service(<%= methodName %>_<%= path2id[pathUrl] %>)
+      <% } %>
+    <% } %>
+  })
+  .bind(("127.0.0.1", 8080))?
+  .run()
+  .await
 }
