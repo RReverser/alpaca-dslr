@@ -8,7 +8,8 @@ import * as assert from 'assert/strict';
 import { inspect } from 'util';
 
 interface MethodExtension {
-  'x-parameterSchemas'?: OpenAPIV3.ReferenceObject[];
+  'x-path'?: OpenAPIV3.ReferenceObject;
+  'x-body'?: OpenAPIV3.ReferenceObject;
   'x-response'?: OpenAPIV3.ReferenceObject;
 }
 
@@ -116,28 +117,26 @@ for (let { method, path, id, operation } of ops()) {
 
   let typeId = toPascalCase(id);
 
-  operation['x-parameterSchemas'] = Object.entries(groupedParams).map(
-    ([group, params]) => {
-      let via;
-      switch (group) {
-        case 'path':
-          via = 'Path';
-          break;
-        case 'query':
-          via = 'Query';
-          break;
-        default:
-          throw new Error(`Unsupported parameter group: ${group}`);
-      }
+  let { path: pathParams, query: queryParams, ...other } = groupedParams;
+  assert.deepEqual(other, {});
 
-      setXKind(params, via);
-      return registerSchema(`${typeId}${toPascalCase(group)}`, params);
-    }
-  );
+  assert.ok(pathParams, `Missing path parameters for ${id}`);
+  setXKind(pathParams, 'Path');
+  let pathParamsRef = registerSchema(`${typeId}Path`, pathParams);
 
   let requestBody = resolveMaybeRef(operation.requestBody);
 
-  if (requestBody) {
+  let bodyParamsRef;
+  if (method === 'get') {
+    assert.ok(queryParams, `Missing query parameters for ${id}`);
+    assert.ok(!requestBody, `Unexpected request body for ${id}`);
+
+    setXKind(queryParams, 'Query');
+    bodyParamsRef = registerSchema(`${typeId}Query`, queryParams);
+  } else {
+    assert.ok(!queryParams, `Unexpected query parameters for ${id}`);
+    assert.ok(requestBody, `Missing request body for ${id}`);
+
     let { content, schema } = getContent(
       requestBody,
       'application/x-www-form-urlencoded'
@@ -148,19 +147,11 @@ for (let { method, path, id, operation } of ops()) {
     }
 
     setXKind(schema, 'Form');
-    operation['x-parameterSchemas'].push(content.schema);
+    bodyParamsRef = content.schema;
   }
 
-  if (method === 'get') {
-    assert.ok(groupedParams.query, 'GET method must have query parameters');
-    assert.ok(!requestBody, 'GET request should not have a body');
-  } else {
-    assert.ok(
-      !groupedParams.query,
-      'Non-GET method must not have query parameters'
-    );
-    assert.ok(requestBody, 'Non-GET request must have a body');
-  }
+  operation['x-path'] = pathParamsRef;
+  operation['x-body'] = bodyParamsRef;
 
   let { 200: successfulResponse, ...errorResponses } = operation.responses;
 

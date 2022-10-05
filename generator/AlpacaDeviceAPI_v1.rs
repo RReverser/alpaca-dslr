@@ -4837,7 +4837,6 @@ This method should return an error message and NotImplementedException error num
 #[put("/<device_type>/<device_number>/action")]
 fn put_action(
     schemas::PutActionPath { device_type, device_number }: schemas::PutActionPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::PutActionRequest { action, parameters },
@@ -4853,7 +4852,6 @@ Transmits an arbitrary string to the device and does not wait for a response. Op
 #[put("/<device_type>/<device_number>/commandblind")]
 fn put_commandblind(
     schemas::PutCommandblindPath { device_type, device_number }: schemas::PutCommandblindPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::PutCommandblindRequest { command, raw },
@@ -4869,7 +4867,6 @@ Transmits an arbitrary string to the device and waits for a boolean response. Op
 #[put("/<device_type>/<device_number>/commandbool")]
 fn put_commandbool(
     schemas::PutCommandboolPath { device_type, device_number }: schemas::PutCommandboolPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::PutCommandblindRequest { command, raw },
@@ -4885,7 +4882,6 @@ Transmits an arbitrary string to the device and waits for a string response. Opt
 #[put("/<device_type>/<device_number>/commandstring")]
 fn put_commandstring(
     schemas::PutCommandstringPath { device_type, device_number }: schemas::PutCommandstringPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::PutCommandblindRequest { command, raw },
@@ -4901,7 +4897,6 @@ Retrieves the connected state of the device
 #[get("/<device_type>/<device_number>/connected")]
 fn get_connected(
     schemas::GetConnectedPath { device_type, device_number }: schemas::GetConnectedPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::GetConnectedQuery {},
@@ -4917,7 +4912,6 @@ Sets the connected state of the device
 #[put("/<device_type>/<device_number>/connected")]
 fn put_connected(
     schemas::PutConnectedPath { device_type, device_number }: schemas::PutConnectedPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::PutConnectedRequest { connected },
@@ -4933,7 +4927,6 @@ The description of the device
 #[get("/<device_type>/<device_number>/description")]
 fn get_description(
     schemas::GetDescriptionPath { device_type, device_number }: schemas::GetDescriptionPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::GetDescriptionQuery {},
@@ -4949,7 +4942,6 @@ The description of the driver
 #[get("/<device_type>/<device_number>/driverinfo")]
 fn get_driverinfo(
     schemas::GetDriverinfoPath { device_type, device_number }: schemas::GetDriverinfoPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::GetDriverinfoQuery {},
@@ -4965,7 +4957,6 @@ A string containing only the major and minor version of the driver.
 #[get("/<device_type>/<device_number>/driverversion")]
 fn get_driverversion(
     schemas::GetDriverversionPath { device_type, device_number }: schemas::GetDriverversionPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::GetDriverversionQuery {},
@@ -4981,7 +4972,6 @@ This method returns the version of the ASCOM device interface contract to which 
 #[get("/<device_type>/<device_number>/interfaceversion")]
 fn get_interfaceversion(
     schemas::GetInterfaceversionPath { device_type, device_number }: schemas::GetInterfaceversionPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::GetInterfaceversionQuery {},
@@ -4997,7 +4987,6 @@ The name of the device
 #[get("/<device_type>/<device_number>/name")]
 fn get_name(
     schemas::GetNamePath { device_type, device_number }: schemas::GetNamePath,
-
     ASCOMRequest {
         transaction,
         request: schemas::GetNameQuery {},
@@ -5013,7 +5002,6 @@ Returns the list of action names supported by this driver.
 #[get("/<device_type>/<device_number>/supportedactions")]
 fn get_supportedactions(
     schemas::GetSupportedactionsPath { device_type, device_number }: schemas::GetSupportedactionsPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::GetSupportedactionsQuery {},
@@ -5029,7 +5017,6 @@ Returns the X offset of the Bayer matrix, as defined in SensorType.
 #[get("/camera/<device_number>/bayeroffsetx")]
 fn get_camera_bayeroffsetx(
     schemas::GetCameraBayeroffsetxPath { device_number }: schemas::GetCameraBayeroffsetxPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::GetCameraBayeroffsetxQuery {},
@@ -5045,7 +5032,6 @@ Returns the Y offset of the Bayer matrix, as defined in SensorType.
 #[get("/camera/<device_number>/bayeroffsety")]
 fn get_camera_bayeroffsety(
     schemas::GetCameraBayeroffsetyPath { device_number }: schemas::GetCameraBayeroffsetyPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::GetCameraBayeroffsetyQuery {},
@@ -5061,7 +5047,6 @@ Returns the binning factor for the X axis.
 #[get("/camera/<device_number>/binx")]
 fn get_camera_binx(
     schemas::GetCameraBinxPath { device_number }: schemas::GetCameraBinxPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::GetCameraBinxQuery {},
@@ -5077,7 +5062,6 @@ Sets the binning factor for the X axis.
 #[put("/camera/<device_number>/binx")]
 fn put_camera_binx(
     schemas::PutCameraBinxPath { device_number }: schemas::PutCameraBinxPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::PutCameraBinxRequest { bin_x },
@@ -5093,7 +5077,6 @@ Returns the binning factor for the Y axis.
 #[get("/camera/<device_number>/biny")]
 fn get_camera_biny(
     schemas::GetCameraBinyPath { device_number }: schemas::GetCameraBinyPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::GetCameraBinyQuery {},
@@ -5109,7 +5092,6 @@ Sets the binning factor for the Y axis.
 #[put("/camera/<device_number>/biny")]
 fn put_camera_biny(
     schemas::PutCameraBinyPath { device_number }: schemas::PutCameraBinyPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::PutCameraBinyRequest { bin_y },
@@ -5125,7 +5107,6 @@ Returns the current camera operational state as an integer. 0 = CameraIdle , 1 =
 #[get("/camera/<device_number>/camerastate")]
 fn get_camera_camerastate(
     schemas::GetCameraCamerastatePath { device_number }: schemas::GetCameraCamerastatePath,
-
     ASCOMRequest {
         transaction,
         request: schemas::GetCameraCamerastateQuery {},
@@ -5141,7 +5122,6 @@ Returns the width of the CCD camera chip in unbinned pixels.
 #[get("/camera/<device_number>/cameraxsize")]
 fn get_camera_cameraxsize(
     schemas::GetCameraCameraxsizePath { device_number }: schemas::GetCameraCameraxsizePath,
-
     ASCOMRequest {
         transaction,
         request: schemas::GetCameraCameraxsizeQuery {},
@@ -5157,7 +5137,6 @@ Returns the height of the CCD camera chip in unbinned pixels.
 #[get("/camera/<device_number>/cameraysize")]
 fn get_camera_cameraysize(
     schemas::GetCameraCameraysizePath { device_number }: schemas::GetCameraCameraysizePath,
-
     ASCOMRequest {
         transaction,
         request: schemas::GetCameraCameraysizeQuery {},
@@ -5173,7 +5152,6 @@ Returns true if the camera can abort exposures; false if not.
 #[get("/camera/<device_number>/canabortexposure")]
 fn get_camera_canabortexposure(
     schemas::GetCameraCanabortexposurePath { device_number }: schemas::GetCameraCanabortexposurePath,
-
     ASCOMRequest {
         transaction,
         request: schemas::GetCameraCanabortexposureQuery {},
@@ -5189,7 +5167,6 @@ Returns a flag showing whether this camera supports asymmetric binning
 #[get("/camera/<device_number>/canasymmetricbin")]
 fn get_camera_canasymmetricbin(
     schemas::GetCameraCanasymmetricbinPath { device_number }: schemas::GetCameraCanasymmetricbinPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::GetCameraCanasymmetricbinQuery {},
@@ -5205,7 +5182,6 @@ Indicates whether the camera has a fast readout mode.
 #[get("/camera/<device_number>/canfastreadout")]
 fn get_camera_canfastreadout(
     schemas::GetCameraCanfastreadoutPath { device_number }: schemas::GetCameraCanfastreadoutPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::GetCameraCanfastreadoutQuery {},
@@ -5221,7 +5197,6 @@ If true, the camera's cooler power setting can be read.
 #[get("/camera/<device_number>/cangetcoolerpower")]
 fn get_camera_cangetcoolerpower(
     schemas::GetCameraCangetcoolerpowerPath { device_number }: schemas::GetCameraCangetcoolerpowerPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::GetCameraCangetcoolerpowerQuery {},
@@ -5237,7 +5212,6 @@ Returns a flag indicating whether this camera supports pulse guiding.
 #[get("/camera/<device_number>/canpulseguide")]
 fn get_camera_canpulseguide(
     schemas::GetCameraCanpulseguidePath { device_number }: schemas::GetCameraCanpulseguidePath,
-
     ASCOMRequest {
         transaction,
         request: schemas::GetCameraCanpulseguideQuery {},
@@ -5253,7 +5227,6 @@ Returns a flag indicatig whether this camera supports setting the CCD temperatur
 #[get("/camera/<device_number>/cansetccdtemperature")]
 fn get_camera_cansetccdtemperature(
     schemas::GetCameraCansetccdtemperaturePath { device_number }: schemas::GetCameraCansetccdtemperaturePath,
-
     ASCOMRequest {
         transaction,
         request: schemas::GetCameraCansetccdtemperatureQuery {},
@@ -5269,7 +5242,6 @@ Returns a flag indicating whether this camera can stop an exposure that is in pr
 #[get("/camera/<device_number>/canstopexposure")]
 fn get_camera_canstopexposure(
     schemas::GetCameraCanstopexposurePath { device_number }: schemas::GetCameraCanstopexposurePath,
-
     ASCOMRequest {
         transaction,
         request: schemas::GetCameraCanstopexposureQuery {},
@@ -5285,7 +5257,6 @@ Returns the current CCD temperature in degrees Celsius.
 #[get("/camera/<device_number>/ccdtemperature")]
 fn get_camera_ccdtemperature(
     schemas::GetCameraCcdtemperaturePath { device_number }: schemas::GetCameraCcdtemperaturePath,
-
     ASCOMRequest {
         transaction,
         request: schemas::GetCameraCcdtemperatureQuery {},
@@ -5301,7 +5272,6 @@ Returns the current cooler on/off state.
 #[get("/camera/<device_number>/cooleron")]
 fn get_camera_cooleron(
     schemas::GetCameraCooleronPath { device_number }: schemas::GetCameraCooleronPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::GetCameraCooleronQuery {},
@@ -5317,7 +5287,6 @@ Turns on and off the camera cooler. True = cooler on, False = cooler off
 #[put("/camera/<device_number>/cooleron")]
 fn put_camera_cooleron(
     schemas::PutCameraCooleronPath { device_number }: schemas::PutCameraCooleronPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::PutCameraCooleronRequest { cooler_on },
@@ -5333,7 +5302,6 @@ Returns the present cooler power level, in percent.
 #[get("/camera/<device_number>/coolerpower")]
 fn get_camera_coolerpower(
     schemas::GetCameraCoolerpowerPath { device_number }: schemas::GetCameraCoolerpowerPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::GetCameraCoolerpowerQuery {},
@@ -5349,7 +5317,6 @@ Returns the gain of the camera in photoelectrons per A/D unit.
 #[get("/camera/<device_number>/electronsperadu")]
 fn get_camera_electronsperadu(
     schemas::GetCameraElectronsperaduPath { device_number }: schemas::GetCameraElectronsperaduPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::GetCameraElectronsperaduQuery {},
@@ -5365,7 +5332,6 @@ Returns the maximum exposure time supported by StartExposure.
 #[get("/camera/<device_number>/exposuremax")]
 fn get_camera_exposuremax(
     schemas::GetCameraExposuremaxPath { device_number }: schemas::GetCameraExposuremaxPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::GetCameraExposuremaxQuery {},
@@ -5381,7 +5347,6 @@ Returns the Minimium exposure time in seconds that the camera supports through S
 #[get("/camera/<device_number>/exposuremin")]
 fn get_camera_exposuremin(
     schemas::GetCameraExposureminPath { device_number }: schemas::GetCameraExposureminPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::GetCameraExposureminQuery {},
@@ -5397,7 +5362,6 @@ Returns the smallest increment in exposure time supported by StartExposure.
 #[get("/camera/<device_number>/exposureresolution")]
 fn get_camera_exposureresolution(
     schemas::GetCameraExposureresolutionPath { device_number }: schemas::GetCameraExposureresolutionPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::GetCameraExposureresolutionQuery {},
@@ -5413,7 +5377,6 @@ Returns whenther Fast Readout Mode is enabled.
 #[get("/camera/<device_number>/fastreadout")]
 fn get_camera_fastreadout(
     schemas::GetCameraFastreadoutPath { device_number }: schemas::GetCameraFastreadoutPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::GetCameraFastreadoutQuery {},
@@ -5429,7 +5392,6 @@ Sets whether Fast Readout Mode is enabled.
 #[put("/camera/<device_number>/fastreadout")]
 fn put_camera_fastreadout(
     schemas::PutCameraFastreadoutPath { device_number }: schemas::PutCameraFastreadoutPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::PutCameraFastreadoutRequest { fast_readout },
@@ -5445,7 +5407,6 @@ Reports the full well capacity of the camera in electrons, at the current camera
 #[get("/camera/<device_number>/fullwellcapacity")]
 fn get_camera_fullwellcapacity(
     schemas::GetCameraFullwellcapacityPath { device_number }: schemas::GetCameraFullwellcapacityPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::GetCameraFullwellcapacityQuery {},
@@ -5461,7 +5422,6 @@ The camera's gain (GAIN VALUE MODE) OR the index of the selected camera gain des
 #[get("/camera/<device_number>/gain")]
 fn get_camera_gain(
     schemas::GetCameraGainPath { device_number }: schemas::GetCameraGainPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::GetCameraGainQuery {},
@@ -5477,7 +5437,6 @@ The camera's gain (GAIN VALUE MODE) OR the index of the selected camera gain des
 #[put("/camera/<device_number>/gain")]
 fn put_camera_gain(
     schemas::PutCameraGainPath { device_number }: schemas::PutCameraGainPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::PutCameraGainRequest { gain },
@@ -5493,7 +5452,6 @@ Returns the maximum value of Gain.
 #[get("/camera/<device_number>/gainmax")]
 fn get_camera_gainmax(
     schemas::GetCameraGainmaxPath { device_number }: schemas::GetCameraGainmaxPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::GetCameraGainmaxQuery {},
@@ -5509,7 +5467,6 @@ Returns the Minimum value of Gain.
 #[get("/camera/<device_number>/gainmin")]
 fn get_camera_gainmin(
     schemas::GetCameraGainminPath { device_number }: schemas::GetCameraGainminPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::GetCameraGainminQuery {},
@@ -5525,7 +5482,6 @@ Returns the Gains supported by the camera.
 #[get("/camera/<device_number>/gains")]
 fn get_camera_gains(
     schemas::GetCameraGainsPath { device_number }: schemas::GetCameraGainsPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::GetCameraGainsQuery {},
@@ -5541,7 +5497,6 @@ Returns a flag indicating whether this camera has a mechanical shutter.
 #[get("/camera/<device_number>/hasshutter")]
 fn get_camera_hasshutter(
     schemas::GetCameraHasshutterPath { device_number }: schemas::GetCameraHasshutterPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::GetCameraHasshutterQuery {},
@@ -5557,7 +5512,6 @@ Returns the current heat sink temperature (called "ambient temperature" by some 
 #[get("/camera/<device_number>/heatsinktemperature")]
 fn get_camera_heatsinktemperature(
     schemas::GetCameraHeatsinktemperaturePath { device_number }: schemas::GetCameraHeatsinktemperaturePath,
-
     ASCOMRequest {
         transaction,
         request: schemas::GetCameraHeatsinktemperatureQuery {},
@@ -5628,7 +5582,6 @@ Returning an image from an Alpaca device as a JSON array is very inefficient and
 #[get("/camera/<device_number>/imagearray")]
 fn get_camera_imagearray(
     schemas::GetCameraImagearrayPath { device_number }: schemas::GetCameraImagearrayPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::GetCameraImagearrayQuery {},
@@ -5699,7 +5652,6 @@ Returning an image from an Alpaca device as a JSON array is very inefficient and
 #[get("/camera/<device_number>/imagearrayvariant")]
 fn get_camera_imagearrayvariant(
     schemas::GetCameraImagearrayvariantPath { device_number }: schemas::GetCameraImagearrayvariantPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::GetCameraImagearrayvariantQuery {},
@@ -5715,7 +5667,6 @@ Returns a flag indicating whether the image is ready to be downloaded from the c
 #[get("/camera/<device_number>/imageready")]
 fn get_camera_imageready(
     schemas::GetCameraImagereadyPath { device_number }: schemas::GetCameraImagereadyPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::GetCameraImagereadyQuery {},
@@ -5731,7 +5682,6 @@ Returns a flag indicating whether the camera is currrently in a PulseGuide opera
 #[get("/camera/<device_number>/ispulseguiding")]
 fn get_camera_ispulseguiding(
     schemas::GetCameraIspulseguidingPath { device_number }: schemas::GetCameraIspulseguidingPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::GetCameraIspulseguidingQuery {},
@@ -5747,7 +5697,6 @@ Reports the actual exposure duration in seconds (i.e. shutter open time).
 #[get("/camera/<device_number>/lastexposureduration")]
 fn get_camera_lastexposureduration(
     schemas::GetCameraLastexposuredurationPath { device_number }: schemas::GetCameraLastexposuredurationPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::GetCameraLastexposuredurationQuery {},
@@ -5763,7 +5712,6 @@ Reports the actual exposure start in the FITS-standard CCYY-MM-DDThh:mm:ss[.sss.
 #[get("/camera/<device_number>/lastexposurestarttime")]
 fn get_camera_lastexposurestarttime(
     schemas::GetCameraLastexposurestarttimePath { device_number }: schemas::GetCameraLastexposurestarttimePath,
-
     ASCOMRequest {
         transaction,
         request: schemas::GetCameraLastexposurestarttimeQuery {},
@@ -5779,7 +5727,6 @@ Reports the maximum ADU value the camera can produce.
 #[get("/camera/<device_number>/maxadu")]
 fn get_camera_maxadu(
     schemas::GetCameraMaxaduPath { device_number }: schemas::GetCameraMaxaduPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::GetCameraMaxaduQuery {},
@@ -5795,7 +5742,6 @@ Returns the maximum allowed binning for the X camera axis
 #[get("/camera/<device_number>/maxbinx")]
 fn get_camera_maxbinx(
     schemas::GetCameraMaxbinxPath { device_number }: schemas::GetCameraMaxbinxPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::GetCameraMaxbinxQuery {},
@@ -5811,7 +5757,6 @@ Returns the maximum allowed binning for the Y camera axis
 #[get("/camera/<device_number>/maxbiny")]
 fn get_camera_maxbiny(
     schemas::GetCameraMaxbinyPath { device_number }: schemas::GetCameraMaxbinyPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::GetCameraMaxbinyQuery {},
@@ -5827,7 +5772,6 @@ Returns the current subframe width, if binning is active, value is in binned pix
 #[get("/camera/<device_number>/numx")]
 fn get_camera_numx(
     schemas::GetCameraNumxPath { device_number }: schemas::GetCameraNumxPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::GetCameraNumxQuery {},
@@ -5843,7 +5787,6 @@ Sets the current subframe width.
 #[put("/camera/<device_number>/numx")]
 fn put_camera_numx(
     schemas::PutCameraNumxPath { device_number }: schemas::PutCameraNumxPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::PutCameraNumxRequest { num_x },
@@ -5859,7 +5802,6 @@ Returns the current subframe height, if binning is active, value is in binned pi
 #[get("/camera/<device_number>/numy")]
 fn get_camera_numy(
     schemas::GetCameraNumyPath { device_number }: schemas::GetCameraNumyPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::GetCameraNumyQuery {},
@@ -5875,7 +5817,6 @@ Sets the current subframe height.
 #[put("/camera/<device_number>/numy")]
 fn put_camera_numy(
     schemas::PutCameraNumyPath { device_number }: schemas::PutCameraNumyPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::PutCameraNumyRequest { num_y },
@@ -5891,7 +5832,6 @@ Returns the camera's offset (OFFSET VALUE MODE) OR the index of the selected cam
 #[get("/camera/<device_number>/offset")]
 fn get_camera_offset(
     schemas::GetCameraOffsetPath { device_number }: schemas::GetCameraOffsetPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::GetCameraOffsetQuery {},
@@ -5907,7 +5847,6 @@ Sets the camera's offset (OFFSET VALUE MODE) OR the index of the selected camera
 #[put("/camera/<device_number>/offset")]
 fn put_camera_offset(
     schemas::PutCameraOffsetPath { device_number }: schemas::PutCameraOffsetPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::PutCameraOffsetRequest { offset },
@@ -5923,7 +5862,6 @@ Returns the maximum value of offset.
 #[get("/camera/<device_number>/offsetmax")]
 fn get_camera_offsetmax(
     schemas::GetCameraOffsetmaxPath { device_number }: schemas::GetCameraOffsetmaxPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::GetCameraOffsetmaxQuery {},
@@ -5939,7 +5877,6 @@ Returns the Minimum value of offset.
 #[get("/camera/<device_number>/offsetmin")]
 fn get_camera_offsetmin(
     schemas::GetCameraOffsetminPath { device_number }: schemas::GetCameraOffsetminPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::GetCameraOffsetminQuery {},
@@ -5955,7 +5892,6 @@ Returns the offsets supported by the camera.
 #[get("/camera/<device_number>/offsets")]
 fn get_camera_offsets(
     schemas::GetCameraOffsetsPath { device_number }: schemas::GetCameraOffsetsPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::GetCameraOffsetsQuery {},
@@ -5971,7 +5907,6 @@ Returns the percentage of the current operation that is complete. If valid, retu
 #[get("/camera/<device_number>/percentcompleted")]
 fn get_camera_percentcompleted(
     schemas::GetCameraPercentcompletedPath { device_number }: schemas::GetCameraPercentcompletedPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::GetCameraPercentcompletedQuery {},
@@ -5987,7 +5922,6 @@ Returns the width of the CCD chip pixels in microns.
 #[get("/camera/<device_number>/pixelsizex")]
 fn get_camera_pixelsizex(
     schemas::GetCameraPixelsizexPath { device_number }: schemas::GetCameraPixelsizexPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::GetCameraPixelsizexQuery {},
@@ -6003,7 +5937,6 @@ Returns the Height of the CCD chip pixels in microns.
 #[get("/camera/<device_number>/pixelsizey")]
 fn get_camera_pixelsizey(
     schemas::GetCameraPixelsizeyPath { device_number }: schemas::GetCameraPixelsizeyPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::GetCameraPixelsizeyQuery {},
@@ -6019,7 +5952,6 @@ ReadoutMode is an index into the array ReadoutModes and returns the desired read
 #[get("/camera/<device_number>/readoutmode")]
 fn get_camera_readoutmode(
     schemas::GetCameraReadoutmodePath { device_number }: schemas::GetCameraReadoutmodePath,
-
     ASCOMRequest {
         transaction,
         request: schemas::GetCameraReadoutmodeQuery {},
@@ -6035,7 +5967,6 @@ Sets the ReadoutMode as an index into the array ReadoutModes.
 #[put("/camera/<device_number>/readoutmode")]
 fn put_camera_readoutmode(
     schemas::PutCameraReadoutmodePath { device_number }: schemas::PutCameraReadoutmodePath,
-
     ASCOMRequest {
         transaction,
         request: schemas::PutCameraReadoutmodeRequest { readout_mode },
@@ -6051,7 +5982,6 @@ This property provides an array of strings, each of which describes an available
 #[get("/camera/<device_number>/readoutmodes")]
 fn get_camera_readoutmodes(
     schemas::GetCameraReadoutmodesPath { device_number }: schemas::GetCameraReadoutmodesPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::GetCameraReadoutmodesQuery {},
@@ -6067,7 +5997,6 @@ The name of the sensor used within the camera.
 #[get("/camera/<device_number>/sensorname")]
 fn get_camera_sensorname(
     schemas::GetCameraSensornamePath { device_number }: schemas::GetCameraSensornamePath,
-
     ASCOMRequest {
         transaction,
         request: schemas::GetCameraSensornameQuery {},
@@ -6092,7 +6021,6 @@ Please see the ASCOM Help fie for more informaiton on the SensorType.
 #[get("/camera/<device_number>/sensortype")]
 fn get_camera_sensortype(
     schemas::GetCameraSensortypePath { device_number }: schemas::GetCameraSensortypePath,
-
     ASCOMRequest {
         transaction,
         request: schemas::GetCameraSensortypeQuery {},
@@ -6108,7 +6036,6 @@ Returns the current camera cooler setpoint in degrees Celsius.
 #[get("/camera/<device_number>/setccdtemperature")]
 fn get_camera_setccdtemperature(
     schemas::GetCameraSetccdtemperaturePath { device_number }: schemas::GetCameraSetccdtemperaturePath,
-
     ASCOMRequest {
         transaction,
         request: schemas::GetCameraSetccdtemperatureQuery {},
@@ -6124,7 +6051,6 @@ Set's the camera's cooler setpoint in degrees Celsius.
 #[put("/camera/<device_number>/setccdtemperature")]
 fn put_camera_setccdtemperature(
     schemas::PutCameraSetccdtemperaturePath { device_number }: schemas::PutCameraSetccdtemperaturePath,
-
     ASCOMRequest {
         transaction,
         request: schemas::PutCameraSetccdtemperatureRequest { set_ccdtemperature },
@@ -6140,7 +6066,6 @@ Sets the subframe start position for the X axis (0 based) and returns the curren
 #[get("/camera/<device_number>/startx")]
 fn get_camera_startx(
     schemas::GetCameraStartxPath { device_number }: schemas::GetCameraStartxPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::GetCameraStartxQuery {},
@@ -6156,7 +6081,6 @@ Sets the current subframe X axis start position in binned pixels.
 #[put("/camera/<device_number>/startx")]
 fn put_camera_startx(
     schemas::PutCameraStartxPath { device_number }: schemas::PutCameraStartxPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::PutCameraStartxRequest { start_x },
@@ -6172,7 +6096,6 @@ Sets the subframe start position for the Y axis (0 based) and returns the curren
 #[get("/camera/<device_number>/starty")]
 fn get_camera_starty(
     schemas::GetCameraStartyPath { device_number }: schemas::GetCameraStartyPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::GetCameraStartyQuery {},
@@ -6188,7 +6111,6 @@ Sets the current subframe Y axis start position in binned pixels.
 #[put("/camera/<device_number>/starty")]
 fn put_camera_starty(
     schemas::PutCameraStartyPath { device_number }: schemas::PutCameraStartyPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::PutCameraStartyRequest { start_y },
@@ -6204,7 +6126,6 @@ The Camera's sub exposure duration in seconds. Only available in Camera Interfac
 #[get("/camera/<device_number>/subexposureduration")]
 fn get_camera_subexposureduration(
     schemas::GetCameraSubexposuredurationPath { device_number }: schemas::GetCameraSubexposuredurationPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::GetCameraSubexposuredurationQuery {},
@@ -6220,7 +6141,6 @@ Sets image sub exposure duration in seconds. Only available in Camera Interface 
 #[put("/camera/<device_number>/subexposureduration")]
 fn put_camera_subexposureduration(
     schemas::PutCameraSubexposuredurationPath { device_number }: schemas::PutCameraSubexposuredurationPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::PutCameraSubexposuredurationRequest { sub_exposure_duration },
@@ -6236,7 +6156,6 @@ Aborts the current exposure, if any, and returns the camera to Idle state.
 #[put("/camera/<device_number>/abortexposure")]
 fn put_camera_abortexposure(
     schemas::PutCameraAbortexposurePath { device_number }: schemas::PutCameraAbortexposurePath,
-
     ASCOMRequest {
         transaction,
         request: schemas::PutCameraAbortexposureRequest {},
@@ -6252,7 +6171,6 @@ Activates the Camera's mount control sytem to instruct the mount to move in a pa
 #[put("/camera/<device_number>/pulseguide")]
 fn put_camera_pulseguide(
     schemas::PutCameraPulseguidePath { device_number }: schemas::PutCameraPulseguidePath,
-
     ASCOMRequest {
         transaction,
         request: schemas::PutCameraPulseguideRequest { direction, duration },
@@ -6268,7 +6186,6 @@ Starts an exposure. Use ImageReady to check when the exposure is complete.
 #[put("/camera/<device_number>/startexposure")]
 fn put_camera_startexposure(
     schemas::PutCameraStartexposurePath { device_number }: schemas::PutCameraStartexposurePath,
-
     ASCOMRequest {
         transaction,
         request: schemas::PutCameraStartexposureRequest { duration, light },
@@ -6284,7 +6201,6 @@ Stops the current exposure, if any. If an exposure is in progress, the readout p
 #[put("/camera/<device_number>/stopexposure")]
 fn put_camera_stopexposure(
     schemas::PutCameraStopexposurePath { device_number }: schemas::PutCameraStopexposurePath,
-
     ASCOMRequest {
         transaction,
         request: schemas::PutCameraAbortexposureRequest {},
@@ -6300,7 +6216,6 @@ Returns the current calibrator brightness in the range 0 (completely off) to Max
 #[get("/covercalibrator/<device_number>/brightness")]
 fn get_covercalibrator_brightness(
     schemas::GetCovercalibratorBrightnessPath { device_number }: schemas::GetCovercalibratorBrightnessPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::GetCovercalibratorBrightnessQuery {},
@@ -6316,7 +6231,6 @@ Returns the state of the calibration device, if present, otherwise returns "NotP
 #[get("/covercalibrator/<device_number>/calibratorstate")]
 fn get_covercalibrator_calibratorstate(
     schemas::GetCovercalibratorCalibratorstatePath { device_number }: schemas::GetCovercalibratorCalibratorstatePath,
-
     ASCOMRequest {
         transaction,
         request: schemas::GetCovercalibratorCalibratorstateQuery {},
@@ -6332,7 +6246,6 @@ Returns the state of the device cover, if present, otherwise returns "NotPresent
 #[get("/covercalibrator/<device_number>/coverstate")]
 fn get_covercalibrator_coverstate(
     schemas::GetCovercalibratorCoverstatePath { device_number }: schemas::GetCovercalibratorCoverstatePath,
-
     ASCOMRequest {
         transaction,
         request: schemas::GetCovercalibratorCoverstateQuery {},
@@ -6348,7 +6261,6 @@ The Brightness value that makes the calibrator deliver its maximum illumination.
 #[get("/covercalibrator/<device_number>/maxbrightness")]
 fn get_covercalibrator_maxbrightness(
     schemas::GetCovercalibratorMaxbrightnessPath { device_number }: schemas::GetCovercalibratorMaxbrightnessPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::GetCovercalibratorMaxbrightnessQuery {},
@@ -6364,7 +6276,6 @@ Turns the calibrator off if the device has calibration capability.
 #[put("/covercalibrator/<device_number>/calibratoroff")]
 fn put_covercalibrator_calibratoroff(
     schemas::PutCovercalibratorCalibratoroffPath { device_number }: schemas::PutCovercalibratorCalibratoroffPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::PutCameraAbortexposureRequest {},
@@ -6380,7 +6291,6 @@ Turns the calibrator on at the specified brightness if the device has calibratio
 #[put("/covercalibrator/<device_number>/calibratoron")]
 fn put_covercalibrator_calibratoron(
     schemas::PutCovercalibratorCalibratoronPath { device_number }: schemas::PutCovercalibratorCalibratoronPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::PutCovercalibratorCalibratoronRequest { brightness },
@@ -6396,7 +6306,6 @@ Initiates cover closing if a cover is present.
 #[put("/covercalibrator/<device_number>/closecover")]
 fn put_covercalibrator_closecover(
     schemas::PutCovercalibratorClosecoverPath { device_number }: schemas::PutCovercalibratorClosecoverPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::PutCameraAbortexposureRequest {},
@@ -6412,7 +6321,6 @@ Stops any cover movement that may be in progress if a cover is present and cover
 #[put("/covercalibrator/<device_number>/haltcover")]
 fn put_covercalibrator_haltcover(
     schemas::PutCovercalibratorHaltcoverPath { device_number }: schemas::PutCovercalibratorHaltcoverPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::PutCameraAbortexposureRequest {},
@@ -6428,7 +6336,6 @@ Initiates cover opening if a cover is present.
 #[put("/covercalibrator/<device_number>/opencover")]
 fn put_covercalibrator_opencover(
     schemas::PutCovercalibratorOpencoverPath { device_number }: schemas::PutCovercalibratorOpencoverPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::PutCameraAbortexposureRequest {},
@@ -6444,7 +6351,6 @@ The dome altitude (degrees, horizon zero and increasing positive to 90 zenith).
 #[get("/dome/<device_number>/altitude")]
 fn get_dome_altitude(
     schemas::GetDomeAltitudePath { device_number }: schemas::GetDomeAltitudePath,
-
     ASCOMRequest {
         transaction,
         request: schemas::GetDomeAltitudeQuery {},
@@ -6460,7 +6366,6 @@ Indicates whether the dome is in the home position. This is normally used follow
 #[get("/dome/<device_number>/athome")]
 fn get_dome_athome(
     schemas::GetDomeAthomePath { device_number }: schemas::GetDomeAthomePath,
-
     ASCOMRequest {
         transaction,
         request: schemas::GetDomeAthomeQuery {},
@@ -6476,7 +6381,6 @@ True if the dome is in the programmed park position. Set only following a Park()
 #[get("/dome/<device_number>/atpark")]
 fn get_dome_atpark(
     schemas::GetDomeAtparkPath { device_number }: schemas::GetDomeAtparkPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::GetDomeAtparkQuery {},
@@ -6492,7 +6396,6 @@ Returns the dome azimuth (degrees, North zero and increasing clockwise, i.e., 90
 #[get("/dome/<device_number>/azimuth")]
 fn get_dome_azimuth(
     schemas::GetDomeAzimuthPath { device_number }: schemas::GetDomeAzimuthPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::GetDomeAzimuthQuery {},
@@ -6508,7 +6411,6 @@ True if the dome can move to the home position.
 #[get("/dome/<device_number>/canfindhome")]
 fn get_dome_canfindhome(
     schemas::GetDomeCanfindhomePath { device_number }: schemas::GetDomeCanfindhomePath,
-
     ASCOMRequest {
         transaction,
         request: schemas::GetDomeCanfindhomeQuery {},
@@ -6524,7 +6426,6 @@ True if the dome is capable of programmed parking (Park() method)
 #[get("/dome/<device_number>/canpark")]
 fn get_dome_canpark(
     schemas::GetDomeCanparkPath { device_number }: schemas::GetDomeCanparkPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::GetDomeCanparkQuery {},
@@ -6540,7 +6441,6 @@ True if driver is capable of setting the dome altitude.
 #[get("/dome/<device_number>/cansetaltitude")]
 fn get_dome_cansetaltitude(
     schemas::GetDomeCansetaltitudePath { device_number }: schemas::GetDomeCansetaltitudePath,
-
     ASCOMRequest {
         transaction,
         request: schemas::GetDomeCansetaltitudeQuery {},
@@ -6556,7 +6456,6 @@ True if driver is capable of setting the dome azimuth.
 #[get("/dome/<device_number>/cansetazimuth")]
 fn get_dome_cansetazimuth(
     schemas::GetDomeCansetazimuthPath { device_number }: schemas::GetDomeCansetazimuthPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::GetDomeCansetazimuthQuery {},
@@ -6572,7 +6471,6 @@ True if driver is capable of setting the dome park position.
 #[get("/dome/<device_number>/cansetpark")]
 fn get_dome_cansetpark(
     schemas::GetDomeCansetparkPath { device_number }: schemas::GetDomeCansetparkPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::GetDomeCansetparkQuery {},
@@ -6588,7 +6486,6 @@ True if driver is capable of automatically operating shutter
 #[get("/dome/<device_number>/cansetshutter")]
 fn get_dome_cansetshutter(
     schemas::GetDomeCansetshutterPath { device_number }: schemas::GetDomeCansetshutterPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::GetDomeCansetshutterQuery {},
@@ -6604,7 +6501,6 @@ True if driver is capable of slaving to a telescope.
 #[get("/dome/<device_number>/canslave")]
 fn get_dome_canslave(
     schemas::GetDomeCanslavePath { device_number }: schemas::GetDomeCanslavePath,
-
     ASCOMRequest {
         transaction,
         request: schemas::GetDomeCanslaveQuery {},
@@ -6620,7 +6516,6 @@ True if driver is capable of synchronizing the dome azimuth position using the S
 #[get("/dome/<device_number>/cansyncazimuth")]
 fn get_dome_cansyncazimuth(
     schemas::GetDomeCansyncazimuthPath { device_number }: schemas::GetDomeCansyncazimuthPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::GetDomeCansyncazimuthQuery {},
@@ -6636,7 +6531,6 @@ Returns the status of the dome shutter or roll-off roof. 0 = Open, 1 = Closed, 2
 #[get("/dome/<device_number>/shutterstatus")]
 fn get_dome_shutterstatus(
     schemas::GetDomeShutterstatusPath { device_number }: schemas::GetDomeShutterstatusPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::GetDomeShutterstatusQuery {},
@@ -6652,7 +6546,6 @@ True if the dome is slaved to the telescope in its hardware, else False.
 #[get("/dome/<device_number>/slaved")]
 fn get_dome_slaved(
     schemas::GetDomeSlavedPath { device_number }: schemas::GetDomeSlavedPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::GetDomeSlavedQuery {},
@@ -6668,7 +6561,6 @@ Sets the current subframe height.
 #[put("/dome/<device_number>/slaved")]
 fn put_dome_slaved(
     schemas::PutDomeSlavedPath { device_number }: schemas::PutDomeSlavedPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::PutDomeSlavedRequest { slaved },
@@ -6684,7 +6576,6 @@ True if any part of the dome is currently moving, False if all dome components a
 #[get("/dome/<device_number>/slewing")]
 fn get_dome_slewing(
     schemas::GetDomeSlewingPath { device_number }: schemas::GetDomeSlewingPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::GetDomeSlewingQuery {},
@@ -6700,7 +6591,6 @@ Calling this method will immediately disable hardware slewing (Slaved will becom
 #[put("/dome/<device_number>/abortslew")]
 fn put_dome_abortslew(
     schemas::PutDomeAbortslewPath { device_number }: schemas::PutDomeAbortslewPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::PutCameraAbortexposureRequest {},
@@ -6716,7 +6606,6 @@ Close the shutter or otherwise shield telescope from the sky.
 #[put("/dome/<device_number>/closeshutter")]
 fn put_dome_closeshutter(
     schemas::PutDomeCloseshutterPath { device_number }: schemas::PutDomeCloseshutterPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::PutCameraAbortexposureRequest {},
@@ -6732,7 +6621,6 @@ After Home position is established initializes Azimuth to the default value and 
 #[put("/dome/<device_number>/findhome")]
 fn put_dome_findhome(
     schemas::PutDomeFindhomePath { device_number }: schemas::PutDomeFindhomePath,
-
     ASCOMRequest {
         transaction,
         request: schemas::PutCameraAbortexposureRequest {},
@@ -6748,7 +6636,6 @@ Open shutter or otherwise expose telescope to the sky.
 #[put("/dome/<device_number>/openshutter")]
 fn put_dome_openshutter(
     schemas::PutDomeOpenshutterPath { device_number }: schemas::PutDomeOpenshutterPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::PutCameraAbortexposureRequest {},
@@ -6764,7 +6651,6 @@ After assuming programmed park position, sets AtPark flag.
 #[put("/dome/<device_number>/park")]
 fn put_dome_park(
     schemas::PutDomeParkPath { device_number }: schemas::PutDomeParkPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::PutCameraAbortexposureRequest {},
@@ -6780,7 +6666,6 @@ Set the current azimuth, altitude position of dome to be the park position.
 #[put("/dome/<device_number>/setpark")]
 fn put_dome_setpark(
     schemas::PutDomeSetparkPath { device_number }: schemas::PutDomeSetparkPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::PutCameraAbortexposureRequest {},
@@ -6796,7 +6681,6 @@ Slew the dome to the given altitude position.
 #[put("/dome/<device_number>/slewtoaltitude")]
 fn put_dome_slewtoaltitude(
     schemas::PutDomeSlewtoaltitudePath { device_number }: schemas::PutDomeSlewtoaltitudePath,
-
     ASCOMRequest {
         transaction,
         request: schemas::PutDomeSlewtoaltitudeRequest { altitude },
@@ -6812,7 +6696,6 @@ Slew the dome to the given azimuth position.
 #[put("/dome/<device_number>/slewtoazimuth")]
 fn put_dome_slewtoazimuth(
     schemas::PutDomeSlewtoazimuthPath { device_number }: schemas::PutDomeSlewtoazimuthPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::PutDomeSlewtoazimuthRequest { azimuth },
@@ -6828,7 +6711,6 @@ Synchronize the current position of the dome to the given azimuth.
 #[put("/dome/<device_number>/synctoazimuth")]
 fn put_dome_synctoazimuth(
     schemas::PutDomeSynctoazimuthPath { device_number }: schemas::PutDomeSynctoazimuthPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::PutDomeSlewtoazimuthRequest { azimuth },
@@ -6844,7 +6726,6 @@ An integer array of filter focus offsets.
 #[get("/filterwheel/<device_number>/focusoffsets")]
 fn get_filterwheel_focusoffsets(
     schemas::GetFilterwheelFocusoffsetsPath { device_number }: schemas::GetFilterwheelFocusoffsetsPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::GetFilterwheelFocusoffsetsQuery {},
@@ -6860,7 +6741,6 @@ The names of the filters
 #[get("/filterwheel/<device_number>/names")]
 fn get_filterwheel_names(
     schemas::GetFilterwheelNamesPath { device_number }: schemas::GetFilterwheelNamesPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::GetFilterwheelNamesQuery {},
@@ -6876,7 +6756,6 @@ Returns the current filter wheel position
 #[get("/filterwheel/<device_number>/position")]
 fn get_filterwheel_position(
     schemas::GetFilterwheelPositionPath { device_number }: schemas::GetFilterwheelPositionPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::GetFilterwheelPositionQuery {},
@@ -6892,7 +6771,6 @@ Sets the filter wheel position
 #[put("/filterwheel/<device_number>/position")]
 fn put_filterwheel_position(
     schemas::PutFilterwheelPositionPath { device_number }: schemas::PutFilterwheelPositionPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::PutFilterwheelPositionRequest { position },
@@ -6908,7 +6786,6 @@ True if the focuser is capable of absolute position; that is, being commanded to
 #[get("/focuser/<device_number>/absolute")]
 fn get_focuser_absolute(
     schemas::GetFocuserAbsolutePath { device_number }: schemas::GetFocuserAbsolutePath,
-
     ASCOMRequest {
         transaction,
         request: schemas::GetFocuserAbsoluteQuery {},
@@ -6924,7 +6801,6 @@ True if the focuser is currently moving to a new position. False if the focuser 
 #[get("/focuser/<device_number>/ismoving")]
 fn get_focuser_ismoving(
     schemas::GetFocuserIsmovingPath { device_number }: schemas::GetFocuserIsmovingPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::GetFocuserIsmovingQuery {},
@@ -6940,7 +6816,6 @@ Maximum increment size allowed by the focuser; i.e. the maximum number of steps 
 #[get("/focuser/<device_number>/maxincrement")]
 fn get_focuser_maxincrement(
     schemas::GetFocuserMaxincrementPath { device_number }: schemas::GetFocuserMaxincrementPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::GetFocuserMaxincrementQuery {},
@@ -6956,7 +6831,6 @@ Maximum step position permitted.
 #[get("/focuser/<device_number>/maxstep")]
 fn get_focuser_maxstep(
     schemas::GetFocuserMaxstepPath { device_number }: schemas::GetFocuserMaxstepPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::GetFocuserMaxstepQuery {},
@@ -6972,7 +6846,6 @@ Current focuser position, in steps.
 #[get("/focuser/<device_number>/position")]
 fn get_focuser_position(
     schemas::GetFocuserPositionPath { device_number }: schemas::GetFocuserPositionPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::GetFocuserPositionQuery {},
@@ -6988,7 +6861,6 @@ Step size (microns) for the focuser.
 #[get("/focuser/<device_number>/stepsize")]
 fn get_focuser_stepsize(
     schemas::GetFocuserStepsizePath { device_number }: schemas::GetFocuserStepsizePath,
-
     ASCOMRequest {
         transaction,
         request: schemas::GetFocuserStepsizeQuery {},
@@ -7004,7 +6876,6 @@ Gets the state of temperature compensation mode (if available), else always Fals
 #[get("/focuser/<device_number>/tempcomp")]
 fn get_focuser_tempcomp(
     schemas::GetFocuserTempcompPath { device_number }: schemas::GetFocuserTempcompPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::GetFocuserTempcompQuery {},
@@ -7020,7 +6891,6 @@ Sets the state of temperature compensation mode.
 #[put("/focuser/<device_number>/tempcomp")]
 fn put_focuser_tempcomp(
     schemas::PutFocuserTempcompPath { device_number }: schemas::PutFocuserTempcompPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::PutFocuserTempcompRequest { temp_comp },
@@ -7036,7 +6906,6 @@ True if focuser has temperature compensation available.
 #[get("/focuser/<device_number>/tempcompavailable")]
 fn get_focuser_tempcompavailable(
     schemas::GetFocuserTempcompavailablePath { device_number }: schemas::GetFocuserTempcompavailablePath,
-
     ASCOMRequest {
         transaction,
         request: schemas::GetFocuserTempcompavailableQuery {},
@@ -7052,7 +6921,6 @@ Current ambient temperature as measured by the focuser.
 #[get("/focuser/<device_number>/temperature")]
 fn get_focuser_temperature(
     schemas::GetFocuserTemperaturePath { device_number }: schemas::GetFocuserTemperaturePath,
-
     ASCOMRequest {
         transaction,
         request: schemas::GetFocuserTemperatureQuery {},
@@ -7068,7 +6936,6 @@ Immediately stop any focuser motion due to a previous Move(Int32) method call.
 #[put("/focuser/<device_number>/halt")]
 fn put_focuser_halt(
     schemas::PutFocuserHaltPath { device_number }: schemas::PutFocuserHaltPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::PutCameraAbortexposureRequest {},
@@ -7084,7 +6951,6 @@ Moves the focuser by the specified amount or to the specified position depending
 #[put("/focuser/<device_number>/move")]
 fn put_focuser_move(
     schemas::PutFocuserMovePath { device_number }: schemas::PutFocuserMovePath,
-
     ASCOMRequest {
         transaction,
         request: schemas::PutFocuserMoveRequest { position },
@@ -7100,7 +6966,6 @@ Gets the time period over which observations will be averaged
 #[get("/observingconditions/<device_number>/averageperiod")]
 fn get_observingconditions_averageperiod(
     schemas::GetObservingconditionsAverageperiodPath { device_number }: schemas::GetObservingconditionsAverageperiodPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::GetObservingconditionsAverageperiodQuery {},
@@ -7116,7 +6981,6 @@ Sets the time period over which observations will be averaged
 #[put("/observingconditions/<device_number>/averageperiod")]
 fn put_observingconditions_averageperiod(
     schemas::PutObservingconditionsAverageperiodPath { device_number }: schemas::PutObservingconditionsAverageperiodPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::PutObservingconditionsAverageperiodRequest { average_period },
@@ -7132,7 +6996,6 @@ Gets the percentage of the sky obscured by cloud
 #[get("/observingconditions/<device_number>/cloudcover")]
 fn get_observingconditions_cloudcover(
     schemas::GetObservingconditionsCloudcoverPath { device_number }: schemas::GetObservingconditionsCloudcoverPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::GetObservingconditionsCloudcoverQuery {},
@@ -7148,7 +7011,6 @@ Gets the atmospheric dew point at the observatory reported in °C.
 #[get("/observingconditions/<device_number>/dewpoint")]
 fn get_observingconditions_dewpoint(
     schemas::GetObservingconditionsDewpointPath { device_number }: schemas::GetObservingconditionsDewpointPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::GetObservingconditionsDewpointQuery {},
@@ -7164,7 +7026,6 @@ Gets the atmospheric  humidity (%) at the observatory
 #[get("/observingconditions/<device_number>/humidity")]
 fn get_observingconditions_humidity(
     schemas::GetObservingconditionsHumidityPath { device_number }: schemas::GetObservingconditionsHumidityPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::GetObservingconditionsHumidityQuery {},
@@ -7180,7 +7041,6 @@ Gets the atmospheric pressure in hectoPascals at the observatory's altitude - NO
 #[get("/observingconditions/<device_number>/pressure")]
 fn get_observingconditions_pressure(
     schemas::GetObservingconditionsPressurePath { device_number }: schemas::GetObservingconditionsPressurePath,
-
     ASCOMRequest {
         transaction,
         request: schemas::GetObservingconditionsPressureQuery {},
@@ -7196,7 +7056,6 @@ Gets the rain rate (mm/hour) at the observatory.
 #[get("/observingconditions/<device_number>/rainrate")]
 fn get_observingconditions_rainrate(
     schemas::GetObservingconditionsRainratePath { device_number }: schemas::GetObservingconditionsRainratePath,
-
     ASCOMRequest {
         transaction,
         request: schemas::GetObservingconditionsRainrateQuery {},
@@ -7212,7 +7071,6 @@ Gets the sky brightness at the observatory (Lux)
 #[get("/observingconditions/<device_number>/skybrightness")]
 fn get_observingconditions_skybrightness(
     schemas::GetObservingconditionsSkybrightnessPath { device_number }: schemas::GetObservingconditionsSkybrightnessPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::GetObservingconditionsSkybrightnessQuery {},
@@ -7228,7 +7086,6 @@ Gets the sky quality at the observatory (magnitudes per square arc second)
 #[get("/observingconditions/<device_number>/skyquality")]
 fn get_observingconditions_skyquality(
     schemas::GetObservingconditionsSkyqualityPath { device_number }: schemas::GetObservingconditionsSkyqualityPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::GetObservingconditionsSkyqualityQuery {},
@@ -7244,7 +7101,6 @@ Gets the sky temperature(°C) at the observatory.
 #[get("/observingconditions/<device_number>/skytemperature")]
 fn get_observingconditions_skytemperature(
     schemas::GetObservingconditionsSkytemperaturePath { device_number }: schemas::GetObservingconditionsSkytemperaturePath,
-
     ASCOMRequest {
         transaction,
         request: schemas::GetObservingconditionsSkytemperatureQuery {},
@@ -7260,7 +7116,6 @@ Gets the seeing at the observatory measured as star full width half maximum (FWH
 #[get("/observingconditions/<device_number>/starfwhm")]
 fn get_observingconditions_starfwhm(
     schemas::GetObservingconditionsStarfwhmPath { device_number }: schemas::GetObservingconditionsStarfwhmPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::GetObservingconditionsStarfwhmQuery {},
@@ -7276,7 +7131,6 @@ Gets the temperature(°C) at the observatory.
 #[get("/observingconditions/<device_number>/temperature")]
 fn get_observingconditions_temperature(
     schemas::GetObservingconditionsTemperaturePath { device_number }: schemas::GetObservingconditionsTemperaturePath,
-
     ASCOMRequest {
         transaction,
         request: schemas::GetObservingconditionsTemperatureQuery {},
@@ -7292,7 +7146,6 @@ Gets the wind direction. The returned value must be between 0.0 and 360.0, inter
 #[get("/observingconditions/<device_number>/winddirection")]
 fn get_observingconditions_winddirection(
     schemas::GetObservingconditionsWinddirectionPath { device_number }: schemas::GetObservingconditionsWinddirectionPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::GetObservingconditionsWinddirectionQuery {},
@@ -7308,7 +7161,6 @@ Gets the peak 3 second wind gust(m/s) at the observatory over the last 2 minutes
 #[get("/observingconditions/<device_number>/windgust")]
 fn get_observingconditions_windgust(
     schemas::GetObservingconditionsWindgustPath { device_number }: schemas::GetObservingconditionsWindgustPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::GetObservingconditionsWindgustQuery {},
@@ -7324,7 +7176,6 @@ Gets the wind speed(m/s) at the observatory.
 #[get("/observingconditions/<device_number>/windspeed")]
 fn get_observingconditions_windspeed(
     schemas::GetObservingconditionsWindspeedPath { device_number }: schemas::GetObservingconditionsWindspeedPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::GetObservingconditionsWindspeedQuery {},
@@ -7340,7 +7191,6 @@ Forces the driver to immediately query its attached hardware to refresh sensor v
 #[put("/observingconditions/<device_number>/refresh")]
 fn put_observingconditions_refresh(
     schemas::PutObservingconditionsRefreshPath { device_number }: schemas::PutObservingconditionsRefreshPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::PutCameraAbortexposureRequest {},
@@ -7356,7 +7206,6 @@ Gets a description of the sensor with the name specified in the SensorName param
 #[get("/observingconditions/<device_number>/sensordescription")]
 fn get_observingconditions_sensordescription(
     schemas::GetObservingconditionsSensordescriptionPath { device_number }: schemas::GetObservingconditionsSensordescriptionPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::GetObservingconditionsSensordescriptionQuery { sensor_name },
@@ -7372,7 +7221,6 @@ Gets the time since the sensor specified in the SensorName parameter was last up
 #[get("/observingconditions/<device_number>/timesincelastupdate")]
 fn get_observingconditions_timesincelastupdate(
     schemas::GetObservingconditionsTimesincelastupdatePath { device_number }: schemas::GetObservingconditionsTimesincelastupdatePath,
-
     ASCOMRequest {
         transaction,
         request: schemas::GetObservingconditionsTimesincelastupdateQuery { sensor_name },
@@ -7388,7 +7236,6 @@ True if the Rotator supports the Reverse method.
 #[get("/rotator/<device_number>/canreverse")]
 fn get_rotator_canreverse(
     schemas::GetRotatorCanreversePath { device_number }: schemas::GetRotatorCanreversePath,
-
     ASCOMRequest {
         transaction,
         request: schemas::GetRotatorCanreverseQuery {},
@@ -7404,7 +7251,6 @@ True if the rotator is currently moving to a new position. False if the focuser 
 #[get("/rotator/<device_number>/ismoving")]
 fn get_rotator_ismoving(
     schemas::GetRotatorIsmovingPath { device_number }: schemas::GetRotatorIsmovingPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::GetRotatorIsmovingQuery {},
@@ -7420,7 +7266,6 @@ Returns the raw mechanical position of the rotator in degrees.
 #[get("/rotator/<device_number>/mechanicalposition")]
 fn get_rotator_mechanicalposition(
     schemas::GetRotatorMechanicalpositionPath { device_number }: schemas::GetRotatorMechanicalpositionPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::GetRotatorMechanicalpositionQuery {},
@@ -7436,7 +7281,6 @@ Current instantaneous Rotator position, in degrees.
 #[get("/rotator/<device_number>/position")]
 fn get_rotator_position(
     schemas::GetRotatorPositionPath { device_number }: schemas::GetRotatorPositionPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::GetRotatorPositionQuery {},
@@ -7452,7 +7296,6 @@ Returns the rotator’s Reverse state.
 #[get("/rotator/<device_number>/reverse")]
 fn get_rotator_reverse(
     schemas::GetRotatorReversePath { device_number }: schemas::GetRotatorReversePath,
-
     ASCOMRequest {
         transaction,
         request: schemas::GetRotatorReverseQuery {},
@@ -7468,7 +7311,6 @@ Sets the rotator’s Reverse state.
 #[put("/rotator/<device_number>/reverse")]
 fn put_rotator_reverse(
     schemas::PutRotatorReversePath { device_number }: schemas::PutRotatorReversePath,
-
     ASCOMRequest {
         transaction,
         request: schemas::PutRotatorReverseRequest { reverse },
@@ -7484,7 +7326,6 @@ The minimum StepSize, in degrees.
 #[get("/rotator/<device_number>/stepsize")]
 fn get_rotator_stepsize(
     schemas::GetRotatorStepsizePath { device_number }: schemas::GetRotatorStepsizePath,
-
     ASCOMRequest {
         transaction,
         request: schemas::GetRotatorStepsizeQuery {},
@@ -7500,7 +7341,6 @@ The destination position angle for Move() and MoveAbsolute().
 #[get("/rotator/<device_number>/targetposition")]
 fn get_rotator_targetposition(
     schemas::GetRotatorTargetpositionPath { device_number }: schemas::GetRotatorTargetpositionPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::GetRotatorTargetpositionQuery {},
@@ -7516,7 +7356,6 @@ Immediately stop any Rotator motion due to a previous Move or MoveAbsolute metho
 #[put("/rotator/<device_number>/halt")]
 fn put_rotator_halt(
     schemas::PutRotatorHaltPath { device_number }: schemas::PutRotatorHaltPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::PutCameraAbortexposureRequest {},
@@ -7532,7 +7371,6 @@ Causes the rotator to move Position degrees relative to the current Position val
 #[put("/rotator/<device_number>/move")]
 fn put_rotator_move(
     schemas::PutRotatorMovePath { device_number }: schemas::PutRotatorMovePath,
-
     ASCOMRequest {
         transaction,
         request: schemas::PutRotatorMoveRequest { position },
@@ -7548,7 +7386,6 @@ Causes the rotator to move the absolute position of Position degrees.
 #[put("/rotator/<device_number>/moveabsolute")]
 fn put_rotator_moveabsolute(
     schemas::PutRotatorMoveabsolutePath { device_number }: schemas::PutRotatorMoveabsolutePath,
-
     ASCOMRequest {
         transaction,
         request: schemas::PutRotatorMoveabsoluteRequest { position },
@@ -7564,7 +7401,6 @@ Causes the rotator to move the mechanical position of Position degrees.
 #[put("/rotator/<device_number>/movemechanical")]
 fn put_rotator_movemechanical(
     schemas::PutRotatorMovemechanicalPath { device_number }: schemas::PutRotatorMovemechanicalPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::PutRotatorMovemechanicalRequest { position },
@@ -7580,7 +7416,6 @@ Causes the rotator to sync to the position of Position degrees.
 #[put("/rotator/<device_number>/sync")]
 fn put_rotator_sync(
     schemas::PutRotatorSyncPath { device_number }: schemas::PutRotatorSyncPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::PutRotatorSyncRequest { position },
@@ -7596,7 +7431,6 @@ Indicates whether the monitored state is safe for use. True if the state is safe
 #[get("/safetymonitor/<device_number>/issafe")]
 fn get_safetymonitor_issafe(
     schemas::GetSafetymonitorIssafePath { device_number }: schemas::GetSafetymonitorIssafePath,
-
     ASCOMRequest {
         transaction,
         request: schemas::GetSafetymonitorIssafeQuery {},
@@ -7612,7 +7446,6 @@ Returns the number of switch devices managed by this driver. Devices are numbere
 #[get("/switch/<device_number>/maxswitch")]
 fn get_switch_maxswitch(
     schemas::GetSwitchMaxswitchPath { device_number }: schemas::GetSwitchMaxswitchPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::GetSwitchMaxswitchQuery {},
@@ -7628,7 +7461,6 @@ Reports if the specified switch device can be written to, default true. This is 
 #[get("/switch/<device_number>/canwrite")]
 fn get_switch_canwrite(
     schemas::GetSwitchCanwritePath { device_number }: schemas::GetSwitchCanwritePath,
-
     ASCOMRequest {
         transaction,
         request: schemas::GetSwitchCanwriteQuery { id },
@@ -7644,7 +7476,6 @@ Return the state of switch device id as a boolean.  Devices are numbered from 0 
 #[get("/switch/<device_number>/getswitch")]
 fn get_switch_getswitch(
     schemas::GetSwitchGetswitchPath { device_number }: schemas::GetSwitchGetswitchPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::GetSwitchGetswitchQuery { id },
@@ -7660,7 +7491,6 @@ Gets the description of the specified switch device. This is to allow a fuller d
 #[get("/switch/<device_number>/getswitchdescription")]
 fn get_switch_getswitchdescription(
     schemas::GetSwitchGetswitchdescriptionPath { device_number }: schemas::GetSwitchGetswitchdescriptionPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::GetSwitchGetswitchdescriptionQuery { id },
@@ -7676,7 +7506,6 @@ Gets the name of the specified switch device. Devices are numbered from 0 to Max
 #[get("/switch/<device_number>/getswitchname")]
 fn get_switch_getswitchname(
     schemas::GetSwitchGetswitchnamePath { device_number }: schemas::GetSwitchGetswitchnamePath,
-
     ASCOMRequest {
         transaction,
         request: schemas::GetSwitchGetswitchnameQuery { id },
@@ -7692,7 +7521,6 @@ Gets the value of the specified switch device as a double. Devices are numbered 
 #[get("/switch/<device_number>/getswitchvalue")]
 fn get_switch_getswitchvalue(
     schemas::GetSwitchGetswitchvaluePath { device_number }: schemas::GetSwitchGetswitchvaluePath,
-
     ASCOMRequest {
         transaction,
         request: schemas::GetSwitchGetswitchvalueQuery { id },
@@ -7708,7 +7536,6 @@ Gets the minimum value of the specified switch device as a double. Devices are n
 #[get("/switch/<device_number>/minswitchvalue")]
 fn get_switch_minswitchvalue(
     schemas::GetSwitchMinswitchvaluePath { device_number }: schemas::GetSwitchMinswitchvaluePath,
-
     ASCOMRequest {
         transaction,
         request: schemas::GetSwitchMinswitchvalueQuery { id },
@@ -7724,7 +7551,6 @@ Gets the maximum value of the specified switch device as a double. Devices are n
 #[get("/switch/<device_number>/maxswitchvalue")]
 fn get_switch_maxswitchvalue(
     schemas::GetSwitchMaxswitchvaluePath { device_number }: schemas::GetSwitchMaxswitchvaluePath,
-
     ASCOMRequest {
         transaction,
         request: schemas::GetSwitchMaxswitchvalueQuery { id },
@@ -7740,7 +7566,6 @@ Sets a switch controller device to the specified state, true or false.
 #[put("/switch/<device_number>/setswitch")]
 fn put_switch_setswitch(
     schemas::PutSwitchSetswitchPath { device_number }: schemas::PutSwitchSetswitchPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::PutSwitchSetswitchRequest { id, state },
@@ -7756,7 +7581,6 @@ Sets a switch device name to the specified value.
 #[put("/switch/<device_number>/setswitchname")]
 fn put_switch_setswitchname(
     schemas::PutSwitchSetswitchnamePath { device_number }: schemas::PutSwitchSetswitchnamePath,
-
     ASCOMRequest {
         transaction,
         request: schemas::PutSwitchSetswitchnameRequest { id, name },
@@ -7772,7 +7596,6 @@ Sets a switch device value to the specified value.
 #[put("/switch/<device_number>/setswitchvalue")]
 fn put_switch_setswitchvalue(
     schemas::PutSwitchSetswitchvaluePath { device_number }: schemas::PutSwitchSetswitchvaluePath,
-
     ASCOMRequest {
         transaction,
         request: schemas::PutSwitchSetswitchvalueRequest { id, value },
@@ -7788,7 +7611,6 @@ Returns the step size that this device supports (the difference between successi
 #[get("/switch/<device_number>/switchstep")]
 fn get_switch_switchstep(
     schemas::GetSwitchSwitchstepPath { device_number }: schemas::GetSwitchSwitchstepPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::GetSwitchSwitchstepQuery { id },
@@ -7804,7 +7626,6 @@ Returns the alignment mode of the mount (Alt/Az, Polar, German Polar).  The alig
 #[get("/telescope/<device_number>/alignmentmode")]
 fn get_telescope_alignmentmode(
     schemas::GetTelescopeAlignmentmodePath { device_number }: schemas::GetTelescopeAlignmentmodePath,
-
     ASCOMRequest {
         transaction,
         request: schemas::GetTelescopeAlignmentmodeQuery {},
@@ -7820,7 +7641,6 @@ The altitude above the local horizon of the mount's current position (degrees, p
 #[get("/telescope/<device_number>/altitude")]
 fn get_telescope_altitude(
     schemas::GetTelescopeAltitudePath { device_number }: schemas::GetTelescopeAltitudePath,
-
     ASCOMRequest {
         transaction,
         request: schemas::GetTelescopeAltitudeQuery {},
@@ -7836,7 +7656,6 @@ The area of the telescope's aperture, taking into account any obstructions (squa
 #[get("/telescope/<device_number>/aperturearea")]
 fn get_telescope_aperturearea(
     schemas::GetTelescopeApertureareaPath { device_number }: schemas::GetTelescopeApertureareaPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::GetTelescopeApertureareaQuery {},
@@ -7852,7 +7671,6 @@ The telescope's effective aperture diameter (meters)
 #[get("/telescope/<device_number>/aperturediameter")]
 fn get_telescope_aperturediameter(
     schemas::GetTelescopeAperturediameterPath { device_number }: schemas::GetTelescopeAperturediameterPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::GetTelescopeAperturediameterQuery {},
@@ -7868,7 +7686,6 @@ True if the mount is stopped in the Home position. Set only following a FindHome
 #[get("/telescope/<device_number>/athome")]
 fn get_telescope_athome(
     schemas::GetTelescopeAthomePath { device_number }: schemas::GetTelescopeAthomePath,
-
     ASCOMRequest {
         transaction,
         request: schemas::GetTelescopeAthomeQuery {},
@@ -7884,7 +7701,6 @@ True if the telescope has been put into the parked state by the seee Park()  met
 #[get("/telescope/<device_number>/atpark")]
 fn get_telescope_atpark(
     schemas::GetTelescopeAtparkPath { device_number }: schemas::GetTelescopeAtparkPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::GetTelescopeAtparkQuery {},
@@ -7900,7 +7716,6 @@ The azimuth at the local horizon of the mount's current position (degrees, North
 #[get("/telescope/<device_number>/azimuth")]
 fn get_telescope_azimuth(
     schemas::GetTelescopeAzimuthPath { device_number }: schemas::GetTelescopeAzimuthPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::GetTelescopeAzimuthQuery {},
@@ -7916,7 +7731,6 @@ True if this telescope is capable of programmed finding its home position (FindH
 #[get("/telescope/<device_number>/canfindhome")]
 fn get_telescope_canfindhome(
     schemas::GetTelescopeCanfindhomePath { device_number }: schemas::GetTelescopeCanfindhomePath,
-
     ASCOMRequest {
         transaction,
         request: schemas::GetTelescopeCanfindhomeQuery {},
@@ -7932,7 +7746,6 @@ True if this telescope is capable of programmed parking (Park() method)
 #[get("/telescope/<device_number>/canpark")]
 fn get_telescope_canpark(
     schemas::GetTelescopeCanparkPath { device_number }: schemas::GetTelescopeCanparkPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::GetTelescopeCanparkQuery {},
@@ -7948,7 +7761,6 @@ True if this telescope is capable of software-pulsed guiding (via the PulseGuide
 #[get("/telescope/<device_number>/canpulseguide")]
 fn get_telescope_canpulseguide(
     schemas::GetTelescopeCanpulseguidePath { device_number }: schemas::GetTelescopeCanpulseguidePath,
-
     ASCOMRequest {
         transaction,
         request: schemas::GetTelescopeCanpulseguideQuery {},
@@ -7964,7 +7776,6 @@ True if the DeclinationRate property can be changed to provide offset tracking i
 #[get("/telescope/<device_number>/cansetdeclinationrate")]
 fn get_telescope_cansetdeclinationrate(
     schemas::GetTelescopeCansetdeclinationratePath { device_number }: schemas::GetTelescopeCansetdeclinationratePath,
-
     ASCOMRequest {
         transaction,
         request: schemas::GetTelescopeCansetdeclinationrateQuery {},
@@ -7980,7 +7791,6 @@ True if the guide rate properties used for PulseGuide(GuideDirections, Int32) ca
 #[get("/telescope/<device_number>/cansetguiderates")]
 fn get_telescope_cansetguiderates(
     schemas::GetTelescopeCansetguideratesPath { device_number }: schemas::GetTelescopeCansetguideratesPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::GetTelescopeCansetguideratesQuery {},
@@ -7996,7 +7806,6 @@ True if this telescope is capable of programmed setting of its park position (Se
 #[get("/telescope/<device_number>/cansetpark")]
 fn get_telescope_cansetpark(
     schemas::GetTelescopeCansetparkPath { device_number }: schemas::GetTelescopeCansetparkPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::GetTelescopeCansetparkQuery {},
@@ -8012,7 +7821,6 @@ True if the SideOfPier property can be set, meaning that the mount can be forced
 #[get("/telescope/<device_number>/cansetpierside")]
 fn get_telescope_cansetpierside(
     schemas::GetTelescopeCansetpiersidePath { device_number }: schemas::GetTelescopeCansetpiersidePath,
-
     ASCOMRequest {
         transaction,
         request: schemas::GetTelescopeCansetpiersideQuery {},
@@ -8028,7 +7836,6 @@ True if the RightAscensionRate property can be changed to provide offset trackin
 #[get("/telescope/<device_number>/cansetrightascensionrate")]
 fn get_telescope_cansetrightascensionrate(
     schemas::GetTelescopeCansetrightascensionratePath { device_number }: schemas::GetTelescopeCansetrightascensionratePath,
-
     ASCOMRequest {
         transaction,
         request: schemas::GetTelescopeCansetrightascensionrateQuery {},
@@ -8044,7 +7851,6 @@ True if the Tracking property can be changed, turning telescope sidereal trackin
 #[get("/telescope/<device_number>/cansettracking")]
 fn get_telescope_cansettracking(
     schemas::GetTelescopeCansettrackingPath { device_number }: schemas::GetTelescopeCansettrackingPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::GetTelescopeCansettrackingQuery {},
@@ -8060,7 +7866,6 @@ True if this telescope is capable of programmed slewing (synchronous or asynchro
 #[get("/telescope/<device_number>/canslew")]
 fn get_telescope_canslew(
     schemas::GetTelescopeCanslewPath { device_number }: schemas::GetTelescopeCanslewPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::GetTelescopeCanslewQuery {},
@@ -8076,7 +7881,6 @@ True if this telescope is capable of programmed slewing (synchronous or asynchro
 #[get("/telescope/<device_number>/canslewaltaz")]
 fn get_telescope_canslewaltaz(
     schemas::GetTelescopeCanslewaltazPath { device_number }: schemas::GetTelescopeCanslewaltazPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::GetTelescopeCanslewaltazQuery {},
@@ -8092,7 +7896,6 @@ True if this telescope is capable of programmed asynchronous slewing to local ho
 #[get("/telescope/<device_number>/canslewaltazasync")]
 fn get_telescope_canslewaltazasync(
     schemas::GetTelescopeCanslewaltazasyncPath { device_number }: schemas::GetTelescopeCanslewaltazasyncPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::GetTelescopeCanslewaltazasyncQuery {},
@@ -8108,7 +7911,6 @@ True if this telescope is capable of programmed asynchronous slewing to equatori
 #[get("/telescope/<device_number>/canslewasync")]
 fn get_telescope_canslewasync(
     schemas::GetTelescopeCanslewasyncPath { device_number }: schemas::GetTelescopeCanslewasyncPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::GetTelescopeCanslewasyncQuery {},
@@ -8124,7 +7926,6 @@ True if this telescope is capable of programmed synching to equatorial coordinat
 #[get("/telescope/<device_number>/cansync")]
 fn get_telescope_cansync(
     schemas::GetTelescopeCansyncPath { device_number }: schemas::GetTelescopeCansyncPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::GetTelescopeCansyncQuery {},
@@ -8140,7 +7941,6 @@ True if this telescope is capable of programmed synching to local horizontal coo
 #[get("/telescope/<device_number>/cansyncaltaz")]
 fn get_telescope_cansyncaltaz(
     schemas::GetTelescopeCansyncaltazPath { device_number }: schemas::GetTelescopeCansyncaltazPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::GetTelescopeCansyncaltazQuery {},
@@ -8156,7 +7956,6 @@ True if this telescope is capable of programmed unparking (UnPark() method)
 #[get("/telescope/<device_number>/canunpark")]
 fn get_telescope_canunpark(
     schemas::GetTelescopeCanunparkPath { device_number }: schemas::GetTelescopeCanunparkPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::GetTelescopeCanunparkQuery {},
@@ -8172,7 +7971,6 @@ The declination (degrees) of the mount's current equatorial coordinates, in the 
 #[get("/telescope/<device_number>/declination")]
 fn get_telescope_declination(
     schemas::GetTelescopeDeclinationPath { device_number }: schemas::GetTelescopeDeclinationPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::GetTelescopeDeclinationQuery {},
@@ -8188,7 +7986,6 @@ The declination tracking rate (arcseconds per second, default = 0.0)
 #[get("/telescope/<device_number>/declinationrate")]
 fn get_telescope_declinationrate(
     schemas::GetTelescopeDeclinationratePath { device_number }: schemas::GetTelescopeDeclinationratePath,
-
     ASCOMRequest {
         transaction,
         request: schemas::GetTelescopeDeclinationrateQuery {},
@@ -8204,7 +8001,6 @@ Sets the declination tracking rate (arcseconds per second)
 #[put("/telescope/<device_number>/declinationrate")]
 fn put_telescope_declinationrate(
     schemas::PutTelescopeDeclinationratePath { device_number }: schemas::PutTelescopeDeclinationratePath,
-
     ASCOMRequest {
         transaction,
         request: schemas::PutTelescopeDeclinationrateRequest { declination_rate },
@@ -8220,7 +8016,6 @@ True if the telescope or driver applies atmospheric refraction to coordinates.
 #[get("/telescope/<device_number>/doesrefraction")]
 fn get_telescope_doesrefraction(
     schemas::GetTelescopeDoesrefractionPath { device_number }: schemas::GetTelescopeDoesrefractionPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::GetTelescopeDoesrefractionQuery {},
@@ -8236,7 +8031,6 @@ Causes the rotator to move Position degrees relative to the current Position val
 #[put("/telescope/<device_number>/doesrefraction")]
 fn put_telescope_doesrefraction(
     schemas::PutTelescopeDoesrefractionPath { device_number }: schemas::PutTelescopeDoesrefractionPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::PutTelescopeDoesrefractionRequest { does_refraction },
@@ -8252,7 +8046,6 @@ Returns the current equatorial coordinate system used by this telescope (e.g. To
 #[get("/telescope/<device_number>/equatorialsystem")]
 fn get_telescope_equatorialsystem(
     schemas::GetTelescopeEquatorialsystemPath { device_number }: schemas::GetTelescopeEquatorialsystemPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::GetTelescopeEquatorialsystemQuery {},
@@ -8268,7 +8061,6 @@ The telescope's focal length in meters
 #[get("/telescope/<device_number>/focallength")]
 fn get_telescope_focallength(
     schemas::GetTelescopeFocallengthPath { device_number }: schemas::GetTelescopeFocallengthPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::GetTelescopeFocallengthQuery {},
@@ -8284,7 +8076,6 @@ The current Declination movement rate offset for telescope guiding (degrees/sec)
 #[get("/telescope/<device_number>/guideratedeclination")]
 fn get_telescope_guideratedeclination(
     schemas::GetTelescopeGuideratedeclinationPath { device_number }: schemas::GetTelescopeGuideratedeclinationPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::GetTelescopeGuideratedeclinationQuery {},
@@ -8300,7 +8091,6 @@ Sets the current Declination movement rate offset for telescope guiding (degrees
 #[put("/telescope/<device_number>/guideratedeclination")]
 fn put_telescope_guideratedeclination(
     schemas::PutTelescopeGuideratedeclinationPath { device_number }: schemas::PutTelescopeGuideratedeclinationPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::PutTelescopeGuideratedeclinationRequest { guide_rate_declination },
@@ -8316,7 +8106,6 @@ The current RightAscension movement rate offset for telescope guiding (degrees/s
 #[get("/telescope/<device_number>/guideraterightascension")]
 fn get_telescope_guideraterightascension(
     schemas::GetTelescopeGuideraterightascensionPath { device_number }: schemas::GetTelescopeGuideraterightascensionPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::GetTelescopeGuideraterightascensionQuery {},
@@ -8332,7 +8121,6 @@ Sets the current RightAscension movement rate offset for telescope guiding (degr
 #[put("/telescope/<device_number>/guideraterightascension")]
 fn put_telescope_guideraterightascension(
     schemas::PutTelescopeGuideraterightascensionPath { device_number }: schemas::PutTelescopeGuideraterightascensionPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::PutTelescopeGuideraterightascensionRequest { guide_rate_right_ascension },
@@ -8348,7 +8136,6 @@ True if a PulseGuide(GuideDirections, Int32) command is in progress, False other
 #[get("/telescope/<device_number>/ispulseguiding")]
 fn get_telescope_ispulseguiding(
     schemas::GetTelescopeIspulseguidingPath { device_number }: schemas::GetTelescopeIspulseguidingPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::GetTelescopeIspulseguidingQuery {},
@@ -8364,7 +8151,6 @@ The right ascension (hours) of the mount's current equatorial coordinates, in th
 #[get("/telescope/<device_number>/rightascension")]
 fn get_telescope_rightascension(
     schemas::GetTelescopeRightascensionPath { device_number }: schemas::GetTelescopeRightascensionPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::GetTelescopeRightascensionQuery {},
@@ -8380,7 +8166,6 @@ The right ascension tracking rate (arcseconds per second, default = 0.0)
 #[get("/telescope/<device_number>/rightascensionrate")]
 fn get_telescope_rightascensionrate(
     schemas::GetTelescopeRightascensionratePath { device_number }: schemas::GetTelescopeRightascensionratePath,
-
     ASCOMRequest {
         transaction,
         request: schemas::GetTelescopeRightascensionrateQuery {},
@@ -8396,7 +8181,6 @@ Sets the right ascension tracking rate (arcseconds per second)
 #[put("/telescope/<device_number>/rightascensionrate")]
 fn put_telescope_rightascensionrate(
     schemas::PutTelescopeRightascensionratePath { device_number }: schemas::PutTelescopeRightascensionratePath,
-
     ASCOMRequest {
         transaction,
         request: schemas::PutTelescopeRightascensionrateRequest { right_ascension_rate },
@@ -8412,7 +8196,6 @@ Indicates the pointing state of the mount. 0 = pierEast, 1 = pierWest, -1= pierU
 #[get("/telescope/<device_number>/sideofpier")]
 fn get_telescope_sideofpier(
     schemas::GetTelescopeSideofpierPath { device_number }: schemas::GetTelescopeSideofpierPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::GetTelescopeSideofpierQuery {},
@@ -8428,7 +8211,6 @@ Sets the pointing state of the mount. 0 = pierEast, 1 = pierWest
 #[put("/telescope/<device_number>/sideofpier")]
 fn put_telescope_sideofpier(
     schemas::PutTelescopeSideofpierPath { device_number }: schemas::PutTelescopeSideofpierPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::PutTelescopeSideofpierRequest { side_of_pier },
@@ -8444,7 +8226,6 @@ The local apparent sidereal time from the telescope's internal clock (hours, sid
 #[get("/telescope/<device_number>/siderealtime")]
 fn get_telescope_siderealtime(
     schemas::GetTelescopeSiderealtimePath { device_number }: schemas::GetTelescopeSiderealtimePath,
-
     ASCOMRequest {
         transaction,
         request: schemas::GetTelescopeSiderealtimeQuery {},
@@ -8460,7 +8241,6 @@ The elevation above mean sea level (meters) of the site at which the telescope i
 #[get("/telescope/<device_number>/siteelevation")]
 fn get_telescope_siteelevation(
     schemas::GetTelescopeSiteelevationPath { device_number }: schemas::GetTelescopeSiteelevationPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::GetTelescopeSiteelevationQuery {},
@@ -8476,7 +8256,6 @@ Sets the elevation above mean sea level (metres) of the site at which the telesc
 #[put("/telescope/<device_number>/siteelevation")]
 fn put_telescope_siteelevation(
     schemas::PutTelescopeSiteelevationPath { device_number }: schemas::PutTelescopeSiteelevationPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::PutTelescopeSiteelevationRequest { site_elevation },
@@ -8492,7 +8271,6 @@ The geodetic(map) latitude (degrees, positive North, WGS84) of the site at which
 #[get("/telescope/<device_number>/sitelatitude")]
 fn get_telescope_sitelatitude(
     schemas::GetTelescopeSitelatitudePath { device_number }: schemas::GetTelescopeSitelatitudePath,
-
     ASCOMRequest {
         transaction,
         request: schemas::GetTelescopeSitelatitudeQuery {},
@@ -8508,7 +8286,6 @@ Sets the observing site's latitude (degrees).
 #[put("/telescope/<device_number>/sitelatitude")]
 fn put_telescope_sitelatitude(
     schemas::PutTelescopeSitelatitudePath { device_number }: schemas::PutTelescopeSitelatitudePath,
-
     ASCOMRequest {
         transaction,
         request: schemas::PutTelescopeSitelatitudeRequest { site_latitude },
@@ -8524,7 +8301,6 @@ The longitude (degrees, positive East, WGS84) of the site at which the telescope
 #[get("/telescope/<device_number>/sitelongitude")]
 fn get_telescope_sitelongitude(
     schemas::GetTelescopeSitelongitudePath { device_number }: schemas::GetTelescopeSitelongitudePath,
-
     ASCOMRequest {
         transaction,
         request: schemas::GetTelescopeSitelongitudeQuery {},
@@ -8540,7 +8316,6 @@ Sets the observing site's longitude (degrees, positive East, WGS84).
 #[put("/telescope/<device_number>/sitelongitude")]
 fn put_telescope_sitelongitude(
     schemas::PutTelescopeSitelongitudePath { device_number }: schemas::PutTelescopeSitelongitudePath,
-
     ASCOMRequest {
         transaction,
         request: schemas::PutTelescopeSitelongitudeRequest { site_longitude },
@@ -8556,7 +8331,6 @@ True if telescope is currently moving in response to one of the Slew methods or 
 #[get("/telescope/<device_number>/slewing")]
 fn get_telescope_slewing(
     schemas::GetTelescopeSlewingPath { device_number }: schemas::GetTelescopeSlewingPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::GetTelescopeSlewingQuery {},
@@ -8572,7 +8346,6 @@ Returns the post-slew settling time (sec.).
 #[get("/telescope/<device_number>/slewsettletime")]
 fn get_telescope_slewsettletime(
     schemas::GetTelescopeSlewsettletimePath { device_number }: schemas::GetTelescopeSlewsettletimePath,
-
     ASCOMRequest {
         transaction,
         request: schemas::GetTelescopeSlewsettletimeQuery {},
@@ -8588,7 +8361,6 @@ Sets the  post-slew settling time (integer sec.).
 #[put("/telescope/<device_number>/slewsettletime")]
 fn put_telescope_slewsettletime(
     schemas::PutTelescopeSlewsettletimePath { device_number }: schemas::PutTelescopeSlewsettletimePath,
-
     ASCOMRequest {
         transaction,
         request: schemas::PutTelescopeSlewsettletimeRequest { slew_settle_time },
@@ -8604,7 +8376,6 @@ The declination (degrees, positive North) for the target of an equatorial slew o
 #[get("/telescope/<device_number>/targetdeclination")]
 fn get_telescope_targetdeclination(
     schemas::GetTelescopeTargetdeclinationPath { device_number }: schemas::GetTelescopeTargetdeclinationPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::GetTelescopeTargetdeclinationQuery {},
@@ -8620,7 +8391,6 @@ Sets the declination (degrees, positive North) for the target of an equatorial s
 #[put("/telescope/<device_number>/targetdeclination")]
 fn put_telescope_targetdeclination(
     schemas::PutTelescopeTargetdeclinationPath { device_number }: schemas::PutTelescopeTargetdeclinationPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::PutTelescopeTargetdeclinationRequest { target_declination },
@@ -8636,7 +8406,6 @@ The right ascension (hours) for the target of an equatorial slew or sync operati
 #[get("/telescope/<device_number>/targetrightascension")]
 fn get_telescope_targetrightascension(
     schemas::GetTelescopeTargetrightascensionPath { device_number }: schemas::GetTelescopeTargetrightascensionPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::GetTelescopeTargetrightascensionQuery {},
@@ -8652,7 +8421,6 @@ Sets the right ascension (hours) for the target of an equatorial slew or sync op
 #[put("/telescope/<device_number>/targetrightascension")]
 fn put_telescope_targetrightascension(
     schemas::PutTelescopeTargetrightascensionPath { device_number }: schemas::PutTelescopeTargetrightascensionPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::PutTelescopeTargetrightascensionRequest { target_right_ascension },
@@ -8668,7 +8436,6 @@ Returns the state of the telescope's sidereal tracking drive.
 #[get("/telescope/<device_number>/tracking")]
 fn get_telescope_tracking(
     schemas::GetTelescopeTrackingPath { device_number }: schemas::GetTelescopeTrackingPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::GetTelescopeTrackingQuery {},
@@ -8684,7 +8451,6 @@ Sets the state of the telescope's sidereal tracking drive.
 #[put("/telescope/<device_number>/tracking")]
 fn put_telescope_tracking(
     schemas::PutTelescopeTrackingPath { device_number }: schemas::PutTelescopeTrackingPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::PutTelescopeTrackingRequest { tracking },
@@ -8700,7 +8466,6 @@ The current tracking rate of the telescope's sidereal drive.
 #[get("/telescope/<device_number>/trackingrate")]
 fn get_telescope_trackingrate(
     schemas::GetTelescopeTrackingratePath { device_number }: schemas::GetTelescopeTrackingratePath,
-
     ASCOMRequest {
         transaction,
         request: schemas::GetTelescopeTrackingrateQuery {},
@@ -8716,7 +8481,6 @@ Sets the tracking rate of the telescope's sidereal drive. 0 = driveSidereal, 1 =
 #[put("/telescope/<device_number>/trackingrate")]
 fn put_telescope_trackingrate(
     schemas::PutTelescopeTrackingratePath { device_number }: schemas::PutTelescopeTrackingratePath,
-
     ASCOMRequest {
         transaction,
         request: schemas::PutTelescopeTrackingrateRequest { tracking_rate },
@@ -8732,7 +8496,6 @@ Returns an array of supported DriveRates values that describe the permissible va
 #[get("/telescope/<device_number>/trackingrates")]
 fn get_telescope_trackingrates(
     schemas::GetTelescopeTrackingratesPath { device_number }: schemas::GetTelescopeTrackingratesPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::GetTelescopeTrackingratesQuery {},
@@ -8748,7 +8511,6 @@ The UTC date/time of the telescope's internal clock in ISO 8601 format including
 #[get("/telescope/<device_number>/utcdate")]
 fn get_telescope_utcdate(
     schemas::GetTelescopeUtcdatePath { device_number }: schemas::GetTelescopeUtcdatePath,
-
     ASCOMRequest {
         transaction,
         request: schemas::GetTelescopeUtcdateQuery {},
@@ -8764,7 +8526,6 @@ The UTC date/time of the telescope's internal clock in ISO 8601 format including
 #[put("/telescope/<device_number>/utcdate")]
 fn put_telescope_utcdate(
     schemas::PutTelescopeUtcdatePath { device_number }: schemas::PutTelescopeUtcdatePath,
-
     ASCOMRequest {
         transaction,
         request: schemas::PutTelescopeUtcdateRequest { utcdate },
@@ -8780,7 +8541,6 @@ Immediately Stops a slew in progress.
 #[put("/telescope/<device_number>/abortslew")]
 fn put_telescope_abortslew(
     schemas::PutTelescopeAbortslewPath { device_number }: schemas::PutTelescopeAbortslewPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::PutCameraAbortexposureRequest {},
@@ -8796,7 +8556,6 @@ The rates at which the telescope may be moved about the specified axis by the Mo
 #[get("/telescope/<device_number>/axisrates")]
 fn get_telescope_axisrates(
     schemas::GetTelescopeAxisratesPath { device_number }: schemas::GetTelescopeAxisratesPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::GetTelescopeAxisratesQuery { axis },
@@ -8812,7 +8571,6 @@ True if this telescope can move the requested axis.
 #[get("/telescope/<device_number>/canmoveaxis")]
 fn get_telescope_canmoveaxis(
     schemas::GetTelescopeCanmoveaxisPath { device_number }: schemas::GetTelescopeCanmoveaxisPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::GetTelescopeCanmoveaxisQuery { axis },
@@ -8828,7 +8586,6 @@ Predicts the pointing state that a German equatorial mount will be in if it slew
 #[get("/telescope/<device_number>/destinationsideofpier")]
 fn get_telescope_destinationsideofpier(
     schemas::GetTelescopeDestinationsideofpierPath { device_number }: schemas::GetTelescopeDestinationsideofpierPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::GetTelescopeDestinationsideofpierQuery { right_ascension, declination },
@@ -8844,7 +8601,6 @@ Locates the telescope's "home" position (synchronous)
 #[put("/telescope/<device_number>/findhome")]
 fn put_telescope_findhome(
     schemas::PutTelescopeFindhomePath { device_number }: schemas::PutTelescopeFindhomePath,
-
     ASCOMRequest {
         transaction,
         request: schemas::PutCameraAbortexposureRequest {},
@@ -8860,7 +8616,6 @@ Move the telescope in one axis at the given rate.
 #[put("/telescope/<device_number>/moveaxis")]
 fn put_telescope_moveaxis(
     schemas::PutTelescopeMoveaxisPath { device_number }: schemas::PutTelescopeMoveaxisPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::PutTelescopeMoveaxisRequest { axis, rate },
@@ -8876,7 +8631,6 @@ Move the telescope to its park position, stop all motion (or restrict to a small
 #[put("/telescope/<device_number>/park")]
 fn put_telescope_park(
     schemas::PutTelescopeParkPath { device_number }: schemas::PutTelescopeParkPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::PutCameraAbortexposureRequest {},
@@ -8892,7 +8646,6 @@ Moves the scope in the given direction for the given interval or time at the rat
 #[put("/telescope/<device_number>/pulseguide")]
 fn put_telescope_pulseguide(
     schemas::PutTelescopePulseguidePath { device_number }: schemas::PutTelescopePulseguidePath,
-
     ASCOMRequest {
         transaction,
         request: schemas::PutTelescopePulseguideRequest { direction, duration },
@@ -8908,7 +8661,6 @@ Sets the telescope's park position to be its current position.
 #[put("/telescope/<device_number>/setpark")]
 fn put_telescope_setpark(
     schemas::PutTelescopeSetparkPath { device_number }: schemas::PutTelescopeSetparkPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::PutCameraAbortexposureRequest {},
@@ -8924,7 +8676,6 @@ Move the telescope to the given local horizontal coordinates, return when slew i
 #[put("/telescope/<device_number>/slewtoaltaz")]
 fn put_telescope_slewtoaltaz(
     schemas::PutTelescopeSlewtoaltazPath { device_number }: schemas::PutTelescopeSlewtoaltazPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::PutTelescopeSlewtoaltazRequest { azimuth, altitude },
@@ -8940,7 +8691,6 @@ Move the telescope to the given local horizontal coordinates, return immediatley
 #[put("/telescope/<device_number>/slewtoaltazasync")]
 fn put_telescope_slewtoaltazasync(
     schemas::PutTelescopeSlewtoaltazasyncPath { device_number }: schemas::PutTelescopeSlewtoaltazasyncPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::PutTelescopeSlewtoaltazRequest { azimuth, altitude },
@@ -8956,7 +8706,6 @@ Move the telescope to the given equatorial coordinates, return when slew is comp
 #[put("/telescope/<device_number>/slewtocoordinates")]
 fn put_telescope_slewtocoordinates(
     schemas::PutTelescopeSlewtocoordinatesPath { device_number }: schemas::PutTelescopeSlewtocoordinatesPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::PutTelescopeSlewtocoordinatesRequest { right_ascension, declination },
@@ -8972,7 +8721,6 @@ Move the telescope to the given equatorial coordinates, return immediatley after
 #[put("/telescope/<device_number>/slewtocoordinatesasync")]
 fn put_telescope_slewtocoordinatesasync(
     schemas::PutTelescopeSlewtocoordinatesasyncPath { device_number }: schemas::PutTelescopeSlewtocoordinatesasyncPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::PutTelescopeSlewtocoordinatesRequest { right_ascension, declination },
@@ -8988,7 +8736,6 @@ Move the telescope to the TargetRightAscension and TargetDeclination equatorial 
 #[put("/telescope/<device_number>/slewtotarget")]
 fn put_telescope_slewtotarget(
     schemas::PutTelescopeSlewtotargetPath { device_number }: schemas::PutTelescopeSlewtotargetPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::PutCameraAbortexposureRequest {},
@@ -9004,7 +8751,6 @@ Move the telescope to the TargetRightAscension and TargetDeclination equatorial 
 #[put("/telescope/<device_number>/slewtotargetasync")]
 fn put_telescope_slewtotargetasync(
     schemas::PutTelescopeSlewtotargetasyncPath { device_number }: schemas::PutTelescopeSlewtotargetasyncPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::PutCameraAbortexposureRequest {},
@@ -9020,7 +8766,6 @@ Matches the scope's local horizontal coordinates to the given local horizontal c
 #[put("/telescope/<device_number>/synctoaltaz")]
 fn put_telescope_synctoaltaz(
     schemas::PutTelescopeSynctoaltazPath { device_number }: schemas::PutTelescopeSynctoaltazPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::PutTelescopeSlewtoaltazRequest { azimuth, altitude },
@@ -9036,7 +8781,6 @@ Matches the scope's equatorial coordinates to the given equatorial coordinates.
 #[put("/telescope/<device_number>/synctocoordinates")]
 fn put_telescope_synctocoordinates(
     schemas::PutTelescopeSynctocoordinatesPath { device_number }: schemas::PutTelescopeSynctocoordinatesPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::PutTelescopeSlewtocoordinatesRequest { right_ascension, declination },
@@ -9052,7 +8796,6 @@ Matches the scope's equatorial coordinates to the TargetRightAscension and Targe
 #[put("/telescope/<device_number>/synctotarget")]
 fn put_telescope_synctotarget(
     schemas::PutTelescopeSynctotargetPath { device_number }: schemas::PutTelescopeSynctotargetPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::PutCameraAbortexposureRequest {},
@@ -9068,7 +8811,6 @@ Takes telescope out of the Parked state. )
 #[put("/telescope/<device_number>/unpark")]
 fn put_telescope_unpark(
     schemas::PutTelescopeUnparkPath { device_number }: schemas::PutTelescopeUnparkPath,
-
     ASCOMRequest {
         transaction,
         request: schemas::PutCameraAbortexposureRequest {},
