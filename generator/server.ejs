@@ -157,7 +157,7 @@ function getTypeDescription(schema) {
       <% for (let [propName, prop] of Object.entries(schema.properties)) { %>
         <%= doc(getTypeDescription(prop)) %>
         #[serde(rename = "<%= propName %>")]
-        <%= toPropName(propName) %>: <%= handleOptType(prop, schema.required?.includes(propName)) %>,
+        pub <%= toPropName(propName) %>: <%= handleOptType(prop, schema.required?.includes(propName)) %>,
       <% } %>
     }
   <% } else { %>

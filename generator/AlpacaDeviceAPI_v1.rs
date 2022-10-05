@@ -112,15 +112,15 @@ mod schemas {
     struct ImageArrayResponse {
         /// 0 = Unknown, 1 = Short(int16), 2 = Integer (int32), 3 = Double (Double precision real number).
         #[serde(rename = "Type")]
-        type_: Option<i32>,
+        pub type_: Option<i32>,
 
         /// The array's rank, will be 2 (single plane image (monochrome)) or 3 (multi-plane image).
         #[serde(rename = "Rank")]
-        rank: Option<i32>,
+        pub rank: Option<i32>,
 
         /// Returned integer or double value
         #[serde(rename = "Value")]
-        value: Option<Vec<Vec<f64>>>,
+        pub value: Option<Vec<Vec<f64>>>,
     }
 
     #[derive(Serialize)]
@@ -128,7 +128,7 @@ mod schemas {
     struct BoolResponse {
         /// True or False value
         #[serde(rename = "Value")]
-        value: Option<bool>,
+        pub value: Option<bool>,
     }
 
     #[derive(Serialize)]
@@ -136,7 +136,7 @@ mod schemas {
     struct DoubleResponse {
         /// Returned double value
         #[serde(rename = "Value")]
-        value: Option<f64>,
+        pub value: Option<f64>,
     }
 
     #[derive(Serialize)]
@@ -144,7 +144,7 @@ mod schemas {
     struct IntResponse {
         /// Returned integer value
         #[serde(rename = "Value")]
-        value: Option<i32>,
+        pub value: Option<i32>,
     }
 
     #[derive(Serialize)]
@@ -152,7 +152,7 @@ mod schemas {
     struct IntArrayResponse {
         /// Array of integer values.
         #[serde(rename = "Value")]
-        value: Option<Vec<i32>>,
+        pub value: Option<Vec<i32>>,
     }
 
     #[derive(Serialize)]
@@ -160,7 +160,7 @@ mod schemas {
     struct StringResponse {
         /// String response from the device.
         #[serde(rename = "Value")]
-        value: Option<String>,
+        pub value: Option<String>,
     }
 
     #[derive(Serialize)]
@@ -168,7 +168,7 @@ mod schemas {
     struct StringArrayResponse {
         /// Array of string values.
         #[serde(rename = "Value")]
-        value: Option<Vec<String>>,
+        pub value: Option<Vec<String>>,
     }
 
     #[derive(Serialize)]
@@ -176,7 +176,7 @@ mod schemas {
     struct AxisRatesResponse {
         /// Array of AxisRate objects
         #[serde(rename = "Value")]
-        value: Option<Vec<schemas::AxisRate>>,
+        pub value: Option<Vec<schemas::AxisRate>>,
     }
 
     #[derive(Deserialize)]
@@ -184,11 +184,11 @@ mod schemas {
     struct AxisRate {
         /// The maximum rate (degrees per second) This must always be a positive number. It indicates the maximum rate in either direction about the axis.
         #[serde(rename = "Maximum")]
-        maximum: f64,
+        pub maximum: f64,
 
         /// The minimum rate (degrees per second) This must always be a positive number. It indicates the maximum rate in either direction about the axis.
         #[serde(rename = "Minimum")]
-        minimum: f64,
+        pub minimum: f64,
     }
 
     #[derive(Serialize)]
@@ -196,7 +196,7 @@ mod schemas {
     struct DriveRatesResponse {
         /// Array of DriveRate values
         #[serde(rename = "Value")]
-        value: Option<Vec<schemas::DriveRate>>,
+        pub value: Option<Vec<schemas::DriveRate>>,
     }
 
     #[derive(Deserialize)]
@@ -209,11 +209,11 @@ mod schemas {
     struct PutActionRequest {
         /// A well known name that represents the action to be carried out.
         #[serde(rename = "Action")]
-        action: String,
+        pub action: String,
 
         /// List of required parameters or an Empty String if none are required
         #[serde(rename = "Parameters")]
-        parameters: String,
+        pub parameters: String,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -222,11 +222,11 @@ mod schemas {
     struct PutCommandblindRequest {
         /// The literal command string to be transmitted.
         #[serde(rename = "Command")]
-        command: String,
+        pub command: String,
 
         /// If set to true the string is transmitted 'as-is', if set to false then protocol framing characters may be added prior to transmission
         #[serde(rename = "Raw")]
-        raw: String,
+        pub raw: String,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -235,7 +235,7 @@ mod schemas {
     struct PutConnectedRequest {
         /// Set True to connect to the device hardware, set False to disconnect from the device hardware
         #[serde(rename = "Connected")]
-        connected: bool,
+        pub connected: bool,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -244,7 +244,7 @@ mod schemas {
     struct PutCameraBinxRequest {
         /// The X binning value
         #[serde(rename = "BinX")]
-        bin_x: i32,
+        pub bin_x: i32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -253,7 +253,7 @@ mod schemas {
     struct PutCameraBinyRequest {
         /// The Y binning value
         #[serde(rename = "BinY")]
-        bin_y: i32,
+        pub bin_y: i32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -262,7 +262,7 @@ mod schemas {
     struct PutCameraCooleronRequest {
         /// Cooler state
         #[serde(rename = "CoolerOn")]
-        cooler_on: bool,
+        pub cooler_on: bool,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -271,7 +271,7 @@ mod schemas {
     struct PutCameraFastreadoutRequest {
         /// True to enable fast readout mode
         #[serde(rename = "FastReadout")]
-        fast_readout: bool,
+        pub fast_readout: bool,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -280,7 +280,7 @@ mod schemas {
     struct PutCameraGainRequest {
         /// Index of the current camera gain in the Gains string array.
         #[serde(rename = "Gain")]
-        gain: i32,
+        pub gain: i32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -289,7 +289,7 @@ mod schemas {
     struct PutCameraNumxRequest {
         /// Sets the subframe width, if binning is active, value is in binned pixels.
         #[serde(rename = "NumX")]
-        num_x: i32,
+        pub num_x: i32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -298,7 +298,7 @@ mod schemas {
     struct PutCameraNumyRequest {
         /// Sets the subframe height, if binning is active, value is in binned pixels.
         #[serde(rename = "NumY")]
-        num_y: i32,
+        pub num_y: i32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -307,7 +307,7 @@ mod schemas {
     struct PutCameraOffsetRequest {
         /// Index of the current camera offset in the offsets string array.
         #[serde(rename = "offset")]
-        offset: i32,
+        pub offset: i32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -316,7 +316,7 @@ mod schemas {
     struct PutCameraReadoutmodeRequest {
         /// Index into the ReadoutModes array of string readout mode names indicating the camera's current readout mode.
         #[serde(rename = "ReadoutMode")]
-        readout_mode: i32,
+        pub readout_mode: i32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -325,7 +325,7 @@ mod schemas {
     struct PutCameraSetccdtemperatureRequest {
         /// Temperature set point (degrees Celsius).
         #[serde(rename = "SetCCDTemperature")]
-        set_ccdtemperature: f64,
+        pub set_ccdtemperature: f64,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -334,7 +334,7 @@ mod schemas {
     struct PutCameraStartxRequest {
         /// The subframe X axis start position in binned pixels.
         #[serde(rename = "StartX")]
-        start_x: i32,
+        pub start_x: i32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -343,7 +343,7 @@ mod schemas {
     struct PutCameraStartyRequest {
         /// The subframe Y axis start position in binned pixels.
         #[serde(rename = "StartY")]
-        start_y: i32,
+        pub start_y: i32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -352,7 +352,7 @@ mod schemas {
     struct PutCameraSubexposuredurationRequest {
         /// The request sub exposure duration in seconds
         #[serde(rename = "SubExposureDuration")]
-        sub_exposure_duration: f64,
+        pub sub_exposure_duration: f64,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -361,11 +361,11 @@ mod schemas {
     struct PutCameraPulseguideRequest {
         /// Direction of movement (0 = North, 1 = South, 2 = East, 3 = West)
         #[serde(rename = "Direction")]
-        direction: i32,
+        pub direction: i32,
 
         /// Duration of movement in milli-seconds
         #[serde(rename = "Duration")]
-        duration: i32,
+        pub duration: i32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -374,11 +374,11 @@ mod schemas {
     struct PutCameraStartexposureRequest {
         /// Duration of exposure in seconds
         #[serde(rename = "Duration")]
-        duration: f64,
+        pub duration: f64,
 
         /// True if light frame, false if dark frame.
         #[serde(rename = "Light")]
-        light: bool,
+        pub light: bool,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -387,7 +387,7 @@ mod schemas {
     struct PutCovercalibratorCalibratoronRequest {
         /// The required brightness in the range 0 to MaxBrightness
         #[serde(rename = "Brightness")]
-        brightness: Option<i32>,
+        pub brightness: Option<i32>,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -396,7 +396,7 @@ mod schemas {
     struct PutDomeSlavedRequest {
         /// True if telescope is slaved to dome, otherwise false
         #[serde(rename = "Slaved")]
-        slaved: bool,
+        pub slaved: bool,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -405,7 +405,7 @@ mod schemas {
     struct PutDomeSlewtoaltitudeRequest {
         /// Target dome altitude (degrees, horizon zero and increasing positive to 90 zenith)
         #[serde(rename = "Altitude")]
-        altitude: f64,
+        pub altitude: f64,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -414,7 +414,7 @@ mod schemas {
     struct PutDomeSlewtoazimuthRequest {
         /// Target dome azimuth (degrees, North zero and increasing clockwise. i.e., 90 East, 180 South, 270 West)
         #[serde(rename = "Azimuth")]
-        azimuth: f64,
+        pub azimuth: f64,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -423,7 +423,7 @@ mod schemas {
     struct PutFilterwheelPositionRequest {
         /// The number of the filter wheel position to select
         #[serde(rename = "Position")]
-        position: i32,
+        pub position: i32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -432,7 +432,7 @@ mod schemas {
     struct PutFocuserTempcompPath {
         /// Zero based device number as set on the server
         #[serde(rename = "device_number")]
-        device_number: i32,
+        pub device_number: i32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -441,7 +441,7 @@ mod schemas {
     struct PutFocuserTempcompRequest {
         /// Set true to enable the focuser's temperature compensation mode, otherwise false for normal operation.
         #[serde(rename = "TempComp")]
-        temp_comp: bool,
+        pub temp_comp: bool,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -450,7 +450,7 @@ mod schemas {
     struct PutFocuserMoveRequest {
         /// Step distance or absolute position, depending on the value of the Absolute property
         #[serde(rename = "Position")]
-        position: i32,
+        pub position: i32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -459,7 +459,7 @@ mod schemas {
     struct PutObservingconditionsAverageperiodRequest {
         /// Time period (hours) over which to average sensor readings
         #[serde(rename = "AveragePeriod")]
-        average_period: f64,
+        pub average_period: f64,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -468,7 +468,7 @@ mod schemas {
     struct GetObservingconditionsSensordescriptionQuery {
         /// Name of the sensor whose description is required
         #[serde(rename = "SensorName")]
-        sensor_name: String,
+        pub sensor_name: String,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -477,7 +477,7 @@ mod schemas {
     struct GetObservingconditionsTimesincelastupdateQuery {
         /// Name of the sensor whose last update time is required
         #[serde(rename = "SensorName")]
-        sensor_name: String,
+        pub sensor_name: String,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -486,7 +486,7 @@ mod schemas {
     struct PutRotatorReverseRequest {
         /// True if the rotation and angular direction must be reversed to match the optical characteristcs
         #[serde(rename = "Reverse")]
-        reverse: bool,
+        pub reverse: bool,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -495,7 +495,7 @@ mod schemas {
     struct PutRotatorMoveRequest {
         /// Relative position to move in degrees from current Position.
         #[serde(rename = "Position")]
-        position: f64,
+        pub position: f64,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -504,7 +504,7 @@ mod schemas {
     struct PutRotatorMoveabsoluteRequest {
         /// Absolute position in degrees.
         #[serde(rename = "Position")]
-        position: f64,
+        pub position: f64,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -513,7 +513,7 @@ mod schemas {
     struct PutRotatorMovemechanicalRequest {
         /// Absolute position in degrees.
         #[serde(rename = "Position")]
-        position: f64,
+        pub position: f64,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -522,7 +522,7 @@ mod schemas {
     struct PutRotatorSyncRequest {
         /// Absolute position in degrees.
         #[serde(rename = "Position")]
-        position: f64,
+        pub position: f64,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -531,7 +531,7 @@ mod schemas {
     struct GetSwitchCanwriteQuery {
         /// The device number (0 to MaxSwitch - 1)
         #[serde(rename = "Id")]
-        id: i32,
+        pub id: i32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -540,7 +540,7 @@ mod schemas {
     struct GetSwitchGetswitchQuery {
         /// The device number (0 to MaxSwitch - 1)
         #[serde(rename = "Id")]
-        id: i32,
+        pub id: i32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -549,7 +549,7 @@ mod schemas {
     struct GetSwitchGetswitchdescriptionQuery {
         /// The device number (0 to MaxSwitch - 1)
         #[serde(rename = "Id")]
-        id: i32,
+        pub id: i32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -558,7 +558,7 @@ mod schemas {
     struct GetSwitchGetswitchnameQuery {
         /// The device number (0 to MaxSwitch - 1)
         #[serde(rename = "Id")]
-        id: i32,
+        pub id: i32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -567,7 +567,7 @@ mod schemas {
     struct GetSwitchGetswitchvalueQuery {
         /// The device number (0 to MaxSwitch - 1)
         #[serde(rename = "Id")]
-        id: i32,
+        pub id: i32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -576,7 +576,7 @@ mod schemas {
     struct GetSwitchMinswitchvalueQuery {
         /// The device number (0 to MaxSwitch - 1)
         #[serde(rename = "Id")]
-        id: i32,
+        pub id: i32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -585,7 +585,7 @@ mod schemas {
     struct GetSwitchMaxswitchvalueQuery {
         /// The device number (0 to MaxSwitch - 1)
         #[serde(rename = "Id")]
-        id: i32,
+        pub id: i32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -594,11 +594,11 @@ mod schemas {
     struct PutSwitchSetswitchRequest {
         /// The device number (0 to MaxSwitch - 1)
         #[serde(rename = "Id")]
-        id: i32,
+        pub id: i32,
 
         /// The required control state (True or False)
         #[serde(rename = "State")]
-        state: bool,
+        pub state: bool,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -607,11 +607,11 @@ mod schemas {
     struct PutSwitchSetswitchnameRequest {
         /// The device number (0 to MaxSwitch - 1)
         #[serde(rename = "Id")]
-        id: i32,
+        pub id: i32,
 
         /// The name of the device
         #[serde(rename = "Name")]
-        name: String,
+        pub name: String,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -620,11 +620,11 @@ mod schemas {
     struct PutSwitchSetswitchvalueRequest {
         /// The device number (0 to MaxSwitch - 1)
         #[serde(rename = "Id")]
-        id: i32,
+        pub id: i32,
 
         /// The value to be set, between MinSwitchValue and MaxSwitchValue
         #[serde(rename = "Value")]
-        value: f64,
+        pub value: f64,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -633,7 +633,7 @@ mod schemas {
     struct GetSwitchSwitchstepQuery {
         /// The device number (0 to MaxSwitch - 1)
         #[serde(rename = "Id")]
-        id: i32,
+        pub id: i32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -642,7 +642,7 @@ mod schemas {
     struct PutTelescopeDeclinationrateRequest {
         /// Declination tracking rate (arcseconds per second)
         #[serde(rename = "DeclinationRate")]
-        declination_rate: f64,
+        pub declination_rate: f64,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -651,7 +651,7 @@ mod schemas {
     struct PutTelescopeDoesrefractionRequest {
         /// Set True to make the telescope or driver applie atmospheric refraction to coordinates.
         #[serde(rename = "DoesRefraction")]
-        does_refraction: bool,
+        pub does_refraction: bool,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -660,7 +660,7 @@ mod schemas {
     struct PutTelescopeGuideratedeclinationRequest {
         /// Declination movement rate offset degrees/sec).
         #[serde(rename = "GuideRateDeclination")]
-        guide_rate_declination: f64,
+        pub guide_rate_declination: f64,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -669,7 +669,7 @@ mod schemas {
     struct PutTelescopeGuideraterightascensionRequest {
         /// RightAscension movement rate offset degrees/sec).
         #[serde(rename = "GuideRateRightAscension")]
-        guide_rate_right_ascension: f64,
+        pub guide_rate_right_ascension: f64,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -678,7 +678,7 @@ mod schemas {
     struct PutTelescopeRightascensionrateRequest {
         /// Right ascension tracking rate (arcseconds per second)
         #[serde(rename = "RightAscensionRate")]
-        right_ascension_rate: f64,
+        pub right_ascension_rate: f64,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -687,7 +687,7 @@ mod schemas {
     struct PutTelescopeSideofpierRequest {
         /// New pointing state.
         #[serde(rename = "SideOfPier")]
-        side_of_pier: i32,
+        pub side_of_pier: i32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -696,7 +696,7 @@ mod schemas {
     struct PutTelescopeSiteelevationRequest {
         /// Elevation above mean sea level (metres).
         #[serde(rename = "SiteElevation")]
-        site_elevation: f64,
+        pub site_elevation: f64,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -705,7 +705,7 @@ mod schemas {
     struct PutTelescopeSitelatitudeRequest {
         /// Site latitude (degrees)
         #[serde(rename = "SiteLatitude")]
-        site_latitude: f64,
+        pub site_latitude: f64,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -714,7 +714,7 @@ mod schemas {
     struct PutTelescopeSitelongitudeRequest {
         /// Site longitude (degrees, positive East, WGS84)
         #[serde(rename = "SiteLongitude")]
-        site_longitude: f64,
+        pub site_longitude: f64,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -723,7 +723,7 @@ mod schemas {
     struct PutTelescopeSlewsettletimeRequest {
         /// Settling time (integer sec.).
         #[serde(rename = "SlewSettleTime")]
-        slew_settle_time: i32,
+        pub slew_settle_time: i32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -732,7 +732,7 @@ mod schemas {
     struct PutTelescopeTargetdeclinationRequest {
         /// Target declination(degrees)
         #[serde(rename = "TargetDeclination")]
-        target_declination: f64,
+        pub target_declination: f64,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -741,7 +741,7 @@ mod schemas {
     struct PutTelescopeTargetrightascensionRequest {
         /// Target right ascension(hours)
         #[serde(rename = "TargetRightAscension")]
-        target_right_ascension: f64,
+        pub target_right_ascension: f64,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -750,7 +750,7 @@ mod schemas {
     struct PutTelescopeTrackingRequest {
         /// Tracking enabled / disabled
         #[serde(rename = "Tracking")]
-        tracking: bool,
+        pub tracking: bool,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -759,7 +759,7 @@ mod schemas {
     struct PutTelescopeTrackingrateRequest {
         /// New tracking rate
         #[serde(rename = "TrackingRate")]
-        tracking_rate: i32,
+        pub tracking_rate: i32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -768,7 +768,7 @@ mod schemas {
     struct PutTelescopeUtcdateRequest {
         /// UTC date/time in ISO 8601 format.
         #[serde(rename = "UTCDate")]
-        utcdate: String,
+        pub utcdate: String,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -777,7 +777,7 @@ mod schemas {
     struct GetTelescopeAxisratesQuery {
         /// The axis about which rate information is desired. 0 = axisPrimary, 1 = axisSecondary, 2 = axisTertiary.
         #[serde(rename = "Axis")]
-        axis: i32,
+        pub axis: i32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -786,7 +786,7 @@ mod schemas {
     struct GetTelescopeCanmoveaxisQuery {
         /// The axis about which rate information is desired. 0 = axisPrimary, 1 = axisSecondary, 2 = axisTertiary.
         #[serde(rename = "Axis")]
-        axis: i32,
+        pub axis: i32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -795,11 +795,11 @@ mod schemas {
     struct GetTelescopeDestinationsideofpierQuery {
         /// Right Ascension coordinate (0.0 to 23.99999999 hours)
         #[serde(rename = "RightAscension")]
-        right_ascension: f64,
+        pub right_ascension: f64,
 
         /// Declination coordinate (-90.0 to +90.0 degrees)
         #[serde(rename = "Declination")]
-        declination: f64,
+        pub declination: f64,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -808,11 +808,11 @@ mod schemas {
     struct PutTelescopeMoveaxisRequest {
         /// The axis about which rate information is desired. 0 = axisPrimary, 1 = axisSecondary, 2 = axisTertiary.
         #[serde(rename = "Axis")]
-        axis: i32,
+        pub axis: i32,
 
         /// The rate of motion (deg/sec) about the specified axis
         #[serde(rename = "Rate")]
-        rate: f64,
+        pub rate: f64,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -821,11 +821,11 @@ mod schemas {
     struct PutTelescopePulseguideRequest {
         /// The direction in which the guide-rate motion is to be made. 0 = guideNorth, 1 = guideSouth, 2 = guideEast, 3 = guideWest
         #[serde(rename = "Direction")]
-        direction: i32,
+        pub direction: i32,
 
         /// The duration of the guide-rate motion (milliseconds)
         #[serde(rename = "Duration")]
-        duration: i32,
+        pub duration: i32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -834,11 +834,11 @@ mod schemas {
     struct PutTelescopeSlewtoaltazRequest {
         /// Azimuth coordinate (degrees, North-referenced, positive East/clockwise)
         #[serde(rename = "Azimuth")]
-        azimuth: f64,
+        pub azimuth: f64,
 
         /// Altitude coordinate (degrees, positive up)
         #[serde(rename = "Altitude")]
-        altitude: f64,
+        pub altitude: f64,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -847,11 +847,11 @@ mod schemas {
     struct PutTelescopeSlewtocoordinatesRequest {
         /// Right Ascension coordinate (hours)
         #[serde(rename = "RightAscension")]
-        right_ascension: f64,
+        pub right_ascension: f64,
 
         /// Declination coordinate (degrees)
         #[serde(rename = "Declination")]
-        declination: f64,
+        pub declination: f64,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -860,7 +860,7 @@ mod schemas {
     struct DeviceNumberPath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: u32,
+        pub device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -869,11 +869,11 @@ mod schemas {
     struct DeviceTypeAndNumberPath {
         /// One of the recognised ASCOM device types e.g. telescope (must be lower case)
         #[serde(rename = "device_type")]
-        device_type: String,
+        pub device_type: String,
 
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: u32,
+        pub device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
