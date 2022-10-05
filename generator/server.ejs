@@ -170,9 +170,6 @@ mod schemas {
   <% for (let [schemaName, schema] of Object.entries(api.components.schemas)) { %>
     <% if (schema['x-kind'] === 'Response') { %>
       #[derive(Serialize)]
-    <% } else if (schema['x-kind']) { %>
-      #[derive(Deserialize, FromRequest)]
-      #[from_request(via(<%= schema['x-kind'] %>))]
     <% } else { %>
       #[derive(Deserialize)]
     <% } %>
@@ -184,20 +181,20 @@ mod schemas {
   <%= doc(`${method.summary}${method.description && method.description !== method.summary ? `\n\n${method.description}` : ''}`) %>
   #[<%= methodName %>("<%= pathUrl.replaceAll(/\{(.*?)\}/g, '<$1>') %>")]
   fn <%= id %>(
-    <% let { 'x-path': pathRef, 'x-body': bodyRef } = method; %>
-    <%= refToName(pathRef) %> {
+    <% let { 'x-path': pathRef, 'x-request': requestRef, 'x-requestKind': requestKind } = method; %>
+    Path(<%= refToName(pathRef) %> {
       <% for (let param in resolveRef(pathRef).properties) { %>
         <%= toPropName(param) %>,
       <% } %>
-    }: <%= refToName(pathRef) %>,
-    ASCOMRequest {
+    }): Path<<%= refToName(pathRef) %>>,
+    <%= requestKind %>(ASCOMRequest {
       transaction,
-      request: <%= refToName(bodyRef) %> {
-        <% for (let param in resolveRef(bodyRef).properties) { %>
+      request: <%= refToName(requestRef) %> {
+        <% for (let param in resolveRef(requestRef).properties) { %>
           <%= toPropName(param) %>,
         <% } %>
       },
-    }: ASCOMRequest<<%= refToName(bodyRef) %>>
+    }): <%= requestKind %><ASCOMRequest<<%= refToName(requestRef) %>>>
   ) -> Result<<%= refToName(method.responses[200].content['application/json'].schema) %>> {
 
   }

@@ -37,7 +37,7 @@ let extraSchemas: Record<string, OpenAPIV3.NonArraySchemaObject> = {
   }
 };
 
-for (let kind of ['Path', 'Query', 'Form', 'Response']) {
+for (let kind of ['Path', 'Request', 'Response']) {
   extraSchemas[`Empty${kind}`] = {
     type: 'object',
     properties: {},

@@ -10,7 +10,8 @@ import { extraSchemas } from './extra-schemas.js';
 
 interface MethodExtension {
   'x-path'?: OpenAPIV3.ReferenceObject;
-  'x-body'?: OpenAPIV3.ReferenceObject;
+  'x-request'?: OpenAPIV3.ReferenceObject;
+  'x-requestKind'?: 'Query' | 'Form';
   'x-response'?: OpenAPIV3.ReferenceObject;
 }
 
@@ -131,13 +132,17 @@ for (let { method, path, id, operation } of ops()) {
 
   let requestBody = resolveMaybeRef(operation.requestBody);
 
-  let bodyParamsRef;
+  let requestParams;
+
   if (method === 'get') {
     assert.ok(queryParams, `Missing query parameters for ${id}`);
     assert.ok(!requestBody, `Unexpected request body for ${id}`);
 
-    setXKind(queryParams, 'Query');
-    bodyParamsRef = registerSchema(`${typeId}Query`, queryParams);
+    setXKind(queryParams, 'Request');
+    requestParams = {
+      ref: registerSchema(`${typeId}Request`, queryParams),
+      kind: 'Query' as const
+    };
   } else {
     assert.ok(!queryParams, `Unexpected query parameters for ${id}`);
     assert.ok(requestBody, `Missing request body for ${id}`);
@@ -151,12 +156,16 @@ for (let { method, path, id, operation } of ops()) {
       content.schema = registerSchema(`${typeId}Request`, schema);
     }
 
-    setXKind(schema, 'Form');
-    bodyParamsRef = content.schema;
+    setXKind(schema, 'Request');
+    requestParams = {
+      ref: content.schema,
+      kind: 'Form' as const
+    };
   }
 
   operation['x-path'] = pathParamsRef;
-  operation['x-body'] = bodyParamsRef;
+  operation['x-request'] = requestParams.ref;
+  operation['x-requestKind'] = requestParams.kind;
 
   let { 200: successfulResponse, ...errorResponses } = operation.responses;
 
@@ -239,8 +248,7 @@ for (let [schemaName, schema] of Object.entries(api.components!.schemas!)) {
       schema.properties = otherProperties;
       break;
     }
-    case 'Form':
-    case 'Query': {
+    case 'Request': {
       let { ClientID, ClientTransactionID, ...otherProperties } =
         schema.properties!;
 
