@@ -65,20 +65,22 @@ function getContent(
   return { schema: schema, content: content[contentType] };
 }
 
+function jsonWithoutOptFields(obj: any): string {
+  return JSON.stringify(obj, (k, v) => {
+    switch (k) {
+      case 'description':
+      case 'minimum':
+      case 'maximum':
+      case 'default':
+        return;
+      default:
+        return v;
+    }
+  });
+}
+
 function withoutOptFields<T>(obj: T): T {
-  return JSON.parse(
-    JSON.stringify(obj, (k, v) => {
-      switch (k) {
-        case 'description':
-        case 'minimum':
-        case 'maximum':
-        case 'default':
-          return;
-        default:
-          return v;
-      }
-    })
-  );
+  return JSON.parse(jsonWithoutOptFields(obj));
 }
 
 function setXKind(schema: OpenAPIV3.SchemaObject, kind: string) {
@@ -192,6 +194,8 @@ for (let { method, path, id, operation } of ops()) {
   setXKind(schema, 'Response');
 }
 
+let groupCounts: Record<string, number> = {};
+
 for (let [schemaName, schema] of Object.entries(api.components!.schemas!)) {
   schema = resolveMaybeRef(schema);
 
@@ -259,7 +263,21 @@ for (let [schemaName, schema] of Object.entries(api.components!.schemas!)) {
       break;
     }
   }
+
+  let key = jsonWithoutOptFields(schema);
+  groupCounts[key] ??= 0;
+  groupCounts[key]++;
 }
+
+Object.entries(groupCounts)
+  .filter(([_, count]) => count > 1)
+  .sort(([_, count1], [__, count2]) => count2 - count1)
+  .forEach(([json, count]) => {
+    console.warn(
+      `Found ${count} schemas with the same shape:`,
+      JSON.parse(json)
+    );
+  });
 
 let rendered = render(
   template,
