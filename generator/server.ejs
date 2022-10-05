@@ -98,10 +98,6 @@ function resolveRef(ref) {
 function refToName(ref) {
   let $ref = getRefTarget(ref);
   assert.ok($ref, `Not a reference ${dbg(ref)}`);
-  let refReplacement = refReplacements[$ref];
-  if (refReplacement) {
-    return refReplacement;
-  }
   let match = $ref.match(/^#\/components\/(parameters|schemas|requestBodies|responses)\/(\w+)$/);
   assert.ok(match, `Invalid reference ${dbg(ref)}`);
   return `${toSnakeCase(match[1])}::${toTypeName(match[2])}`;
