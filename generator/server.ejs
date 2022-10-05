@@ -98,6 +98,9 @@ function resolveRef(ref) {
 function refToName(ref) {
   let $ref = getRefTarget(ref);
   assert.ok($ref, `Not a reference ${dbg(ref)}`);
+  if ($ref.startsWith('#/components/schemas/Empty')) {
+    return '()';
+  }
   let match = $ref.match(/^#\/components\/(parameters|schemas|requestBodies|responses)\/(\w+)$/);
   assert.ok(match, `Invalid reference ${dbg(ref)}`);
   return `${toSnakeCase(match[1])}::${toTypeName(match[2])}`;
@@ -164,6 +167,7 @@ function getTypeDescription(schema) {
 
 mod schemas {
   <% for (let [schemaName, schema] of Object.entries(api.components.schemas)) { %>
+    <% if (schemaName.startsWith('Empty')) continue; %>
     <% if (schema['x-kind'] === 'Response') { %>
       #[derive(Serialize)]
     <% } else { %>
@@ -177,20 +181,29 @@ mod schemas {
   <%= doc(`${method.summary}${method.description && method.description !== method.summary ? `\n\n${method.description}` : ''}`) %>
   #[<%= methodName %>("<%= pathUrl.replaceAll(/\{(.*?)\}/g, '<$1>') %>")]
   fn <%= id %>(
-    <% let { 'x-path': pathRef, 'x-request': requestRef, 'x-requestKind': requestKind } = method; %>
-    Path(<%= refToName(pathRef) %> {
-      <% for (let param in resolveRef(pathRef).properties) { %>
-        <%= toPropName(param) %>,
-      <% } %>
-    }): Path<<%= refToName(pathRef) %>>,
-    <%= requestKind %>(ASCOMRequest {
-      transaction,
-      request: <%= refToName(requestRef) %> {
-        <% for (let param in resolveRef(requestRef).properties) { %>
+    <%
+      let { 'x-path': pathRef, 'x-request': requestRef, 'x-requestKind': requestKind } = method;
+      let pathRefName = refToName(pathRef);
+      let requestRefName = refToName(requestRef);
+    %>
+    <% if (pathRefName !== '()') { %>
+      Path(<%= refToName(pathRef) %> {
+        <% for (let param in resolveRef(pathRef).properties) { %>
           <%= toPropName(param) %>,
         <% } %>
-      },
-    }): <%= requestKind %><ASCOMRequest<<%= refToName(requestRef) %>>>
+      }): Path<<%= refToName(pathRef) %>>,
+    <% } %>
+    <%= requestKind %>(ASCOMRequest {
+      transaction,
+      request: <%= requestRefName %>
+      <% if (requestRefName !== '()') { %>
+        {
+          <% for (let param in resolveRef(requestRef).properties) { %>
+            <%= toPropName(param) %>,
+          <% } %>
+        }
+      <% } %>,
+    }): <%= requestKind %><ASCOMRequest<<%= requestRefName %>>>
   ) -> Result<<%= refToName(method.responses[200].content['application/json'].schema) %>> {
 
   }
