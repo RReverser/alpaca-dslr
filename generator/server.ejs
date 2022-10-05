@@ -6,11 +6,31 @@
 
 use axum::{Router, routing::{get, post}};
 
-pub struct TransactionResponse {
+#[derive(Deserialize)]
+pub struct TransactionRequest {
+  #[serde(rename = "ClientID")]
+  client_id: u32,
+  #[serde(rename = "ClientTransactionID")]
   client_transaction_id: u32,
+}
+
+#[derive(Serialize)]
+pub struct TransactionResponse {
+  #[serde(rename = "ClientTransactionID")]
+  client_transaction_id: u32,
+  #[serde(rename = "ServerTransactionID")]
   server_transaction_id: u32,
 }
 
+#[derive(Deserialize)]
+pub struct ASCOMRequest<T> {
+  #[serde(flatten)]
+  transaction: TransactionRequest,
+  #[serde(flatten)]
+  request: T,
+}
+
+#[derive(Serialize)]
 pub struct ASCOMError {
   code: i32,
   message: String,
@@ -68,6 +88,9 @@ function doc(description) {
 }
 
 function refToName(ref) {
+  if (ref?.$ref === '#/TransactionRequest') {
+    return 'TransactionRequest';
+  }
   let match = ref?.$ref?.match(/^#\/components\/(parameters|schemas|requestBodies|responses)\/(\w+)$/);
   assert.ok(match, `Invalid reference ${dbg(ref)}`);
   return `${toSnakeCase(match[1])}::${toTypeName(match[2])}`;
@@ -159,11 +182,23 @@ mod schemas {
   #[<%= methodName %>("<%= pathUrl.replaceAll(/\{(.*?)\}/g, '<$1>') %>")]
   fn <%= id %>(
     <% for (let ref of method['x-parameterSchemas']) { %>
-      <%= refToName(ref) %> {
-        <% for (let param in refs.get(ref.$ref).properties) { %>
-          <%= toPropName(param) %>,
-        <% } %>
-      }: <%= refToName(ref) %>,
+      <% let resolvedRef = refs.get(ref.$ref); %>
+      <% let wrapWithTransaction = resolvedRef['x-kind'] === 'Form' || resolvedRef['x-kind'] === 'Query'; %>
+      <% if (wrapWithTransaction) { %>
+      ASCOMRequest {
+        transaction,
+        request:
+      <% } %>
+        <%= refToName(ref) %> {
+          <% for (let param in resolvedRef.properties) { %>
+            <%= toPropName(param) %>,
+          <% } %>
+        }
+      <% if (wrapWithTransaction) { %>
+      }: ASCOMRequest<<%= refToName(ref) %>>,
+      <% } else { %>
+      : <%= refToName(ref) %>,
+      <% } %>
     <% } %>
   ) -> Result<<%= refToName(method.responses[200].content['application/json'].schema) %>> {
 

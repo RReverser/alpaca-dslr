@@ -65,9 +65,19 @@ function getContent(
   return { schema: schema, content: content[contentType] };
 }
 
-function withoutDescriptions<T>(obj: T): T {
+function withoutOptFields<T>(obj: T): T {
   return JSON.parse(
-    JSON.stringify(obj, (k, v) => (k === 'description' ? undefined : v))
+    JSON.stringify(obj, (k, v) => {
+      switch (k) {
+        case 'description':
+        case 'minimum':
+        case 'maximum':
+        case 'default':
+          return;
+        default:
+          return v;
+      }
+    })
   );
 }
 
@@ -124,6 +134,7 @@ for (let { method, path, id, operation } of ops()) {
   );
 
   let requestBody = resolveMaybeRef(operation.requestBody);
+
   if (requestBody) {
     let { content, schema } = getContent(
       requestBody,
@@ -136,6 +147,17 @@ for (let { method, path, id, operation } of ops()) {
 
     setXKind(schema, 'Form');
     operation['x-parameterSchemas'].push(content.schema);
+  }
+
+  if (method === 'get') {
+    assert.ok(groupedParams.query, 'GET method must have query parameters');
+    assert.ok(!requestBody, 'GET request should not have a body');
+  } else {
+    assert.ok(
+      !groupedParams.query,
+      'Non-GET method must not have query parameters'
+    );
+    assert.ok(requestBody, 'Non-GET request must have a body');
   }
 
   let { 200: successfulResponse, ...errorResponses } = operation.responses;
@@ -154,7 +176,7 @@ for (let { method, path, id, operation } of ops()) {
       }
     }
   };
-  assert.deepEqual(withoutDescriptions(errorResponses), {
+  assert.deepEqual(withoutOptFields(errorResponses), {
     400: errorResponseShape,
     500: errorResponseShape
   });
@@ -170,7 +192,7 @@ for (let { method, path, id, operation } of ops()) {
   setXKind(schema, 'Response');
 }
 
-for (let schema of Object.values(api.components!.schemas!)) {
+for (let [schemaName, schema] of Object.entries(api.components!.schemas!)) {
   schema = resolveMaybeRef(schema);
 
   switch ((schema as any)['x-kind']) {
@@ -182,8 +204,9 @@ for (let schema of Object.values(api.components!.schemas!)) {
         ErrorMessage,
         ...otherProperties
       } = schema.properties!;
+
       assert.deepEqual(
-        withoutDescriptions({
+        withoutOptFields({
           ClientTransactionID,
           ServerTransactionID,
           ErrorNumber,
@@ -192,26 +215,44 @@ for (let schema of Object.values(api.components!.schemas!)) {
         {
           ClientTransactionID: {
             type: 'integer',
-            format: 'uint32',
-            minimum: 0,
-            maximum: 4294967295
+            format: 'uint32'
           },
           ServerTransactionID: {
             type: 'integer',
-            format: 'uint32',
-            minimum: 0,
-            maximum: 4294967295
+            format: 'uint32'
           },
           ErrorNumber: {
             type: 'integer',
-            format: 'int32',
-            minimum: -2147483648,
-            maximum: 2147483647
+            format: 'int32'
           },
           ErrorMessage: {
             type: 'string'
           }
-        }
+        },
+        `Missing response properties in ${schemaName}`
+      );
+
+      schema.properties = otherProperties;
+      break;
+    }
+    case 'Form':
+    case 'Query': {
+      let { ClientID, ClientTransactionID, ...otherProperties } =
+        schema.properties!;
+
+      assert.deepEqual(
+        withoutOptFields({ ClientID, ClientTransactionID }),
+        {
+          ClientID: {
+            type: 'integer',
+            format: 'uint32'
+          },
+          ClientTransactionID: {
+            type: 'integer',
+            format: 'uint32'
+          }
+        },
+        `Missing request properties in ${schemaName}`
       );
 
       schema.properties = otherProperties;

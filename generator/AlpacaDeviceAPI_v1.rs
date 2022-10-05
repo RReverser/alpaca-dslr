@@ -40,11 +40,31 @@ use axum::{
     Router,
 };
 
-pub struct TransactionResponse {
+#[derive(Deserialize)]
+pub struct TransactionRequest {
+    #[serde(rename = "ClientID")]
+    client_id: u32,
+    #[serde(rename = "ClientTransactionID")]
     client_transaction_id: u32,
+}
+
+#[derive(Serialize)]
+pub struct TransactionResponse {
+    #[serde(rename = "ClientTransactionID")]
+    client_transaction_id: u32,
+    #[serde(rename = "ServerTransactionID")]
     server_transaction_id: u32,
 }
 
+#[derive(Deserialize)]
+pub struct ASCOMRequest<T> {
+    #[serde(flatten)]
+    transaction: TransactionRequest,
+    #[serde(flatten)]
+    request: T,
+}
+
+#[derive(Serialize)]
 pub struct ASCOMError {
     code: i32,
     message: String,
@@ -304,18 +324,6 @@ mod schemas {
         */
         #[serde(rename = "Parameters")]
         parameters: String,
-
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -350,18 +358,6 @@ mod schemas {
         */
         #[serde(rename = "Raw")]
         raw: String,
-
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -418,19 +414,7 @@ mod schemas {
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Query))]
 
-    struct GetConnectedQuery {
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
-    }
+    struct GetConnectedQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -458,18 +442,6 @@ mod schemas {
         */
         #[serde(rename = "Connected")]
         connected: bool,
-
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -492,19 +464,7 @@ mod schemas {
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Query))]
 
-    struct GetDescriptionQuery {
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
-    }
+    struct GetDescriptionQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -526,19 +486,7 @@ mod schemas {
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Query))]
 
-    struct GetDriverinfoQuery {
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
-    }
+    struct GetDriverinfoQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -560,19 +508,7 @@ mod schemas {
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Query))]
 
-    struct GetDriverversionQuery {
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
-    }
+    struct GetDriverversionQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -594,19 +530,7 @@ mod schemas {
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Query))]
 
-    struct GetInterfaceversionQuery {
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
-    }
+    struct GetInterfaceversionQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -628,19 +552,7 @@ mod schemas {
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Query))]
 
-    struct GetNameQuery {
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
-    }
+    struct GetNameQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -662,19 +574,7 @@ mod schemas {
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Query))]
 
-    struct GetSupportedactionsQuery {
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
-    }
+    struct GetSupportedactionsQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -690,19 +590,7 @@ mod schemas {
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Query))]
 
-    struct GetCameraBayeroffsetxQuery {
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
-    }
+    struct GetCameraBayeroffsetxQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -718,19 +606,7 @@ mod schemas {
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Query))]
 
-    struct GetCameraBayeroffsetyQuery {
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
-    }
+    struct GetCameraBayeroffsetyQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -746,19 +622,7 @@ mod schemas {
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Query))]
 
-    struct GetCameraBinxQuery {
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
-    }
+    struct GetCameraBinxQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -780,18 +644,6 @@ mod schemas {
         */
         #[serde(rename = "BinX")]
         bin_x: i32,
-
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -808,19 +660,7 @@ mod schemas {
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Query))]
 
-    struct GetCameraBinyQuery {
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
-    }
+    struct GetCameraBinyQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -842,18 +682,6 @@ mod schemas {
         */
         #[serde(rename = "BinY")]
         bin_y: i32,
-
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -870,19 +698,7 @@ mod schemas {
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Query))]
 
-    struct GetCameraCamerastateQuery {
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
-    }
+    struct GetCameraCamerastateQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -898,19 +714,7 @@ mod schemas {
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Query))]
 
-    struct GetCameraCameraxsizeQuery {
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
-    }
+    struct GetCameraCameraxsizeQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -926,19 +730,7 @@ mod schemas {
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Query))]
 
-    struct GetCameraCameraysizeQuery {
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
-    }
+    struct GetCameraCameraysizeQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -954,19 +746,7 @@ mod schemas {
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Query))]
 
-    struct GetCameraCanabortexposureQuery {
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
-    }
+    struct GetCameraCanabortexposureQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -982,19 +762,7 @@ mod schemas {
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Query))]
 
-    struct GetCameraCanasymmetricbinQuery {
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
-    }
+    struct GetCameraCanasymmetricbinQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -1010,19 +778,7 @@ mod schemas {
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Query))]
 
-    struct GetCameraCanfastreadoutQuery {
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
-    }
+    struct GetCameraCanfastreadoutQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -1038,19 +794,7 @@ mod schemas {
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Query))]
 
-    struct GetCameraCangetcoolerpowerQuery {
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
-    }
+    struct GetCameraCangetcoolerpowerQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -1066,19 +810,7 @@ mod schemas {
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Query))]
 
-    struct GetCameraCanpulseguideQuery {
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
-    }
+    struct GetCameraCanpulseguideQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -1094,19 +826,7 @@ mod schemas {
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Query))]
 
-    struct GetCameraCansetccdtemperatureQuery {
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
-    }
+    struct GetCameraCansetccdtemperatureQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -1122,19 +842,7 @@ mod schemas {
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Query))]
 
-    struct GetCameraCanstopexposureQuery {
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
-    }
+    struct GetCameraCanstopexposureQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -1150,19 +858,7 @@ mod schemas {
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Query))]
 
-    struct GetCameraCcdtemperatureQuery {
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
-    }
+    struct GetCameraCcdtemperatureQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -1178,19 +874,7 @@ mod schemas {
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Query))]
 
-    struct GetCameraCooleronQuery {
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
-    }
+    struct GetCameraCooleronQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -1212,18 +896,6 @@ mod schemas {
         */
         #[serde(rename = "CoolerOn")]
         cooler_on: bool,
-
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -1240,19 +912,7 @@ mod schemas {
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Query))]
 
-    struct GetCameraCoolerpowerQuery {
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
-    }
+    struct GetCameraCoolerpowerQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -1268,19 +928,7 @@ mod schemas {
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Query))]
 
-    struct GetCameraElectronsperaduQuery {
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
-    }
+    struct GetCameraElectronsperaduQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -1296,19 +944,7 @@ mod schemas {
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Query))]
 
-    struct GetCameraExposuremaxQuery {
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
-    }
+    struct GetCameraExposuremaxQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -1324,19 +960,7 @@ mod schemas {
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Query))]
 
-    struct GetCameraExposureminQuery {
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
-    }
+    struct GetCameraExposureminQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -1352,19 +976,7 @@ mod schemas {
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Query))]
 
-    struct GetCameraExposureresolutionQuery {
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
-    }
+    struct GetCameraExposureresolutionQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -1380,19 +992,7 @@ mod schemas {
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Query))]
 
-    struct GetCameraFastreadoutQuery {
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
-    }
+    struct GetCameraFastreadoutQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -1414,18 +1014,6 @@ mod schemas {
         */
         #[serde(rename = "FastReadout")]
         fast_readout: bool,
-
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -1442,19 +1030,7 @@ mod schemas {
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Query))]
 
-    struct GetCameraFullwellcapacityQuery {
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
-    }
+    struct GetCameraFullwellcapacityQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -1470,19 +1046,7 @@ mod schemas {
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Query))]
 
-    struct GetCameraGainQuery {
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
-    }
+    struct GetCameraGainQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -1504,18 +1068,6 @@ mod schemas {
         */
         #[serde(rename = "Gain")]
         gain: i32,
-
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -1532,19 +1084,7 @@ mod schemas {
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Query))]
 
-    struct GetCameraGainmaxQuery {
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
-    }
+    struct GetCameraGainmaxQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -1560,19 +1100,7 @@ mod schemas {
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Query))]
 
-    struct GetCameraGainminQuery {
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
-    }
+    struct GetCameraGainminQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -1588,19 +1116,7 @@ mod schemas {
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Query))]
 
-    struct GetCameraGainsQuery {
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
-    }
+    struct GetCameraGainsQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -1616,19 +1132,7 @@ mod schemas {
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Query))]
 
-    struct GetCameraHasshutterQuery {
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
-    }
+    struct GetCameraHasshutterQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -1644,19 +1148,7 @@ mod schemas {
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Query))]
 
-    struct GetCameraHeatsinktemperatureQuery {
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
-    }
+    struct GetCameraHeatsinktemperatureQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -1672,19 +1164,7 @@ mod schemas {
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Query))]
 
-    struct GetCameraImagearrayQuery {
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
-    }
+    struct GetCameraImagearrayQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -1700,19 +1180,7 @@ mod schemas {
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Query))]
 
-    struct GetCameraImagearrayvariantQuery {
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
-    }
+    struct GetCameraImagearrayvariantQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -1728,19 +1196,7 @@ mod schemas {
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Query))]
 
-    struct GetCameraImagereadyQuery {
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
-    }
+    struct GetCameraImagereadyQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -1756,19 +1212,7 @@ mod schemas {
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Query))]
 
-    struct GetCameraIspulseguidingQuery {
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
-    }
+    struct GetCameraIspulseguidingQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -1784,19 +1228,7 @@ mod schemas {
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Query))]
 
-    struct GetCameraLastexposuredurationQuery {
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
-    }
+    struct GetCameraLastexposuredurationQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -1812,19 +1244,7 @@ mod schemas {
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Query))]
 
-    struct GetCameraLastexposurestarttimeQuery {
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
-    }
+    struct GetCameraLastexposurestarttimeQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -1840,19 +1260,7 @@ mod schemas {
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Query))]
 
-    struct GetCameraMaxaduQuery {
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
-    }
+    struct GetCameraMaxaduQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -1868,19 +1276,7 @@ mod schemas {
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Query))]
 
-    struct GetCameraMaxbinxQuery {
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
-    }
+    struct GetCameraMaxbinxQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -1896,19 +1292,7 @@ mod schemas {
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Query))]
 
-    struct GetCameraMaxbinyQuery {
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
-    }
+    struct GetCameraMaxbinyQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -1924,19 +1308,7 @@ mod schemas {
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Query))]
 
-    struct GetCameraNumxQuery {
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
-    }
+    struct GetCameraNumxQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -1958,18 +1330,6 @@ mod schemas {
         */
         #[serde(rename = "NumX")]
         num_x: i32,
-
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -1986,19 +1346,7 @@ mod schemas {
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Query))]
 
-    struct GetCameraNumyQuery {
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
-    }
+    struct GetCameraNumyQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -2020,18 +1368,6 @@ mod schemas {
         */
         #[serde(rename = "NumY")]
         num_y: i32,
-
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -2048,19 +1384,7 @@ mod schemas {
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Query))]
 
-    struct GetCameraOffsetQuery {
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
-    }
+    struct GetCameraOffsetQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -2082,18 +1406,6 @@ mod schemas {
         */
         #[serde(rename = "offset")]
         offset: i32,
-
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -2110,19 +1422,7 @@ mod schemas {
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Query))]
 
-    struct GetCameraOffsetmaxQuery {
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
-    }
+    struct GetCameraOffsetmaxQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -2138,19 +1438,7 @@ mod schemas {
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Query))]
 
-    struct GetCameraOffsetminQuery {
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
-    }
+    struct GetCameraOffsetminQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -2166,19 +1454,7 @@ mod schemas {
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Query))]
 
-    struct GetCameraOffsetsQuery {
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
-    }
+    struct GetCameraOffsetsQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -2194,19 +1470,7 @@ mod schemas {
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Query))]
 
-    struct GetCameraPercentcompletedQuery {
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
-    }
+    struct GetCameraPercentcompletedQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -2222,19 +1486,7 @@ mod schemas {
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Query))]
 
-    struct GetCameraPixelsizexQuery {
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
-    }
+    struct GetCameraPixelsizexQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -2250,19 +1502,7 @@ mod schemas {
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Query))]
 
-    struct GetCameraPixelsizeyQuery {
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
-    }
+    struct GetCameraPixelsizeyQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -2278,19 +1518,7 @@ mod schemas {
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Query))]
 
-    struct GetCameraReadoutmodeQuery {
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
-    }
+    struct GetCameraReadoutmodeQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -2312,18 +1540,6 @@ mod schemas {
         */
         #[serde(rename = "ReadoutMode")]
         readout_mode: i32,
-
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -2340,19 +1556,7 @@ mod schemas {
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Query))]
 
-    struct GetCameraReadoutmodesQuery {
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
-    }
+    struct GetCameraReadoutmodesQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -2368,19 +1572,7 @@ mod schemas {
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Query))]
 
-    struct GetCameraSensornameQuery {
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
-    }
+    struct GetCameraSensornameQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -2396,19 +1588,7 @@ mod schemas {
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Query))]
 
-    struct GetCameraSensortypeQuery {
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
-    }
+    struct GetCameraSensortypeQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -2424,19 +1604,7 @@ mod schemas {
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Query))]
 
-    struct GetCameraSetccdtemperatureQuery {
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
-    }
+    struct GetCameraSetccdtemperatureQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -2458,18 +1626,6 @@ mod schemas {
         */
         #[serde(rename = "SetCCDTemperature")]
         set_ccdtemperature: f64,
-
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -2486,19 +1642,7 @@ mod schemas {
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Query))]
 
-    struct GetCameraStartxQuery {
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
-    }
+    struct GetCameraStartxQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -2520,18 +1664,6 @@ mod schemas {
         */
         #[serde(rename = "StartX")]
         start_x: i32,
-
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -2548,19 +1680,7 @@ mod schemas {
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Query))]
 
-    struct GetCameraStartyQuery {
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
-    }
+    struct GetCameraStartyQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -2582,18 +1702,6 @@ mod schemas {
         */
         #[serde(rename = "StartY")]
         start_y: i32,
-
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -2610,19 +1718,7 @@ mod schemas {
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Query))]
 
-    struct GetCameraSubexposuredurationQuery {
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
-    }
+    struct GetCameraSubexposuredurationQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -2644,18 +1740,6 @@ mod schemas {
         */
         #[serde(rename = "SubExposureDuration")]
         sub_exposure_duration: f64,
-
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -2672,19 +1756,7 @@ mod schemas {
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Form))]
 
-    struct PutCameraAbortexposureRequest {
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
-    }
+    struct PutCameraAbortexposureRequest {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -2712,18 +1784,6 @@ mod schemas {
         */
         #[serde(rename = "Duration")]
         duration: i32,
-
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -2752,18 +1812,6 @@ mod schemas {
         */
         #[serde(rename = "Light")]
         light: bool,
-
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -2791,19 +1839,7 @@ mod schemas {
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Query))]
 
-    struct GetCovercalibratorBrightnessQuery {
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
-    }
+    struct GetCovercalibratorBrightnessQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -2819,19 +1855,7 @@ mod schemas {
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Query))]
 
-    struct GetCovercalibratorCalibratorstateQuery {
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
-    }
+    struct GetCovercalibratorCalibratorstateQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -2847,19 +1871,7 @@ mod schemas {
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Query))]
 
-    struct GetCovercalibratorCoverstateQuery {
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
-    }
+    struct GetCovercalibratorCoverstateQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -2875,19 +1887,7 @@ mod schemas {
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Query))]
 
-    struct GetCovercalibratorMaxbrightnessQuery {
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
-    }
+    struct GetCovercalibratorMaxbrightnessQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -2920,18 +1920,6 @@ mod schemas {
         */
         #[serde(rename = "Brightness")]
         brightness: Option<i32>,
-
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -2981,19 +1969,7 @@ mod schemas {
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Query))]
 
-    struct GetDomeAltitudeQuery {
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
-    }
+    struct GetDomeAltitudeQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -3009,19 +1985,7 @@ mod schemas {
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Query))]
 
-    struct GetDomeAthomeQuery {
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
-    }
+    struct GetDomeAthomeQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -3037,19 +2001,7 @@ mod schemas {
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Query))]
 
-    struct GetDomeAtparkQuery {
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
-    }
+    struct GetDomeAtparkQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -3065,19 +2017,7 @@ mod schemas {
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Query))]
 
-    struct GetDomeAzimuthQuery {
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
-    }
+    struct GetDomeAzimuthQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -3093,19 +2033,7 @@ mod schemas {
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Query))]
 
-    struct GetDomeCanfindhomeQuery {
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
-    }
+    struct GetDomeCanfindhomeQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -3121,19 +2049,7 @@ mod schemas {
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Query))]
 
-    struct GetDomeCanparkQuery {
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
-    }
+    struct GetDomeCanparkQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -3149,19 +2065,7 @@ mod schemas {
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Query))]
 
-    struct GetDomeCansetaltitudeQuery {
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
-    }
+    struct GetDomeCansetaltitudeQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -3177,19 +2081,7 @@ mod schemas {
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Query))]
 
-    struct GetDomeCansetazimuthQuery {
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
-    }
+    struct GetDomeCansetazimuthQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -3205,19 +2097,7 @@ mod schemas {
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Query))]
 
-    struct GetDomeCansetparkQuery {
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
-    }
+    struct GetDomeCansetparkQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -3233,19 +2113,7 @@ mod schemas {
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Query))]
 
-    struct GetDomeCansetshutterQuery {
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
-    }
+    struct GetDomeCansetshutterQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -3261,19 +2129,7 @@ mod schemas {
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Query))]
 
-    struct GetDomeCanslaveQuery {
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
-    }
+    struct GetDomeCanslaveQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -3289,19 +2145,7 @@ mod schemas {
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Query))]
 
-    struct GetDomeCansyncazimuthQuery {
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
-    }
+    struct GetDomeCansyncazimuthQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -3317,19 +2161,7 @@ mod schemas {
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Query))]
 
-    struct GetDomeShutterstatusQuery {
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
-    }
+    struct GetDomeShutterstatusQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -3345,19 +2177,7 @@ mod schemas {
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Query))]
 
-    struct GetDomeSlavedQuery {
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
-    }
+    struct GetDomeSlavedQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -3379,18 +2199,6 @@ mod schemas {
         */
         #[serde(rename = "Slaved")]
         slaved: bool,
-
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -3407,19 +2215,7 @@ mod schemas {
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Query))]
 
-    struct GetDomeSlewingQuery {
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
-    }
+    struct GetDomeSlewingQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -3507,18 +2303,6 @@ mod schemas {
         */
         #[serde(rename = "Altitude")]
         altitude: f64,
-
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -3541,18 +2325,6 @@ mod schemas {
         */
         #[serde(rename = "Azimuth")]
         azimuth: f64,
-
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -3580,19 +2352,7 @@ mod schemas {
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Query))]
 
-    struct GetFilterwheelFocusoffsetsQuery {
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
-    }
+    struct GetFilterwheelFocusoffsetsQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -3608,19 +2368,7 @@ mod schemas {
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Query))]
 
-    struct GetFilterwheelNamesQuery {
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
-    }
+    struct GetFilterwheelNamesQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -3636,19 +2384,7 @@ mod schemas {
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Query))]
 
-    struct GetFilterwheelPositionQuery {
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
-    }
+    struct GetFilterwheelPositionQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -3670,18 +2406,6 @@ mod schemas {
         */
         #[serde(rename = "Position")]
         position: i32,
-
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -3698,19 +2422,7 @@ mod schemas {
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Query))]
 
-    struct GetFocuserAbsoluteQuery {
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
-    }
+    struct GetFocuserAbsoluteQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -3726,19 +2438,7 @@ mod schemas {
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Query))]
 
-    struct GetFocuserIsmovingQuery {
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
-    }
+    struct GetFocuserIsmovingQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -3754,19 +2454,7 @@ mod schemas {
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Query))]
 
-    struct GetFocuserMaxincrementQuery {
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
-    }
+    struct GetFocuserMaxincrementQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -3782,19 +2470,7 @@ mod schemas {
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Query))]
 
-    struct GetFocuserMaxstepQuery {
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
-    }
+    struct GetFocuserMaxstepQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -3810,19 +2486,7 @@ mod schemas {
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Query))]
 
-    struct GetFocuserPositionQuery {
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
-    }
+    struct GetFocuserPositionQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -3838,19 +2502,7 @@ mod schemas {
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Query))]
 
-    struct GetFocuserStepsizeQuery {
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
-    }
+    struct GetFocuserStepsizeQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -3866,19 +2518,7 @@ mod schemas {
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Query))]
 
-    struct GetFocuserTempcompQuery {
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
-    }
+    struct GetFocuserTempcompQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -3900,18 +2540,6 @@ mod schemas {
         */
         #[serde(rename = "TempComp")]
         temp_comp: bool,
-
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "Client")]
-        client: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionIDForm")]
-        client_transaction_idform: Option<u32>,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -3928,19 +2556,7 @@ mod schemas {
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Query))]
 
-    struct GetFocuserTempcompavailableQuery {
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
-    }
+    struct GetFocuserTempcompavailableQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -3956,19 +2572,7 @@ mod schemas {
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Query))]
 
-    struct GetFocuserTemperatureQuery {
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
-    }
+    struct GetFocuserTemperatureQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -4001,18 +2605,6 @@ mod schemas {
         */
         #[serde(rename = "Position")]
         position: i32,
-
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -4029,19 +2621,7 @@ mod schemas {
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Query))]
 
-    struct GetObservingconditionsAverageperiodQuery {
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
-    }
+    struct GetObservingconditionsAverageperiodQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -4063,18 +2643,6 @@ mod schemas {
         */
         #[serde(rename = "AveragePeriod")]
         average_period: f64,
-
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -4091,19 +2659,7 @@ mod schemas {
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Query))]
 
-    struct GetObservingconditionsCloudcoverQuery {
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
-    }
+    struct GetObservingconditionsCloudcoverQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -4119,19 +2675,7 @@ mod schemas {
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Query))]
 
-    struct GetObservingconditionsDewpointQuery {
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
-    }
+    struct GetObservingconditionsDewpointQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -4147,19 +2691,7 @@ mod schemas {
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Query))]
 
-    struct GetObservingconditionsHumidityQuery {
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
-    }
+    struct GetObservingconditionsHumidityQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -4175,19 +2707,7 @@ mod schemas {
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Query))]
 
-    struct GetObservingconditionsPressureQuery {
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
-    }
+    struct GetObservingconditionsPressureQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -4203,19 +2723,7 @@ mod schemas {
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Query))]
 
-    struct GetObservingconditionsRainrateQuery {
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
-    }
+    struct GetObservingconditionsRainrateQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -4231,19 +2739,7 @@ mod schemas {
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Query))]
 
-    struct GetObservingconditionsSkybrightnessQuery {
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
-    }
+    struct GetObservingconditionsSkybrightnessQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -4259,19 +2755,7 @@ mod schemas {
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Query))]
 
-    struct GetObservingconditionsSkyqualityQuery {
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
-    }
+    struct GetObservingconditionsSkyqualityQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -4287,19 +2771,7 @@ mod schemas {
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Query))]
 
-    struct GetObservingconditionsSkytemperatureQuery {
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
-    }
+    struct GetObservingconditionsSkytemperatureQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -4315,19 +2787,7 @@ mod schemas {
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Query))]
 
-    struct GetObservingconditionsStarfwhmQuery {
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
-    }
+    struct GetObservingconditionsStarfwhmQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -4343,19 +2803,7 @@ mod schemas {
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Query))]
 
-    struct GetObservingconditionsTemperatureQuery {
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
-    }
+    struct GetObservingconditionsTemperatureQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -4371,19 +2819,7 @@ mod schemas {
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Query))]
 
-    struct GetObservingconditionsWinddirectionQuery {
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
-    }
+    struct GetObservingconditionsWinddirectionQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -4399,19 +2835,7 @@ mod schemas {
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Query))]
 
-    struct GetObservingconditionsWindgustQuery {
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
-    }
+    struct GetObservingconditionsWindgustQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -4427,19 +2851,7 @@ mod schemas {
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Query))]
 
-    struct GetObservingconditionsWindspeedQuery {
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
-    }
+    struct GetObservingconditionsWindspeedQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -4472,18 +2884,6 @@ mod schemas {
         */
         #[serde(rename = "SensorName")]
         sensor_name: Option<String>,
-
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -4506,18 +2906,6 @@ mod schemas {
         */
         #[serde(rename = "SensorName")]
         sensor_name: Option<String>,
-
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -4534,19 +2922,7 @@ mod schemas {
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Query))]
 
-    struct GetRotatorCanreverseQuery {
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
-    }
+    struct GetRotatorCanreverseQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -4562,19 +2938,7 @@ mod schemas {
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Query))]
 
-    struct GetRotatorIsmovingQuery {
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
-    }
+    struct GetRotatorIsmovingQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -4590,19 +2954,7 @@ mod schemas {
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Query))]
 
-    struct GetRotatorMechanicalpositionQuery {
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
-    }
+    struct GetRotatorMechanicalpositionQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -4618,19 +2970,7 @@ mod schemas {
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Query))]
 
-    struct GetRotatorPositionQuery {
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
-    }
+    struct GetRotatorPositionQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -4646,19 +2986,7 @@ mod schemas {
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Query))]
 
-    struct GetRotatorReverseQuery {
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
-    }
+    struct GetRotatorReverseQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -4680,18 +3008,6 @@ mod schemas {
         */
         #[serde(rename = "Reverse")]
         reverse: bool,
-
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -4708,19 +3024,7 @@ mod schemas {
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Query))]
 
-    struct GetRotatorStepsizeQuery {
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
-    }
+    struct GetRotatorStepsizeQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -4736,19 +3040,7 @@ mod schemas {
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Query))]
 
-    struct GetRotatorTargetpositionQuery {
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
-    }
+    struct GetRotatorTargetpositionQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -4781,18 +3073,6 @@ mod schemas {
         */
         #[serde(rename = "Position")]
         position: f64,
-
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -4815,18 +3095,6 @@ mod schemas {
         */
         #[serde(rename = "Position")]
         position: f64,
-
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -4849,18 +3117,6 @@ mod schemas {
         */
         #[serde(rename = "Position")]
         position: f64,
-
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -4883,18 +3139,6 @@ mod schemas {
         */
         #[serde(rename = "Position")]
         position: f64,
-
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -4911,19 +3155,7 @@ mod schemas {
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Query))]
 
-    struct GetSafetymonitorIssafeQuery {
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
-    }
+    struct GetSafetymonitorIssafeQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -4939,19 +3171,7 @@ mod schemas {
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Query))]
 
-    struct GetSwitchMaxswitchQuery {
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
-    }
+    struct GetSwitchMaxswitchQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -4973,18 +3193,6 @@ mod schemas {
         */
         #[serde(rename = "Id")]
         id: Option<i32>,
-
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -5007,18 +3215,6 @@ mod schemas {
         */
         #[serde(rename = "Id")]
         id: Option<i32>,
-
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -5041,18 +3237,6 @@ mod schemas {
         */
         #[serde(rename = "Id")]
         id: Option<i32>,
-
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -5075,18 +3259,6 @@ mod schemas {
         */
         #[serde(rename = "Id")]
         id: Option<i32>,
-
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -5109,18 +3281,6 @@ mod schemas {
         */
         #[serde(rename = "Id")]
         id: Option<i32>,
-
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -5143,18 +3303,6 @@ mod schemas {
         */
         #[serde(rename = "Id")]
         id: Option<i32>,
-
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -5177,18 +3325,6 @@ mod schemas {
         */
         #[serde(rename = "Id")]
         id: Option<i32>,
-
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -5217,18 +3353,6 @@ mod schemas {
         */
         #[serde(rename = "State")]
         state: bool,
-
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -5257,18 +3381,6 @@ mod schemas {
         */
         #[serde(rename = "Name")]
         name: String,
-
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -5297,18 +3409,6 @@ mod schemas {
         */
         #[serde(rename = "Value")]
         value: f64,
-
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -5331,18 +3431,6 @@ mod schemas {
         */
         #[serde(rename = "Id")]
         id: Option<i32>,
-
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -5359,19 +3447,7 @@ mod schemas {
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Query))]
 
-    struct GetTelescopeAlignmentmodeQuery {
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
-    }
+    struct GetTelescopeAlignmentmodeQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -5387,19 +3463,7 @@ mod schemas {
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Query))]
 
-    struct GetTelescopeAltitudeQuery {
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
-    }
+    struct GetTelescopeAltitudeQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -5415,19 +3479,7 @@ mod schemas {
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Query))]
 
-    struct GetTelescopeApertureareaQuery {
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
-    }
+    struct GetTelescopeApertureareaQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -5443,19 +3495,7 @@ mod schemas {
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Query))]
 
-    struct GetTelescopeAperturediameterQuery {
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
-    }
+    struct GetTelescopeAperturediameterQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -5471,19 +3511,7 @@ mod schemas {
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Query))]
 
-    struct GetTelescopeAthomeQuery {
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
-    }
+    struct GetTelescopeAthomeQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -5499,19 +3527,7 @@ mod schemas {
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Query))]
 
-    struct GetTelescopeAtparkQuery {
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
-    }
+    struct GetTelescopeAtparkQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -5527,19 +3543,7 @@ mod schemas {
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Query))]
 
-    struct GetTelescopeAzimuthQuery {
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
-    }
+    struct GetTelescopeAzimuthQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -5555,19 +3559,7 @@ mod schemas {
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Query))]
 
-    struct GetTelescopeCanfindhomeQuery {
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
-    }
+    struct GetTelescopeCanfindhomeQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -5583,19 +3575,7 @@ mod schemas {
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Query))]
 
-    struct GetTelescopeCanparkQuery {
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
-    }
+    struct GetTelescopeCanparkQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -5611,19 +3591,7 @@ mod schemas {
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Query))]
 
-    struct GetTelescopeCanpulseguideQuery {
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
-    }
+    struct GetTelescopeCanpulseguideQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -5639,19 +3607,7 @@ mod schemas {
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Query))]
 
-    struct GetTelescopeCansetdeclinationrateQuery {
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
-    }
+    struct GetTelescopeCansetdeclinationrateQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -5667,19 +3623,7 @@ mod schemas {
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Query))]
 
-    struct GetTelescopeCansetguideratesQuery {
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
-    }
+    struct GetTelescopeCansetguideratesQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -5695,19 +3639,7 @@ mod schemas {
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Query))]
 
-    struct GetTelescopeCansetparkQuery {
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
-    }
+    struct GetTelescopeCansetparkQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -5723,19 +3655,7 @@ mod schemas {
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Query))]
 
-    struct GetTelescopeCansetpiersideQuery {
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
-    }
+    struct GetTelescopeCansetpiersideQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -5751,19 +3671,7 @@ mod schemas {
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Query))]
 
-    struct GetTelescopeCansetrightascensionrateQuery {
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
-    }
+    struct GetTelescopeCansetrightascensionrateQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -5779,19 +3687,7 @@ mod schemas {
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Query))]
 
-    struct GetTelescopeCansettrackingQuery {
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
-    }
+    struct GetTelescopeCansettrackingQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -5807,19 +3703,7 @@ mod schemas {
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Query))]
 
-    struct GetTelescopeCanslewQuery {
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
-    }
+    struct GetTelescopeCanslewQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -5835,19 +3719,7 @@ mod schemas {
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Query))]
 
-    struct GetTelescopeCanslewaltazQuery {
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
-    }
+    struct GetTelescopeCanslewaltazQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -5863,19 +3735,7 @@ mod schemas {
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Query))]
 
-    struct GetTelescopeCanslewaltazasyncQuery {
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
-    }
+    struct GetTelescopeCanslewaltazasyncQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -5891,19 +3751,7 @@ mod schemas {
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Query))]
 
-    struct GetTelescopeCanslewasyncQuery {
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
-    }
+    struct GetTelescopeCanslewasyncQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -5919,19 +3767,7 @@ mod schemas {
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Query))]
 
-    struct GetTelescopeCansyncQuery {
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
-    }
+    struct GetTelescopeCansyncQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -5947,19 +3783,7 @@ mod schemas {
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Query))]
 
-    struct GetTelescopeCansyncaltazQuery {
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
-    }
+    struct GetTelescopeCansyncaltazQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -5975,19 +3799,7 @@ mod schemas {
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Query))]
 
-    struct GetTelescopeCanunparkQuery {
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
-    }
+    struct GetTelescopeCanunparkQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -6003,19 +3815,7 @@ mod schemas {
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Query))]
 
-    struct GetTelescopeDeclinationQuery {
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
-    }
+    struct GetTelescopeDeclinationQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -6031,19 +3831,7 @@ mod schemas {
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Query))]
 
-    struct GetTelescopeDeclinationrateQuery {
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
-    }
+    struct GetTelescopeDeclinationrateQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -6065,18 +3853,6 @@ mod schemas {
         */
         #[serde(rename = "DeclinationRate")]
         declination_rate: f64,
-
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -6093,19 +3869,7 @@ mod schemas {
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Query))]
 
-    struct GetTelescopeDoesrefractionQuery {
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
-    }
+    struct GetTelescopeDoesrefractionQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -6127,18 +3891,6 @@ mod schemas {
         */
         #[serde(rename = "DoesRefraction")]
         does_refraction: bool,
-
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -6155,19 +3907,7 @@ mod schemas {
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Query))]
 
-    struct GetTelescopeEquatorialsystemQuery {
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
-    }
+    struct GetTelescopeEquatorialsystemQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -6183,19 +3923,7 @@ mod schemas {
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Query))]
 
-    struct GetTelescopeFocallengthQuery {
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
-    }
+    struct GetTelescopeFocallengthQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -6211,19 +3939,7 @@ mod schemas {
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Query))]
 
-    struct GetTelescopeGuideratedeclinationQuery {
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
-    }
+    struct GetTelescopeGuideratedeclinationQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -6245,18 +3961,6 @@ mod schemas {
         */
         #[serde(rename = "GuideRateDeclination")]
         guide_rate_declination: f64,
-
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -6273,19 +3977,7 @@ mod schemas {
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Query))]
 
-    struct GetTelescopeGuideraterightascensionQuery {
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
-    }
+    struct GetTelescopeGuideraterightascensionQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -6307,18 +3999,6 @@ mod schemas {
         */
         #[serde(rename = "GuideRateRightAscension")]
         guide_rate_right_ascension: f64,
-
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -6335,19 +4015,7 @@ mod schemas {
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Query))]
 
-    struct GetTelescopeIspulseguidingQuery {
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
-    }
+    struct GetTelescopeIspulseguidingQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -6363,19 +4031,7 @@ mod schemas {
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Query))]
 
-    struct GetTelescopeRightascensionQuery {
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
-    }
+    struct GetTelescopeRightascensionQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -6391,19 +4047,7 @@ mod schemas {
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Query))]
 
-    struct GetTelescopeRightascensionrateQuery {
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
-    }
+    struct GetTelescopeRightascensionrateQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -6425,18 +4069,6 @@ mod schemas {
         */
         #[serde(rename = "RightAscensionRate")]
         right_ascension_rate: f64,
-
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -6453,19 +4085,7 @@ mod schemas {
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Query))]
 
-    struct GetTelescopeSideofpierQuery {
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
-    }
+    struct GetTelescopeSideofpierQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -6487,18 +4107,6 @@ mod schemas {
         */
         #[serde(rename = "SideOfPier")]
         side_of_pier: i32,
-
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -6515,19 +4123,7 @@ mod schemas {
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Query))]
 
-    struct GetTelescopeSiderealtimeQuery {
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
-    }
+    struct GetTelescopeSiderealtimeQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -6543,19 +4139,7 @@ mod schemas {
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Query))]
 
-    struct GetTelescopeSiteelevationQuery {
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
-    }
+    struct GetTelescopeSiteelevationQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -6577,18 +4161,6 @@ mod schemas {
         */
         #[serde(rename = "SiteElevation")]
         site_elevation: f64,
-
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -6605,19 +4177,7 @@ mod schemas {
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Query))]
 
-    struct GetTelescopeSitelatitudeQuery {
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
-    }
+    struct GetTelescopeSitelatitudeQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -6639,18 +4199,6 @@ mod schemas {
         */
         #[serde(rename = "SiteLatitude")]
         site_latitude: f64,
-
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -6667,19 +4215,7 @@ mod schemas {
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Query))]
 
-    struct GetTelescopeSitelongitudeQuery {
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
-    }
+    struct GetTelescopeSitelongitudeQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -6701,18 +4237,6 @@ mod schemas {
         */
         #[serde(rename = "SiteLongitude")]
         site_longitude: f64,
-
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -6729,19 +4253,7 @@ mod schemas {
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Query))]
 
-    struct GetTelescopeSlewingQuery {
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
-    }
+    struct GetTelescopeSlewingQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -6757,19 +4269,7 @@ mod schemas {
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Query))]
 
-    struct GetTelescopeSlewsettletimeQuery {
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
-    }
+    struct GetTelescopeSlewsettletimeQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -6791,18 +4291,6 @@ mod schemas {
         */
         #[serde(rename = "SlewSettleTime")]
         slew_settle_time: i32,
-
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -6819,19 +4307,7 @@ mod schemas {
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Query))]
 
-    struct GetTelescopeTargetdeclinationQuery {
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
-    }
+    struct GetTelescopeTargetdeclinationQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -6853,18 +4329,6 @@ mod schemas {
         */
         #[serde(rename = "TargetDeclination")]
         target_declination: f64,
-
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -6881,19 +4345,7 @@ mod schemas {
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Query))]
 
-    struct GetTelescopeTargetrightascensionQuery {
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
-    }
+    struct GetTelescopeTargetrightascensionQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -6915,18 +4367,6 @@ mod schemas {
         */
         #[serde(rename = "TargetRightAscension")]
         target_right_ascension: f64,
-
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -6943,19 +4383,7 @@ mod schemas {
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Query))]
 
-    struct GetTelescopeTrackingQuery {
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
-    }
+    struct GetTelescopeTrackingQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -6977,18 +4405,6 @@ mod schemas {
         */
         #[serde(rename = "Tracking")]
         tracking: bool,
-
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -7005,19 +4421,7 @@ mod schemas {
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Query))]
 
-    struct GetTelescopeTrackingrateQuery {
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
-    }
+    struct GetTelescopeTrackingrateQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -7039,18 +4443,6 @@ mod schemas {
         */
         #[serde(rename = "TrackingRate")]
         tracking_rate: i32,
-
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -7067,19 +4459,7 @@ mod schemas {
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Query))]
 
-    struct GetTelescopeTrackingratesQuery {
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
-    }
+    struct GetTelescopeTrackingratesQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -7095,19 +4475,7 @@ mod schemas {
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Query))]
 
-    struct GetTelescopeUtcdateQuery {
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
-    }
+    struct GetTelescopeUtcdateQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -7129,18 +4497,6 @@ mod schemas {
         */
         #[serde(rename = "UTCDate")]
         utcdate: String,
-
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -7170,18 +4526,6 @@ mod schemas {
 
     struct GetTelescopeAxisratesQuery {
         /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
-
-        /**
         The axis about which rate information is desired. 0 = axisPrimary, 1 = axisSecondary, 2 = axisTertiary.
         */
         #[serde(rename = "Axis")]
@@ -7208,18 +4552,6 @@ mod schemas {
         */
         #[serde(rename = "Axis")]
         axis: Option<i32>,
-
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -7248,18 +4580,6 @@ mod schemas {
         */
         #[serde(rename = "Declination")]
         declination: Option<f64>,
-
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -7299,18 +4619,6 @@ mod schemas {
         */
         #[serde(rename = "Rate")]
         rate: f64,
-
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -7350,18 +4658,6 @@ mod schemas {
         */
         #[serde(rename = "Duration")]
         duration: i32,
-
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -7401,18 +4697,6 @@ mod schemas {
         */
         #[serde(rename = "Altitude")]
         altitude: f64,
-
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -7452,18 +4736,6 @@ mod schemas {
         */
         #[serde(rename = "Declination")]
         declination: f64,
-
-        /**
-        Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-        */
-        #[serde(rename = "ClientID")]
-        client_id: Option<u32>,
-
-        /**
-        Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -7566,15 +4838,10 @@ This method should return an error message and NotImplementedException error num
 fn put_action(
     schemas::PutActionPath { device_type, device_number }: schemas::PutActionPath,
 
-    schemas::PutActionRequest {
-        action,
-
-        parameters,
-
-        client_id,
-
-        client_transaction_id,
-    }: schemas::PutActionRequest,
+    ASCOMRequest {
+        transaction,
+        request: schemas::PutActionRequest { action, parameters },
+    }: ASCOMRequest<schemas::PutActionRequest>,
 ) -> Result<schemas::StringResponse> {
 }
 
@@ -7587,15 +4854,10 @@ Transmits an arbitrary string to the device and does not wait for a response. Op
 fn put_commandblind(
     schemas::PutCommandblindPath { device_type, device_number }: schemas::PutCommandblindPath,
 
-    schemas::PutCommandblindRequest {
-        command,
-
-        raw,
-
-        client_id,
-
-        client_transaction_id,
-    }: schemas::PutCommandblindRequest,
+    ASCOMRequest {
+        transaction,
+        request: schemas::PutCommandblindRequest { command, raw },
+    }: ASCOMRequest<schemas::PutCommandblindRequest>,
 ) -> Result<schemas::MethodResponse> {
 }
 
@@ -7608,15 +4870,10 @@ Transmits an arbitrary string to the device and waits for a boolean response. Op
 fn put_commandbool(
     schemas::PutCommandboolPath { device_type, device_number }: schemas::PutCommandboolPath,
 
-    schemas::PutCommandblindRequest {
-        command,
-
-        raw,
-
-        client_id,
-
-        client_transaction_id,
-    }: schemas::PutCommandblindRequest,
+    ASCOMRequest {
+        transaction,
+        request: schemas::PutCommandblindRequest { command, raw },
+    }: ASCOMRequest<schemas::PutCommandblindRequest>,
 ) -> Result<schemas::BoolResponse> {
 }
 
@@ -7629,15 +4886,10 @@ Transmits an arbitrary string to the device and waits for a string response. Opt
 fn put_commandstring(
     schemas::PutCommandstringPath { device_type, device_number }: schemas::PutCommandstringPath,
 
-    schemas::PutCommandblindRequest {
-        command,
-
-        raw,
-
-        client_id,
-
-        client_transaction_id,
-    }: schemas::PutCommandblindRequest,
+    ASCOMRequest {
+        transaction,
+        request: schemas::PutCommandblindRequest { command, raw },
+    }: ASCOMRequest<schemas::PutCommandblindRequest>,
 ) -> Result<schemas::StringResponse> {
 }
 
@@ -7650,7 +4902,10 @@ Retrieves the connected state of the device
 fn get_connected(
     schemas::GetConnectedPath { device_type, device_number }: schemas::GetConnectedPath,
 
-    schemas::GetConnectedQuery { client_id, client_transaction_id }: schemas::GetConnectedQuery,
+    ASCOMRequest {
+        transaction,
+        request: schemas::GetConnectedQuery {},
+    }: ASCOMRequest<schemas::GetConnectedQuery>,
 ) -> Result<schemas::BoolResponse> {
 }
 
@@ -7663,13 +4918,10 @@ Sets the connected state of the device
 fn put_connected(
     schemas::PutConnectedPath { device_type, device_number }: schemas::PutConnectedPath,
 
-    schemas::PutConnectedRequest {
-        connected,
-
-        client_id,
-
-        client_transaction_id,
-    }: schemas::PutConnectedRequest,
+    ASCOMRequest {
+        transaction,
+        request: schemas::PutConnectedRequest { connected },
+    }: ASCOMRequest<schemas::PutConnectedRequest>,
 ) -> Result<schemas::MethodResponse> {
 }
 
@@ -7682,7 +4934,10 @@ The description of the device
 fn get_description(
     schemas::GetDescriptionPath { device_type, device_number }: schemas::GetDescriptionPath,
 
-    schemas::GetDescriptionQuery { client_id, client_transaction_id }: schemas::GetDescriptionQuery,
+    ASCOMRequest {
+        transaction,
+        request: schemas::GetDescriptionQuery {},
+    }: ASCOMRequest<schemas::GetDescriptionQuery>,
 ) -> Result<schemas::StringResponse> {
 }
 
@@ -7695,7 +4950,10 @@ The description of the driver
 fn get_driverinfo(
     schemas::GetDriverinfoPath { device_type, device_number }: schemas::GetDriverinfoPath,
 
-    schemas::GetDriverinfoQuery { client_id, client_transaction_id }: schemas::GetDriverinfoQuery,
+    ASCOMRequest {
+        transaction,
+        request: schemas::GetDriverinfoQuery {},
+    }: ASCOMRequest<schemas::GetDriverinfoQuery>,
 ) -> Result<schemas::StringResponse> {
 }
 
@@ -7708,7 +4966,10 @@ A string containing only the major and minor version of the driver.
 fn get_driverversion(
     schemas::GetDriverversionPath { device_type, device_number }: schemas::GetDriverversionPath,
 
-    schemas::GetDriverversionQuery { client_id, client_transaction_id }: schemas::GetDriverversionQuery,
+    ASCOMRequest {
+        transaction,
+        request: schemas::GetDriverversionQuery {},
+    }: ASCOMRequest<schemas::GetDriverversionQuery>,
 ) -> Result<schemas::StringResponse> {
 }
 
@@ -7721,7 +4982,10 @@ This method returns the version of the ASCOM device interface contract to which 
 fn get_interfaceversion(
     schemas::GetInterfaceversionPath { device_type, device_number }: schemas::GetInterfaceversionPath,
 
-    schemas::GetInterfaceversionQuery { client_id, client_transaction_id }: schemas::GetInterfaceversionQuery,
+    ASCOMRequest {
+        transaction,
+        request: schemas::GetInterfaceversionQuery {},
+    }: ASCOMRequest<schemas::GetInterfaceversionQuery>,
 ) -> Result<schemas::IntResponse> {
 }
 
@@ -7734,7 +4998,10 @@ The name of the device
 fn get_name(
     schemas::GetNamePath { device_type, device_number }: schemas::GetNamePath,
 
-    schemas::GetNameQuery { client_id, client_transaction_id }: schemas::GetNameQuery,
+    ASCOMRequest {
+        transaction,
+        request: schemas::GetNameQuery {},
+    }: ASCOMRequest<schemas::GetNameQuery>,
 ) -> Result<schemas::StringResponse> {
 }
 
@@ -7747,7 +5014,10 @@ Returns the list of action names supported by this driver.
 fn get_supportedactions(
     schemas::GetSupportedactionsPath { device_type, device_number }: schemas::GetSupportedactionsPath,
 
-    schemas::GetSupportedactionsQuery { client_id, client_transaction_id }: schemas::GetSupportedactionsQuery,
+    ASCOMRequest {
+        transaction,
+        request: schemas::GetSupportedactionsQuery {},
+    }: ASCOMRequest<schemas::GetSupportedactionsQuery>,
 ) -> Result<schemas::StringArrayResponse> {
 }
 
@@ -7760,7 +5030,10 @@ Returns the X offset of the Bayer matrix, as defined in SensorType.
 fn get_camera_bayeroffsetx(
     schemas::GetCameraBayeroffsetxPath { device_number }: schemas::GetCameraBayeroffsetxPath,
 
-    schemas::GetCameraBayeroffsetxQuery { client_id, client_transaction_id }: schemas::GetCameraBayeroffsetxQuery,
+    ASCOMRequest {
+        transaction,
+        request: schemas::GetCameraBayeroffsetxQuery {},
+    }: ASCOMRequest<schemas::GetCameraBayeroffsetxQuery>,
 ) -> Result<schemas::IntResponse> {
 }
 
@@ -7773,7 +5046,10 @@ Returns the Y offset of the Bayer matrix, as defined in SensorType.
 fn get_camera_bayeroffsety(
     schemas::GetCameraBayeroffsetyPath { device_number }: schemas::GetCameraBayeroffsetyPath,
 
-    schemas::GetCameraBayeroffsetyQuery { client_id, client_transaction_id }: schemas::GetCameraBayeroffsetyQuery,
+    ASCOMRequest {
+        transaction,
+        request: schemas::GetCameraBayeroffsetyQuery {},
+    }: ASCOMRequest<schemas::GetCameraBayeroffsetyQuery>,
 ) -> Result<schemas::IntResponse> {
 }
 
@@ -7786,7 +5062,10 @@ Returns the binning factor for the X axis.
 fn get_camera_binx(
     schemas::GetCameraBinxPath { device_number }: schemas::GetCameraBinxPath,
 
-    schemas::GetCameraBinxQuery { client_id, client_transaction_id }: schemas::GetCameraBinxQuery,
+    ASCOMRequest {
+        transaction,
+        request: schemas::GetCameraBinxQuery {},
+    }: ASCOMRequest<schemas::GetCameraBinxQuery>,
 ) -> Result<schemas::IntResponse> {
 }
 
@@ -7799,13 +5078,10 @@ Sets the binning factor for the X axis.
 fn put_camera_binx(
     schemas::PutCameraBinxPath { device_number }: schemas::PutCameraBinxPath,
 
-    schemas::PutCameraBinxRequest {
-        bin_x,
-
-        client_id,
-
-        client_transaction_id,
-    }: schemas::PutCameraBinxRequest,
+    ASCOMRequest {
+        transaction,
+        request: schemas::PutCameraBinxRequest { bin_x },
+    }: ASCOMRequest<schemas::PutCameraBinxRequest>,
 ) -> Result<schemas::MethodResponse> {
 }
 
@@ -7818,7 +5094,10 @@ Returns the binning factor for the Y axis.
 fn get_camera_biny(
     schemas::GetCameraBinyPath { device_number }: schemas::GetCameraBinyPath,
 
-    schemas::GetCameraBinyQuery { client_id, client_transaction_id }: schemas::GetCameraBinyQuery,
+    ASCOMRequest {
+        transaction,
+        request: schemas::GetCameraBinyQuery {},
+    }: ASCOMRequest<schemas::GetCameraBinyQuery>,
 ) -> Result<schemas::IntResponse> {
 }
 
@@ -7831,13 +5110,10 @@ Sets the binning factor for the Y axis.
 fn put_camera_biny(
     schemas::PutCameraBinyPath { device_number }: schemas::PutCameraBinyPath,
 
-    schemas::PutCameraBinyRequest {
-        bin_y,
-
-        client_id,
-
-        client_transaction_id,
-    }: schemas::PutCameraBinyRequest,
+    ASCOMRequest {
+        transaction,
+        request: schemas::PutCameraBinyRequest { bin_y },
+    }: ASCOMRequest<schemas::PutCameraBinyRequest>,
 ) -> Result<schemas::MethodResponse> {
 }
 
@@ -7850,7 +5126,10 @@ Returns the current camera operational state as an integer. 0 = CameraIdle , 1 =
 fn get_camera_camerastate(
     schemas::GetCameraCamerastatePath { device_number }: schemas::GetCameraCamerastatePath,
 
-    schemas::GetCameraCamerastateQuery { client_id, client_transaction_id }: schemas::GetCameraCamerastateQuery,
+    ASCOMRequest {
+        transaction,
+        request: schemas::GetCameraCamerastateQuery {},
+    }: ASCOMRequest<schemas::GetCameraCamerastateQuery>,
 ) -> Result<schemas::IntResponse> {
 }
 
@@ -7863,7 +5142,10 @@ Returns the width of the CCD camera chip in unbinned pixels.
 fn get_camera_cameraxsize(
     schemas::GetCameraCameraxsizePath { device_number }: schemas::GetCameraCameraxsizePath,
 
-    schemas::GetCameraCameraxsizeQuery { client_id, client_transaction_id }: schemas::GetCameraCameraxsizeQuery,
+    ASCOMRequest {
+        transaction,
+        request: schemas::GetCameraCameraxsizeQuery {},
+    }: ASCOMRequest<schemas::GetCameraCameraxsizeQuery>,
 ) -> Result<schemas::IntResponse> {
 }
 
@@ -7876,7 +5158,10 @@ Returns the height of the CCD camera chip in unbinned pixels.
 fn get_camera_cameraysize(
     schemas::GetCameraCameraysizePath { device_number }: schemas::GetCameraCameraysizePath,
 
-    schemas::GetCameraCameraysizeQuery { client_id, client_transaction_id }: schemas::GetCameraCameraysizeQuery,
+    ASCOMRequest {
+        transaction,
+        request: schemas::GetCameraCameraysizeQuery {},
+    }: ASCOMRequest<schemas::GetCameraCameraysizeQuery>,
 ) -> Result<schemas::IntResponse> {
 }
 
@@ -7889,7 +5174,10 @@ Returns true if the camera can abort exposures; false if not.
 fn get_camera_canabortexposure(
     schemas::GetCameraCanabortexposurePath { device_number }: schemas::GetCameraCanabortexposurePath,
 
-    schemas::GetCameraCanabortexposureQuery { client_id, client_transaction_id }: schemas::GetCameraCanabortexposureQuery,
+    ASCOMRequest {
+        transaction,
+        request: schemas::GetCameraCanabortexposureQuery {},
+    }: ASCOMRequest<schemas::GetCameraCanabortexposureQuery>,
 ) -> Result<schemas::BoolResponse> {
 }
 
@@ -7902,7 +5190,10 @@ Returns a flag showing whether this camera supports asymmetric binning
 fn get_camera_canasymmetricbin(
     schemas::GetCameraCanasymmetricbinPath { device_number }: schemas::GetCameraCanasymmetricbinPath,
 
-    schemas::GetCameraCanasymmetricbinQuery { client_id, client_transaction_id }: schemas::GetCameraCanasymmetricbinQuery,
+    ASCOMRequest {
+        transaction,
+        request: schemas::GetCameraCanasymmetricbinQuery {},
+    }: ASCOMRequest<schemas::GetCameraCanasymmetricbinQuery>,
 ) -> Result<schemas::BoolResponse> {
 }
 
@@ -7915,7 +5206,10 @@ Indicates whether the camera has a fast readout mode.
 fn get_camera_canfastreadout(
     schemas::GetCameraCanfastreadoutPath { device_number }: schemas::GetCameraCanfastreadoutPath,
 
-    schemas::GetCameraCanfastreadoutQuery { client_id, client_transaction_id }: schemas::GetCameraCanfastreadoutQuery,
+    ASCOMRequest {
+        transaction,
+        request: schemas::GetCameraCanfastreadoutQuery {},
+    }: ASCOMRequest<schemas::GetCameraCanfastreadoutQuery>,
 ) -> Result<schemas::BoolResponse> {
 }
 
@@ -7928,7 +5222,10 @@ If true, the camera's cooler power setting can be read.
 fn get_camera_cangetcoolerpower(
     schemas::GetCameraCangetcoolerpowerPath { device_number }: schemas::GetCameraCangetcoolerpowerPath,
 
-    schemas::GetCameraCangetcoolerpowerQuery { client_id, client_transaction_id }: schemas::GetCameraCangetcoolerpowerQuery,
+    ASCOMRequest {
+        transaction,
+        request: schemas::GetCameraCangetcoolerpowerQuery {},
+    }: ASCOMRequest<schemas::GetCameraCangetcoolerpowerQuery>,
 ) -> Result<schemas::BoolResponse> {
 }
 
@@ -7941,7 +5238,10 @@ Returns a flag indicating whether this camera supports pulse guiding.
 fn get_camera_canpulseguide(
     schemas::GetCameraCanpulseguidePath { device_number }: schemas::GetCameraCanpulseguidePath,
 
-    schemas::GetCameraCanpulseguideQuery { client_id, client_transaction_id }: schemas::GetCameraCanpulseguideQuery,
+    ASCOMRequest {
+        transaction,
+        request: schemas::GetCameraCanpulseguideQuery {},
+    }: ASCOMRequest<schemas::GetCameraCanpulseguideQuery>,
 ) -> Result<schemas::BoolResponse> {
 }
 
@@ -7954,7 +5254,10 @@ Returns a flag indicatig whether this camera supports setting the CCD temperatur
 fn get_camera_cansetccdtemperature(
     schemas::GetCameraCansetccdtemperaturePath { device_number }: schemas::GetCameraCansetccdtemperaturePath,
 
-    schemas::GetCameraCansetccdtemperatureQuery { client_id, client_transaction_id }: schemas::GetCameraCansetccdtemperatureQuery,
+    ASCOMRequest {
+        transaction,
+        request: schemas::GetCameraCansetccdtemperatureQuery {},
+    }: ASCOMRequest<schemas::GetCameraCansetccdtemperatureQuery>,
 ) -> Result<schemas::BoolResponse> {
 }
 
@@ -7967,7 +5270,10 @@ Returns a flag indicating whether this camera can stop an exposure that is in pr
 fn get_camera_canstopexposure(
     schemas::GetCameraCanstopexposurePath { device_number }: schemas::GetCameraCanstopexposurePath,
 
-    schemas::GetCameraCanstopexposureQuery { client_id, client_transaction_id }: schemas::GetCameraCanstopexposureQuery,
+    ASCOMRequest {
+        transaction,
+        request: schemas::GetCameraCanstopexposureQuery {},
+    }: ASCOMRequest<schemas::GetCameraCanstopexposureQuery>,
 ) -> Result<schemas::BoolResponse> {
 }
 
@@ -7980,7 +5286,10 @@ Returns the current CCD temperature in degrees Celsius.
 fn get_camera_ccdtemperature(
     schemas::GetCameraCcdtemperaturePath { device_number }: schemas::GetCameraCcdtemperaturePath,
 
-    schemas::GetCameraCcdtemperatureQuery { client_id, client_transaction_id }: schemas::GetCameraCcdtemperatureQuery,
+    ASCOMRequest {
+        transaction,
+        request: schemas::GetCameraCcdtemperatureQuery {},
+    }: ASCOMRequest<schemas::GetCameraCcdtemperatureQuery>,
 ) -> Result<schemas::DoubleResponse> {
 }
 
@@ -7993,7 +5302,10 @@ Returns the current cooler on/off state.
 fn get_camera_cooleron(
     schemas::GetCameraCooleronPath { device_number }: schemas::GetCameraCooleronPath,
 
-    schemas::GetCameraCooleronQuery { client_id, client_transaction_id }: schemas::GetCameraCooleronQuery,
+    ASCOMRequest {
+        transaction,
+        request: schemas::GetCameraCooleronQuery {},
+    }: ASCOMRequest<schemas::GetCameraCooleronQuery>,
 ) -> Result<schemas::BoolResponse> {
 }
 
@@ -8006,13 +5318,10 @@ Turns on and off the camera cooler. True = cooler on, False = cooler off
 fn put_camera_cooleron(
     schemas::PutCameraCooleronPath { device_number }: schemas::PutCameraCooleronPath,
 
-    schemas::PutCameraCooleronRequest {
-        cooler_on,
-
-        client_id,
-
-        client_transaction_id,
-    }: schemas::PutCameraCooleronRequest,
+    ASCOMRequest {
+        transaction,
+        request: schemas::PutCameraCooleronRequest { cooler_on },
+    }: ASCOMRequest<schemas::PutCameraCooleronRequest>,
 ) -> Result<schemas::MethodResponse> {
 }
 
@@ -8025,7 +5334,10 @@ Returns the present cooler power level, in percent.
 fn get_camera_coolerpower(
     schemas::GetCameraCoolerpowerPath { device_number }: schemas::GetCameraCoolerpowerPath,
 
-    schemas::GetCameraCoolerpowerQuery { client_id, client_transaction_id }: schemas::GetCameraCoolerpowerQuery,
+    ASCOMRequest {
+        transaction,
+        request: schemas::GetCameraCoolerpowerQuery {},
+    }: ASCOMRequest<schemas::GetCameraCoolerpowerQuery>,
 ) -> Result<schemas::DoubleResponse> {
 }
 
@@ -8038,7 +5350,10 @@ Returns the gain of the camera in photoelectrons per A/D unit.
 fn get_camera_electronsperadu(
     schemas::GetCameraElectronsperaduPath { device_number }: schemas::GetCameraElectronsperaduPath,
 
-    schemas::GetCameraElectronsperaduQuery { client_id, client_transaction_id }: schemas::GetCameraElectronsperaduQuery,
+    ASCOMRequest {
+        transaction,
+        request: schemas::GetCameraElectronsperaduQuery {},
+    }: ASCOMRequest<schemas::GetCameraElectronsperaduQuery>,
 ) -> Result<schemas::DoubleResponse> {
 }
 
@@ -8051,7 +5366,10 @@ Returns the maximum exposure time supported by StartExposure.
 fn get_camera_exposuremax(
     schemas::GetCameraExposuremaxPath { device_number }: schemas::GetCameraExposuremaxPath,
 
-    schemas::GetCameraExposuremaxQuery { client_id, client_transaction_id }: schemas::GetCameraExposuremaxQuery,
+    ASCOMRequest {
+        transaction,
+        request: schemas::GetCameraExposuremaxQuery {},
+    }: ASCOMRequest<schemas::GetCameraExposuremaxQuery>,
 ) -> Result<schemas::DoubleResponse> {
 }
 
@@ -8064,7 +5382,10 @@ Returns the Minimium exposure time in seconds that the camera supports through S
 fn get_camera_exposuremin(
     schemas::GetCameraExposureminPath { device_number }: schemas::GetCameraExposureminPath,
 
-    schemas::GetCameraExposureminQuery { client_id, client_transaction_id }: schemas::GetCameraExposureminQuery,
+    ASCOMRequest {
+        transaction,
+        request: schemas::GetCameraExposureminQuery {},
+    }: ASCOMRequest<schemas::GetCameraExposureminQuery>,
 ) -> Result<schemas::DoubleResponse> {
 }
 
@@ -8077,7 +5398,10 @@ Returns the smallest increment in exposure time supported by StartExposure.
 fn get_camera_exposureresolution(
     schemas::GetCameraExposureresolutionPath { device_number }: schemas::GetCameraExposureresolutionPath,
 
-    schemas::GetCameraExposureresolutionQuery { client_id, client_transaction_id }: schemas::GetCameraExposureresolutionQuery,
+    ASCOMRequest {
+        transaction,
+        request: schemas::GetCameraExposureresolutionQuery {},
+    }: ASCOMRequest<schemas::GetCameraExposureresolutionQuery>,
 ) -> Result<schemas::DoubleResponse> {
 }
 
@@ -8090,7 +5414,10 @@ Returns whenther Fast Readout Mode is enabled.
 fn get_camera_fastreadout(
     schemas::GetCameraFastreadoutPath { device_number }: schemas::GetCameraFastreadoutPath,
 
-    schemas::GetCameraFastreadoutQuery { client_id, client_transaction_id }: schemas::GetCameraFastreadoutQuery,
+    ASCOMRequest {
+        transaction,
+        request: schemas::GetCameraFastreadoutQuery {},
+    }: ASCOMRequest<schemas::GetCameraFastreadoutQuery>,
 ) -> Result<schemas::BoolResponse> {
 }
 
@@ -8103,13 +5430,10 @@ Sets whether Fast Readout Mode is enabled.
 fn put_camera_fastreadout(
     schemas::PutCameraFastreadoutPath { device_number }: schemas::PutCameraFastreadoutPath,
 
-    schemas::PutCameraFastreadoutRequest {
-        fast_readout,
-
-        client_id,
-
-        client_transaction_id,
-    }: schemas::PutCameraFastreadoutRequest,
+    ASCOMRequest {
+        transaction,
+        request: schemas::PutCameraFastreadoutRequest { fast_readout },
+    }: ASCOMRequest<schemas::PutCameraFastreadoutRequest>,
 ) -> Result<schemas::MethodResponse> {
 }
 
@@ -8122,7 +5446,10 @@ Reports the full well capacity of the camera in electrons, at the current camera
 fn get_camera_fullwellcapacity(
     schemas::GetCameraFullwellcapacityPath { device_number }: schemas::GetCameraFullwellcapacityPath,
 
-    schemas::GetCameraFullwellcapacityQuery { client_id, client_transaction_id }: schemas::GetCameraFullwellcapacityQuery,
+    ASCOMRequest {
+        transaction,
+        request: schemas::GetCameraFullwellcapacityQuery {},
+    }: ASCOMRequest<schemas::GetCameraFullwellcapacityQuery>,
 ) -> Result<schemas::DoubleResponse> {
 }
 
@@ -8135,7 +5462,10 @@ The camera's gain (GAIN VALUE MODE) OR the index of the selected camera gain des
 fn get_camera_gain(
     schemas::GetCameraGainPath { device_number }: schemas::GetCameraGainPath,
 
-    schemas::GetCameraGainQuery { client_id, client_transaction_id }: schemas::GetCameraGainQuery,
+    ASCOMRequest {
+        transaction,
+        request: schemas::GetCameraGainQuery {},
+    }: ASCOMRequest<schemas::GetCameraGainQuery>,
 ) -> Result<schemas::IntResponse> {
 }
 
@@ -8148,13 +5478,10 @@ The camera's gain (GAIN VALUE MODE) OR the index of the selected camera gain des
 fn put_camera_gain(
     schemas::PutCameraGainPath { device_number }: schemas::PutCameraGainPath,
 
-    schemas::PutCameraGainRequest {
-        gain,
-
-        client_id,
-
-        client_transaction_id,
-    }: schemas::PutCameraGainRequest,
+    ASCOMRequest {
+        transaction,
+        request: schemas::PutCameraGainRequest { gain },
+    }: ASCOMRequest<schemas::PutCameraGainRequest>,
 ) -> Result<schemas::MethodResponse> {
 }
 
@@ -8167,7 +5494,10 @@ Returns the maximum value of Gain.
 fn get_camera_gainmax(
     schemas::GetCameraGainmaxPath { device_number }: schemas::GetCameraGainmaxPath,
 
-    schemas::GetCameraGainmaxQuery { client_id, client_transaction_id }: schemas::GetCameraGainmaxQuery,
+    ASCOMRequest {
+        transaction,
+        request: schemas::GetCameraGainmaxQuery {},
+    }: ASCOMRequest<schemas::GetCameraGainmaxQuery>,
 ) -> Result<schemas::IntResponse> {
 }
 
@@ -8180,7 +5510,10 @@ Returns the Minimum value of Gain.
 fn get_camera_gainmin(
     schemas::GetCameraGainminPath { device_number }: schemas::GetCameraGainminPath,
 
-    schemas::GetCameraGainminQuery { client_id, client_transaction_id }: schemas::GetCameraGainminQuery,
+    ASCOMRequest {
+        transaction,
+        request: schemas::GetCameraGainminQuery {},
+    }: ASCOMRequest<schemas::GetCameraGainminQuery>,
 ) -> Result<schemas::IntResponse> {
 }
 
@@ -8193,7 +5526,10 @@ Returns the Gains supported by the camera.
 fn get_camera_gains(
     schemas::GetCameraGainsPath { device_number }: schemas::GetCameraGainsPath,
 
-    schemas::GetCameraGainsQuery { client_id, client_transaction_id }: schemas::GetCameraGainsQuery,
+    ASCOMRequest {
+        transaction,
+        request: schemas::GetCameraGainsQuery {},
+    }: ASCOMRequest<schemas::GetCameraGainsQuery>,
 ) -> Result<schemas::StringArrayResponse> {
 }
 
@@ -8206,7 +5542,10 @@ Returns a flag indicating whether this camera has a mechanical shutter.
 fn get_camera_hasshutter(
     schemas::GetCameraHasshutterPath { device_number }: schemas::GetCameraHasshutterPath,
 
-    schemas::GetCameraHasshutterQuery { client_id, client_transaction_id }: schemas::GetCameraHasshutterQuery,
+    ASCOMRequest {
+        transaction,
+        request: schemas::GetCameraHasshutterQuery {},
+    }: ASCOMRequest<schemas::GetCameraHasshutterQuery>,
 ) -> Result<schemas::BoolResponse> {
 }
 
@@ -8219,7 +5558,10 @@ Returns the current heat sink temperature (called "ambient temperature" by some 
 fn get_camera_heatsinktemperature(
     schemas::GetCameraHeatsinktemperaturePath { device_number }: schemas::GetCameraHeatsinktemperaturePath,
 
-    schemas::GetCameraHeatsinktemperatureQuery { client_id, client_transaction_id }: schemas::GetCameraHeatsinktemperatureQuery,
+    ASCOMRequest {
+        transaction,
+        request: schemas::GetCameraHeatsinktemperatureQuery {},
+    }: ASCOMRequest<schemas::GetCameraHeatsinktemperatureQuery>,
 ) -> Result<schemas::DoubleResponse> {
 }
 
@@ -8287,7 +5629,10 @@ Returning an image from an Alpaca device as a JSON array is very inefficient and
 fn get_camera_imagearray(
     schemas::GetCameraImagearrayPath { device_number }: schemas::GetCameraImagearrayPath,
 
-    schemas::GetCameraImagearrayQuery { client_id, client_transaction_id }: schemas::GetCameraImagearrayQuery,
+    ASCOMRequest {
+        transaction,
+        request: schemas::GetCameraImagearrayQuery {},
+    }: ASCOMRequest<schemas::GetCameraImagearrayQuery>,
 ) -> Result<schemas::ImageArrayResponse> {
 }
 
@@ -8355,7 +5700,10 @@ Returning an image from an Alpaca device as a JSON array is very inefficient and
 fn get_camera_imagearrayvariant(
     schemas::GetCameraImagearrayvariantPath { device_number }: schemas::GetCameraImagearrayvariantPath,
 
-    schemas::GetCameraImagearrayvariantQuery { client_id, client_transaction_id }: schemas::GetCameraImagearrayvariantQuery,
+    ASCOMRequest {
+        transaction,
+        request: schemas::GetCameraImagearrayvariantQuery {},
+    }: ASCOMRequest<schemas::GetCameraImagearrayvariantQuery>,
 ) -> Result<schemas::ImageArrayResponse> {
 }
 
@@ -8368,7 +5716,10 @@ Returns a flag indicating whether the image is ready to be downloaded from the c
 fn get_camera_imageready(
     schemas::GetCameraImagereadyPath { device_number }: schemas::GetCameraImagereadyPath,
 
-    schemas::GetCameraImagereadyQuery { client_id, client_transaction_id }: schemas::GetCameraImagereadyQuery,
+    ASCOMRequest {
+        transaction,
+        request: schemas::GetCameraImagereadyQuery {},
+    }: ASCOMRequest<schemas::GetCameraImagereadyQuery>,
 ) -> Result<schemas::BoolResponse> {
 }
 
@@ -8381,7 +5732,10 @@ Returns a flag indicating whether the camera is currrently in a PulseGuide opera
 fn get_camera_ispulseguiding(
     schemas::GetCameraIspulseguidingPath { device_number }: schemas::GetCameraIspulseguidingPath,
 
-    schemas::GetCameraIspulseguidingQuery { client_id, client_transaction_id }: schemas::GetCameraIspulseguidingQuery,
+    ASCOMRequest {
+        transaction,
+        request: schemas::GetCameraIspulseguidingQuery {},
+    }: ASCOMRequest<schemas::GetCameraIspulseguidingQuery>,
 ) -> Result<schemas::BoolResponse> {
 }
 
@@ -8394,7 +5748,10 @@ Reports the actual exposure duration in seconds (i.e. shutter open time).
 fn get_camera_lastexposureduration(
     schemas::GetCameraLastexposuredurationPath { device_number }: schemas::GetCameraLastexposuredurationPath,
 
-    schemas::GetCameraLastexposuredurationQuery { client_id, client_transaction_id }: schemas::GetCameraLastexposuredurationQuery,
+    ASCOMRequest {
+        transaction,
+        request: schemas::GetCameraLastexposuredurationQuery {},
+    }: ASCOMRequest<schemas::GetCameraLastexposuredurationQuery>,
 ) -> Result<schemas::DoubleResponse> {
 }
 
@@ -8407,7 +5764,10 @@ Reports the actual exposure start in the FITS-standard CCYY-MM-DDThh:mm:ss[.sss.
 fn get_camera_lastexposurestarttime(
     schemas::GetCameraLastexposurestarttimePath { device_number }: schemas::GetCameraLastexposurestarttimePath,
 
-    schemas::GetCameraLastexposurestarttimeQuery { client_id, client_transaction_id }: schemas::GetCameraLastexposurestarttimeQuery,
+    ASCOMRequest {
+        transaction,
+        request: schemas::GetCameraLastexposurestarttimeQuery {},
+    }: ASCOMRequest<schemas::GetCameraLastexposurestarttimeQuery>,
 ) -> Result<schemas::StringResponse> {
 }
 
@@ -8420,7 +5780,10 @@ Reports the maximum ADU value the camera can produce.
 fn get_camera_maxadu(
     schemas::GetCameraMaxaduPath { device_number }: schemas::GetCameraMaxaduPath,
 
-    schemas::GetCameraMaxaduQuery { client_id, client_transaction_id }: schemas::GetCameraMaxaduQuery,
+    ASCOMRequest {
+        transaction,
+        request: schemas::GetCameraMaxaduQuery {},
+    }: ASCOMRequest<schemas::GetCameraMaxaduQuery>,
 ) -> Result<schemas::IntResponse> {
 }
 
@@ -8433,7 +5796,10 @@ Returns the maximum allowed binning for the X camera axis
 fn get_camera_maxbinx(
     schemas::GetCameraMaxbinxPath { device_number }: schemas::GetCameraMaxbinxPath,
 
-    schemas::GetCameraMaxbinxQuery { client_id, client_transaction_id }: schemas::GetCameraMaxbinxQuery,
+    ASCOMRequest {
+        transaction,
+        request: schemas::GetCameraMaxbinxQuery {},
+    }: ASCOMRequest<schemas::GetCameraMaxbinxQuery>,
 ) -> Result<schemas::IntResponse> {
 }
 
@@ -8446,7 +5812,10 @@ Returns the maximum allowed binning for the Y camera axis
 fn get_camera_maxbiny(
     schemas::GetCameraMaxbinyPath { device_number }: schemas::GetCameraMaxbinyPath,
 
-    schemas::GetCameraMaxbinyQuery { client_id, client_transaction_id }: schemas::GetCameraMaxbinyQuery,
+    ASCOMRequest {
+        transaction,
+        request: schemas::GetCameraMaxbinyQuery {},
+    }: ASCOMRequest<schemas::GetCameraMaxbinyQuery>,
 ) -> Result<schemas::IntResponse> {
 }
 
@@ -8459,7 +5828,10 @@ Returns the current subframe width, if binning is active, value is in binned pix
 fn get_camera_numx(
     schemas::GetCameraNumxPath { device_number }: schemas::GetCameraNumxPath,
 
-    schemas::GetCameraNumxQuery { client_id, client_transaction_id }: schemas::GetCameraNumxQuery,
+    ASCOMRequest {
+        transaction,
+        request: schemas::GetCameraNumxQuery {},
+    }: ASCOMRequest<schemas::GetCameraNumxQuery>,
 ) -> Result<schemas::IntResponse> {
 }
 
@@ -8472,13 +5844,10 @@ Sets the current subframe width.
 fn put_camera_numx(
     schemas::PutCameraNumxPath { device_number }: schemas::PutCameraNumxPath,
 
-    schemas::PutCameraNumxRequest {
-        num_x,
-
-        client_id,
-
-        client_transaction_id,
-    }: schemas::PutCameraNumxRequest,
+    ASCOMRequest {
+        transaction,
+        request: schemas::PutCameraNumxRequest { num_x },
+    }: ASCOMRequest<schemas::PutCameraNumxRequest>,
 ) -> Result<schemas::MethodResponse> {
 }
 
@@ -8491,7 +5860,10 @@ Returns the current subframe height, if binning is active, value is in binned pi
 fn get_camera_numy(
     schemas::GetCameraNumyPath { device_number }: schemas::GetCameraNumyPath,
 
-    schemas::GetCameraNumyQuery { client_id, client_transaction_id }: schemas::GetCameraNumyQuery,
+    ASCOMRequest {
+        transaction,
+        request: schemas::GetCameraNumyQuery {},
+    }: ASCOMRequest<schemas::GetCameraNumyQuery>,
 ) -> Result<schemas::IntResponse> {
 }
 
@@ -8504,13 +5876,10 @@ Sets the current subframe height.
 fn put_camera_numy(
     schemas::PutCameraNumyPath { device_number }: schemas::PutCameraNumyPath,
 
-    schemas::PutCameraNumyRequest {
-        num_y,
-
-        client_id,
-
-        client_transaction_id,
-    }: schemas::PutCameraNumyRequest,
+    ASCOMRequest {
+        transaction,
+        request: schemas::PutCameraNumyRequest { num_y },
+    }: ASCOMRequest<schemas::PutCameraNumyRequest>,
 ) -> Result<schemas::MethodResponse> {
 }
 
@@ -8523,7 +5892,10 @@ Returns the camera's offset (OFFSET VALUE MODE) OR the index of the selected cam
 fn get_camera_offset(
     schemas::GetCameraOffsetPath { device_number }: schemas::GetCameraOffsetPath,
 
-    schemas::GetCameraOffsetQuery { client_id, client_transaction_id }: schemas::GetCameraOffsetQuery,
+    ASCOMRequest {
+        transaction,
+        request: schemas::GetCameraOffsetQuery {},
+    }: ASCOMRequest<schemas::GetCameraOffsetQuery>,
 ) -> Result<schemas::IntResponse> {
 }
 
@@ -8536,13 +5908,10 @@ Sets the camera's offset (OFFSET VALUE MODE) OR the index of the selected camera
 fn put_camera_offset(
     schemas::PutCameraOffsetPath { device_number }: schemas::PutCameraOffsetPath,
 
-    schemas::PutCameraOffsetRequest {
-        offset,
-
-        client_id,
-
-        client_transaction_id,
-    }: schemas::PutCameraOffsetRequest,
+    ASCOMRequest {
+        transaction,
+        request: schemas::PutCameraOffsetRequest { offset },
+    }: ASCOMRequest<schemas::PutCameraOffsetRequest>,
 ) -> Result<schemas::MethodResponse> {
 }
 
@@ -8555,7 +5924,10 @@ Returns the maximum value of offset.
 fn get_camera_offsetmax(
     schemas::GetCameraOffsetmaxPath { device_number }: schemas::GetCameraOffsetmaxPath,
 
-    schemas::GetCameraOffsetmaxQuery { client_id, client_transaction_id }: schemas::GetCameraOffsetmaxQuery,
+    ASCOMRequest {
+        transaction,
+        request: schemas::GetCameraOffsetmaxQuery {},
+    }: ASCOMRequest<schemas::GetCameraOffsetmaxQuery>,
 ) -> Result<schemas::IntResponse> {
 }
 
@@ -8568,7 +5940,10 @@ Returns the Minimum value of offset.
 fn get_camera_offsetmin(
     schemas::GetCameraOffsetminPath { device_number }: schemas::GetCameraOffsetminPath,
 
-    schemas::GetCameraOffsetminQuery { client_id, client_transaction_id }: schemas::GetCameraOffsetminQuery,
+    ASCOMRequest {
+        transaction,
+        request: schemas::GetCameraOffsetminQuery {},
+    }: ASCOMRequest<schemas::GetCameraOffsetminQuery>,
 ) -> Result<schemas::IntResponse> {
 }
 
@@ -8581,7 +5956,10 @@ Returns the offsets supported by the camera.
 fn get_camera_offsets(
     schemas::GetCameraOffsetsPath { device_number }: schemas::GetCameraOffsetsPath,
 
-    schemas::GetCameraOffsetsQuery { client_id, client_transaction_id }: schemas::GetCameraOffsetsQuery,
+    ASCOMRequest {
+        transaction,
+        request: schemas::GetCameraOffsetsQuery {},
+    }: ASCOMRequest<schemas::GetCameraOffsetsQuery>,
 ) -> Result<schemas::StringArrayResponse> {
 }
 
@@ -8594,7 +5972,10 @@ Returns the percentage of the current operation that is complete. If valid, retu
 fn get_camera_percentcompleted(
     schemas::GetCameraPercentcompletedPath { device_number }: schemas::GetCameraPercentcompletedPath,
 
-    schemas::GetCameraPercentcompletedQuery { client_id, client_transaction_id }: schemas::GetCameraPercentcompletedQuery,
+    ASCOMRequest {
+        transaction,
+        request: schemas::GetCameraPercentcompletedQuery {},
+    }: ASCOMRequest<schemas::GetCameraPercentcompletedQuery>,
 ) -> Result<schemas::IntResponse> {
 }
 
@@ -8607,7 +5988,10 @@ Returns the width of the CCD chip pixels in microns.
 fn get_camera_pixelsizex(
     schemas::GetCameraPixelsizexPath { device_number }: schemas::GetCameraPixelsizexPath,
 
-    schemas::GetCameraPixelsizexQuery { client_id, client_transaction_id }: schemas::GetCameraPixelsizexQuery,
+    ASCOMRequest {
+        transaction,
+        request: schemas::GetCameraPixelsizexQuery {},
+    }: ASCOMRequest<schemas::GetCameraPixelsizexQuery>,
 ) -> Result<schemas::DoubleResponse> {
 }
 
@@ -8620,7 +6004,10 @@ Returns the Height of the CCD chip pixels in microns.
 fn get_camera_pixelsizey(
     schemas::GetCameraPixelsizeyPath { device_number }: schemas::GetCameraPixelsizeyPath,
 
-    schemas::GetCameraPixelsizeyQuery { client_id, client_transaction_id }: schemas::GetCameraPixelsizeyQuery,
+    ASCOMRequest {
+        transaction,
+        request: schemas::GetCameraPixelsizeyQuery {},
+    }: ASCOMRequest<schemas::GetCameraPixelsizeyQuery>,
 ) -> Result<schemas::DoubleResponse> {
 }
 
@@ -8633,7 +6020,10 @@ ReadoutMode is an index into the array ReadoutModes and returns the desired read
 fn get_camera_readoutmode(
     schemas::GetCameraReadoutmodePath { device_number }: schemas::GetCameraReadoutmodePath,
 
-    schemas::GetCameraReadoutmodeQuery { client_id, client_transaction_id }: schemas::GetCameraReadoutmodeQuery,
+    ASCOMRequest {
+        transaction,
+        request: schemas::GetCameraReadoutmodeQuery {},
+    }: ASCOMRequest<schemas::GetCameraReadoutmodeQuery>,
 ) -> Result<schemas::IntResponse> {
 }
 
@@ -8646,13 +6036,10 @@ Sets the ReadoutMode as an index into the array ReadoutModes.
 fn put_camera_readoutmode(
     schemas::PutCameraReadoutmodePath { device_number }: schemas::PutCameraReadoutmodePath,
 
-    schemas::PutCameraReadoutmodeRequest {
-        readout_mode,
-
-        client_id,
-
-        client_transaction_id,
-    }: schemas::PutCameraReadoutmodeRequest,
+    ASCOMRequest {
+        transaction,
+        request: schemas::PutCameraReadoutmodeRequest { readout_mode },
+    }: ASCOMRequest<schemas::PutCameraReadoutmodeRequest>,
 ) -> Result<schemas::MethodResponse> {
 }
 
@@ -8665,7 +6052,10 @@ This property provides an array of strings, each of which describes an available
 fn get_camera_readoutmodes(
     schemas::GetCameraReadoutmodesPath { device_number }: schemas::GetCameraReadoutmodesPath,
 
-    schemas::GetCameraReadoutmodesQuery { client_id, client_transaction_id }: schemas::GetCameraReadoutmodesQuery,
+    ASCOMRequest {
+        transaction,
+        request: schemas::GetCameraReadoutmodesQuery {},
+    }: ASCOMRequest<schemas::GetCameraReadoutmodesQuery>,
 ) -> Result<schemas::StringArrayResponse> {
 }
 
@@ -8678,7 +6068,10 @@ The name of the sensor used within the camera.
 fn get_camera_sensorname(
     schemas::GetCameraSensornamePath { device_number }: schemas::GetCameraSensornamePath,
 
-    schemas::GetCameraSensornameQuery { client_id, client_transaction_id }: schemas::GetCameraSensornameQuery,
+    ASCOMRequest {
+        transaction,
+        request: schemas::GetCameraSensornameQuery {},
+    }: ASCOMRequest<schemas::GetCameraSensornameQuery>,
 ) -> Result<schemas::StringResponse> {
 }
 
@@ -8700,7 +6093,10 @@ Please see the ASCOM Help fie for more informaiton on the SensorType.
 fn get_camera_sensortype(
     schemas::GetCameraSensortypePath { device_number }: schemas::GetCameraSensortypePath,
 
-    schemas::GetCameraSensortypeQuery { client_id, client_transaction_id }: schemas::GetCameraSensortypeQuery,
+    ASCOMRequest {
+        transaction,
+        request: schemas::GetCameraSensortypeQuery {},
+    }: ASCOMRequest<schemas::GetCameraSensortypeQuery>,
 ) -> Result<schemas::IntResponse> {
 }
 
@@ -8713,7 +6109,10 @@ Returns the current camera cooler setpoint in degrees Celsius.
 fn get_camera_setccdtemperature(
     schemas::GetCameraSetccdtemperaturePath { device_number }: schemas::GetCameraSetccdtemperaturePath,
 
-    schemas::GetCameraSetccdtemperatureQuery { client_id, client_transaction_id }: schemas::GetCameraSetccdtemperatureQuery,
+    ASCOMRequest {
+        transaction,
+        request: schemas::GetCameraSetccdtemperatureQuery {},
+    }: ASCOMRequest<schemas::GetCameraSetccdtemperatureQuery>,
 ) -> Result<schemas::DoubleResponse> {
 }
 
@@ -8726,13 +6125,10 @@ Set's the camera's cooler setpoint in degrees Celsius.
 fn put_camera_setccdtemperature(
     schemas::PutCameraSetccdtemperaturePath { device_number }: schemas::PutCameraSetccdtemperaturePath,
 
-    schemas::PutCameraSetccdtemperatureRequest {
-        set_ccdtemperature,
-
-        client_id,
-
-        client_transaction_id,
-    }: schemas::PutCameraSetccdtemperatureRequest,
+    ASCOMRequest {
+        transaction,
+        request: schemas::PutCameraSetccdtemperatureRequest { set_ccdtemperature },
+    }: ASCOMRequest<schemas::PutCameraSetccdtemperatureRequest>,
 ) -> Result<schemas::MethodResponse> {
 }
 
@@ -8745,7 +6141,10 @@ Sets the subframe start position for the X axis (0 based) and returns the curren
 fn get_camera_startx(
     schemas::GetCameraStartxPath { device_number }: schemas::GetCameraStartxPath,
 
-    schemas::GetCameraStartxQuery { client_id, client_transaction_id }: schemas::GetCameraStartxQuery,
+    ASCOMRequest {
+        transaction,
+        request: schemas::GetCameraStartxQuery {},
+    }: ASCOMRequest<schemas::GetCameraStartxQuery>,
 ) -> Result<schemas::IntResponse> {
 }
 
@@ -8758,13 +6157,10 @@ Sets the current subframe X axis start position in binned pixels.
 fn put_camera_startx(
     schemas::PutCameraStartxPath { device_number }: schemas::PutCameraStartxPath,
 
-    schemas::PutCameraStartxRequest {
-        start_x,
-
-        client_id,
-
-        client_transaction_id,
-    }: schemas::PutCameraStartxRequest,
+    ASCOMRequest {
+        transaction,
+        request: schemas::PutCameraStartxRequest { start_x },
+    }: ASCOMRequest<schemas::PutCameraStartxRequest>,
 ) -> Result<schemas::MethodResponse> {
 }
 
@@ -8777,7 +6173,10 @@ Sets the subframe start position for the Y axis (0 based) and returns the curren
 fn get_camera_starty(
     schemas::GetCameraStartyPath { device_number }: schemas::GetCameraStartyPath,
 
-    schemas::GetCameraStartyQuery { client_id, client_transaction_id }: schemas::GetCameraStartyQuery,
+    ASCOMRequest {
+        transaction,
+        request: schemas::GetCameraStartyQuery {},
+    }: ASCOMRequest<schemas::GetCameraStartyQuery>,
 ) -> Result<schemas::IntResponse> {
 }
 
@@ -8790,13 +6189,10 @@ Sets the current subframe Y axis start position in binned pixels.
 fn put_camera_starty(
     schemas::PutCameraStartyPath { device_number }: schemas::PutCameraStartyPath,
 
-    schemas::PutCameraStartyRequest {
-        start_y,
-
-        client_id,
-
-        client_transaction_id,
-    }: schemas::PutCameraStartyRequest,
+    ASCOMRequest {
+        transaction,
+        request: schemas::PutCameraStartyRequest { start_y },
+    }: ASCOMRequest<schemas::PutCameraStartyRequest>,
 ) -> Result<schemas::MethodResponse> {
 }
 
@@ -8809,7 +6205,10 @@ The Camera's sub exposure duration in seconds. Only available in Camera Interfac
 fn get_camera_subexposureduration(
     schemas::GetCameraSubexposuredurationPath { device_number }: schemas::GetCameraSubexposuredurationPath,
 
-    schemas::GetCameraSubexposuredurationQuery { client_id, client_transaction_id }: schemas::GetCameraSubexposuredurationQuery,
+    ASCOMRequest {
+        transaction,
+        request: schemas::GetCameraSubexposuredurationQuery {},
+    }: ASCOMRequest<schemas::GetCameraSubexposuredurationQuery>,
 ) -> Result<schemas::DoubleResponse> {
 }
 
@@ -8822,13 +6221,10 @@ Sets image sub exposure duration in seconds. Only available in Camera Interface 
 fn put_camera_subexposureduration(
     schemas::PutCameraSubexposuredurationPath { device_number }: schemas::PutCameraSubexposuredurationPath,
 
-    schemas::PutCameraSubexposuredurationRequest {
-        sub_exposure_duration,
-
-        client_id,
-
-        client_transaction_id,
-    }: schemas::PutCameraSubexposuredurationRequest,
+    ASCOMRequest {
+        transaction,
+        request: schemas::PutCameraSubexposuredurationRequest { sub_exposure_duration },
+    }: ASCOMRequest<schemas::PutCameraSubexposuredurationRequest>,
 ) -> Result<schemas::MethodResponse> {
 }
 
@@ -8841,7 +6237,10 @@ Aborts the current exposure, if any, and returns the camera to Idle state.
 fn put_camera_abortexposure(
     schemas::PutCameraAbortexposurePath { device_number }: schemas::PutCameraAbortexposurePath,
 
-    schemas::PutCameraAbortexposureRequest { client_id, client_transaction_id }: schemas::PutCameraAbortexposureRequest,
+    ASCOMRequest {
+        transaction,
+        request: schemas::PutCameraAbortexposureRequest {},
+    }: ASCOMRequest<schemas::PutCameraAbortexposureRequest>,
 ) -> Result<schemas::MethodResponse> {
 }
 
@@ -8854,15 +6253,10 @@ Activates the Camera's mount control sytem to instruct the mount to move in a pa
 fn put_camera_pulseguide(
     schemas::PutCameraPulseguidePath { device_number }: schemas::PutCameraPulseguidePath,
 
-    schemas::PutCameraPulseguideRequest {
-        direction,
-
-        duration,
-
-        client_id,
-
-        client_transaction_id,
-    }: schemas::PutCameraPulseguideRequest,
+    ASCOMRequest {
+        transaction,
+        request: schemas::PutCameraPulseguideRequest { direction, duration },
+    }: ASCOMRequest<schemas::PutCameraPulseguideRequest>,
 ) -> Result<schemas::MethodResponse> {
 }
 
@@ -8875,15 +6269,10 @@ Starts an exposure. Use ImageReady to check when the exposure is complete.
 fn put_camera_startexposure(
     schemas::PutCameraStartexposurePath { device_number }: schemas::PutCameraStartexposurePath,
 
-    schemas::PutCameraStartexposureRequest {
-        duration,
-
-        light,
-
-        client_id,
-
-        client_transaction_id,
-    }: schemas::PutCameraStartexposureRequest,
+    ASCOMRequest {
+        transaction,
+        request: schemas::PutCameraStartexposureRequest { duration, light },
+    }: ASCOMRequest<schemas::PutCameraStartexposureRequest>,
 ) -> Result<schemas::MethodResponse> {
 }
 
@@ -8896,7 +6285,10 @@ Stops the current exposure, if any. If an exposure is in progress, the readout p
 fn put_camera_stopexposure(
     schemas::PutCameraStopexposurePath { device_number }: schemas::PutCameraStopexposurePath,
 
-    schemas::PutCameraAbortexposureRequest { client_id, client_transaction_id }: schemas::PutCameraAbortexposureRequest,
+    ASCOMRequest {
+        transaction,
+        request: schemas::PutCameraAbortexposureRequest {},
+    }: ASCOMRequest<schemas::PutCameraAbortexposureRequest>,
 ) -> Result<schemas::MethodResponse> {
 }
 
@@ -8909,7 +6301,10 @@ Returns the current calibrator brightness in the range 0 (completely off) to Max
 fn get_covercalibrator_brightness(
     schemas::GetCovercalibratorBrightnessPath { device_number }: schemas::GetCovercalibratorBrightnessPath,
 
-    schemas::GetCovercalibratorBrightnessQuery { client_id, client_transaction_id }: schemas::GetCovercalibratorBrightnessQuery,
+    ASCOMRequest {
+        transaction,
+        request: schemas::GetCovercalibratorBrightnessQuery {},
+    }: ASCOMRequest<schemas::GetCovercalibratorBrightnessQuery>,
 ) -> Result<schemas::IntResponse> {
 }
 
@@ -8922,7 +6317,10 @@ Returns the state of the calibration device, if present, otherwise returns "NotP
 fn get_covercalibrator_calibratorstate(
     schemas::GetCovercalibratorCalibratorstatePath { device_number }: schemas::GetCovercalibratorCalibratorstatePath,
 
-    schemas::GetCovercalibratorCalibratorstateQuery { client_id, client_transaction_id }: schemas::GetCovercalibratorCalibratorstateQuery,
+    ASCOMRequest {
+        transaction,
+        request: schemas::GetCovercalibratorCalibratorstateQuery {},
+    }: ASCOMRequest<schemas::GetCovercalibratorCalibratorstateQuery>,
 ) -> Result<schemas::IntResponse> {
 }
 
@@ -8935,7 +6333,10 @@ Returns the state of the device cover, if present, otherwise returns "NotPresent
 fn get_covercalibrator_coverstate(
     schemas::GetCovercalibratorCoverstatePath { device_number }: schemas::GetCovercalibratorCoverstatePath,
 
-    schemas::GetCovercalibratorCoverstateQuery { client_id, client_transaction_id }: schemas::GetCovercalibratorCoverstateQuery,
+    ASCOMRequest {
+        transaction,
+        request: schemas::GetCovercalibratorCoverstateQuery {},
+    }: ASCOMRequest<schemas::GetCovercalibratorCoverstateQuery>,
 ) -> Result<schemas::IntResponse> {
 }
 
@@ -8948,7 +6349,10 @@ The Brightness value that makes the calibrator deliver its maximum illumination.
 fn get_covercalibrator_maxbrightness(
     schemas::GetCovercalibratorMaxbrightnessPath { device_number }: schemas::GetCovercalibratorMaxbrightnessPath,
 
-    schemas::GetCovercalibratorMaxbrightnessQuery { client_id, client_transaction_id }: schemas::GetCovercalibratorMaxbrightnessQuery,
+    ASCOMRequest {
+        transaction,
+        request: schemas::GetCovercalibratorMaxbrightnessQuery {},
+    }: ASCOMRequest<schemas::GetCovercalibratorMaxbrightnessQuery>,
 ) -> Result<schemas::IntResponse> {
 }
 
@@ -8961,7 +6365,10 @@ Turns the calibrator off if the device has calibration capability.
 fn put_covercalibrator_calibratoroff(
     schemas::PutCovercalibratorCalibratoroffPath { device_number }: schemas::PutCovercalibratorCalibratoroffPath,
 
-    schemas::PutCameraAbortexposureRequest { client_id, client_transaction_id }: schemas::PutCameraAbortexposureRequest,
+    ASCOMRequest {
+        transaction,
+        request: schemas::PutCameraAbortexposureRequest {},
+    }: ASCOMRequest<schemas::PutCameraAbortexposureRequest>,
 ) -> Result<schemas::MethodResponse> {
 }
 
@@ -8974,13 +6381,10 @@ Turns the calibrator on at the specified brightness if the device has calibratio
 fn put_covercalibrator_calibratoron(
     schemas::PutCovercalibratorCalibratoronPath { device_number }: schemas::PutCovercalibratorCalibratoronPath,
 
-    schemas::PutCovercalibratorCalibratoronRequest {
-        brightness,
-
-        client_id,
-
-        client_transaction_id,
-    }: schemas::PutCovercalibratorCalibratoronRequest,
+    ASCOMRequest {
+        transaction,
+        request: schemas::PutCovercalibratorCalibratoronRequest { brightness },
+    }: ASCOMRequest<schemas::PutCovercalibratorCalibratoronRequest>,
 ) -> Result<schemas::MethodResponse> {
 }
 
@@ -8993,7 +6397,10 @@ Initiates cover closing if a cover is present.
 fn put_covercalibrator_closecover(
     schemas::PutCovercalibratorClosecoverPath { device_number }: schemas::PutCovercalibratorClosecoverPath,
 
-    schemas::PutCameraAbortexposureRequest { client_id, client_transaction_id }: schemas::PutCameraAbortexposureRequest,
+    ASCOMRequest {
+        transaction,
+        request: schemas::PutCameraAbortexposureRequest {},
+    }: ASCOMRequest<schemas::PutCameraAbortexposureRequest>,
 ) -> Result<schemas::MethodResponse> {
 }
 
@@ -9006,7 +6413,10 @@ Stops any cover movement that may be in progress if a cover is present and cover
 fn put_covercalibrator_haltcover(
     schemas::PutCovercalibratorHaltcoverPath { device_number }: schemas::PutCovercalibratorHaltcoverPath,
 
-    schemas::PutCameraAbortexposureRequest { client_id, client_transaction_id }: schemas::PutCameraAbortexposureRequest,
+    ASCOMRequest {
+        transaction,
+        request: schemas::PutCameraAbortexposureRequest {},
+    }: ASCOMRequest<schemas::PutCameraAbortexposureRequest>,
 ) -> Result<schemas::MethodResponse> {
 }
 
@@ -9019,7 +6429,10 @@ Initiates cover opening if a cover is present.
 fn put_covercalibrator_opencover(
     schemas::PutCovercalibratorOpencoverPath { device_number }: schemas::PutCovercalibratorOpencoverPath,
 
-    schemas::PutCameraAbortexposureRequest { client_id, client_transaction_id }: schemas::PutCameraAbortexposureRequest,
+    ASCOMRequest {
+        transaction,
+        request: schemas::PutCameraAbortexposureRequest {},
+    }: ASCOMRequest<schemas::PutCameraAbortexposureRequest>,
 ) -> Result<schemas::MethodResponse> {
 }
 
@@ -9032,7 +6445,10 @@ The dome altitude (degrees, horizon zero and increasing positive to 90 zenith).
 fn get_dome_altitude(
     schemas::GetDomeAltitudePath { device_number }: schemas::GetDomeAltitudePath,
 
-    schemas::GetDomeAltitudeQuery { client_id, client_transaction_id }: schemas::GetDomeAltitudeQuery,
+    ASCOMRequest {
+        transaction,
+        request: schemas::GetDomeAltitudeQuery {},
+    }: ASCOMRequest<schemas::GetDomeAltitudeQuery>,
 ) -> Result<schemas::DoubleResponse> {
 }
 
@@ -9045,7 +6461,10 @@ Indicates whether the dome is in the home position. This is normally used follow
 fn get_dome_athome(
     schemas::GetDomeAthomePath { device_number }: schemas::GetDomeAthomePath,
 
-    schemas::GetDomeAthomeQuery { client_id, client_transaction_id }: schemas::GetDomeAthomeQuery,
+    ASCOMRequest {
+        transaction,
+        request: schemas::GetDomeAthomeQuery {},
+    }: ASCOMRequest<schemas::GetDomeAthomeQuery>,
 ) -> Result<schemas::BoolResponse> {
 }
 
@@ -9058,7 +6477,10 @@ True if the dome is in the programmed park position. Set only following a Park()
 fn get_dome_atpark(
     schemas::GetDomeAtparkPath { device_number }: schemas::GetDomeAtparkPath,
 
-    schemas::GetDomeAtparkQuery { client_id, client_transaction_id }: schemas::GetDomeAtparkQuery,
+    ASCOMRequest {
+        transaction,
+        request: schemas::GetDomeAtparkQuery {},
+    }: ASCOMRequest<schemas::GetDomeAtparkQuery>,
 ) -> Result<schemas::BoolResponse> {
 }
 
@@ -9071,7 +6493,10 @@ Returns the dome azimuth (degrees, North zero and increasing clockwise, i.e., 90
 fn get_dome_azimuth(
     schemas::GetDomeAzimuthPath { device_number }: schemas::GetDomeAzimuthPath,
 
-    schemas::GetDomeAzimuthQuery { client_id, client_transaction_id }: schemas::GetDomeAzimuthQuery,
+    ASCOMRequest {
+        transaction,
+        request: schemas::GetDomeAzimuthQuery {},
+    }: ASCOMRequest<schemas::GetDomeAzimuthQuery>,
 ) -> Result<schemas::DoubleResponse> {
 }
 
@@ -9084,7 +6509,10 @@ True if the dome can move to the home position.
 fn get_dome_canfindhome(
     schemas::GetDomeCanfindhomePath { device_number }: schemas::GetDomeCanfindhomePath,
 
-    schemas::GetDomeCanfindhomeQuery { client_id, client_transaction_id }: schemas::GetDomeCanfindhomeQuery,
+    ASCOMRequest {
+        transaction,
+        request: schemas::GetDomeCanfindhomeQuery {},
+    }: ASCOMRequest<schemas::GetDomeCanfindhomeQuery>,
 ) -> Result<schemas::BoolResponse> {
 }
 
@@ -9097,7 +6525,10 @@ True if the dome is capable of programmed parking (Park() method)
 fn get_dome_canpark(
     schemas::GetDomeCanparkPath { device_number }: schemas::GetDomeCanparkPath,
 
-    schemas::GetDomeCanparkQuery { client_id, client_transaction_id }: schemas::GetDomeCanparkQuery,
+    ASCOMRequest {
+        transaction,
+        request: schemas::GetDomeCanparkQuery {},
+    }: ASCOMRequest<schemas::GetDomeCanparkQuery>,
 ) -> Result<schemas::BoolResponse> {
 }
 
@@ -9110,7 +6541,10 @@ True if driver is capable of setting the dome altitude.
 fn get_dome_cansetaltitude(
     schemas::GetDomeCansetaltitudePath { device_number }: schemas::GetDomeCansetaltitudePath,
 
-    schemas::GetDomeCansetaltitudeQuery { client_id, client_transaction_id }: schemas::GetDomeCansetaltitudeQuery,
+    ASCOMRequest {
+        transaction,
+        request: schemas::GetDomeCansetaltitudeQuery {},
+    }: ASCOMRequest<schemas::GetDomeCansetaltitudeQuery>,
 ) -> Result<schemas::BoolResponse> {
 }
 
@@ -9123,7 +6557,10 @@ True if driver is capable of setting the dome azimuth.
 fn get_dome_cansetazimuth(
     schemas::GetDomeCansetazimuthPath { device_number }: schemas::GetDomeCansetazimuthPath,
 
-    schemas::GetDomeCansetazimuthQuery { client_id, client_transaction_id }: schemas::GetDomeCansetazimuthQuery,
+    ASCOMRequest {
+        transaction,
+        request: schemas::GetDomeCansetazimuthQuery {},
+    }: ASCOMRequest<schemas::GetDomeCansetazimuthQuery>,
 ) -> Result<schemas::BoolResponse> {
 }
 
@@ -9136,7 +6573,10 @@ True if driver is capable of setting the dome park position.
 fn get_dome_cansetpark(
     schemas::GetDomeCansetparkPath { device_number }: schemas::GetDomeCansetparkPath,
 
-    schemas::GetDomeCansetparkQuery { client_id, client_transaction_id }: schemas::GetDomeCansetparkQuery,
+    ASCOMRequest {
+        transaction,
+        request: schemas::GetDomeCansetparkQuery {},
+    }: ASCOMRequest<schemas::GetDomeCansetparkQuery>,
 ) -> Result<schemas::BoolResponse> {
 }
 
@@ -9149,7 +6589,10 @@ True if driver is capable of automatically operating shutter
 fn get_dome_cansetshutter(
     schemas::GetDomeCansetshutterPath { device_number }: schemas::GetDomeCansetshutterPath,
 
-    schemas::GetDomeCansetshutterQuery { client_id, client_transaction_id }: schemas::GetDomeCansetshutterQuery,
+    ASCOMRequest {
+        transaction,
+        request: schemas::GetDomeCansetshutterQuery {},
+    }: ASCOMRequest<schemas::GetDomeCansetshutterQuery>,
 ) -> Result<schemas::BoolResponse> {
 }
 
@@ -9162,7 +6605,10 @@ True if driver is capable of slaving to a telescope.
 fn get_dome_canslave(
     schemas::GetDomeCanslavePath { device_number }: schemas::GetDomeCanslavePath,
 
-    schemas::GetDomeCanslaveQuery { client_id, client_transaction_id }: schemas::GetDomeCanslaveQuery,
+    ASCOMRequest {
+        transaction,
+        request: schemas::GetDomeCanslaveQuery {},
+    }: ASCOMRequest<schemas::GetDomeCanslaveQuery>,
 ) -> Result<schemas::BoolResponse> {
 }
 
@@ -9175,7 +6621,10 @@ True if driver is capable of synchronizing the dome azimuth position using the S
 fn get_dome_cansyncazimuth(
     schemas::GetDomeCansyncazimuthPath { device_number }: schemas::GetDomeCansyncazimuthPath,
 
-    schemas::GetDomeCansyncazimuthQuery { client_id, client_transaction_id }: schemas::GetDomeCansyncazimuthQuery,
+    ASCOMRequest {
+        transaction,
+        request: schemas::GetDomeCansyncazimuthQuery {},
+    }: ASCOMRequest<schemas::GetDomeCansyncazimuthQuery>,
 ) -> Result<schemas::BoolResponse> {
 }
 
@@ -9188,7 +6637,10 @@ Returns the status of the dome shutter or roll-off roof. 0 = Open, 1 = Closed, 2
 fn get_dome_shutterstatus(
     schemas::GetDomeShutterstatusPath { device_number }: schemas::GetDomeShutterstatusPath,
 
-    schemas::GetDomeShutterstatusQuery { client_id, client_transaction_id }: schemas::GetDomeShutterstatusQuery,
+    ASCOMRequest {
+        transaction,
+        request: schemas::GetDomeShutterstatusQuery {},
+    }: ASCOMRequest<schemas::GetDomeShutterstatusQuery>,
 ) -> Result<schemas::IntResponse> {
 }
 
@@ -9201,7 +6653,10 @@ True if the dome is slaved to the telescope in its hardware, else False.
 fn get_dome_slaved(
     schemas::GetDomeSlavedPath { device_number }: schemas::GetDomeSlavedPath,
 
-    schemas::GetDomeSlavedQuery { client_id, client_transaction_id }: schemas::GetDomeSlavedQuery,
+    ASCOMRequest {
+        transaction,
+        request: schemas::GetDomeSlavedQuery {},
+    }: ASCOMRequest<schemas::GetDomeSlavedQuery>,
 ) -> Result<schemas::BoolResponse> {
 }
 
@@ -9214,13 +6669,10 @@ Sets the current subframe height.
 fn put_dome_slaved(
     schemas::PutDomeSlavedPath { device_number }: schemas::PutDomeSlavedPath,
 
-    schemas::PutDomeSlavedRequest {
-        slaved,
-
-        client_id,
-
-        client_transaction_id,
-    }: schemas::PutDomeSlavedRequest,
+    ASCOMRequest {
+        transaction,
+        request: schemas::PutDomeSlavedRequest { slaved },
+    }: ASCOMRequest<schemas::PutDomeSlavedRequest>,
 ) -> Result<schemas::MethodResponse> {
 }
 
@@ -9233,7 +6685,10 @@ True if any part of the dome is currently moving, False if all dome components a
 fn get_dome_slewing(
     schemas::GetDomeSlewingPath { device_number }: schemas::GetDomeSlewingPath,
 
-    schemas::GetDomeSlewingQuery { client_id, client_transaction_id }: schemas::GetDomeSlewingQuery,
+    ASCOMRequest {
+        transaction,
+        request: schemas::GetDomeSlewingQuery {},
+    }: ASCOMRequest<schemas::GetDomeSlewingQuery>,
 ) -> Result<schemas::BoolResponse> {
 }
 
@@ -9246,7 +6701,10 @@ Calling this method will immediately disable hardware slewing (Slaved will becom
 fn put_dome_abortslew(
     schemas::PutDomeAbortslewPath { device_number }: schemas::PutDomeAbortslewPath,
 
-    schemas::PutCameraAbortexposureRequest { client_id, client_transaction_id }: schemas::PutCameraAbortexposureRequest,
+    ASCOMRequest {
+        transaction,
+        request: schemas::PutCameraAbortexposureRequest {},
+    }: ASCOMRequest<schemas::PutCameraAbortexposureRequest>,
 ) -> Result<schemas::MethodResponse> {
 }
 
@@ -9259,7 +6717,10 @@ Close the shutter or otherwise shield telescope from the sky.
 fn put_dome_closeshutter(
     schemas::PutDomeCloseshutterPath { device_number }: schemas::PutDomeCloseshutterPath,
 
-    schemas::PutCameraAbortexposureRequest { client_id, client_transaction_id }: schemas::PutCameraAbortexposureRequest,
+    ASCOMRequest {
+        transaction,
+        request: schemas::PutCameraAbortexposureRequest {},
+    }: ASCOMRequest<schemas::PutCameraAbortexposureRequest>,
 ) -> Result<schemas::MethodResponse> {
 }
 
@@ -9272,7 +6733,10 @@ After Home position is established initializes Azimuth to the default value and 
 fn put_dome_findhome(
     schemas::PutDomeFindhomePath { device_number }: schemas::PutDomeFindhomePath,
 
-    schemas::PutCameraAbortexposureRequest { client_id, client_transaction_id }: schemas::PutCameraAbortexposureRequest,
+    ASCOMRequest {
+        transaction,
+        request: schemas::PutCameraAbortexposureRequest {},
+    }: ASCOMRequest<schemas::PutCameraAbortexposureRequest>,
 ) -> Result<schemas::MethodResponse> {
 }
 
@@ -9285,7 +6749,10 @@ Open shutter or otherwise expose telescope to the sky.
 fn put_dome_openshutter(
     schemas::PutDomeOpenshutterPath { device_number }: schemas::PutDomeOpenshutterPath,
 
-    schemas::PutCameraAbortexposureRequest { client_id, client_transaction_id }: schemas::PutCameraAbortexposureRequest,
+    ASCOMRequest {
+        transaction,
+        request: schemas::PutCameraAbortexposureRequest {},
+    }: ASCOMRequest<schemas::PutCameraAbortexposureRequest>,
 ) -> Result<schemas::MethodResponse> {
 }
 
@@ -9298,7 +6765,10 @@ After assuming programmed park position, sets AtPark flag.
 fn put_dome_park(
     schemas::PutDomeParkPath { device_number }: schemas::PutDomeParkPath,
 
-    schemas::PutCameraAbortexposureRequest { client_id, client_transaction_id }: schemas::PutCameraAbortexposureRequest,
+    ASCOMRequest {
+        transaction,
+        request: schemas::PutCameraAbortexposureRequest {},
+    }: ASCOMRequest<schemas::PutCameraAbortexposureRequest>,
 ) -> Result<schemas::MethodResponse> {
 }
 
@@ -9311,7 +6781,10 @@ Set the current azimuth, altitude position of dome to be the park position.
 fn put_dome_setpark(
     schemas::PutDomeSetparkPath { device_number }: schemas::PutDomeSetparkPath,
 
-    schemas::PutCameraAbortexposureRequest { client_id, client_transaction_id }: schemas::PutCameraAbortexposureRequest,
+    ASCOMRequest {
+        transaction,
+        request: schemas::PutCameraAbortexposureRequest {},
+    }: ASCOMRequest<schemas::PutCameraAbortexposureRequest>,
 ) -> Result<schemas::MethodResponse> {
 }
 
@@ -9324,13 +6797,10 @@ Slew the dome to the given altitude position.
 fn put_dome_slewtoaltitude(
     schemas::PutDomeSlewtoaltitudePath { device_number }: schemas::PutDomeSlewtoaltitudePath,
 
-    schemas::PutDomeSlewtoaltitudeRequest {
-        altitude,
-
-        client_id,
-
-        client_transaction_id,
-    }: schemas::PutDomeSlewtoaltitudeRequest,
+    ASCOMRequest {
+        transaction,
+        request: schemas::PutDomeSlewtoaltitudeRequest { altitude },
+    }: ASCOMRequest<schemas::PutDomeSlewtoaltitudeRequest>,
 ) -> Result<schemas::MethodResponse> {
 }
 
@@ -9343,13 +6813,10 @@ Slew the dome to the given azimuth position.
 fn put_dome_slewtoazimuth(
     schemas::PutDomeSlewtoazimuthPath { device_number }: schemas::PutDomeSlewtoazimuthPath,
 
-    schemas::PutDomeSlewtoazimuthRequest {
-        azimuth,
-
-        client_id,
-
-        client_transaction_id,
-    }: schemas::PutDomeSlewtoazimuthRequest,
+    ASCOMRequest {
+        transaction,
+        request: schemas::PutDomeSlewtoazimuthRequest { azimuth },
+    }: ASCOMRequest<schemas::PutDomeSlewtoazimuthRequest>,
 ) -> Result<schemas::MethodResponse> {
 }
 
@@ -9362,13 +6829,10 @@ Synchronize the current position of the dome to the given azimuth.
 fn put_dome_synctoazimuth(
     schemas::PutDomeSynctoazimuthPath { device_number }: schemas::PutDomeSynctoazimuthPath,
 
-    schemas::PutDomeSlewtoazimuthRequest {
-        azimuth,
-
-        client_id,
-
-        client_transaction_id,
-    }: schemas::PutDomeSlewtoazimuthRequest,
+    ASCOMRequest {
+        transaction,
+        request: schemas::PutDomeSlewtoazimuthRequest { azimuth },
+    }: ASCOMRequest<schemas::PutDomeSlewtoazimuthRequest>,
 ) -> Result<schemas::MethodResponse> {
 }
 
@@ -9381,7 +6845,10 @@ An integer array of filter focus offsets.
 fn get_filterwheel_focusoffsets(
     schemas::GetFilterwheelFocusoffsetsPath { device_number }: schemas::GetFilterwheelFocusoffsetsPath,
 
-    schemas::GetFilterwheelFocusoffsetsQuery { client_id, client_transaction_id }: schemas::GetFilterwheelFocusoffsetsQuery,
+    ASCOMRequest {
+        transaction,
+        request: schemas::GetFilterwheelFocusoffsetsQuery {},
+    }: ASCOMRequest<schemas::GetFilterwheelFocusoffsetsQuery>,
 ) -> Result<schemas::IntArrayResponse> {
 }
 
@@ -9394,7 +6861,10 @@ The names of the filters
 fn get_filterwheel_names(
     schemas::GetFilterwheelNamesPath { device_number }: schemas::GetFilterwheelNamesPath,
 
-    schemas::GetFilterwheelNamesQuery { client_id, client_transaction_id }: schemas::GetFilterwheelNamesQuery,
+    ASCOMRequest {
+        transaction,
+        request: schemas::GetFilterwheelNamesQuery {},
+    }: ASCOMRequest<schemas::GetFilterwheelNamesQuery>,
 ) -> Result<schemas::StringArrayResponse> {
 }
 
@@ -9407,7 +6877,10 @@ Returns the current filter wheel position
 fn get_filterwheel_position(
     schemas::GetFilterwheelPositionPath { device_number }: schemas::GetFilterwheelPositionPath,
 
-    schemas::GetFilterwheelPositionQuery { client_id, client_transaction_id }: schemas::GetFilterwheelPositionQuery,
+    ASCOMRequest {
+        transaction,
+        request: schemas::GetFilterwheelPositionQuery {},
+    }: ASCOMRequest<schemas::GetFilterwheelPositionQuery>,
 ) -> Result<schemas::IntResponse> {
 }
 
@@ -9420,13 +6893,10 @@ Sets the filter wheel position
 fn put_filterwheel_position(
     schemas::PutFilterwheelPositionPath { device_number }: schemas::PutFilterwheelPositionPath,
 
-    schemas::PutFilterwheelPositionRequest {
-        position,
-
-        client_id,
-
-        client_transaction_id,
-    }: schemas::PutFilterwheelPositionRequest,
+    ASCOMRequest {
+        transaction,
+        request: schemas::PutFilterwheelPositionRequest { position },
+    }: ASCOMRequest<schemas::PutFilterwheelPositionRequest>,
 ) -> Result<schemas::MethodResponse> {
 }
 
@@ -9439,7 +6909,10 @@ True if the focuser is capable of absolute position; that is, being commanded to
 fn get_focuser_absolute(
     schemas::GetFocuserAbsolutePath { device_number }: schemas::GetFocuserAbsolutePath,
 
-    schemas::GetFocuserAbsoluteQuery { client_id, client_transaction_id }: schemas::GetFocuserAbsoluteQuery,
+    ASCOMRequest {
+        transaction,
+        request: schemas::GetFocuserAbsoluteQuery {},
+    }: ASCOMRequest<schemas::GetFocuserAbsoluteQuery>,
 ) -> Result<schemas::BoolResponse> {
 }
 
@@ -9452,7 +6925,10 @@ True if the focuser is currently moving to a new position. False if the focuser 
 fn get_focuser_ismoving(
     schemas::GetFocuserIsmovingPath { device_number }: schemas::GetFocuserIsmovingPath,
 
-    schemas::GetFocuserIsmovingQuery { client_id, client_transaction_id }: schemas::GetFocuserIsmovingQuery,
+    ASCOMRequest {
+        transaction,
+        request: schemas::GetFocuserIsmovingQuery {},
+    }: ASCOMRequest<schemas::GetFocuserIsmovingQuery>,
 ) -> Result<schemas::BoolResponse> {
 }
 
@@ -9465,7 +6941,10 @@ Maximum increment size allowed by the focuser; i.e. the maximum number of steps 
 fn get_focuser_maxincrement(
     schemas::GetFocuserMaxincrementPath { device_number }: schemas::GetFocuserMaxincrementPath,
 
-    schemas::GetFocuserMaxincrementQuery { client_id, client_transaction_id }: schemas::GetFocuserMaxincrementQuery,
+    ASCOMRequest {
+        transaction,
+        request: schemas::GetFocuserMaxincrementQuery {},
+    }: ASCOMRequest<schemas::GetFocuserMaxincrementQuery>,
 ) -> Result<schemas::IntResponse> {
 }
 
@@ -9478,7 +6957,10 @@ Maximum step position permitted.
 fn get_focuser_maxstep(
     schemas::GetFocuserMaxstepPath { device_number }: schemas::GetFocuserMaxstepPath,
 
-    schemas::GetFocuserMaxstepQuery { client_id, client_transaction_id }: schemas::GetFocuserMaxstepQuery,
+    ASCOMRequest {
+        transaction,
+        request: schemas::GetFocuserMaxstepQuery {},
+    }: ASCOMRequest<schemas::GetFocuserMaxstepQuery>,
 ) -> Result<schemas::IntResponse> {
 }
 
@@ -9491,7 +6973,10 @@ Current focuser position, in steps.
 fn get_focuser_position(
     schemas::GetFocuserPositionPath { device_number }: schemas::GetFocuserPositionPath,
 
-    schemas::GetFocuserPositionQuery { client_id, client_transaction_id }: schemas::GetFocuserPositionQuery,
+    ASCOMRequest {
+        transaction,
+        request: schemas::GetFocuserPositionQuery {},
+    }: ASCOMRequest<schemas::GetFocuserPositionQuery>,
 ) -> Result<schemas::IntResponse> {
 }
 
@@ -9504,7 +6989,10 @@ Step size (microns) for the focuser.
 fn get_focuser_stepsize(
     schemas::GetFocuserStepsizePath { device_number }: schemas::GetFocuserStepsizePath,
 
-    schemas::GetFocuserStepsizeQuery { client_id, client_transaction_id }: schemas::GetFocuserStepsizeQuery,
+    ASCOMRequest {
+        transaction,
+        request: schemas::GetFocuserStepsizeQuery {},
+    }: ASCOMRequest<schemas::GetFocuserStepsizeQuery>,
 ) -> Result<schemas::DoubleResponse> {
 }
 
@@ -9517,7 +7005,10 @@ Gets the state of temperature compensation mode (if available), else always Fals
 fn get_focuser_tempcomp(
     schemas::GetFocuserTempcompPath { device_number }: schemas::GetFocuserTempcompPath,
 
-    schemas::GetFocuserTempcompQuery { client_id, client_transaction_id }: schemas::GetFocuserTempcompQuery,
+    ASCOMRequest {
+        transaction,
+        request: schemas::GetFocuserTempcompQuery {},
+    }: ASCOMRequest<schemas::GetFocuserTempcompQuery>,
 ) -> Result<schemas::BoolResponse> {
 }
 
@@ -9530,13 +7021,10 @@ Sets the state of temperature compensation mode.
 fn put_focuser_tempcomp(
     schemas::PutFocuserTempcompPath { device_number }: schemas::PutFocuserTempcompPath,
 
-    schemas::PutFocuserTempcompRequest {
-        temp_comp,
-
-        client,
-
-        client_transaction_idform,
-    }: schemas::PutFocuserTempcompRequest,
+    ASCOMRequest {
+        transaction,
+        request: schemas::PutFocuserTempcompRequest { temp_comp },
+    }: ASCOMRequest<schemas::PutFocuserTempcompRequest>,
 ) -> Result<schemas::MethodResponse> {
 }
 
@@ -9549,7 +7037,10 @@ True if focuser has temperature compensation available.
 fn get_focuser_tempcompavailable(
     schemas::GetFocuserTempcompavailablePath { device_number }: schemas::GetFocuserTempcompavailablePath,
 
-    schemas::GetFocuserTempcompavailableQuery { client_id, client_transaction_id }: schemas::GetFocuserTempcompavailableQuery,
+    ASCOMRequest {
+        transaction,
+        request: schemas::GetFocuserTempcompavailableQuery {},
+    }: ASCOMRequest<schemas::GetFocuserTempcompavailableQuery>,
 ) -> Result<schemas::BoolResponse> {
 }
 
@@ -9562,7 +7053,10 @@ Current ambient temperature as measured by the focuser.
 fn get_focuser_temperature(
     schemas::GetFocuserTemperaturePath { device_number }: schemas::GetFocuserTemperaturePath,
 
-    schemas::GetFocuserTemperatureQuery { client_id, client_transaction_id }: schemas::GetFocuserTemperatureQuery,
+    ASCOMRequest {
+        transaction,
+        request: schemas::GetFocuserTemperatureQuery {},
+    }: ASCOMRequest<schemas::GetFocuserTemperatureQuery>,
 ) -> Result<schemas::DoubleResponse> {
 }
 
@@ -9575,7 +7069,10 @@ Immediately stop any focuser motion due to a previous Move(Int32) method call.
 fn put_focuser_halt(
     schemas::PutFocuserHaltPath { device_number }: schemas::PutFocuserHaltPath,
 
-    schemas::PutCameraAbortexposureRequest { client_id, client_transaction_id }: schemas::PutCameraAbortexposureRequest,
+    ASCOMRequest {
+        transaction,
+        request: schemas::PutCameraAbortexposureRequest {},
+    }: ASCOMRequest<schemas::PutCameraAbortexposureRequest>,
 ) -> Result<schemas::MethodResponse> {
 }
 
@@ -9588,13 +7085,10 @@ Moves the focuser by the specified amount or to the specified position depending
 fn put_focuser_move(
     schemas::PutFocuserMovePath { device_number }: schemas::PutFocuserMovePath,
 
-    schemas::PutFocuserMoveRequest {
-        position,
-
-        client_id,
-
-        client_transaction_id,
-    }: schemas::PutFocuserMoveRequest,
+    ASCOMRequest {
+        transaction,
+        request: schemas::PutFocuserMoveRequest { position },
+    }: ASCOMRequest<schemas::PutFocuserMoveRequest>,
 ) -> Result<schemas::MethodResponse> {
 }
 
@@ -9607,7 +7101,10 @@ Gets the time period over which observations will be averaged
 fn get_observingconditions_averageperiod(
     schemas::GetObservingconditionsAverageperiodPath { device_number }: schemas::GetObservingconditionsAverageperiodPath,
 
-    schemas::GetObservingconditionsAverageperiodQuery { client_id, client_transaction_id }: schemas::GetObservingconditionsAverageperiodQuery,
+    ASCOMRequest {
+        transaction,
+        request: schemas::GetObservingconditionsAverageperiodQuery {},
+    }: ASCOMRequest<schemas::GetObservingconditionsAverageperiodQuery>,
 ) -> Result<schemas::DoubleResponse> {
 }
 
@@ -9620,13 +7117,10 @@ Sets the time period over which observations will be averaged
 fn put_observingconditions_averageperiod(
     schemas::PutObservingconditionsAverageperiodPath { device_number }: schemas::PutObservingconditionsAverageperiodPath,
 
-    schemas::PutObservingconditionsAverageperiodRequest {
-        average_period,
-
-        client_id,
-
-        client_transaction_id,
-    }: schemas::PutObservingconditionsAverageperiodRequest,
+    ASCOMRequest {
+        transaction,
+        request: schemas::PutObservingconditionsAverageperiodRequest { average_period },
+    }: ASCOMRequest<schemas::PutObservingconditionsAverageperiodRequest>,
 ) -> Result<schemas::MethodResponse> {
 }
 
@@ -9639,7 +7133,10 @@ Gets the percentage of the sky obscured by cloud
 fn get_observingconditions_cloudcover(
     schemas::GetObservingconditionsCloudcoverPath { device_number }: schemas::GetObservingconditionsCloudcoverPath,
 
-    schemas::GetObservingconditionsCloudcoverQuery { client_id, client_transaction_id }: schemas::GetObservingconditionsCloudcoverQuery,
+    ASCOMRequest {
+        transaction,
+        request: schemas::GetObservingconditionsCloudcoverQuery {},
+    }: ASCOMRequest<schemas::GetObservingconditionsCloudcoverQuery>,
 ) -> Result<schemas::DoubleResponse> {
 }
 
@@ -9652,7 +7149,10 @@ Gets the atmospheric dew point at the observatory reported in °C.
 fn get_observingconditions_dewpoint(
     schemas::GetObservingconditionsDewpointPath { device_number }: schemas::GetObservingconditionsDewpointPath,
 
-    schemas::GetObservingconditionsDewpointQuery { client_id, client_transaction_id }: schemas::GetObservingconditionsDewpointQuery,
+    ASCOMRequest {
+        transaction,
+        request: schemas::GetObservingconditionsDewpointQuery {},
+    }: ASCOMRequest<schemas::GetObservingconditionsDewpointQuery>,
 ) -> Result<schemas::DoubleResponse> {
 }
 
@@ -9665,7 +7165,10 @@ Gets the atmospheric  humidity (%) at the observatory
 fn get_observingconditions_humidity(
     schemas::GetObservingconditionsHumidityPath { device_number }: schemas::GetObservingconditionsHumidityPath,
 
-    schemas::GetObservingconditionsHumidityQuery { client_id, client_transaction_id }: schemas::GetObservingconditionsHumidityQuery,
+    ASCOMRequest {
+        transaction,
+        request: schemas::GetObservingconditionsHumidityQuery {},
+    }: ASCOMRequest<schemas::GetObservingconditionsHumidityQuery>,
 ) -> Result<schemas::DoubleResponse> {
 }
 
@@ -9678,7 +7181,10 @@ Gets the atmospheric pressure in hectoPascals at the observatory's altitude - NO
 fn get_observingconditions_pressure(
     schemas::GetObservingconditionsPressurePath { device_number }: schemas::GetObservingconditionsPressurePath,
 
-    schemas::GetObservingconditionsPressureQuery { client_id, client_transaction_id }: schemas::GetObservingconditionsPressureQuery,
+    ASCOMRequest {
+        transaction,
+        request: schemas::GetObservingconditionsPressureQuery {},
+    }: ASCOMRequest<schemas::GetObservingconditionsPressureQuery>,
 ) -> Result<schemas::DoubleResponse> {
 }
 
@@ -9691,7 +7197,10 @@ Gets the rain rate (mm/hour) at the observatory.
 fn get_observingconditions_rainrate(
     schemas::GetObservingconditionsRainratePath { device_number }: schemas::GetObservingconditionsRainratePath,
 
-    schemas::GetObservingconditionsRainrateQuery { client_id, client_transaction_id }: schemas::GetObservingconditionsRainrateQuery,
+    ASCOMRequest {
+        transaction,
+        request: schemas::GetObservingconditionsRainrateQuery {},
+    }: ASCOMRequest<schemas::GetObservingconditionsRainrateQuery>,
 ) -> Result<schemas::DoubleResponse> {
 }
 
@@ -9704,7 +7213,10 @@ Gets the sky brightness at the observatory (Lux)
 fn get_observingconditions_skybrightness(
     schemas::GetObservingconditionsSkybrightnessPath { device_number }: schemas::GetObservingconditionsSkybrightnessPath,
 
-    schemas::GetObservingconditionsSkybrightnessQuery { client_id, client_transaction_id }: schemas::GetObservingconditionsSkybrightnessQuery,
+    ASCOMRequest {
+        transaction,
+        request: schemas::GetObservingconditionsSkybrightnessQuery {},
+    }: ASCOMRequest<schemas::GetObservingconditionsSkybrightnessQuery>,
 ) -> Result<schemas::DoubleResponse> {
 }
 
@@ -9717,7 +7229,10 @@ Gets the sky quality at the observatory (magnitudes per square arc second)
 fn get_observingconditions_skyquality(
     schemas::GetObservingconditionsSkyqualityPath { device_number }: schemas::GetObservingconditionsSkyqualityPath,
 
-    schemas::GetObservingconditionsSkyqualityQuery { client_id, client_transaction_id }: schemas::GetObservingconditionsSkyqualityQuery,
+    ASCOMRequest {
+        transaction,
+        request: schemas::GetObservingconditionsSkyqualityQuery {},
+    }: ASCOMRequest<schemas::GetObservingconditionsSkyqualityQuery>,
 ) -> Result<schemas::DoubleResponse> {
 }
 
@@ -9730,7 +7245,10 @@ Gets the sky temperature(°C) at the observatory.
 fn get_observingconditions_skytemperature(
     schemas::GetObservingconditionsSkytemperaturePath { device_number }: schemas::GetObservingconditionsSkytemperaturePath,
 
-    schemas::GetObservingconditionsSkytemperatureQuery { client_id, client_transaction_id }: schemas::GetObservingconditionsSkytemperatureQuery,
+    ASCOMRequest {
+        transaction,
+        request: schemas::GetObservingconditionsSkytemperatureQuery {},
+    }: ASCOMRequest<schemas::GetObservingconditionsSkytemperatureQuery>,
 ) -> Result<schemas::DoubleResponse> {
 }
 
@@ -9743,7 +7261,10 @@ Gets the seeing at the observatory measured as star full width half maximum (FWH
 fn get_observingconditions_starfwhm(
     schemas::GetObservingconditionsStarfwhmPath { device_number }: schemas::GetObservingconditionsStarfwhmPath,
 
-    schemas::GetObservingconditionsStarfwhmQuery { client_id, client_transaction_id }: schemas::GetObservingconditionsStarfwhmQuery,
+    ASCOMRequest {
+        transaction,
+        request: schemas::GetObservingconditionsStarfwhmQuery {},
+    }: ASCOMRequest<schemas::GetObservingconditionsStarfwhmQuery>,
 ) -> Result<schemas::DoubleResponse> {
 }
 
@@ -9756,7 +7277,10 @@ Gets the temperature(°C) at the observatory.
 fn get_observingconditions_temperature(
     schemas::GetObservingconditionsTemperaturePath { device_number }: schemas::GetObservingconditionsTemperaturePath,
 
-    schemas::GetObservingconditionsTemperatureQuery { client_id, client_transaction_id }: schemas::GetObservingconditionsTemperatureQuery,
+    ASCOMRequest {
+        transaction,
+        request: schemas::GetObservingconditionsTemperatureQuery {},
+    }: ASCOMRequest<schemas::GetObservingconditionsTemperatureQuery>,
 ) -> Result<schemas::DoubleResponse> {
 }
 
@@ -9769,7 +7293,10 @@ Gets the wind direction. The returned value must be between 0.0 and 360.0, inter
 fn get_observingconditions_winddirection(
     schemas::GetObservingconditionsWinddirectionPath { device_number }: schemas::GetObservingconditionsWinddirectionPath,
 
-    schemas::GetObservingconditionsWinddirectionQuery { client_id, client_transaction_id }: schemas::GetObservingconditionsWinddirectionQuery,
+    ASCOMRequest {
+        transaction,
+        request: schemas::GetObservingconditionsWinddirectionQuery {},
+    }: ASCOMRequest<schemas::GetObservingconditionsWinddirectionQuery>,
 ) -> Result<schemas::DoubleResponse> {
 }
 
@@ -9782,7 +7309,10 @@ Gets the peak 3 second wind gust(m/s) at the observatory over the last 2 minutes
 fn get_observingconditions_windgust(
     schemas::GetObservingconditionsWindgustPath { device_number }: schemas::GetObservingconditionsWindgustPath,
 
-    schemas::GetObservingconditionsWindgustQuery { client_id, client_transaction_id }: schemas::GetObservingconditionsWindgustQuery,
+    ASCOMRequest {
+        transaction,
+        request: schemas::GetObservingconditionsWindgustQuery {},
+    }: ASCOMRequest<schemas::GetObservingconditionsWindgustQuery>,
 ) -> Result<schemas::DoubleResponse> {
 }
 
@@ -9795,7 +7325,10 @@ Gets the wind speed(m/s) at the observatory.
 fn get_observingconditions_windspeed(
     schemas::GetObservingconditionsWindspeedPath { device_number }: schemas::GetObservingconditionsWindspeedPath,
 
-    schemas::GetObservingconditionsWindspeedQuery { client_id, client_transaction_id }: schemas::GetObservingconditionsWindspeedQuery,
+    ASCOMRequest {
+        transaction,
+        request: schemas::GetObservingconditionsWindspeedQuery {},
+    }: ASCOMRequest<schemas::GetObservingconditionsWindspeedQuery>,
 ) -> Result<schemas::DoubleResponse> {
 }
 
@@ -9808,7 +7341,10 @@ Forces the driver to immediately query its attached hardware to refresh sensor v
 fn put_observingconditions_refresh(
     schemas::PutObservingconditionsRefreshPath { device_number }: schemas::PutObservingconditionsRefreshPath,
 
-    schemas::PutCameraAbortexposureRequest { client_id, client_transaction_id }: schemas::PutCameraAbortexposureRequest,
+    ASCOMRequest {
+        transaction,
+        request: schemas::PutCameraAbortexposureRequest {},
+    }: ASCOMRequest<schemas::PutCameraAbortexposureRequest>,
 ) -> Result<schemas::MethodResponse> {
 }
 
@@ -9821,13 +7357,10 @@ Gets a description of the sensor with the name specified in the SensorName param
 fn get_observingconditions_sensordescription(
     schemas::GetObservingconditionsSensordescriptionPath { device_number }: schemas::GetObservingconditionsSensordescriptionPath,
 
-    schemas::GetObservingconditionsSensordescriptionQuery {
-        sensor_name,
-
-        client_id,
-
-        client_transaction_id,
-    }: schemas::GetObservingconditionsSensordescriptionQuery,
+    ASCOMRequest {
+        transaction,
+        request: schemas::GetObservingconditionsSensordescriptionQuery { sensor_name },
+    }: ASCOMRequest<schemas::GetObservingconditionsSensordescriptionQuery>,
 ) -> Result<schemas::StringResponse> {
 }
 
@@ -9840,13 +7373,10 @@ Gets the time since the sensor specified in the SensorName parameter was last up
 fn get_observingconditions_timesincelastupdate(
     schemas::GetObservingconditionsTimesincelastupdatePath { device_number }: schemas::GetObservingconditionsTimesincelastupdatePath,
 
-    schemas::GetObservingconditionsTimesincelastupdateQuery {
-        sensor_name,
-
-        client_id,
-
-        client_transaction_id,
-    }: schemas::GetObservingconditionsTimesincelastupdateQuery,
+    ASCOMRequest {
+        transaction,
+        request: schemas::GetObservingconditionsTimesincelastupdateQuery { sensor_name },
+    }: ASCOMRequest<schemas::GetObservingconditionsTimesincelastupdateQuery>,
 ) -> Result<schemas::DoubleResponse> {
 }
 
@@ -9859,7 +7389,10 @@ True if the Rotator supports the Reverse method.
 fn get_rotator_canreverse(
     schemas::GetRotatorCanreversePath { device_number }: schemas::GetRotatorCanreversePath,
 
-    schemas::GetRotatorCanreverseQuery { client_id, client_transaction_id }: schemas::GetRotatorCanreverseQuery,
+    ASCOMRequest {
+        transaction,
+        request: schemas::GetRotatorCanreverseQuery {},
+    }: ASCOMRequest<schemas::GetRotatorCanreverseQuery>,
 ) -> Result<schemas::BoolResponse> {
 }
 
@@ -9872,7 +7405,10 @@ True if the rotator is currently moving to a new position. False if the focuser 
 fn get_rotator_ismoving(
     schemas::GetRotatorIsmovingPath { device_number }: schemas::GetRotatorIsmovingPath,
 
-    schemas::GetRotatorIsmovingQuery { client_id, client_transaction_id }: schemas::GetRotatorIsmovingQuery,
+    ASCOMRequest {
+        transaction,
+        request: schemas::GetRotatorIsmovingQuery {},
+    }: ASCOMRequest<schemas::GetRotatorIsmovingQuery>,
 ) -> Result<schemas::BoolResponse> {
 }
 
@@ -9885,7 +7421,10 @@ Returns the raw mechanical position of the rotator in degrees.
 fn get_rotator_mechanicalposition(
     schemas::GetRotatorMechanicalpositionPath { device_number }: schemas::GetRotatorMechanicalpositionPath,
 
-    schemas::GetRotatorMechanicalpositionQuery { client_id, client_transaction_id }: schemas::GetRotatorMechanicalpositionQuery,
+    ASCOMRequest {
+        transaction,
+        request: schemas::GetRotatorMechanicalpositionQuery {},
+    }: ASCOMRequest<schemas::GetRotatorMechanicalpositionQuery>,
 ) -> Result<schemas::DoubleResponse> {
 }
 
@@ -9898,7 +7437,10 @@ Current instantaneous Rotator position, in degrees.
 fn get_rotator_position(
     schemas::GetRotatorPositionPath { device_number }: schemas::GetRotatorPositionPath,
 
-    schemas::GetRotatorPositionQuery { client_id, client_transaction_id }: schemas::GetRotatorPositionQuery,
+    ASCOMRequest {
+        transaction,
+        request: schemas::GetRotatorPositionQuery {},
+    }: ASCOMRequest<schemas::GetRotatorPositionQuery>,
 ) -> Result<schemas::DoubleResponse> {
 }
 
@@ -9911,7 +7453,10 @@ Returns the rotator’s Reverse state.
 fn get_rotator_reverse(
     schemas::GetRotatorReversePath { device_number }: schemas::GetRotatorReversePath,
 
-    schemas::GetRotatorReverseQuery { client_id, client_transaction_id }: schemas::GetRotatorReverseQuery,
+    ASCOMRequest {
+        transaction,
+        request: schemas::GetRotatorReverseQuery {},
+    }: ASCOMRequest<schemas::GetRotatorReverseQuery>,
 ) -> Result<schemas::BoolResponse> {
 }
 
@@ -9924,13 +7469,10 @@ Sets the rotator’s Reverse state.
 fn put_rotator_reverse(
     schemas::PutRotatorReversePath { device_number }: schemas::PutRotatorReversePath,
 
-    schemas::PutRotatorReverseRequest {
-        reverse,
-
-        client_id,
-
-        client_transaction_id,
-    }: schemas::PutRotatorReverseRequest,
+    ASCOMRequest {
+        transaction,
+        request: schemas::PutRotatorReverseRequest { reverse },
+    }: ASCOMRequest<schemas::PutRotatorReverseRequest>,
 ) -> Result<schemas::MethodResponse> {
 }
 
@@ -9943,7 +7485,10 @@ The minimum StepSize, in degrees.
 fn get_rotator_stepsize(
     schemas::GetRotatorStepsizePath { device_number }: schemas::GetRotatorStepsizePath,
 
-    schemas::GetRotatorStepsizeQuery { client_id, client_transaction_id }: schemas::GetRotatorStepsizeQuery,
+    ASCOMRequest {
+        transaction,
+        request: schemas::GetRotatorStepsizeQuery {},
+    }: ASCOMRequest<schemas::GetRotatorStepsizeQuery>,
 ) -> Result<schemas::DoubleResponse> {
 }
 
@@ -9956,7 +7501,10 @@ The destination position angle for Move() and MoveAbsolute().
 fn get_rotator_targetposition(
     schemas::GetRotatorTargetpositionPath { device_number }: schemas::GetRotatorTargetpositionPath,
 
-    schemas::GetRotatorTargetpositionQuery { client_id, client_transaction_id }: schemas::GetRotatorTargetpositionQuery,
+    ASCOMRequest {
+        transaction,
+        request: schemas::GetRotatorTargetpositionQuery {},
+    }: ASCOMRequest<schemas::GetRotatorTargetpositionQuery>,
 ) -> Result<schemas::DoubleResponse> {
 }
 
@@ -9969,7 +7517,10 @@ Immediately stop any Rotator motion due to a previous Move or MoveAbsolute metho
 fn put_rotator_halt(
     schemas::PutRotatorHaltPath { device_number }: schemas::PutRotatorHaltPath,
 
-    schemas::PutCameraAbortexposureRequest { client_id, client_transaction_id }: schemas::PutCameraAbortexposureRequest,
+    ASCOMRequest {
+        transaction,
+        request: schemas::PutCameraAbortexposureRequest {},
+    }: ASCOMRequest<schemas::PutCameraAbortexposureRequest>,
 ) -> Result<schemas::MethodResponse> {
 }
 
@@ -9982,13 +7533,10 @@ Causes the rotator to move Position degrees relative to the current Position val
 fn put_rotator_move(
     schemas::PutRotatorMovePath { device_number }: schemas::PutRotatorMovePath,
 
-    schemas::PutRotatorMoveRequest {
-        position,
-
-        client_id,
-
-        client_transaction_id,
-    }: schemas::PutRotatorMoveRequest,
+    ASCOMRequest {
+        transaction,
+        request: schemas::PutRotatorMoveRequest { position },
+    }: ASCOMRequest<schemas::PutRotatorMoveRequest>,
 ) -> Result<schemas::MethodResponse> {
 }
 
@@ -10001,13 +7549,10 @@ Causes the rotator to move the absolute position of Position degrees.
 fn put_rotator_moveabsolute(
     schemas::PutRotatorMoveabsolutePath { device_number }: schemas::PutRotatorMoveabsolutePath,
 
-    schemas::PutRotatorMoveabsoluteRequest {
-        position,
-
-        client_id,
-
-        client_transaction_id,
-    }: schemas::PutRotatorMoveabsoluteRequest,
+    ASCOMRequest {
+        transaction,
+        request: schemas::PutRotatorMoveabsoluteRequest { position },
+    }: ASCOMRequest<schemas::PutRotatorMoveabsoluteRequest>,
 ) -> Result<schemas::MethodResponse> {
 }
 
@@ -10020,13 +7565,10 @@ Causes the rotator to move the mechanical position of Position degrees.
 fn put_rotator_movemechanical(
     schemas::PutRotatorMovemechanicalPath { device_number }: schemas::PutRotatorMovemechanicalPath,
 
-    schemas::PutRotatorMovemechanicalRequest {
-        position,
-
-        client_id,
-
-        client_transaction_id,
-    }: schemas::PutRotatorMovemechanicalRequest,
+    ASCOMRequest {
+        transaction,
+        request: schemas::PutRotatorMovemechanicalRequest { position },
+    }: ASCOMRequest<schemas::PutRotatorMovemechanicalRequest>,
 ) -> Result<schemas::MethodResponse> {
 }
 
@@ -10039,13 +7581,10 @@ Causes the rotator to sync to the position of Position degrees.
 fn put_rotator_sync(
     schemas::PutRotatorSyncPath { device_number }: schemas::PutRotatorSyncPath,
 
-    schemas::PutRotatorSyncRequest {
-        position,
-
-        client_id,
-
-        client_transaction_id,
-    }: schemas::PutRotatorSyncRequest,
+    ASCOMRequest {
+        transaction,
+        request: schemas::PutRotatorSyncRequest { position },
+    }: ASCOMRequest<schemas::PutRotatorSyncRequest>,
 ) -> Result<schemas::MethodResponse> {
 }
 
@@ -10058,7 +7597,10 @@ Indicates whether the monitored state is safe for use. True if the state is safe
 fn get_safetymonitor_issafe(
     schemas::GetSafetymonitorIssafePath { device_number }: schemas::GetSafetymonitorIssafePath,
 
-    schemas::GetSafetymonitorIssafeQuery { client_id, client_transaction_id }: schemas::GetSafetymonitorIssafeQuery,
+    ASCOMRequest {
+        transaction,
+        request: schemas::GetSafetymonitorIssafeQuery {},
+    }: ASCOMRequest<schemas::GetSafetymonitorIssafeQuery>,
 ) -> Result<schemas::BoolResponse> {
 }
 
@@ -10071,7 +7613,10 @@ Returns the number of switch devices managed by this driver. Devices are numbere
 fn get_switch_maxswitch(
     schemas::GetSwitchMaxswitchPath { device_number }: schemas::GetSwitchMaxswitchPath,
 
-    schemas::GetSwitchMaxswitchQuery { client_id, client_transaction_id }: schemas::GetSwitchMaxswitchQuery,
+    ASCOMRequest {
+        transaction,
+        request: schemas::GetSwitchMaxswitchQuery {},
+    }: ASCOMRequest<schemas::GetSwitchMaxswitchQuery>,
 ) -> Result<schemas::IntResponse> {
 }
 
@@ -10084,7 +7629,10 @@ Reports if the specified switch device can be written to, default true. This is 
 fn get_switch_canwrite(
     schemas::GetSwitchCanwritePath { device_number }: schemas::GetSwitchCanwritePath,
 
-    schemas::GetSwitchCanwriteQuery { id, client_id, client_transaction_id }: schemas::GetSwitchCanwriteQuery,
+    ASCOMRequest {
+        transaction,
+        request: schemas::GetSwitchCanwriteQuery { id },
+    }: ASCOMRequest<schemas::GetSwitchCanwriteQuery>,
 ) -> Result<schemas::BoolResponse> {
 }
 
@@ -10097,7 +7645,10 @@ Return the state of switch device id as a boolean.  Devices are numbered from 0 
 fn get_switch_getswitch(
     schemas::GetSwitchGetswitchPath { device_number }: schemas::GetSwitchGetswitchPath,
 
-    schemas::GetSwitchGetswitchQuery { id, client_id, client_transaction_id }: schemas::GetSwitchGetswitchQuery,
+    ASCOMRequest {
+        transaction,
+        request: schemas::GetSwitchGetswitchQuery { id },
+    }: ASCOMRequest<schemas::GetSwitchGetswitchQuery>,
 ) -> Result<schemas::BoolResponse> {
 }
 
@@ -10110,7 +7661,10 @@ Gets the description of the specified switch device. This is to allow a fuller d
 fn get_switch_getswitchdescription(
     schemas::GetSwitchGetswitchdescriptionPath { device_number }: schemas::GetSwitchGetswitchdescriptionPath,
 
-    schemas::GetSwitchGetswitchdescriptionQuery { id, client_id, client_transaction_id }: schemas::GetSwitchGetswitchdescriptionQuery,
+    ASCOMRequest {
+        transaction,
+        request: schemas::GetSwitchGetswitchdescriptionQuery { id },
+    }: ASCOMRequest<schemas::GetSwitchGetswitchdescriptionQuery>,
 ) -> Result<schemas::StringResponse> {
 }
 
@@ -10123,7 +7677,10 @@ Gets the name of the specified switch device. Devices are numbered from 0 to Max
 fn get_switch_getswitchname(
     schemas::GetSwitchGetswitchnamePath { device_number }: schemas::GetSwitchGetswitchnamePath,
 
-    schemas::GetSwitchGetswitchnameQuery { id, client_id, client_transaction_id }: schemas::GetSwitchGetswitchnameQuery,
+    ASCOMRequest {
+        transaction,
+        request: schemas::GetSwitchGetswitchnameQuery { id },
+    }: ASCOMRequest<schemas::GetSwitchGetswitchnameQuery>,
 ) -> Result<schemas::StringResponse> {
 }
 
@@ -10136,7 +7693,10 @@ Gets the value of the specified switch device as a double. Devices are numbered 
 fn get_switch_getswitchvalue(
     schemas::GetSwitchGetswitchvaluePath { device_number }: schemas::GetSwitchGetswitchvaluePath,
 
-    schemas::GetSwitchGetswitchvalueQuery { id, client_id, client_transaction_id }: schemas::GetSwitchGetswitchvalueQuery,
+    ASCOMRequest {
+        transaction,
+        request: schemas::GetSwitchGetswitchvalueQuery { id },
+    }: ASCOMRequest<schemas::GetSwitchGetswitchvalueQuery>,
 ) -> Result<schemas::DoubleResponse> {
 }
 
@@ -10149,7 +7709,10 @@ Gets the minimum value of the specified switch device as a double. Devices are n
 fn get_switch_minswitchvalue(
     schemas::GetSwitchMinswitchvaluePath { device_number }: schemas::GetSwitchMinswitchvaluePath,
 
-    schemas::GetSwitchMinswitchvalueQuery { id, client_id, client_transaction_id }: schemas::GetSwitchMinswitchvalueQuery,
+    ASCOMRequest {
+        transaction,
+        request: schemas::GetSwitchMinswitchvalueQuery { id },
+    }: ASCOMRequest<schemas::GetSwitchMinswitchvalueQuery>,
 ) -> Result<schemas::DoubleResponse> {
 }
 
@@ -10162,7 +7725,10 @@ Gets the maximum value of the specified switch device as a double. Devices are n
 fn get_switch_maxswitchvalue(
     schemas::GetSwitchMaxswitchvaluePath { device_number }: schemas::GetSwitchMaxswitchvaluePath,
 
-    schemas::GetSwitchMaxswitchvalueQuery { id, client_id, client_transaction_id }: schemas::GetSwitchMaxswitchvalueQuery,
+    ASCOMRequest {
+        transaction,
+        request: schemas::GetSwitchMaxswitchvalueQuery { id },
+    }: ASCOMRequest<schemas::GetSwitchMaxswitchvalueQuery>,
 ) -> Result<schemas::DoubleResponse> {
 }
 
@@ -10175,15 +7741,10 @@ Sets a switch controller device to the specified state, true or false.
 fn put_switch_setswitch(
     schemas::PutSwitchSetswitchPath { device_number }: schemas::PutSwitchSetswitchPath,
 
-    schemas::PutSwitchSetswitchRequest {
-        id,
-
-        state,
-
-        client_id,
-
-        client_transaction_id,
-    }: schemas::PutSwitchSetswitchRequest,
+    ASCOMRequest {
+        transaction,
+        request: schemas::PutSwitchSetswitchRequest { id, state },
+    }: ASCOMRequest<schemas::PutSwitchSetswitchRequest>,
 ) -> Result<schemas::MethodResponse> {
 }
 
@@ -10196,15 +7757,10 @@ Sets a switch device name to the specified value.
 fn put_switch_setswitchname(
     schemas::PutSwitchSetswitchnamePath { device_number }: schemas::PutSwitchSetswitchnamePath,
 
-    schemas::PutSwitchSetswitchnameRequest {
-        id,
-
-        name,
-
-        client_id,
-
-        client_transaction_id,
-    }: schemas::PutSwitchSetswitchnameRequest,
+    ASCOMRequest {
+        transaction,
+        request: schemas::PutSwitchSetswitchnameRequest { id, name },
+    }: ASCOMRequest<schemas::PutSwitchSetswitchnameRequest>,
 ) -> Result<schemas::MethodResponse> {
 }
 
@@ -10217,15 +7773,10 @@ Sets a switch device value to the specified value.
 fn put_switch_setswitchvalue(
     schemas::PutSwitchSetswitchvaluePath { device_number }: schemas::PutSwitchSetswitchvaluePath,
 
-    schemas::PutSwitchSetswitchvalueRequest {
-        id,
-
-        value,
-
-        client_id,
-
-        client_transaction_id,
-    }: schemas::PutSwitchSetswitchvalueRequest,
+    ASCOMRequest {
+        transaction,
+        request: schemas::PutSwitchSetswitchvalueRequest { id, value },
+    }: ASCOMRequest<schemas::PutSwitchSetswitchvalueRequest>,
 ) -> Result<schemas::MethodResponse> {
 }
 
@@ -10238,7 +7789,10 @@ Returns the step size that this device supports (the difference between successi
 fn get_switch_switchstep(
     schemas::GetSwitchSwitchstepPath { device_number }: schemas::GetSwitchSwitchstepPath,
 
-    schemas::GetSwitchSwitchstepQuery { id, client_id, client_transaction_id }: schemas::GetSwitchSwitchstepQuery,
+    ASCOMRequest {
+        transaction,
+        request: schemas::GetSwitchSwitchstepQuery { id },
+    }: ASCOMRequest<schemas::GetSwitchSwitchstepQuery>,
 ) -> Result<schemas::DoubleResponse> {
 }
 
@@ -10251,7 +7805,10 @@ Returns the alignment mode of the mount (Alt/Az, Polar, German Polar).  The alig
 fn get_telescope_alignmentmode(
     schemas::GetTelescopeAlignmentmodePath { device_number }: schemas::GetTelescopeAlignmentmodePath,
 
-    schemas::GetTelescopeAlignmentmodeQuery { client_id, client_transaction_id }: schemas::GetTelescopeAlignmentmodeQuery,
+    ASCOMRequest {
+        transaction,
+        request: schemas::GetTelescopeAlignmentmodeQuery {},
+    }: ASCOMRequest<schemas::GetTelescopeAlignmentmodeQuery>,
 ) -> Result<schemas::IntResponse> {
 }
 
@@ -10264,7 +7821,10 @@ The altitude above the local horizon of the mount's current position (degrees, p
 fn get_telescope_altitude(
     schemas::GetTelescopeAltitudePath { device_number }: schemas::GetTelescopeAltitudePath,
 
-    schemas::GetTelescopeAltitudeQuery { client_id, client_transaction_id }: schemas::GetTelescopeAltitudeQuery,
+    ASCOMRequest {
+        transaction,
+        request: schemas::GetTelescopeAltitudeQuery {},
+    }: ASCOMRequest<schemas::GetTelescopeAltitudeQuery>,
 ) -> Result<schemas::DoubleResponse> {
 }
 
@@ -10277,7 +7837,10 @@ The area of the telescope's aperture, taking into account any obstructions (squa
 fn get_telescope_aperturearea(
     schemas::GetTelescopeApertureareaPath { device_number }: schemas::GetTelescopeApertureareaPath,
 
-    schemas::GetTelescopeApertureareaQuery { client_id, client_transaction_id }: schemas::GetTelescopeApertureareaQuery,
+    ASCOMRequest {
+        transaction,
+        request: schemas::GetTelescopeApertureareaQuery {},
+    }: ASCOMRequest<schemas::GetTelescopeApertureareaQuery>,
 ) -> Result<schemas::DoubleResponse> {
 }
 
@@ -10290,7 +7853,10 @@ The telescope's effective aperture diameter (meters)
 fn get_telescope_aperturediameter(
     schemas::GetTelescopeAperturediameterPath { device_number }: schemas::GetTelescopeAperturediameterPath,
 
-    schemas::GetTelescopeAperturediameterQuery { client_id, client_transaction_id }: schemas::GetTelescopeAperturediameterQuery,
+    ASCOMRequest {
+        transaction,
+        request: schemas::GetTelescopeAperturediameterQuery {},
+    }: ASCOMRequest<schemas::GetTelescopeAperturediameterQuery>,
 ) -> Result<schemas::DoubleResponse> {
 }
 
@@ -10303,7 +7869,10 @@ True if the mount is stopped in the Home position. Set only following a FindHome
 fn get_telescope_athome(
     schemas::GetTelescopeAthomePath { device_number }: schemas::GetTelescopeAthomePath,
 
-    schemas::GetTelescopeAthomeQuery { client_id, client_transaction_id }: schemas::GetTelescopeAthomeQuery,
+    ASCOMRequest {
+        transaction,
+        request: schemas::GetTelescopeAthomeQuery {},
+    }: ASCOMRequest<schemas::GetTelescopeAthomeQuery>,
 ) -> Result<schemas::BoolResponse> {
 }
 
@@ -10316,7 +7885,10 @@ True if the telescope has been put into the parked state by the seee Park()  met
 fn get_telescope_atpark(
     schemas::GetTelescopeAtparkPath { device_number }: schemas::GetTelescopeAtparkPath,
 
-    schemas::GetTelescopeAtparkQuery { client_id, client_transaction_id }: schemas::GetTelescopeAtparkQuery,
+    ASCOMRequest {
+        transaction,
+        request: schemas::GetTelescopeAtparkQuery {},
+    }: ASCOMRequest<schemas::GetTelescopeAtparkQuery>,
 ) -> Result<schemas::BoolResponse> {
 }
 
@@ -10329,7 +7901,10 @@ The azimuth at the local horizon of the mount's current position (degrees, North
 fn get_telescope_azimuth(
     schemas::GetTelescopeAzimuthPath { device_number }: schemas::GetTelescopeAzimuthPath,
 
-    schemas::GetTelescopeAzimuthQuery { client_id, client_transaction_id }: schemas::GetTelescopeAzimuthQuery,
+    ASCOMRequest {
+        transaction,
+        request: schemas::GetTelescopeAzimuthQuery {},
+    }: ASCOMRequest<schemas::GetTelescopeAzimuthQuery>,
 ) -> Result<schemas::DoubleResponse> {
 }
 
@@ -10342,7 +7917,10 @@ True if this telescope is capable of programmed finding its home position (FindH
 fn get_telescope_canfindhome(
     schemas::GetTelescopeCanfindhomePath { device_number }: schemas::GetTelescopeCanfindhomePath,
 
-    schemas::GetTelescopeCanfindhomeQuery { client_id, client_transaction_id }: schemas::GetTelescopeCanfindhomeQuery,
+    ASCOMRequest {
+        transaction,
+        request: schemas::GetTelescopeCanfindhomeQuery {},
+    }: ASCOMRequest<schemas::GetTelescopeCanfindhomeQuery>,
 ) -> Result<schemas::BoolResponse> {
 }
 
@@ -10355,7 +7933,10 @@ True if this telescope is capable of programmed parking (Park() method)
 fn get_telescope_canpark(
     schemas::GetTelescopeCanparkPath { device_number }: schemas::GetTelescopeCanparkPath,
 
-    schemas::GetTelescopeCanparkQuery { client_id, client_transaction_id }: schemas::GetTelescopeCanparkQuery,
+    ASCOMRequest {
+        transaction,
+        request: schemas::GetTelescopeCanparkQuery {},
+    }: ASCOMRequest<schemas::GetTelescopeCanparkQuery>,
 ) -> Result<schemas::BoolResponse> {
 }
 
@@ -10368,7 +7949,10 @@ True if this telescope is capable of software-pulsed guiding (via the PulseGuide
 fn get_telescope_canpulseguide(
     schemas::GetTelescopeCanpulseguidePath { device_number }: schemas::GetTelescopeCanpulseguidePath,
 
-    schemas::GetTelescopeCanpulseguideQuery { client_id, client_transaction_id }: schemas::GetTelescopeCanpulseguideQuery,
+    ASCOMRequest {
+        transaction,
+        request: schemas::GetTelescopeCanpulseguideQuery {},
+    }: ASCOMRequest<schemas::GetTelescopeCanpulseguideQuery>,
 ) -> Result<schemas::BoolResponse> {
 }
 
@@ -10381,7 +7965,10 @@ True if the DeclinationRate property can be changed to provide offset tracking i
 fn get_telescope_cansetdeclinationrate(
     schemas::GetTelescopeCansetdeclinationratePath { device_number }: schemas::GetTelescopeCansetdeclinationratePath,
 
-    schemas::GetTelescopeCansetdeclinationrateQuery { client_id, client_transaction_id }: schemas::GetTelescopeCansetdeclinationrateQuery,
+    ASCOMRequest {
+        transaction,
+        request: schemas::GetTelescopeCansetdeclinationrateQuery {},
+    }: ASCOMRequest<schemas::GetTelescopeCansetdeclinationrateQuery>,
 ) -> Result<schemas::BoolResponse> {
 }
 
@@ -10394,7 +7981,10 @@ True if the guide rate properties used for PulseGuide(GuideDirections, Int32) ca
 fn get_telescope_cansetguiderates(
     schemas::GetTelescopeCansetguideratesPath { device_number }: schemas::GetTelescopeCansetguideratesPath,
 
-    schemas::GetTelescopeCansetguideratesQuery { client_id, client_transaction_id }: schemas::GetTelescopeCansetguideratesQuery,
+    ASCOMRequest {
+        transaction,
+        request: schemas::GetTelescopeCansetguideratesQuery {},
+    }: ASCOMRequest<schemas::GetTelescopeCansetguideratesQuery>,
 ) -> Result<schemas::BoolResponse> {
 }
 
@@ -10407,7 +7997,10 @@ True if this telescope is capable of programmed setting of its park position (Se
 fn get_telescope_cansetpark(
     schemas::GetTelescopeCansetparkPath { device_number }: schemas::GetTelescopeCansetparkPath,
 
-    schemas::GetTelescopeCansetparkQuery { client_id, client_transaction_id }: schemas::GetTelescopeCansetparkQuery,
+    ASCOMRequest {
+        transaction,
+        request: schemas::GetTelescopeCansetparkQuery {},
+    }: ASCOMRequest<schemas::GetTelescopeCansetparkQuery>,
 ) -> Result<schemas::BoolResponse> {
 }
 
@@ -10420,7 +8013,10 @@ True if the SideOfPier property can be set, meaning that the mount can be forced
 fn get_telescope_cansetpierside(
     schemas::GetTelescopeCansetpiersidePath { device_number }: schemas::GetTelescopeCansetpiersidePath,
 
-    schemas::GetTelescopeCansetpiersideQuery { client_id, client_transaction_id }: schemas::GetTelescopeCansetpiersideQuery,
+    ASCOMRequest {
+        transaction,
+        request: schemas::GetTelescopeCansetpiersideQuery {},
+    }: ASCOMRequest<schemas::GetTelescopeCansetpiersideQuery>,
 ) -> Result<schemas::BoolResponse> {
 }
 
@@ -10433,7 +8029,10 @@ True if the RightAscensionRate property can be changed to provide offset trackin
 fn get_telescope_cansetrightascensionrate(
     schemas::GetTelescopeCansetrightascensionratePath { device_number }: schemas::GetTelescopeCansetrightascensionratePath,
 
-    schemas::GetTelescopeCansetrightascensionrateQuery { client_id, client_transaction_id }: schemas::GetTelescopeCansetrightascensionrateQuery,
+    ASCOMRequest {
+        transaction,
+        request: schemas::GetTelescopeCansetrightascensionrateQuery {},
+    }: ASCOMRequest<schemas::GetTelescopeCansetrightascensionrateQuery>,
 ) -> Result<schemas::BoolResponse> {
 }
 
@@ -10446,7 +8045,10 @@ True if the Tracking property can be changed, turning telescope sidereal trackin
 fn get_telescope_cansettracking(
     schemas::GetTelescopeCansettrackingPath { device_number }: schemas::GetTelescopeCansettrackingPath,
 
-    schemas::GetTelescopeCansettrackingQuery { client_id, client_transaction_id }: schemas::GetTelescopeCansettrackingQuery,
+    ASCOMRequest {
+        transaction,
+        request: schemas::GetTelescopeCansettrackingQuery {},
+    }: ASCOMRequest<schemas::GetTelescopeCansettrackingQuery>,
 ) -> Result<schemas::BoolResponse> {
 }
 
@@ -10459,7 +8061,10 @@ True if this telescope is capable of programmed slewing (synchronous or asynchro
 fn get_telescope_canslew(
     schemas::GetTelescopeCanslewPath { device_number }: schemas::GetTelescopeCanslewPath,
 
-    schemas::GetTelescopeCanslewQuery { client_id, client_transaction_id }: schemas::GetTelescopeCanslewQuery,
+    ASCOMRequest {
+        transaction,
+        request: schemas::GetTelescopeCanslewQuery {},
+    }: ASCOMRequest<schemas::GetTelescopeCanslewQuery>,
 ) -> Result<schemas::BoolResponse> {
 }
 
@@ -10472,7 +8077,10 @@ True if this telescope is capable of programmed slewing (synchronous or asynchro
 fn get_telescope_canslewaltaz(
     schemas::GetTelescopeCanslewaltazPath { device_number }: schemas::GetTelescopeCanslewaltazPath,
 
-    schemas::GetTelescopeCanslewaltazQuery { client_id, client_transaction_id }: schemas::GetTelescopeCanslewaltazQuery,
+    ASCOMRequest {
+        transaction,
+        request: schemas::GetTelescopeCanslewaltazQuery {},
+    }: ASCOMRequest<schemas::GetTelescopeCanslewaltazQuery>,
 ) -> Result<schemas::BoolResponse> {
 }
 
@@ -10485,7 +8093,10 @@ True if this telescope is capable of programmed asynchronous slewing to local ho
 fn get_telescope_canslewaltazasync(
     schemas::GetTelescopeCanslewaltazasyncPath { device_number }: schemas::GetTelescopeCanslewaltazasyncPath,
 
-    schemas::GetTelescopeCanslewaltazasyncQuery { client_id, client_transaction_id }: schemas::GetTelescopeCanslewaltazasyncQuery,
+    ASCOMRequest {
+        transaction,
+        request: schemas::GetTelescopeCanslewaltazasyncQuery {},
+    }: ASCOMRequest<schemas::GetTelescopeCanslewaltazasyncQuery>,
 ) -> Result<schemas::BoolResponse> {
 }
 
@@ -10498,7 +8109,10 @@ True if this telescope is capable of programmed asynchronous slewing to equatori
 fn get_telescope_canslewasync(
     schemas::GetTelescopeCanslewasyncPath { device_number }: schemas::GetTelescopeCanslewasyncPath,
 
-    schemas::GetTelescopeCanslewasyncQuery { client_id, client_transaction_id }: schemas::GetTelescopeCanslewasyncQuery,
+    ASCOMRequest {
+        transaction,
+        request: schemas::GetTelescopeCanslewasyncQuery {},
+    }: ASCOMRequest<schemas::GetTelescopeCanslewasyncQuery>,
 ) -> Result<schemas::BoolResponse> {
 }
 
@@ -10511,7 +8125,10 @@ True if this telescope is capable of programmed synching to equatorial coordinat
 fn get_telescope_cansync(
     schemas::GetTelescopeCansyncPath { device_number }: schemas::GetTelescopeCansyncPath,
 
-    schemas::GetTelescopeCansyncQuery { client_id, client_transaction_id }: schemas::GetTelescopeCansyncQuery,
+    ASCOMRequest {
+        transaction,
+        request: schemas::GetTelescopeCansyncQuery {},
+    }: ASCOMRequest<schemas::GetTelescopeCansyncQuery>,
 ) -> Result<schemas::BoolResponse> {
 }
 
@@ -10524,7 +8141,10 @@ True if this telescope is capable of programmed synching to local horizontal coo
 fn get_telescope_cansyncaltaz(
     schemas::GetTelescopeCansyncaltazPath { device_number }: schemas::GetTelescopeCansyncaltazPath,
 
-    schemas::GetTelescopeCansyncaltazQuery { client_id, client_transaction_id }: schemas::GetTelescopeCansyncaltazQuery,
+    ASCOMRequest {
+        transaction,
+        request: schemas::GetTelescopeCansyncaltazQuery {},
+    }: ASCOMRequest<schemas::GetTelescopeCansyncaltazQuery>,
 ) -> Result<schemas::BoolResponse> {
 }
 
@@ -10537,7 +8157,10 @@ True if this telescope is capable of programmed unparking (UnPark() method)
 fn get_telescope_canunpark(
     schemas::GetTelescopeCanunparkPath { device_number }: schemas::GetTelescopeCanunparkPath,
 
-    schemas::GetTelescopeCanunparkQuery { client_id, client_transaction_id }: schemas::GetTelescopeCanunparkQuery,
+    ASCOMRequest {
+        transaction,
+        request: schemas::GetTelescopeCanunparkQuery {},
+    }: ASCOMRequest<schemas::GetTelescopeCanunparkQuery>,
 ) -> Result<schemas::BoolResponse> {
 }
 
@@ -10550,7 +8173,10 @@ The declination (degrees) of the mount's current equatorial coordinates, in the 
 fn get_telescope_declination(
     schemas::GetTelescopeDeclinationPath { device_number }: schemas::GetTelescopeDeclinationPath,
 
-    schemas::GetTelescopeDeclinationQuery { client_id, client_transaction_id }: schemas::GetTelescopeDeclinationQuery,
+    ASCOMRequest {
+        transaction,
+        request: schemas::GetTelescopeDeclinationQuery {},
+    }: ASCOMRequest<schemas::GetTelescopeDeclinationQuery>,
 ) -> Result<schemas::DoubleResponse> {
 }
 
@@ -10563,7 +8189,10 @@ The declination tracking rate (arcseconds per second, default = 0.0)
 fn get_telescope_declinationrate(
     schemas::GetTelescopeDeclinationratePath { device_number }: schemas::GetTelescopeDeclinationratePath,
 
-    schemas::GetTelescopeDeclinationrateQuery { client_id, client_transaction_id }: schemas::GetTelescopeDeclinationrateQuery,
+    ASCOMRequest {
+        transaction,
+        request: schemas::GetTelescopeDeclinationrateQuery {},
+    }: ASCOMRequest<schemas::GetTelescopeDeclinationrateQuery>,
 ) -> Result<schemas::DoubleResponse> {
 }
 
@@ -10576,13 +8205,10 @@ Sets the declination tracking rate (arcseconds per second)
 fn put_telescope_declinationrate(
     schemas::PutTelescopeDeclinationratePath { device_number }: schemas::PutTelescopeDeclinationratePath,
 
-    schemas::PutTelescopeDeclinationrateRequest {
-        declination_rate,
-
-        client_id,
-
-        client_transaction_id,
-    }: schemas::PutTelescopeDeclinationrateRequest,
+    ASCOMRequest {
+        transaction,
+        request: schemas::PutTelescopeDeclinationrateRequest { declination_rate },
+    }: ASCOMRequest<schemas::PutTelescopeDeclinationrateRequest>,
 ) -> Result<schemas::MethodResponse> {
 }
 
@@ -10595,7 +8221,10 @@ True if the telescope or driver applies atmospheric refraction to coordinates.
 fn get_telescope_doesrefraction(
     schemas::GetTelescopeDoesrefractionPath { device_number }: schemas::GetTelescopeDoesrefractionPath,
 
-    schemas::GetTelescopeDoesrefractionQuery { client_id, client_transaction_id }: schemas::GetTelescopeDoesrefractionQuery,
+    ASCOMRequest {
+        transaction,
+        request: schemas::GetTelescopeDoesrefractionQuery {},
+    }: ASCOMRequest<schemas::GetTelescopeDoesrefractionQuery>,
 ) -> Result<schemas::BoolResponse> {
 }
 
@@ -10608,13 +8237,10 @@ Causes the rotator to move Position degrees relative to the current Position val
 fn put_telescope_doesrefraction(
     schemas::PutTelescopeDoesrefractionPath { device_number }: schemas::PutTelescopeDoesrefractionPath,
 
-    schemas::PutTelescopeDoesrefractionRequest {
-        does_refraction,
-
-        client_id,
-
-        client_transaction_id,
-    }: schemas::PutTelescopeDoesrefractionRequest,
+    ASCOMRequest {
+        transaction,
+        request: schemas::PutTelescopeDoesrefractionRequest { does_refraction },
+    }: ASCOMRequest<schemas::PutTelescopeDoesrefractionRequest>,
 ) -> Result<schemas::MethodResponse> {
 }
 
@@ -10627,7 +8253,10 @@ Returns the current equatorial coordinate system used by this telescope (e.g. To
 fn get_telescope_equatorialsystem(
     schemas::GetTelescopeEquatorialsystemPath { device_number }: schemas::GetTelescopeEquatorialsystemPath,
 
-    schemas::GetTelescopeEquatorialsystemQuery { client_id, client_transaction_id }: schemas::GetTelescopeEquatorialsystemQuery,
+    ASCOMRequest {
+        transaction,
+        request: schemas::GetTelescopeEquatorialsystemQuery {},
+    }: ASCOMRequest<schemas::GetTelescopeEquatorialsystemQuery>,
 ) -> Result<schemas::IntResponse> {
 }
 
@@ -10640,7 +8269,10 @@ The telescope's focal length in meters
 fn get_telescope_focallength(
     schemas::GetTelescopeFocallengthPath { device_number }: schemas::GetTelescopeFocallengthPath,
 
-    schemas::GetTelescopeFocallengthQuery { client_id, client_transaction_id }: schemas::GetTelescopeFocallengthQuery,
+    ASCOMRequest {
+        transaction,
+        request: schemas::GetTelescopeFocallengthQuery {},
+    }: ASCOMRequest<schemas::GetTelescopeFocallengthQuery>,
 ) -> Result<schemas::DoubleResponse> {
 }
 
@@ -10653,7 +8285,10 @@ The current Declination movement rate offset for telescope guiding (degrees/sec)
 fn get_telescope_guideratedeclination(
     schemas::GetTelescopeGuideratedeclinationPath { device_number }: schemas::GetTelescopeGuideratedeclinationPath,
 
-    schemas::GetTelescopeGuideratedeclinationQuery { client_id, client_transaction_id }: schemas::GetTelescopeGuideratedeclinationQuery,
+    ASCOMRequest {
+        transaction,
+        request: schemas::GetTelescopeGuideratedeclinationQuery {},
+    }: ASCOMRequest<schemas::GetTelescopeGuideratedeclinationQuery>,
 ) -> Result<schemas::DoubleResponse> {
 }
 
@@ -10666,13 +8301,10 @@ Sets the current Declination movement rate offset for telescope guiding (degrees
 fn put_telescope_guideratedeclination(
     schemas::PutTelescopeGuideratedeclinationPath { device_number }: schemas::PutTelescopeGuideratedeclinationPath,
 
-    schemas::PutTelescopeGuideratedeclinationRequest {
-        guide_rate_declination,
-
-        client_id,
-
-        client_transaction_id,
-    }: schemas::PutTelescopeGuideratedeclinationRequest,
+    ASCOMRequest {
+        transaction,
+        request: schemas::PutTelescopeGuideratedeclinationRequest { guide_rate_declination },
+    }: ASCOMRequest<schemas::PutTelescopeGuideratedeclinationRequest>,
 ) -> Result<schemas::MethodResponse> {
 }
 
@@ -10685,7 +8317,10 @@ The current RightAscension movement rate offset for telescope guiding (degrees/s
 fn get_telescope_guideraterightascension(
     schemas::GetTelescopeGuideraterightascensionPath { device_number }: schemas::GetTelescopeGuideraterightascensionPath,
 
-    schemas::GetTelescopeGuideraterightascensionQuery { client_id, client_transaction_id }: schemas::GetTelescopeGuideraterightascensionQuery,
+    ASCOMRequest {
+        transaction,
+        request: schemas::GetTelescopeGuideraterightascensionQuery {},
+    }: ASCOMRequest<schemas::GetTelescopeGuideraterightascensionQuery>,
 ) -> Result<schemas::DoubleResponse> {
 }
 
@@ -10698,13 +8333,10 @@ Sets the current RightAscension movement rate offset for telescope guiding (degr
 fn put_telescope_guideraterightascension(
     schemas::PutTelescopeGuideraterightascensionPath { device_number }: schemas::PutTelescopeGuideraterightascensionPath,
 
-    schemas::PutTelescopeGuideraterightascensionRequest {
-        guide_rate_right_ascension,
-
-        client_id,
-
-        client_transaction_id,
-    }: schemas::PutTelescopeGuideraterightascensionRequest,
+    ASCOMRequest {
+        transaction,
+        request: schemas::PutTelescopeGuideraterightascensionRequest { guide_rate_right_ascension },
+    }: ASCOMRequest<schemas::PutTelescopeGuideraterightascensionRequest>,
 ) -> Result<schemas::MethodResponse> {
 }
 
@@ -10717,7 +8349,10 @@ True if a PulseGuide(GuideDirections, Int32) command is in progress, False other
 fn get_telescope_ispulseguiding(
     schemas::GetTelescopeIspulseguidingPath { device_number }: schemas::GetTelescopeIspulseguidingPath,
 
-    schemas::GetTelescopeIspulseguidingQuery { client_id, client_transaction_id }: schemas::GetTelescopeIspulseguidingQuery,
+    ASCOMRequest {
+        transaction,
+        request: schemas::GetTelescopeIspulseguidingQuery {},
+    }: ASCOMRequest<schemas::GetTelescopeIspulseguidingQuery>,
 ) -> Result<schemas::BoolResponse> {
 }
 
@@ -10730,7 +8365,10 @@ The right ascension (hours) of the mount's current equatorial coordinates, in th
 fn get_telescope_rightascension(
     schemas::GetTelescopeRightascensionPath { device_number }: schemas::GetTelescopeRightascensionPath,
 
-    schemas::GetTelescopeRightascensionQuery { client_id, client_transaction_id }: schemas::GetTelescopeRightascensionQuery,
+    ASCOMRequest {
+        transaction,
+        request: schemas::GetTelescopeRightascensionQuery {},
+    }: ASCOMRequest<schemas::GetTelescopeRightascensionQuery>,
 ) -> Result<schemas::DoubleResponse> {
 }
 
@@ -10743,7 +8381,10 @@ The right ascension tracking rate (arcseconds per second, default = 0.0)
 fn get_telescope_rightascensionrate(
     schemas::GetTelescopeRightascensionratePath { device_number }: schemas::GetTelescopeRightascensionratePath,
 
-    schemas::GetTelescopeRightascensionrateQuery { client_id, client_transaction_id }: schemas::GetTelescopeRightascensionrateQuery,
+    ASCOMRequest {
+        transaction,
+        request: schemas::GetTelescopeRightascensionrateQuery {},
+    }: ASCOMRequest<schemas::GetTelescopeRightascensionrateQuery>,
 ) -> Result<schemas::DoubleResponse> {
 }
 
@@ -10756,13 +8397,10 @@ Sets the right ascension tracking rate (arcseconds per second)
 fn put_telescope_rightascensionrate(
     schemas::PutTelescopeRightascensionratePath { device_number }: schemas::PutTelescopeRightascensionratePath,
 
-    schemas::PutTelescopeRightascensionrateRequest {
-        right_ascension_rate,
-
-        client_id,
-
-        client_transaction_id,
-    }: schemas::PutTelescopeRightascensionrateRequest,
+    ASCOMRequest {
+        transaction,
+        request: schemas::PutTelescopeRightascensionrateRequest { right_ascension_rate },
+    }: ASCOMRequest<schemas::PutTelescopeRightascensionrateRequest>,
 ) -> Result<schemas::MethodResponse> {
 }
 
@@ -10775,7 +8413,10 @@ Indicates the pointing state of the mount. 0 = pierEast, 1 = pierWest, -1= pierU
 fn get_telescope_sideofpier(
     schemas::GetTelescopeSideofpierPath { device_number }: schemas::GetTelescopeSideofpierPath,
 
-    schemas::GetTelescopeSideofpierQuery { client_id, client_transaction_id }: schemas::GetTelescopeSideofpierQuery,
+    ASCOMRequest {
+        transaction,
+        request: schemas::GetTelescopeSideofpierQuery {},
+    }: ASCOMRequest<schemas::GetTelescopeSideofpierQuery>,
 ) -> Result<schemas::IntResponse> {
 }
 
@@ -10788,13 +8429,10 @@ Sets the pointing state of the mount. 0 = pierEast, 1 = pierWest
 fn put_telescope_sideofpier(
     schemas::PutTelescopeSideofpierPath { device_number }: schemas::PutTelescopeSideofpierPath,
 
-    schemas::PutTelescopeSideofpierRequest {
-        side_of_pier,
-
-        client_id,
-
-        client_transaction_id,
-    }: schemas::PutTelescopeSideofpierRequest,
+    ASCOMRequest {
+        transaction,
+        request: schemas::PutTelescopeSideofpierRequest { side_of_pier },
+    }: ASCOMRequest<schemas::PutTelescopeSideofpierRequest>,
 ) -> Result<schemas::MethodResponse> {
 }
 
@@ -10807,7 +8445,10 @@ The local apparent sidereal time from the telescope's internal clock (hours, sid
 fn get_telescope_siderealtime(
     schemas::GetTelescopeSiderealtimePath { device_number }: schemas::GetTelescopeSiderealtimePath,
 
-    schemas::GetTelescopeSiderealtimeQuery { client_id, client_transaction_id }: schemas::GetTelescopeSiderealtimeQuery,
+    ASCOMRequest {
+        transaction,
+        request: schemas::GetTelescopeSiderealtimeQuery {},
+    }: ASCOMRequest<schemas::GetTelescopeSiderealtimeQuery>,
 ) -> Result<schemas::DoubleResponse> {
 }
 
@@ -10820,7 +8461,10 @@ The elevation above mean sea level (meters) of the site at which the telescope i
 fn get_telescope_siteelevation(
     schemas::GetTelescopeSiteelevationPath { device_number }: schemas::GetTelescopeSiteelevationPath,
 
-    schemas::GetTelescopeSiteelevationQuery { client_id, client_transaction_id }: schemas::GetTelescopeSiteelevationQuery,
+    ASCOMRequest {
+        transaction,
+        request: schemas::GetTelescopeSiteelevationQuery {},
+    }: ASCOMRequest<schemas::GetTelescopeSiteelevationQuery>,
 ) -> Result<schemas::DoubleResponse> {
 }
 
@@ -10833,13 +8477,10 @@ Sets the elevation above mean sea level (metres) of the site at which the telesc
 fn put_telescope_siteelevation(
     schemas::PutTelescopeSiteelevationPath { device_number }: schemas::PutTelescopeSiteelevationPath,
 
-    schemas::PutTelescopeSiteelevationRequest {
-        site_elevation,
-
-        client_id,
-
-        client_transaction_id,
-    }: schemas::PutTelescopeSiteelevationRequest,
+    ASCOMRequest {
+        transaction,
+        request: schemas::PutTelescopeSiteelevationRequest { site_elevation },
+    }: ASCOMRequest<schemas::PutTelescopeSiteelevationRequest>,
 ) -> Result<schemas::MethodResponse> {
 }
 
@@ -10852,7 +8493,10 @@ The geodetic(map) latitude (degrees, positive North, WGS84) of the site at which
 fn get_telescope_sitelatitude(
     schemas::GetTelescopeSitelatitudePath { device_number }: schemas::GetTelescopeSitelatitudePath,
 
-    schemas::GetTelescopeSitelatitudeQuery { client_id, client_transaction_id }: schemas::GetTelescopeSitelatitudeQuery,
+    ASCOMRequest {
+        transaction,
+        request: schemas::GetTelescopeSitelatitudeQuery {},
+    }: ASCOMRequest<schemas::GetTelescopeSitelatitudeQuery>,
 ) -> Result<schemas::DoubleResponse> {
 }
 
@@ -10865,13 +8509,10 @@ Sets the observing site's latitude (degrees).
 fn put_telescope_sitelatitude(
     schemas::PutTelescopeSitelatitudePath { device_number }: schemas::PutTelescopeSitelatitudePath,
 
-    schemas::PutTelescopeSitelatitudeRequest {
-        site_latitude,
-
-        client_id,
-
-        client_transaction_id,
-    }: schemas::PutTelescopeSitelatitudeRequest,
+    ASCOMRequest {
+        transaction,
+        request: schemas::PutTelescopeSitelatitudeRequest { site_latitude },
+    }: ASCOMRequest<schemas::PutTelescopeSitelatitudeRequest>,
 ) -> Result<schemas::MethodResponse> {
 }
 
@@ -10884,7 +8525,10 @@ The longitude (degrees, positive East, WGS84) of the site at which the telescope
 fn get_telescope_sitelongitude(
     schemas::GetTelescopeSitelongitudePath { device_number }: schemas::GetTelescopeSitelongitudePath,
 
-    schemas::GetTelescopeSitelongitudeQuery { client_id, client_transaction_id }: schemas::GetTelescopeSitelongitudeQuery,
+    ASCOMRequest {
+        transaction,
+        request: schemas::GetTelescopeSitelongitudeQuery {},
+    }: ASCOMRequest<schemas::GetTelescopeSitelongitudeQuery>,
 ) -> Result<schemas::DoubleResponse> {
 }
 
@@ -10897,13 +8541,10 @@ Sets the observing site's longitude (degrees, positive East, WGS84).
 fn put_telescope_sitelongitude(
     schemas::PutTelescopeSitelongitudePath { device_number }: schemas::PutTelescopeSitelongitudePath,
 
-    schemas::PutTelescopeSitelongitudeRequest {
-        site_longitude,
-
-        client_id,
-
-        client_transaction_id,
-    }: schemas::PutTelescopeSitelongitudeRequest,
+    ASCOMRequest {
+        transaction,
+        request: schemas::PutTelescopeSitelongitudeRequest { site_longitude },
+    }: ASCOMRequest<schemas::PutTelescopeSitelongitudeRequest>,
 ) -> Result<schemas::MethodResponse> {
 }
 
@@ -10916,7 +8557,10 @@ True if telescope is currently moving in response to one of the Slew methods or 
 fn get_telescope_slewing(
     schemas::GetTelescopeSlewingPath { device_number }: schemas::GetTelescopeSlewingPath,
 
-    schemas::GetTelescopeSlewingQuery { client_id, client_transaction_id }: schemas::GetTelescopeSlewingQuery,
+    ASCOMRequest {
+        transaction,
+        request: schemas::GetTelescopeSlewingQuery {},
+    }: ASCOMRequest<schemas::GetTelescopeSlewingQuery>,
 ) -> Result<schemas::BoolResponse> {
 }
 
@@ -10929,7 +8573,10 @@ Returns the post-slew settling time (sec.).
 fn get_telescope_slewsettletime(
     schemas::GetTelescopeSlewsettletimePath { device_number }: schemas::GetTelescopeSlewsettletimePath,
 
-    schemas::GetTelescopeSlewsettletimeQuery { client_id, client_transaction_id }: schemas::GetTelescopeSlewsettletimeQuery,
+    ASCOMRequest {
+        transaction,
+        request: schemas::GetTelescopeSlewsettletimeQuery {},
+    }: ASCOMRequest<schemas::GetTelescopeSlewsettletimeQuery>,
 ) -> Result<schemas::IntResponse> {
 }
 
@@ -10942,13 +8589,10 @@ Sets the  post-slew settling time (integer sec.).
 fn put_telescope_slewsettletime(
     schemas::PutTelescopeSlewsettletimePath { device_number }: schemas::PutTelescopeSlewsettletimePath,
 
-    schemas::PutTelescopeSlewsettletimeRequest {
-        slew_settle_time,
-
-        client_id,
-
-        client_transaction_id,
-    }: schemas::PutTelescopeSlewsettletimeRequest,
+    ASCOMRequest {
+        transaction,
+        request: schemas::PutTelescopeSlewsettletimeRequest { slew_settle_time },
+    }: ASCOMRequest<schemas::PutTelescopeSlewsettletimeRequest>,
 ) -> Result<schemas::MethodResponse> {
 }
 
@@ -10961,7 +8605,10 @@ The declination (degrees, positive North) for the target of an equatorial slew o
 fn get_telescope_targetdeclination(
     schemas::GetTelescopeTargetdeclinationPath { device_number }: schemas::GetTelescopeTargetdeclinationPath,
 
-    schemas::GetTelescopeTargetdeclinationQuery { client_id, client_transaction_id }: schemas::GetTelescopeTargetdeclinationQuery,
+    ASCOMRequest {
+        transaction,
+        request: schemas::GetTelescopeTargetdeclinationQuery {},
+    }: ASCOMRequest<schemas::GetTelescopeTargetdeclinationQuery>,
 ) -> Result<schemas::DoubleResponse> {
 }
 
@@ -10974,13 +8621,10 @@ Sets the declination (degrees, positive North) for the target of an equatorial s
 fn put_telescope_targetdeclination(
     schemas::PutTelescopeTargetdeclinationPath { device_number }: schemas::PutTelescopeTargetdeclinationPath,
 
-    schemas::PutTelescopeTargetdeclinationRequest {
-        target_declination,
-
-        client_id,
-
-        client_transaction_id,
-    }: schemas::PutTelescopeTargetdeclinationRequest,
+    ASCOMRequest {
+        transaction,
+        request: schemas::PutTelescopeTargetdeclinationRequest { target_declination },
+    }: ASCOMRequest<schemas::PutTelescopeTargetdeclinationRequest>,
 ) -> Result<schemas::MethodResponse> {
 }
 
@@ -10993,7 +8637,10 @@ The right ascension (hours) for the target of an equatorial slew or sync operati
 fn get_telescope_targetrightascension(
     schemas::GetTelescopeTargetrightascensionPath { device_number }: schemas::GetTelescopeTargetrightascensionPath,
 
-    schemas::GetTelescopeTargetrightascensionQuery { client_id, client_transaction_id }: schemas::GetTelescopeTargetrightascensionQuery,
+    ASCOMRequest {
+        transaction,
+        request: schemas::GetTelescopeTargetrightascensionQuery {},
+    }: ASCOMRequest<schemas::GetTelescopeTargetrightascensionQuery>,
 ) -> Result<schemas::DoubleResponse> {
 }
 
@@ -11006,13 +8653,10 @@ Sets the right ascension (hours) for the target of an equatorial slew or sync op
 fn put_telescope_targetrightascension(
     schemas::PutTelescopeTargetrightascensionPath { device_number }: schemas::PutTelescopeTargetrightascensionPath,
 
-    schemas::PutTelescopeTargetrightascensionRequest {
-        target_right_ascension,
-
-        client_id,
-
-        client_transaction_id,
-    }: schemas::PutTelescopeTargetrightascensionRequest,
+    ASCOMRequest {
+        transaction,
+        request: schemas::PutTelescopeTargetrightascensionRequest { target_right_ascension },
+    }: ASCOMRequest<schemas::PutTelescopeTargetrightascensionRequest>,
 ) -> Result<schemas::MethodResponse> {
 }
 
@@ -11025,7 +8669,10 @@ Returns the state of the telescope's sidereal tracking drive.
 fn get_telescope_tracking(
     schemas::GetTelescopeTrackingPath { device_number }: schemas::GetTelescopeTrackingPath,
 
-    schemas::GetTelescopeTrackingQuery { client_id, client_transaction_id }: schemas::GetTelescopeTrackingQuery,
+    ASCOMRequest {
+        transaction,
+        request: schemas::GetTelescopeTrackingQuery {},
+    }: ASCOMRequest<schemas::GetTelescopeTrackingQuery>,
 ) -> Result<schemas::BoolResponse> {
 }
 
@@ -11038,13 +8685,10 @@ Sets the state of the telescope's sidereal tracking drive.
 fn put_telescope_tracking(
     schemas::PutTelescopeTrackingPath { device_number }: schemas::PutTelescopeTrackingPath,
 
-    schemas::PutTelescopeTrackingRequest {
-        tracking,
-
-        client_id,
-
-        client_transaction_id,
-    }: schemas::PutTelescopeTrackingRequest,
+    ASCOMRequest {
+        transaction,
+        request: schemas::PutTelescopeTrackingRequest { tracking },
+    }: ASCOMRequest<schemas::PutTelescopeTrackingRequest>,
 ) -> Result<schemas::MethodResponse> {
 }
 
@@ -11057,7 +8701,10 @@ The current tracking rate of the telescope's sidereal drive.
 fn get_telescope_trackingrate(
     schemas::GetTelescopeTrackingratePath { device_number }: schemas::GetTelescopeTrackingratePath,
 
-    schemas::GetTelescopeTrackingrateQuery { client_id, client_transaction_id }: schemas::GetTelescopeTrackingrateQuery,
+    ASCOMRequest {
+        transaction,
+        request: schemas::GetTelescopeTrackingrateQuery {},
+    }: ASCOMRequest<schemas::GetTelescopeTrackingrateQuery>,
 ) -> Result<schemas::IntResponse> {
 }
 
@@ -11070,13 +8717,10 @@ Sets the tracking rate of the telescope's sidereal drive. 0 = driveSidereal, 1 =
 fn put_telescope_trackingrate(
     schemas::PutTelescopeTrackingratePath { device_number }: schemas::PutTelescopeTrackingratePath,
 
-    schemas::PutTelescopeTrackingrateRequest {
-        tracking_rate,
-
-        client_id,
-
-        client_transaction_id,
-    }: schemas::PutTelescopeTrackingrateRequest,
+    ASCOMRequest {
+        transaction,
+        request: schemas::PutTelescopeTrackingrateRequest { tracking_rate },
+    }: ASCOMRequest<schemas::PutTelescopeTrackingrateRequest>,
 ) -> Result<schemas::MethodResponse> {
 }
 
@@ -11089,7 +8733,10 @@ Returns an array of supported DriveRates values that describe the permissible va
 fn get_telescope_trackingrates(
     schemas::GetTelescopeTrackingratesPath { device_number }: schemas::GetTelescopeTrackingratesPath,
 
-    schemas::GetTelescopeTrackingratesQuery { client_id, client_transaction_id }: schemas::GetTelescopeTrackingratesQuery,
+    ASCOMRequest {
+        transaction,
+        request: schemas::GetTelescopeTrackingratesQuery {},
+    }: ASCOMRequest<schemas::GetTelescopeTrackingratesQuery>,
 ) -> Result<schemas::DriveRatesResponse> {
 }
 
@@ -11102,7 +8749,10 @@ The UTC date/time of the telescope's internal clock in ISO 8601 format including
 fn get_telescope_utcdate(
     schemas::GetTelescopeUtcdatePath { device_number }: schemas::GetTelescopeUtcdatePath,
 
-    schemas::GetTelescopeUtcdateQuery { client_id, client_transaction_id }: schemas::GetTelescopeUtcdateQuery,
+    ASCOMRequest {
+        transaction,
+        request: schemas::GetTelescopeUtcdateQuery {},
+    }: ASCOMRequest<schemas::GetTelescopeUtcdateQuery>,
 ) -> Result<schemas::StringResponse> {
 }
 
@@ -11115,13 +8765,10 @@ The UTC date/time of the telescope's internal clock in ISO 8601 format including
 fn put_telescope_utcdate(
     schemas::PutTelescopeUtcdatePath { device_number }: schemas::PutTelescopeUtcdatePath,
 
-    schemas::PutTelescopeUtcdateRequest {
-        utcdate,
-
-        client_id,
-
-        client_transaction_id,
-    }: schemas::PutTelescopeUtcdateRequest,
+    ASCOMRequest {
+        transaction,
+        request: schemas::PutTelescopeUtcdateRequest { utcdate },
+    }: ASCOMRequest<schemas::PutTelescopeUtcdateRequest>,
 ) -> Result<schemas::MethodResponse> {
 }
 
@@ -11134,7 +8781,10 @@ Immediately Stops a slew in progress.
 fn put_telescope_abortslew(
     schemas::PutTelescopeAbortslewPath { device_number }: schemas::PutTelescopeAbortslewPath,
 
-    schemas::PutCameraAbortexposureRequest { client_id, client_transaction_id }: schemas::PutCameraAbortexposureRequest,
+    ASCOMRequest {
+        transaction,
+        request: schemas::PutCameraAbortexposureRequest {},
+    }: ASCOMRequest<schemas::PutCameraAbortexposureRequest>,
 ) -> Result<schemas::MethodResponse> {
 }
 
@@ -11147,13 +8797,10 @@ The rates at which the telescope may be moved about the specified axis by the Mo
 fn get_telescope_axisrates(
     schemas::GetTelescopeAxisratesPath { device_number }: schemas::GetTelescopeAxisratesPath,
 
-    schemas::GetTelescopeAxisratesQuery {
-        client_id,
-
-        client_transaction_id,
-
-        axis,
-    }: schemas::GetTelescopeAxisratesQuery,
+    ASCOMRequest {
+        transaction,
+        request: schemas::GetTelescopeAxisratesQuery { axis },
+    }: ASCOMRequest<schemas::GetTelescopeAxisratesQuery>,
 ) -> Result<schemas::AxisRatesResponse> {
 }
 
@@ -11166,13 +8813,10 @@ True if this telescope can move the requested axis.
 fn get_telescope_canmoveaxis(
     schemas::GetTelescopeCanmoveaxisPath { device_number }: schemas::GetTelescopeCanmoveaxisPath,
 
-    schemas::GetTelescopeCanmoveaxisQuery {
-        axis,
-
-        client_id,
-
-        client_transaction_id,
-    }: schemas::GetTelescopeCanmoveaxisQuery,
+    ASCOMRequest {
+        transaction,
+        request: schemas::GetTelescopeCanmoveaxisQuery { axis },
+    }: ASCOMRequest<schemas::GetTelescopeCanmoveaxisQuery>,
 ) -> Result<schemas::BoolResponse> {
 }
 
@@ -11185,15 +8829,10 @@ Predicts the pointing state that a German equatorial mount will be in if it slew
 fn get_telescope_destinationsideofpier(
     schemas::GetTelescopeDestinationsideofpierPath { device_number }: schemas::GetTelescopeDestinationsideofpierPath,
 
-    schemas::GetTelescopeDestinationsideofpierQuery {
-        right_ascension,
-
-        declination,
-
-        client_id,
-
-        client_transaction_id,
-    }: schemas::GetTelescopeDestinationsideofpierQuery,
+    ASCOMRequest {
+        transaction,
+        request: schemas::GetTelescopeDestinationsideofpierQuery { right_ascension, declination },
+    }: ASCOMRequest<schemas::GetTelescopeDestinationsideofpierQuery>,
 ) -> Result<schemas::IntResponse> {
 }
 
@@ -11206,7 +8845,10 @@ Locates the telescope's "home" position (synchronous)
 fn put_telescope_findhome(
     schemas::PutTelescopeFindhomePath { device_number }: schemas::PutTelescopeFindhomePath,
 
-    schemas::PutCameraAbortexposureRequest { client_id, client_transaction_id }: schemas::PutCameraAbortexposureRequest,
+    ASCOMRequest {
+        transaction,
+        request: schemas::PutCameraAbortexposureRequest {},
+    }: ASCOMRequest<schemas::PutCameraAbortexposureRequest>,
 ) -> Result<schemas::MethodResponse> {
 }
 
@@ -11219,15 +8861,10 @@ Move the telescope in one axis at the given rate.
 fn put_telescope_moveaxis(
     schemas::PutTelescopeMoveaxisPath { device_number }: schemas::PutTelescopeMoveaxisPath,
 
-    schemas::PutTelescopeMoveaxisRequest {
-        axis,
-
-        rate,
-
-        client_id,
-
-        client_transaction_id,
-    }: schemas::PutTelescopeMoveaxisRequest,
+    ASCOMRequest {
+        transaction,
+        request: schemas::PutTelescopeMoveaxisRequest { axis, rate },
+    }: ASCOMRequest<schemas::PutTelescopeMoveaxisRequest>,
 ) -> Result<schemas::MethodResponse> {
 }
 
@@ -11240,7 +8877,10 @@ Move the telescope to its park position, stop all motion (or restrict to a small
 fn put_telescope_park(
     schemas::PutTelescopeParkPath { device_number }: schemas::PutTelescopeParkPath,
 
-    schemas::PutCameraAbortexposureRequest { client_id, client_transaction_id }: schemas::PutCameraAbortexposureRequest,
+    ASCOMRequest {
+        transaction,
+        request: schemas::PutCameraAbortexposureRequest {},
+    }: ASCOMRequest<schemas::PutCameraAbortexposureRequest>,
 ) -> Result<schemas::MethodResponse> {
 }
 
@@ -11253,15 +8893,10 @@ Moves the scope in the given direction for the given interval or time at the rat
 fn put_telescope_pulseguide(
     schemas::PutTelescopePulseguidePath { device_number }: schemas::PutTelescopePulseguidePath,
 
-    schemas::PutTelescopePulseguideRequest {
-        direction,
-
-        duration,
-
-        client_id,
-
-        client_transaction_id,
-    }: schemas::PutTelescopePulseguideRequest,
+    ASCOMRequest {
+        transaction,
+        request: schemas::PutTelescopePulseguideRequest { direction, duration },
+    }: ASCOMRequest<schemas::PutTelescopePulseguideRequest>,
 ) -> Result<schemas::MethodResponse> {
 }
 
@@ -11274,7 +8909,10 @@ Sets the telescope's park position to be its current position.
 fn put_telescope_setpark(
     schemas::PutTelescopeSetparkPath { device_number }: schemas::PutTelescopeSetparkPath,
 
-    schemas::PutCameraAbortexposureRequest { client_id, client_transaction_id }: schemas::PutCameraAbortexposureRequest,
+    ASCOMRequest {
+        transaction,
+        request: schemas::PutCameraAbortexposureRequest {},
+    }: ASCOMRequest<schemas::PutCameraAbortexposureRequest>,
 ) -> Result<schemas::MethodResponse> {
 }
 
@@ -11287,15 +8925,10 @@ Move the telescope to the given local horizontal coordinates, return when slew i
 fn put_telescope_slewtoaltaz(
     schemas::PutTelescopeSlewtoaltazPath { device_number }: schemas::PutTelescopeSlewtoaltazPath,
 
-    schemas::PutTelescopeSlewtoaltazRequest {
-        azimuth,
-
-        altitude,
-
-        client_id,
-
-        client_transaction_id,
-    }: schemas::PutTelescopeSlewtoaltazRequest,
+    ASCOMRequest {
+        transaction,
+        request: schemas::PutTelescopeSlewtoaltazRequest { azimuth, altitude },
+    }: ASCOMRequest<schemas::PutTelescopeSlewtoaltazRequest>,
 ) -> Result<schemas::MethodResponse> {
 }
 
@@ -11308,15 +8941,10 @@ Move the telescope to the given local horizontal coordinates, return immediatley
 fn put_telescope_slewtoaltazasync(
     schemas::PutTelescopeSlewtoaltazasyncPath { device_number }: schemas::PutTelescopeSlewtoaltazasyncPath,
 
-    schemas::PutTelescopeSlewtoaltazRequest {
-        azimuth,
-
-        altitude,
-
-        client_id,
-
-        client_transaction_id,
-    }: schemas::PutTelescopeSlewtoaltazRequest,
+    ASCOMRequest {
+        transaction,
+        request: schemas::PutTelescopeSlewtoaltazRequest { azimuth, altitude },
+    }: ASCOMRequest<schemas::PutTelescopeSlewtoaltazRequest>,
 ) -> Result<schemas::MethodResponse> {
 }
 
@@ -11329,15 +8957,10 @@ Move the telescope to the given equatorial coordinates, return when slew is comp
 fn put_telescope_slewtocoordinates(
     schemas::PutTelescopeSlewtocoordinatesPath { device_number }: schemas::PutTelescopeSlewtocoordinatesPath,
 
-    schemas::PutTelescopeSlewtocoordinatesRequest {
-        right_ascension,
-
-        declination,
-
-        client_id,
-
-        client_transaction_id,
-    }: schemas::PutTelescopeSlewtocoordinatesRequest,
+    ASCOMRequest {
+        transaction,
+        request: schemas::PutTelescopeSlewtocoordinatesRequest { right_ascension, declination },
+    }: ASCOMRequest<schemas::PutTelescopeSlewtocoordinatesRequest>,
 ) -> Result<schemas::MethodResponse> {
 }
 
@@ -11350,15 +8973,10 @@ Move the telescope to the given equatorial coordinates, return immediatley after
 fn put_telescope_slewtocoordinatesasync(
     schemas::PutTelescopeSlewtocoordinatesasyncPath { device_number }: schemas::PutTelescopeSlewtocoordinatesasyncPath,
 
-    schemas::PutTelescopeSlewtocoordinatesRequest {
-        right_ascension,
-
-        declination,
-
-        client_id,
-
-        client_transaction_id,
-    }: schemas::PutTelescopeSlewtocoordinatesRequest,
+    ASCOMRequest {
+        transaction,
+        request: schemas::PutTelescopeSlewtocoordinatesRequest { right_ascension, declination },
+    }: ASCOMRequest<schemas::PutTelescopeSlewtocoordinatesRequest>,
 ) -> Result<schemas::MethodResponse> {
 }
 
@@ -11371,7 +8989,10 @@ Move the telescope to the TargetRightAscension and TargetDeclination equatorial 
 fn put_telescope_slewtotarget(
     schemas::PutTelescopeSlewtotargetPath { device_number }: schemas::PutTelescopeSlewtotargetPath,
 
-    schemas::PutCameraAbortexposureRequest { client_id, client_transaction_id }: schemas::PutCameraAbortexposureRequest,
+    ASCOMRequest {
+        transaction,
+        request: schemas::PutCameraAbortexposureRequest {},
+    }: ASCOMRequest<schemas::PutCameraAbortexposureRequest>,
 ) -> Result<schemas::MethodResponse> {
 }
 
@@ -11384,7 +9005,10 @@ Move the telescope to the TargetRightAscension and TargetDeclination equatorial 
 fn put_telescope_slewtotargetasync(
     schemas::PutTelescopeSlewtotargetasyncPath { device_number }: schemas::PutTelescopeSlewtotargetasyncPath,
 
-    schemas::PutCameraAbortexposureRequest { client_id, client_transaction_id }: schemas::PutCameraAbortexposureRequest,
+    ASCOMRequest {
+        transaction,
+        request: schemas::PutCameraAbortexposureRequest {},
+    }: ASCOMRequest<schemas::PutCameraAbortexposureRequest>,
 ) -> Result<schemas::MethodResponse> {
 }
 
@@ -11397,15 +9021,10 @@ Matches the scope's local horizontal coordinates to the given local horizontal c
 fn put_telescope_synctoaltaz(
     schemas::PutTelescopeSynctoaltazPath { device_number }: schemas::PutTelescopeSynctoaltazPath,
 
-    schemas::PutTelescopeSlewtoaltazRequest {
-        azimuth,
-
-        altitude,
-
-        client_id,
-
-        client_transaction_id,
-    }: schemas::PutTelescopeSlewtoaltazRequest,
+    ASCOMRequest {
+        transaction,
+        request: schemas::PutTelescopeSlewtoaltazRequest { azimuth, altitude },
+    }: ASCOMRequest<schemas::PutTelescopeSlewtoaltazRequest>,
 ) -> Result<schemas::MethodResponse> {
 }
 
@@ -11418,15 +9037,10 @@ Matches the scope's equatorial coordinates to the given equatorial coordinates.
 fn put_telescope_synctocoordinates(
     schemas::PutTelescopeSynctocoordinatesPath { device_number }: schemas::PutTelescopeSynctocoordinatesPath,
 
-    schemas::PutTelescopeSlewtocoordinatesRequest {
-        right_ascension,
-
-        declination,
-
-        client_id,
-
-        client_transaction_id,
-    }: schemas::PutTelescopeSlewtocoordinatesRequest,
+    ASCOMRequest {
+        transaction,
+        request: schemas::PutTelescopeSlewtocoordinatesRequest { right_ascension, declination },
+    }: ASCOMRequest<schemas::PutTelescopeSlewtocoordinatesRequest>,
 ) -> Result<schemas::MethodResponse> {
 }
 
@@ -11439,7 +9053,10 @@ Matches the scope's equatorial coordinates to the TargetRightAscension and Targe
 fn put_telescope_synctotarget(
     schemas::PutTelescopeSynctotargetPath { device_number }: schemas::PutTelescopeSynctotargetPath,
 
-    schemas::PutCameraAbortexposureRequest { client_id, client_transaction_id }: schemas::PutCameraAbortexposureRequest,
+    ASCOMRequest {
+        transaction,
+        request: schemas::PutCameraAbortexposureRequest {},
+    }: ASCOMRequest<schemas::PutCameraAbortexposureRequest>,
 ) -> Result<schemas::MethodResponse> {
 }
 
@@ -11452,7 +9069,10 @@ Takes telescope out of the Parked state. )
 fn put_telescope_unpark(
     schemas::PutTelescopeUnparkPath { device_number }: schemas::PutTelescopeUnparkPath,
 
-    schemas::PutCameraAbortexposureRequest { client_id, client_transaction_id }: schemas::PutCameraAbortexposureRequest,
+    ASCOMRequest {
+        transaction,
+        request: schemas::PutCameraAbortexposureRequest {},
+    }: ASCOMRequest<schemas::PutCameraAbortexposureRequest>,
 ) -> Result<schemas::MethodResponse> {
 }
 
