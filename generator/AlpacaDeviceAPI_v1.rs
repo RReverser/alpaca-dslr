@@ -252,11 +252,11 @@ mod schemas {
     struct PutActionPath {
         /// One of the recognised ASCOM device types e.g. telescope (must be lower case)
         #[serde(rename = "device_type")]
-        device_type: Option<String>,
+        device_type: String,
 
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -278,11 +278,11 @@ mod schemas {
     struct PutCommandblindPath {
         /// One of the recognised ASCOM device types e.g. telescope (must be lower case)
         #[serde(rename = "device_type")]
-        device_type: Option<String>,
+        device_type: String,
 
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -304,11 +304,11 @@ mod schemas {
     struct PutCommandboolPath {
         /// One of the recognised ASCOM device types e.g. telescope (must be lower case)
         #[serde(rename = "device_type")]
-        device_type: Option<String>,
+        device_type: String,
 
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -317,11 +317,11 @@ mod schemas {
     struct PutCommandstringPath {
         /// One of the recognised ASCOM device types e.g. telescope (must be lower case)
         #[serde(rename = "device_type")]
-        device_type: Option<String>,
+        device_type: String,
 
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -330,11 +330,11 @@ mod schemas {
     struct GetConnectedPath {
         /// One of the recognised ASCOM device types e.g. telescope (must be lower case)
         #[serde(rename = "device_type")]
-        device_type: Option<String>,
+        device_type: String,
 
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -343,11 +343,11 @@ mod schemas {
     struct PutConnectedPath {
         /// One of the recognised ASCOM device types e.g. telescope (must be lower case)
         #[serde(rename = "device_type")]
-        device_type: Option<String>,
+        device_type: String,
 
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -365,11 +365,11 @@ mod schemas {
     struct GetDescriptionPath {
         /// One of the recognised ASCOM device types e.g. telescope (must be lower case)
         #[serde(rename = "device_type")]
-        device_type: Option<String>,
+        device_type: String,
 
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -378,11 +378,11 @@ mod schemas {
     struct GetDriverinfoPath {
         /// One of the recognised ASCOM device types e.g. telescope (must be lower case)
         #[serde(rename = "device_type")]
-        device_type: Option<String>,
+        device_type: String,
 
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -391,11 +391,11 @@ mod schemas {
     struct GetDriverversionPath {
         /// One of the recognised ASCOM device types e.g. telescope (must be lower case)
         #[serde(rename = "device_type")]
-        device_type: Option<String>,
+        device_type: String,
 
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -404,11 +404,11 @@ mod schemas {
     struct GetInterfaceversionPath {
         /// One of the recognised ASCOM device types e.g. telescope (must be lower case)
         #[serde(rename = "device_type")]
-        device_type: Option<String>,
+        device_type: String,
 
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -417,11 +417,11 @@ mod schemas {
     struct GetNamePath {
         /// One of the recognised ASCOM device types e.g. telescope (must be lower case)
         #[serde(rename = "device_type")]
-        device_type: Option<String>,
+        device_type: String,
 
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -430,11 +430,11 @@ mod schemas {
     struct GetSupportedactionsPath {
         /// One of the recognised ASCOM device types e.g. telescope (must be lower case)
         #[serde(rename = "device_type")]
-        device_type: Option<String>,
+        device_type: String,
 
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -443,7 +443,7 @@ mod schemas {
     struct GetCameraBayeroffsetxPath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -452,7 +452,7 @@ mod schemas {
     struct GetCameraBayeroffsetyPath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -461,7 +461,7 @@ mod schemas {
     struct GetCameraBinxPath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -470,7 +470,7 @@ mod schemas {
     struct PutCameraBinxPath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -488,7 +488,7 @@ mod schemas {
     struct GetCameraBinyPath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -497,7 +497,7 @@ mod schemas {
     struct PutCameraBinyPath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -515,7 +515,7 @@ mod schemas {
     struct GetCameraCamerastatePath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -524,7 +524,7 @@ mod schemas {
     struct GetCameraCameraxsizePath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -533,7 +533,7 @@ mod schemas {
     struct GetCameraCameraysizePath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -542,7 +542,7 @@ mod schemas {
     struct GetCameraCanabortexposurePath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -551,7 +551,7 @@ mod schemas {
     struct GetCameraCanasymmetricbinPath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -560,7 +560,7 @@ mod schemas {
     struct GetCameraCanfastreadoutPath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -569,7 +569,7 @@ mod schemas {
     struct GetCameraCangetcoolerpowerPath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -578,7 +578,7 @@ mod schemas {
     struct GetCameraCanpulseguidePath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -587,7 +587,7 @@ mod schemas {
     struct GetCameraCansetccdtemperaturePath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -596,7 +596,7 @@ mod schemas {
     struct GetCameraCanstopexposurePath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -605,7 +605,7 @@ mod schemas {
     struct GetCameraCcdtemperaturePath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -614,7 +614,7 @@ mod schemas {
     struct GetCameraCooleronPath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -623,7 +623,7 @@ mod schemas {
     struct PutCameraCooleronPath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -641,7 +641,7 @@ mod schemas {
     struct GetCameraCoolerpowerPath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -650,7 +650,7 @@ mod schemas {
     struct GetCameraElectronsperaduPath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -659,7 +659,7 @@ mod schemas {
     struct GetCameraExposuremaxPath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -668,7 +668,7 @@ mod schemas {
     struct GetCameraExposureminPath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -677,7 +677,7 @@ mod schemas {
     struct GetCameraExposureresolutionPath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -686,7 +686,7 @@ mod schemas {
     struct GetCameraFastreadoutPath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -695,7 +695,7 @@ mod schemas {
     struct PutCameraFastreadoutPath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -713,7 +713,7 @@ mod schemas {
     struct GetCameraFullwellcapacityPath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -722,7 +722,7 @@ mod schemas {
     struct GetCameraGainPath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -731,7 +731,7 @@ mod schemas {
     struct PutCameraGainPath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -749,7 +749,7 @@ mod schemas {
     struct GetCameraGainmaxPath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -758,7 +758,7 @@ mod schemas {
     struct GetCameraGainminPath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -767,7 +767,7 @@ mod schemas {
     struct GetCameraGainsPath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -776,7 +776,7 @@ mod schemas {
     struct GetCameraHasshutterPath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -785,7 +785,7 @@ mod schemas {
     struct GetCameraHeatsinktemperaturePath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -794,7 +794,7 @@ mod schemas {
     struct GetCameraImagearrayPath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -803,7 +803,7 @@ mod schemas {
     struct GetCameraImagearrayvariantPath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -812,7 +812,7 @@ mod schemas {
     struct GetCameraImagereadyPath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -821,7 +821,7 @@ mod schemas {
     struct GetCameraIspulseguidingPath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -830,7 +830,7 @@ mod schemas {
     struct GetCameraLastexposuredurationPath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -839,7 +839,7 @@ mod schemas {
     struct GetCameraLastexposurestarttimePath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -848,7 +848,7 @@ mod schemas {
     struct GetCameraMaxaduPath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -857,7 +857,7 @@ mod schemas {
     struct GetCameraMaxbinxPath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -866,7 +866,7 @@ mod schemas {
     struct GetCameraMaxbinyPath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -875,7 +875,7 @@ mod schemas {
     struct GetCameraNumxPath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -884,7 +884,7 @@ mod schemas {
     struct PutCameraNumxPath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -902,7 +902,7 @@ mod schemas {
     struct GetCameraNumyPath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -911,7 +911,7 @@ mod schemas {
     struct PutCameraNumyPath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -929,7 +929,7 @@ mod schemas {
     struct GetCameraOffsetPath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -938,7 +938,7 @@ mod schemas {
     struct PutCameraOffsetPath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -956,7 +956,7 @@ mod schemas {
     struct GetCameraOffsetmaxPath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -965,7 +965,7 @@ mod schemas {
     struct GetCameraOffsetminPath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -974,7 +974,7 @@ mod schemas {
     struct GetCameraOffsetsPath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -983,7 +983,7 @@ mod schemas {
     struct GetCameraPercentcompletedPath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -992,7 +992,7 @@ mod schemas {
     struct GetCameraPixelsizexPath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -1001,7 +1001,7 @@ mod schemas {
     struct GetCameraPixelsizeyPath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -1010,7 +1010,7 @@ mod schemas {
     struct GetCameraReadoutmodePath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -1019,7 +1019,7 @@ mod schemas {
     struct PutCameraReadoutmodePath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -1037,7 +1037,7 @@ mod schemas {
     struct GetCameraReadoutmodesPath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -1046,7 +1046,7 @@ mod schemas {
     struct GetCameraSensornamePath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -1055,7 +1055,7 @@ mod schemas {
     struct GetCameraSensortypePath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -1064,7 +1064,7 @@ mod schemas {
     struct GetCameraSetccdtemperaturePath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -1073,7 +1073,7 @@ mod schemas {
     struct PutCameraSetccdtemperaturePath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -1091,7 +1091,7 @@ mod schemas {
     struct GetCameraStartxPath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -1100,7 +1100,7 @@ mod schemas {
     struct PutCameraStartxPath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -1118,7 +1118,7 @@ mod schemas {
     struct GetCameraStartyPath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -1127,7 +1127,7 @@ mod schemas {
     struct PutCameraStartyPath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -1145,7 +1145,7 @@ mod schemas {
     struct GetCameraSubexposuredurationPath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -1154,7 +1154,7 @@ mod schemas {
     struct PutCameraSubexposuredurationPath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -1172,7 +1172,7 @@ mod schemas {
     struct PutCameraAbortexposurePath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -1181,7 +1181,7 @@ mod schemas {
     struct PutCameraPulseguidePath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -1203,7 +1203,7 @@ mod schemas {
     struct PutCameraStartexposurePath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -1225,7 +1225,7 @@ mod schemas {
     struct PutCameraStopexposurePath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -1234,7 +1234,7 @@ mod schemas {
     struct GetCovercalibratorBrightnessPath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -1243,7 +1243,7 @@ mod schemas {
     struct GetCovercalibratorCalibratorstatePath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -1252,7 +1252,7 @@ mod schemas {
     struct GetCovercalibratorCoverstatePath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -1261,7 +1261,7 @@ mod schemas {
     struct GetCovercalibratorMaxbrightnessPath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -1270,7 +1270,7 @@ mod schemas {
     struct PutCovercalibratorCalibratoroffPath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -1279,7 +1279,7 @@ mod schemas {
     struct PutCovercalibratorCalibratoronPath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -1297,7 +1297,7 @@ mod schemas {
     struct PutCovercalibratorClosecoverPath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -1306,7 +1306,7 @@ mod schemas {
     struct PutCovercalibratorHaltcoverPath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -1315,7 +1315,7 @@ mod schemas {
     struct PutCovercalibratorOpencoverPath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -1324,7 +1324,7 @@ mod schemas {
     struct GetDomeAltitudePath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -1333,7 +1333,7 @@ mod schemas {
     struct GetDomeAthomePath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -1342,7 +1342,7 @@ mod schemas {
     struct GetDomeAtparkPath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -1351,7 +1351,7 @@ mod schemas {
     struct GetDomeAzimuthPath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -1360,7 +1360,7 @@ mod schemas {
     struct GetDomeCanfindhomePath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -1369,7 +1369,7 @@ mod schemas {
     struct GetDomeCanparkPath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -1378,7 +1378,7 @@ mod schemas {
     struct GetDomeCansetaltitudePath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -1387,7 +1387,7 @@ mod schemas {
     struct GetDomeCansetazimuthPath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -1396,7 +1396,7 @@ mod schemas {
     struct GetDomeCansetparkPath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -1405,7 +1405,7 @@ mod schemas {
     struct GetDomeCansetshutterPath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -1414,7 +1414,7 @@ mod schemas {
     struct GetDomeCanslavePath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -1423,7 +1423,7 @@ mod schemas {
     struct GetDomeCansyncazimuthPath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -1432,7 +1432,7 @@ mod schemas {
     struct GetDomeShutterstatusPath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -1441,7 +1441,7 @@ mod schemas {
     struct GetDomeSlavedPath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -1450,7 +1450,7 @@ mod schemas {
     struct PutDomeSlavedPath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -1468,7 +1468,7 @@ mod schemas {
     struct GetDomeSlewingPath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -1477,7 +1477,7 @@ mod schemas {
     struct PutDomeAbortslewPath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -1486,7 +1486,7 @@ mod schemas {
     struct PutDomeCloseshutterPath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -1495,7 +1495,7 @@ mod schemas {
     struct PutDomeFindhomePath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -1504,7 +1504,7 @@ mod schemas {
     struct PutDomeOpenshutterPath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -1513,7 +1513,7 @@ mod schemas {
     struct PutDomeParkPath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -1522,7 +1522,7 @@ mod schemas {
     struct PutDomeSetparkPath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -1531,7 +1531,7 @@ mod schemas {
     struct PutDomeSlewtoaltitudePath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -1549,7 +1549,7 @@ mod schemas {
     struct PutDomeSlewtoazimuthPath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -1567,7 +1567,7 @@ mod schemas {
     struct PutDomeSynctoazimuthPath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -1576,7 +1576,7 @@ mod schemas {
     struct GetFilterwheelFocusoffsetsPath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -1585,7 +1585,7 @@ mod schemas {
     struct GetFilterwheelNamesPath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -1594,7 +1594,7 @@ mod schemas {
     struct GetFilterwheelPositionPath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -1603,7 +1603,7 @@ mod schemas {
     struct PutFilterwheelPositionPath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -1621,7 +1621,7 @@ mod schemas {
     struct GetFocuserAbsolutePath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -1630,7 +1630,7 @@ mod schemas {
     struct GetFocuserIsmovingPath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -1639,7 +1639,7 @@ mod schemas {
     struct GetFocuserMaxincrementPath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -1648,7 +1648,7 @@ mod schemas {
     struct GetFocuserMaxstepPath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -1657,7 +1657,7 @@ mod schemas {
     struct GetFocuserPositionPath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -1666,7 +1666,7 @@ mod schemas {
     struct GetFocuserStepsizePath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -1675,7 +1675,7 @@ mod schemas {
     struct GetFocuserTempcompPath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -1684,7 +1684,7 @@ mod schemas {
     struct PutFocuserTempcompPath {
         /// Zero based device number as set on the server
         #[serde(rename = "device_number")]
-        device_number: Option<i32>,
+        device_number: i32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -1702,7 +1702,7 @@ mod schemas {
     struct GetFocuserTempcompavailablePath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -1711,7 +1711,7 @@ mod schemas {
     struct GetFocuserTemperaturePath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -1720,7 +1720,7 @@ mod schemas {
     struct PutFocuserHaltPath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -1729,7 +1729,7 @@ mod schemas {
     struct PutFocuserMovePath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -1747,7 +1747,7 @@ mod schemas {
     struct GetObservingconditionsAverageperiodPath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -1756,7 +1756,7 @@ mod schemas {
     struct PutObservingconditionsAverageperiodPath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -1774,7 +1774,7 @@ mod schemas {
     struct GetObservingconditionsCloudcoverPath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -1783,7 +1783,7 @@ mod schemas {
     struct GetObservingconditionsDewpointPath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -1792,7 +1792,7 @@ mod schemas {
     struct GetObservingconditionsHumidityPath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -1801,7 +1801,7 @@ mod schemas {
     struct GetObservingconditionsPressurePath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -1810,7 +1810,7 @@ mod schemas {
     struct GetObservingconditionsRainratePath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -1819,7 +1819,7 @@ mod schemas {
     struct GetObservingconditionsSkybrightnessPath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -1828,7 +1828,7 @@ mod schemas {
     struct GetObservingconditionsSkyqualityPath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -1837,7 +1837,7 @@ mod schemas {
     struct GetObservingconditionsSkytemperaturePath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -1846,7 +1846,7 @@ mod schemas {
     struct GetObservingconditionsStarfwhmPath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -1855,7 +1855,7 @@ mod schemas {
     struct GetObservingconditionsTemperaturePath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -1864,7 +1864,7 @@ mod schemas {
     struct GetObservingconditionsWinddirectionPath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -1873,7 +1873,7 @@ mod schemas {
     struct GetObservingconditionsWindgustPath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -1882,7 +1882,7 @@ mod schemas {
     struct GetObservingconditionsWindspeedPath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -1891,7 +1891,7 @@ mod schemas {
     struct PutObservingconditionsRefreshPath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -1900,7 +1900,7 @@ mod schemas {
     struct GetObservingconditionsSensordescriptionPath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -1909,7 +1909,7 @@ mod schemas {
     struct GetObservingconditionsSensordescriptionQuery {
         /// Name of the sensor whose description is required
         #[serde(rename = "SensorName")]
-        sensor_name: Option<String>,
+        sensor_name: String,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -1918,7 +1918,7 @@ mod schemas {
     struct GetObservingconditionsTimesincelastupdatePath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -1927,7 +1927,7 @@ mod schemas {
     struct GetObservingconditionsTimesincelastupdateQuery {
         /// Name of the sensor whose last update time is required
         #[serde(rename = "SensorName")]
-        sensor_name: Option<String>,
+        sensor_name: String,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -1936,7 +1936,7 @@ mod schemas {
     struct GetRotatorCanreversePath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -1945,7 +1945,7 @@ mod schemas {
     struct GetRotatorIsmovingPath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -1954,7 +1954,7 @@ mod schemas {
     struct GetRotatorMechanicalpositionPath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -1963,7 +1963,7 @@ mod schemas {
     struct GetRotatorPositionPath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -1972,7 +1972,7 @@ mod schemas {
     struct GetRotatorReversePath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -1981,7 +1981,7 @@ mod schemas {
     struct PutRotatorReversePath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -1999,7 +1999,7 @@ mod schemas {
     struct GetRotatorStepsizePath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -2008,7 +2008,7 @@ mod schemas {
     struct GetRotatorTargetpositionPath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -2017,7 +2017,7 @@ mod schemas {
     struct PutRotatorHaltPath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -2026,7 +2026,7 @@ mod schemas {
     struct PutRotatorMovePath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -2044,7 +2044,7 @@ mod schemas {
     struct PutRotatorMoveabsolutePath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -2062,7 +2062,7 @@ mod schemas {
     struct PutRotatorMovemechanicalPath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -2080,7 +2080,7 @@ mod schemas {
     struct PutRotatorSyncPath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -2098,7 +2098,7 @@ mod schemas {
     struct GetSafetymonitorIssafePath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -2107,7 +2107,7 @@ mod schemas {
     struct GetSwitchMaxswitchPath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -2116,7 +2116,7 @@ mod schemas {
     struct GetSwitchCanwritePath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -2125,7 +2125,7 @@ mod schemas {
     struct GetSwitchCanwriteQuery {
         /// The device number (0 to MaxSwitch - 1)
         #[serde(rename = "Id")]
-        id: Option<i32>,
+        id: i32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -2134,7 +2134,7 @@ mod schemas {
     struct GetSwitchGetswitchPath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -2143,7 +2143,7 @@ mod schemas {
     struct GetSwitchGetswitchQuery {
         /// The device number (0 to MaxSwitch - 1)
         #[serde(rename = "Id")]
-        id: Option<i32>,
+        id: i32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -2152,7 +2152,7 @@ mod schemas {
     struct GetSwitchGetswitchdescriptionPath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -2161,7 +2161,7 @@ mod schemas {
     struct GetSwitchGetswitchdescriptionQuery {
         /// The device number (0 to MaxSwitch - 1)
         #[serde(rename = "Id")]
-        id: Option<i32>,
+        id: i32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -2170,7 +2170,7 @@ mod schemas {
     struct GetSwitchGetswitchnamePath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -2179,7 +2179,7 @@ mod schemas {
     struct GetSwitchGetswitchnameQuery {
         /// The device number (0 to MaxSwitch - 1)
         #[serde(rename = "Id")]
-        id: Option<i32>,
+        id: i32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -2188,7 +2188,7 @@ mod schemas {
     struct GetSwitchGetswitchvaluePath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -2197,7 +2197,7 @@ mod schemas {
     struct GetSwitchGetswitchvalueQuery {
         /// The device number (0 to MaxSwitch - 1)
         #[serde(rename = "Id")]
-        id: Option<i32>,
+        id: i32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -2206,7 +2206,7 @@ mod schemas {
     struct GetSwitchMinswitchvaluePath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -2215,7 +2215,7 @@ mod schemas {
     struct GetSwitchMinswitchvalueQuery {
         /// The device number (0 to MaxSwitch - 1)
         #[serde(rename = "Id")]
-        id: Option<i32>,
+        id: i32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -2224,7 +2224,7 @@ mod schemas {
     struct GetSwitchMaxswitchvaluePath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -2233,7 +2233,7 @@ mod schemas {
     struct GetSwitchMaxswitchvalueQuery {
         /// The device number (0 to MaxSwitch - 1)
         #[serde(rename = "Id")]
-        id: Option<i32>,
+        id: i32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -2242,7 +2242,7 @@ mod schemas {
     struct PutSwitchSetswitchPath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -2264,7 +2264,7 @@ mod schemas {
     struct PutSwitchSetswitchnamePath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -2286,7 +2286,7 @@ mod schemas {
     struct PutSwitchSetswitchvaluePath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -2308,7 +2308,7 @@ mod schemas {
     struct GetSwitchSwitchstepPath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -2317,7 +2317,7 @@ mod schemas {
     struct GetSwitchSwitchstepQuery {
         /// The device number (0 to MaxSwitch - 1)
         #[serde(rename = "Id")]
-        id: Option<i32>,
+        id: i32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -2326,7 +2326,7 @@ mod schemas {
     struct GetTelescopeAlignmentmodePath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -2335,7 +2335,7 @@ mod schemas {
     struct GetTelescopeAltitudePath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -2344,7 +2344,7 @@ mod schemas {
     struct GetTelescopeApertureareaPath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -2353,7 +2353,7 @@ mod schemas {
     struct GetTelescopeAperturediameterPath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -2362,7 +2362,7 @@ mod schemas {
     struct GetTelescopeAthomePath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -2371,7 +2371,7 @@ mod schemas {
     struct GetTelescopeAtparkPath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -2380,7 +2380,7 @@ mod schemas {
     struct GetTelescopeAzimuthPath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -2389,7 +2389,7 @@ mod schemas {
     struct GetTelescopeCanfindhomePath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -2398,7 +2398,7 @@ mod schemas {
     struct GetTelescopeCanparkPath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -2407,7 +2407,7 @@ mod schemas {
     struct GetTelescopeCanpulseguidePath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -2416,7 +2416,7 @@ mod schemas {
     struct GetTelescopeCansetdeclinationratePath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -2425,7 +2425,7 @@ mod schemas {
     struct GetTelescopeCansetguideratesPath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -2434,7 +2434,7 @@ mod schemas {
     struct GetTelescopeCansetparkPath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -2443,7 +2443,7 @@ mod schemas {
     struct GetTelescopeCansetpiersidePath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -2452,7 +2452,7 @@ mod schemas {
     struct GetTelescopeCansetrightascensionratePath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -2461,7 +2461,7 @@ mod schemas {
     struct GetTelescopeCansettrackingPath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -2470,7 +2470,7 @@ mod schemas {
     struct GetTelescopeCanslewPath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -2479,7 +2479,7 @@ mod schemas {
     struct GetTelescopeCanslewaltazPath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -2488,7 +2488,7 @@ mod schemas {
     struct GetTelescopeCanslewaltazasyncPath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -2497,7 +2497,7 @@ mod schemas {
     struct GetTelescopeCanslewasyncPath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -2506,7 +2506,7 @@ mod schemas {
     struct GetTelescopeCansyncPath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -2515,7 +2515,7 @@ mod schemas {
     struct GetTelescopeCansyncaltazPath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -2524,7 +2524,7 @@ mod schemas {
     struct GetTelescopeCanunparkPath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -2533,7 +2533,7 @@ mod schemas {
     struct GetTelescopeDeclinationPath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -2542,7 +2542,7 @@ mod schemas {
     struct GetTelescopeDeclinationratePath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -2551,7 +2551,7 @@ mod schemas {
     struct PutTelescopeDeclinationratePath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -2569,7 +2569,7 @@ mod schemas {
     struct GetTelescopeDoesrefractionPath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -2578,7 +2578,7 @@ mod schemas {
     struct PutTelescopeDoesrefractionPath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -2596,7 +2596,7 @@ mod schemas {
     struct GetTelescopeEquatorialsystemPath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -2605,7 +2605,7 @@ mod schemas {
     struct GetTelescopeFocallengthPath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -2614,7 +2614,7 @@ mod schemas {
     struct GetTelescopeGuideratedeclinationPath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -2623,7 +2623,7 @@ mod schemas {
     struct PutTelescopeGuideratedeclinationPath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -2641,7 +2641,7 @@ mod schemas {
     struct GetTelescopeGuideraterightascensionPath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -2650,7 +2650,7 @@ mod schemas {
     struct PutTelescopeGuideraterightascensionPath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -2668,7 +2668,7 @@ mod schemas {
     struct GetTelescopeIspulseguidingPath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -2677,7 +2677,7 @@ mod schemas {
     struct GetTelescopeRightascensionPath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -2686,7 +2686,7 @@ mod schemas {
     struct GetTelescopeRightascensionratePath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -2695,7 +2695,7 @@ mod schemas {
     struct PutTelescopeRightascensionratePath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -2713,7 +2713,7 @@ mod schemas {
     struct GetTelescopeSideofpierPath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -2722,7 +2722,7 @@ mod schemas {
     struct PutTelescopeSideofpierPath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -2740,7 +2740,7 @@ mod schemas {
     struct GetTelescopeSiderealtimePath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -2749,7 +2749,7 @@ mod schemas {
     struct GetTelescopeSiteelevationPath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -2758,7 +2758,7 @@ mod schemas {
     struct PutTelescopeSiteelevationPath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -2776,7 +2776,7 @@ mod schemas {
     struct GetTelescopeSitelatitudePath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -2785,7 +2785,7 @@ mod schemas {
     struct PutTelescopeSitelatitudePath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -2803,7 +2803,7 @@ mod schemas {
     struct GetTelescopeSitelongitudePath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -2812,7 +2812,7 @@ mod schemas {
     struct PutTelescopeSitelongitudePath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -2830,7 +2830,7 @@ mod schemas {
     struct GetTelescopeSlewingPath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -2839,7 +2839,7 @@ mod schemas {
     struct GetTelescopeSlewsettletimePath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -2848,7 +2848,7 @@ mod schemas {
     struct PutTelescopeSlewsettletimePath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -2866,7 +2866,7 @@ mod schemas {
     struct GetTelescopeTargetdeclinationPath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -2875,7 +2875,7 @@ mod schemas {
     struct PutTelescopeTargetdeclinationPath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -2893,7 +2893,7 @@ mod schemas {
     struct GetTelescopeTargetrightascensionPath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -2902,7 +2902,7 @@ mod schemas {
     struct PutTelescopeTargetrightascensionPath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -2920,7 +2920,7 @@ mod schemas {
     struct GetTelescopeTrackingPath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -2929,7 +2929,7 @@ mod schemas {
     struct PutTelescopeTrackingPath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -2947,7 +2947,7 @@ mod schemas {
     struct GetTelescopeTrackingratePath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -2956,7 +2956,7 @@ mod schemas {
     struct PutTelescopeTrackingratePath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -2974,7 +2974,7 @@ mod schemas {
     struct GetTelescopeTrackingratesPath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -2983,7 +2983,7 @@ mod schemas {
     struct GetTelescopeUtcdatePath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -2992,7 +2992,7 @@ mod schemas {
     struct PutTelescopeUtcdatePath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -3010,7 +3010,7 @@ mod schemas {
     struct PutTelescopeAbortslewPath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -3019,7 +3019,7 @@ mod schemas {
     struct GetTelescopeAxisratesPath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -3028,7 +3028,7 @@ mod schemas {
     struct GetTelescopeAxisratesQuery {
         /// The axis about which rate information is desired. 0 = axisPrimary, 1 = axisSecondary, 2 = axisTertiary.
         #[serde(rename = "Axis")]
-        axis: Option<i32>,
+        axis: i32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -3037,7 +3037,7 @@ mod schemas {
     struct GetTelescopeCanmoveaxisPath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -3046,7 +3046,7 @@ mod schemas {
     struct GetTelescopeCanmoveaxisQuery {
         /// The axis about which rate information is desired. 0 = axisPrimary, 1 = axisSecondary, 2 = axisTertiary.
         #[serde(rename = "Axis")]
-        axis: Option<i32>,
+        axis: i32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -3055,7 +3055,7 @@ mod schemas {
     struct GetTelescopeDestinationsideofpierPath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -3064,11 +3064,11 @@ mod schemas {
     struct GetTelescopeDestinationsideofpierQuery {
         /// Right Ascension coordinate (0.0 to 23.99999999 hours)
         #[serde(rename = "RightAscension")]
-        right_ascension: Option<f64>,
+        right_ascension: f64,
 
         /// Declination coordinate (-90.0 to +90.0 degrees)
         #[serde(rename = "Declination")]
-        declination: Option<f64>,
+        declination: f64,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -3077,7 +3077,7 @@ mod schemas {
     struct PutTelescopeFindhomePath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -3086,7 +3086,7 @@ mod schemas {
     struct PutTelescopeMoveaxisPath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -3108,7 +3108,7 @@ mod schemas {
     struct PutTelescopeParkPath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -3117,7 +3117,7 @@ mod schemas {
     struct PutTelescopePulseguidePath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -3139,7 +3139,7 @@ mod schemas {
     struct PutTelescopeSetparkPath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -3148,7 +3148,7 @@ mod schemas {
     struct PutTelescopeSlewtoaltazPath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -3170,7 +3170,7 @@ mod schemas {
     struct PutTelescopeSlewtoaltazasyncPath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -3179,7 +3179,7 @@ mod schemas {
     struct PutTelescopeSlewtocoordinatesPath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -3201,7 +3201,7 @@ mod schemas {
     struct PutTelescopeSlewtocoordinatesasyncPath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -3210,7 +3210,7 @@ mod schemas {
     struct PutTelescopeSlewtotargetPath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -3219,7 +3219,7 @@ mod schemas {
     struct PutTelescopeSlewtotargetasyncPath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -3228,7 +3228,7 @@ mod schemas {
     struct PutTelescopeSynctoaltazPath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -3237,7 +3237,7 @@ mod schemas {
     struct PutTelescopeSynctocoordinatesPath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -3246,7 +3246,7 @@ mod schemas {
     struct PutTelescopeSynctotargetPath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -3255,7 +3255,7 @@ mod schemas {
     struct PutTelescopeUnparkPath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
-        device_number: Option<u32>,
+        device_number: u32,
     }
 
     #[derive(Serialize)]

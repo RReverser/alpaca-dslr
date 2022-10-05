@@ -106,13 +106,17 @@ for (let { method, path, id, operation } of ops()) {
   let groupedParams: Record<string, OpenAPIV3.NonArraySchemaObject> = {};
   for (let param of operation.parameters || []) {
     param = resolveMaybeRef(param);
-    (groupedParams[param.in] ??= {
+    let schema = (groupedParams[param.in] ??= {
       type: 'object',
       properties: {}
-    }).properties![param.name] = {
+    });
+    schema.properties![param.name] = {
       description: param.description,
       ...param.schema
     };
+    if (param.required) {
+      (schema.required ??= []).push(param.name);
+    }
   }
 
   let typeId = toPascalCase(id);
