@@ -83,7 +83,7 @@ function toPropName(name) {
 
 function doc(description) {
   if (description) {
-    return `/**\n${description}\n*/`;
+    return description.includes('\n') ? `/**\n${description}\n*/` : `/// ${description}`;
   }
 }
 

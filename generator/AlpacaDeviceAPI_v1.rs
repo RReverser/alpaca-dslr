@@ -107,58 +107,42 @@ pub type Result<T> = std::result::Result<ASCOMResponse<T>, AlpacaError>;
 
 mod parameters {
 
-    /**
-    One of the recognised ASCOM device types e.g. telescope (must be lower case)
-    */
+    /// One of the recognised ASCOM device types e.g. telescope (must be lower case)
     #[derive(Deserialize)]
     #[repr(transparent)]
     struct DeviceType(String);
 
-    /**
-    Zero based device number as set on the server (0 to 4294967295)
-    */
+    /// Zero based device number as set on the server (0 to 4294967295)
     #[derive(Deserialize)]
     #[repr(transparent)]
     struct DeviceNumber(u32);
 
-    /**
-    Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-    */
+    /// Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
     #[derive(Deserialize)]
     #[repr(transparent)]
     struct ClientIdquery(u32);
 
-    /**
-    Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-    */
+    /// Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
     #[derive(Deserialize)]
     #[repr(transparent)]
     struct ClientTransactionIdquery(u32);
 
-    /**
-    Right Ascension coordinate (0.0 to 23.99999999 hours)
-    */
+    /// Right Ascension coordinate (0.0 to 23.99999999 hours)
     #[derive(Deserialize)]
     #[repr(transparent)]
     struct RightAscensionQuery(f64);
 
-    /**
-    Declination coordinate (-90.0 to +90.0 degrees)
-    */
+    /// Declination coordinate (-90.0 to +90.0 degrees)
     #[derive(Deserialize)]
     #[repr(transparent)]
     struct DeclinationQuery(f64);
 
-    /**
-    The axis about which rate information is desired. 0 = axisPrimary, 1 = axisSecondary, 2 = axisTertiary.
-    */
+    /// The axis about which rate information is desired. 0 = axisPrimary, 1 = axisSecondary, 2 = axisTertiary.
     #[derive(Deserialize)]
     #[repr(transparent)]
     struct AxisQuery(i32);
 
-    /**
-    The device number (0 to MaxSwitch - 1)
-    */
+    /// The device number (0 to MaxSwitch - 1)
     #[derive(Deserialize)]
     #[repr(transparent)]
     struct SwitchNumberQuery(i32);
@@ -169,21 +153,15 @@ mod schemas {
     #[derive(Serialize)]
 
     struct ImageArrayResponse {
-        /**
-        0 = Unknown, 1 = Short(int16), 2 = Integer (int32), 3 = Double (Double precision real number).
-        */
+        /// 0 = Unknown, 1 = Short(int16), 2 = Integer (int32), 3 = Double (Double precision real number).
         #[serde(rename = "Type")]
         type_: Option<i32>,
 
-        /**
-        The array's rank, will be 2 (single plane image (monochrome)) or 3 (multi-plane image).
-        */
+        /// The array's rank, will be 2 (single plane image (monochrome)) or 3 (multi-plane image).
         #[serde(rename = "Rank")]
         rank: Option<i32>,
 
-        /**
-        Returned integer or double value
-        */
+        /// Returned integer or double value
         #[serde(rename = "Value")]
         value: Option<Vec<Vec<f64>>>,
     }
@@ -191,9 +169,7 @@ mod schemas {
     #[derive(Serialize)]
 
     struct BoolResponse {
-        /**
-        True or False value
-        */
+        /// True or False value
         #[serde(rename = "Value")]
         value: Option<bool>,
     }
@@ -201,9 +177,7 @@ mod schemas {
     #[derive(Serialize)]
 
     struct DoubleResponse {
-        /**
-        Returned double value
-        */
+        /// Returned double value
         #[serde(rename = "Value")]
         value: Option<f64>,
     }
@@ -211,9 +185,7 @@ mod schemas {
     #[derive(Serialize)]
 
     struct IntResponse {
-        /**
-        Returned integer value
-        */
+        /// Returned integer value
         #[serde(rename = "Value")]
         value: Option<i32>,
     }
@@ -221,9 +193,7 @@ mod schemas {
     #[derive(Serialize)]
 
     struct IntArrayResponse {
-        /**
-        Array of integer values.
-        */
+        /// Array of integer values.
         #[serde(rename = "Value")]
         value: Option<Vec<i32>>,
     }
@@ -235,9 +205,7 @@ mod schemas {
     #[derive(Serialize)]
 
     struct StringResponse {
-        /**
-        String response from the device.
-        */
+        /// String response from the device.
         #[serde(rename = "Value")]
         value: Option<String>,
     }
@@ -245,9 +213,7 @@ mod schemas {
     #[derive(Serialize)]
 
     struct StringArrayResponse {
-        /**
-        Array of string values.
-        */
+        /// Array of string values.
         #[serde(rename = "Value")]
         value: Option<Vec<String>>,
     }
@@ -255,9 +221,7 @@ mod schemas {
     #[derive(Serialize)]
 
     struct AxisRatesResponse {
-        /**
-        Array of AxisRate objects
-        */
+        /// Array of AxisRate objects
         #[serde(rename = "Value")]
         value: Option<Vec<schemas::AxisRate>>,
     }
@@ -265,15 +229,11 @@ mod schemas {
     #[derive(Deserialize)]
 
     struct AxisRate {
-        /**
-        The maximum rate (degrees per second) This must always be a positive number. It indicates the maximum rate in either direction about the axis.
-        */
+        /// The maximum rate (degrees per second) This must always be a positive number. It indicates the maximum rate in either direction about the axis.
         #[serde(rename = "Maximum")]
         maximum: f64,
 
-        /**
-        The minimum rate (degrees per second) This must always be a positive number. It indicates the maximum rate in either direction about the axis.
-        */
+        /// The minimum rate (degrees per second) This must always be a positive number. It indicates the maximum rate in either direction about the axis.
         #[serde(rename = "Minimum")]
         minimum: f64,
     }
@@ -281,9 +241,7 @@ mod schemas {
     #[derive(Serialize)]
 
     struct DriveRatesResponse {
-        /**
-        Array of DriveRate values
-        */
+        /// Array of DriveRate values
         #[serde(rename = "Value")]
         value: Option<Vec<schemas::DriveRate>>,
     }
@@ -296,15 +254,11 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct PutActionPath {
-        /**
-        One of the recognised ASCOM device types e.g. telescope (must be lower case)
-        */
+        /// One of the recognised ASCOM device types e.g. telescope (must be lower case)
         #[serde(rename = "device_type")]
         device_type: Option<String>,
 
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -313,15 +267,11 @@ mod schemas {
     #[from_request(via(Form))]
 
     struct PutActionRequest {
-        /**
-        A well known name that represents the action to be carried out.
-        */
+        /// A well known name that represents the action to be carried out.
         #[serde(rename = "Action")]
         action: String,
 
-        /**
-        List of required parameters or an Empty String if none are required
-        */
+        /// List of required parameters or an Empty String if none are required
         #[serde(rename = "Parameters")]
         parameters: String,
     }
@@ -330,15 +280,11 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct PutCommandblindPath {
-        /**
-        One of the recognised ASCOM device types e.g. telescope (must be lower case)
-        */
+        /// One of the recognised ASCOM device types e.g. telescope (must be lower case)
         #[serde(rename = "device_type")]
         device_type: Option<String>,
 
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -347,15 +293,11 @@ mod schemas {
     #[from_request(via(Form))]
 
     struct PutCommandblindRequest {
-        /**
-        The literal command string to be transmitted.
-        */
+        /// The literal command string to be transmitted.
         #[serde(rename = "Command")]
         command: String,
 
-        /**
-        If set to true the string is transmitted 'as-is', if set to false then protocol framing characters may be added prior to transmission
-        */
+        /// If set to true the string is transmitted 'as-is', if set to false then protocol framing characters may be added prior to transmission
         #[serde(rename = "Raw")]
         raw: String,
     }
@@ -364,15 +306,11 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct PutCommandboolPath {
-        /**
-        One of the recognised ASCOM device types e.g. telescope (must be lower case)
-        */
+        /// One of the recognised ASCOM device types e.g. telescope (must be lower case)
         #[serde(rename = "device_type")]
         device_type: Option<String>,
 
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -381,15 +319,11 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct PutCommandstringPath {
-        /**
-        One of the recognised ASCOM device types e.g. telescope (must be lower case)
-        */
+        /// One of the recognised ASCOM device types e.g. telescope (must be lower case)
         #[serde(rename = "device_type")]
         device_type: Option<String>,
 
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -398,15 +332,11 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct GetConnectedPath {
-        /**
-        One of the recognised ASCOM device types e.g. telescope (must be lower case)
-        */
+        /// One of the recognised ASCOM device types e.g. telescope (must be lower case)
         #[serde(rename = "device_type")]
         device_type: Option<String>,
 
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -420,15 +350,11 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct PutConnectedPath {
-        /**
-        One of the recognised ASCOM device types e.g. telescope (must be lower case)
-        */
+        /// One of the recognised ASCOM device types e.g. telescope (must be lower case)
         #[serde(rename = "device_type")]
         device_type: Option<String>,
 
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -437,9 +363,7 @@ mod schemas {
     #[from_request(via(Form))]
 
     struct PutConnectedRequest {
-        /**
-        Set True to connect to the device hardware, set False to disconnect from the device hardware
-        */
+        /// Set True to connect to the device hardware, set False to disconnect from the device hardware
         #[serde(rename = "Connected")]
         connected: bool,
     }
@@ -448,15 +372,11 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct GetDescriptionPath {
-        /**
-        One of the recognised ASCOM device types e.g. telescope (must be lower case)
-        */
+        /// One of the recognised ASCOM device types e.g. telescope (must be lower case)
         #[serde(rename = "device_type")]
         device_type: Option<String>,
 
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -470,15 +390,11 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct GetDriverinfoPath {
-        /**
-        One of the recognised ASCOM device types e.g. telescope (must be lower case)
-        */
+        /// One of the recognised ASCOM device types e.g. telescope (must be lower case)
         #[serde(rename = "device_type")]
         device_type: Option<String>,
 
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -492,15 +408,11 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct GetDriverversionPath {
-        /**
-        One of the recognised ASCOM device types e.g. telescope (must be lower case)
-        */
+        /// One of the recognised ASCOM device types e.g. telescope (must be lower case)
         #[serde(rename = "device_type")]
         device_type: Option<String>,
 
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -514,15 +426,11 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct GetInterfaceversionPath {
-        /**
-        One of the recognised ASCOM device types e.g. telescope (must be lower case)
-        */
+        /// One of the recognised ASCOM device types e.g. telescope (must be lower case)
         #[serde(rename = "device_type")]
         device_type: Option<String>,
 
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -536,15 +444,11 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct GetNamePath {
-        /**
-        One of the recognised ASCOM device types e.g. telescope (must be lower case)
-        */
+        /// One of the recognised ASCOM device types e.g. telescope (must be lower case)
         #[serde(rename = "device_type")]
         device_type: Option<String>,
 
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -558,15 +462,11 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct GetSupportedactionsPath {
-        /**
-        One of the recognised ASCOM device types e.g. telescope (must be lower case)
-        */
+        /// One of the recognised ASCOM device types e.g. telescope (must be lower case)
         #[serde(rename = "device_type")]
         device_type: Option<String>,
 
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -580,9 +480,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct GetCameraBayeroffsetxPath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -596,9 +494,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct GetCameraBayeroffsetyPath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -612,9 +508,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct GetCameraBinxPath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -628,9 +522,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct PutCameraBinxPath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -639,9 +531,7 @@ mod schemas {
     #[from_request(via(Form))]
 
     struct PutCameraBinxRequest {
-        /**
-        The X binning value
-        */
+        /// The X binning value
         #[serde(rename = "BinX")]
         bin_x: i32,
     }
@@ -650,9 +540,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct GetCameraBinyPath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -666,9 +554,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct PutCameraBinyPath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -677,9 +563,7 @@ mod schemas {
     #[from_request(via(Form))]
 
     struct PutCameraBinyRequest {
-        /**
-        The Y binning value
-        */
+        /// The Y binning value
         #[serde(rename = "BinY")]
         bin_y: i32,
     }
@@ -688,9 +572,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct GetCameraCamerastatePath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -704,9 +586,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct GetCameraCameraxsizePath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -720,9 +600,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct GetCameraCameraysizePath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -736,9 +614,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct GetCameraCanabortexposurePath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -752,9 +628,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct GetCameraCanasymmetricbinPath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -768,9 +642,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct GetCameraCanfastreadoutPath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -784,9 +656,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct GetCameraCangetcoolerpowerPath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -800,9 +670,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct GetCameraCanpulseguidePath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -816,9 +684,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct GetCameraCansetccdtemperaturePath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -832,9 +698,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct GetCameraCanstopexposurePath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -848,9 +712,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct GetCameraCcdtemperaturePath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -864,9 +726,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct GetCameraCooleronPath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -880,9 +740,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct PutCameraCooleronPath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -891,9 +749,7 @@ mod schemas {
     #[from_request(via(Form))]
 
     struct PutCameraCooleronRequest {
-        /**
-        Cooler state
-        */
+        /// Cooler state
         #[serde(rename = "CoolerOn")]
         cooler_on: bool,
     }
@@ -902,9 +758,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct GetCameraCoolerpowerPath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -918,9 +772,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct GetCameraElectronsperaduPath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -934,9 +786,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct GetCameraExposuremaxPath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -950,9 +800,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct GetCameraExposureminPath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -966,9 +814,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct GetCameraExposureresolutionPath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -982,9 +828,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct GetCameraFastreadoutPath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -998,9 +842,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct PutCameraFastreadoutPath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -1009,9 +851,7 @@ mod schemas {
     #[from_request(via(Form))]
 
     struct PutCameraFastreadoutRequest {
-        /**
-        True to enable fast readout mode
-        */
+        /// True to enable fast readout mode
         #[serde(rename = "FastReadout")]
         fast_readout: bool,
     }
@@ -1020,9 +860,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct GetCameraFullwellcapacityPath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -1036,9 +874,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct GetCameraGainPath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -1052,9 +888,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct PutCameraGainPath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -1063,9 +897,7 @@ mod schemas {
     #[from_request(via(Form))]
 
     struct PutCameraGainRequest {
-        /**
-        Index of the current camera gain in the Gains string array.
-        */
+        /// Index of the current camera gain in the Gains string array.
         #[serde(rename = "Gain")]
         gain: i32,
     }
@@ -1074,9 +906,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct GetCameraGainmaxPath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -1090,9 +920,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct GetCameraGainminPath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -1106,9 +934,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct GetCameraGainsPath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -1122,9 +948,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct GetCameraHasshutterPath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -1138,9 +962,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct GetCameraHeatsinktemperaturePath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -1154,9 +976,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct GetCameraImagearrayPath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -1170,9 +990,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct GetCameraImagearrayvariantPath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -1186,9 +1004,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct GetCameraImagereadyPath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -1202,9 +1018,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct GetCameraIspulseguidingPath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -1218,9 +1032,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct GetCameraLastexposuredurationPath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -1234,9 +1046,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct GetCameraLastexposurestarttimePath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -1250,9 +1060,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct GetCameraMaxaduPath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -1266,9 +1074,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct GetCameraMaxbinxPath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -1282,9 +1088,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct GetCameraMaxbinyPath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -1298,9 +1102,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct GetCameraNumxPath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -1314,9 +1116,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct PutCameraNumxPath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -1325,9 +1125,7 @@ mod schemas {
     #[from_request(via(Form))]
 
     struct PutCameraNumxRequest {
-        /**
-        Sets the subframe width, if binning is active, value is in binned pixels.
-        */
+        /// Sets the subframe width, if binning is active, value is in binned pixels.
         #[serde(rename = "NumX")]
         num_x: i32,
     }
@@ -1336,9 +1134,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct GetCameraNumyPath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -1352,9 +1148,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct PutCameraNumyPath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -1363,9 +1157,7 @@ mod schemas {
     #[from_request(via(Form))]
 
     struct PutCameraNumyRequest {
-        /**
-        Sets the subframe height, if binning is active, value is in binned pixels.
-        */
+        /// Sets the subframe height, if binning is active, value is in binned pixels.
         #[serde(rename = "NumY")]
         num_y: i32,
     }
@@ -1374,9 +1166,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct GetCameraOffsetPath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -1390,9 +1180,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct PutCameraOffsetPath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -1401,9 +1189,7 @@ mod schemas {
     #[from_request(via(Form))]
 
     struct PutCameraOffsetRequest {
-        /**
-        Index of the current camera offset in the offsets string array.
-        */
+        /// Index of the current camera offset in the offsets string array.
         #[serde(rename = "offset")]
         offset: i32,
     }
@@ -1412,9 +1198,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct GetCameraOffsetmaxPath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -1428,9 +1212,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct GetCameraOffsetminPath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -1444,9 +1226,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct GetCameraOffsetsPath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -1460,9 +1240,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct GetCameraPercentcompletedPath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -1476,9 +1254,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct GetCameraPixelsizexPath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -1492,9 +1268,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct GetCameraPixelsizeyPath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -1508,9 +1282,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct GetCameraReadoutmodePath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -1524,9 +1296,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct PutCameraReadoutmodePath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -1535,9 +1305,7 @@ mod schemas {
     #[from_request(via(Form))]
 
     struct PutCameraReadoutmodeRequest {
-        /**
-        Index into the ReadoutModes array of string readout mode names indicating the camera's current readout mode.
-        */
+        /// Index into the ReadoutModes array of string readout mode names indicating the camera's current readout mode.
         #[serde(rename = "ReadoutMode")]
         readout_mode: i32,
     }
@@ -1546,9 +1314,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct GetCameraReadoutmodesPath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -1562,9 +1328,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct GetCameraSensornamePath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -1578,9 +1342,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct GetCameraSensortypePath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -1594,9 +1356,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct GetCameraSetccdtemperaturePath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -1610,9 +1370,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct PutCameraSetccdtemperaturePath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -1621,9 +1379,7 @@ mod schemas {
     #[from_request(via(Form))]
 
     struct PutCameraSetccdtemperatureRequest {
-        /**
-        Temperature set point (degrees Celsius).
-        */
+        /// Temperature set point (degrees Celsius).
         #[serde(rename = "SetCCDTemperature")]
         set_ccdtemperature: f64,
     }
@@ -1632,9 +1388,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct GetCameraStartxPath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -1648,9 +1402,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct PutCameraStartxPath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -1659,9 +1411,7 @@ mod schemas {
     #[from_request(via(Form))]
 
     struct PutCameraStartxRequest {
-        /**
-        The subframe X axis start position in binned pixels.
-        */
+        /// The subframe X axis start position in binned pixels.
         #[serde(rename = "StartX")]
         start_x: i32,
     }
@@ -1670,9 +1420,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct GetCameraStartyPath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -1686,9 +1434,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct PutCameraStartyPath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -1697,9 +1443,7 @@ mod schemas {
     #[from_request(via(Form))]
 
     struct PutCameraStartyRequest {
-        /**
-        The subframe Y axis start position in binned pixels.
-        */
+        /// The subframe Y axis start position in binned pixels.
         #[serde(rename = "StartY")]
         start_y: i32,
     }
@@ -1708,9 +1452,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct GetCameraSubexposuredurationPath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -1724,9 +1466,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct PutCameraSubexposuredurationPath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -1735,9 +1475,7 @@ mod schemas {
     #[from_request(via(Form))]
 
     struct PutCameraSubexposuredurationRequest {
-        /**
-        The request sub exposure duration in seconds
-        */
+        /// The request sub exposure duration in seconds
         #[serde(rename = "SubExposureDuration")]
         sub_exposure_duration: f64,
     }
@@ -1746,9 +1484,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct PutCameraAbortexposurePath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -1762,9 +1498,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct PutCameraPulseguidePath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -1773,15 +1507,11 @@ mod schemas {
     #[from_request(via(Form))]
 
     struct PutCameraPulseguideRequest {
-        /**
-        Direction of movement (0 = North, 1 = South, 2 = East, 3 = West)
-        */
+        /// Direction of movement (0 = North, 1 = South, 2 = East, 3 = West)
         #[serde(rename = "Direction")]
         direction: i32,
 
-        /**
-        Duration of movement in milli-seconds
-        */
+        /// Duration of movement in milli-seconds
         #[serde(rename = "Duration")]
         duration: i32,
     }
@@ -1790,9 +1520,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct PutCameraStartexposurePath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -1801,15 +1529,11 @@ mod schemas {
     #[from_request(via(Form))]
 
     struct PutCameraStartexposureRequest {
-        /**
-        Duration of exposure in seconds
-        */
+        /// Duration of exposure in seconds
         #[serde(rename = "Duration")]
         duration: f64,
 
-        /**
-        True if light frame, false if dark frame.
-        */
+        /// True if light frame, false if dark frame.
         #[serde(rename = "Light")]
         light: bool,
     }
@@ -1818,9 +1542,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct PutCameraStopexposurePath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -1829,9 +1551,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct GetCovercalibratorBrightnessPath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -1845,9 +1565,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct GetCovercalibratorCalibratorstatePath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -1861,9 +1579,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct GetCovercalibratorCoverstatePath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -1877,9 +1593,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct GetCovercalibratorMaxbrightnessPath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -1893,9 +1607,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct PutCovercalibratorCalibratoroffPath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -1904,9 +1616,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct PutCovercalibratorCalibratoronPath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -1915,9 +1625,7 @@ mod schemas {
     #[from_request(via(Form))]
 
     struct PutCovercalibratorCalibratoronRequest {
-        /**
-        The required brightness in the range 0 to MaxBrightness
-        */
+        /// The required brightness in the range 0 to MaxBrightness
         #[serde(rename = "Brightness")]
         brightness: Option<i32>,
     }
@@ -1926,9 +1634,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct PutCovercalibratorClosecoverPath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -1937,9 +1643,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct PutCovercalibratorHaltcoverPath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -1948,9 +1652,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct PutCovercalibratorOpencoverPath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -1959,9 +1661,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct GetDomeAltitudePath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -1975,9 +1675,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct GetDomeAthomePath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -1991,9 +1689,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct GetDomeAtparkPath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -2007,9 +1703,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct GetDomeAzimuthPath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -2023,9 +1717,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct GetDomeCanfindhomePath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -2039,9 +1731,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct GetDomeCanparkPath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -2055,9 +1745,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct GetDomeCansetaltitudePath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -2071,9 +1759,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct GetDomeCansetazimuthPath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -2087,9 +1773,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct GetDomeCansetparkPath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -2103,9 +1787,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct GetDomeCansetshutterPath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -2119,9 +1801,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct GetDomeCanslavePath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -2135,9 +1815,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct GetDomeCansyncazimuthPath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -2151,9 +1829,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct GetDomeShutterstatusPath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -2167,9 +1843,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct GetDomeSlavedPath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -2183,9 +1857,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct PutDomeSlavedPath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -2194,9 +1866,7 @@ mod schemas {
     #[from_request(via(Form))]
 
     struct PutDomeSlavedRequest {
-        /**
-        True if telescope is slaved to dome, otherwise false
-        */
+        /// True if telescope is slaved to dome, otherwise false
         #[serde(rename = "Slaved")]
         slaved: bool,
     }
@@ -2205,9 +1875,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct GetDomeSlewingPath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -2221,9 +1889,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct PutDomeAbortslewPath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -2232,9 +1898,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct PutDomeCloseshutterPath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -2243,9 +1907,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct PutDomeFindhomePath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -2254,9 +1916,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct PutDomeOpenshutterPath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -2265,9 +1925,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct PutDomeParkPath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -2276,9 +1934,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct PutDomeSetparkPath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -2287,9 +1943,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct PutDomeSlewtoaltitudePath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -2298,9 +1952,7 @@ mod schemas {
     #[from_request(via(Form))]
 
     struct PutDomeSlewtoaltitudeRequest {
-        /**
-        Target dome altitude (degrees, horizon zero and increasing positive to 90 zenith)
-        */
+        /// Target dome altitude (degrees, horizon zero and increasing positive to 90 zenith)
         #[serde(rename = "Altitude")]
         altitude: f64,
     }
@@ -2309,9 +1961,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct PutDomeSlewtoazimuthPath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -2320,9 +1970,7 @@ mod schemas {
     #[from_request(via(Form))]
 
     struct PutDomeSlewtoazimuthRequest {
-        /**
-        Target dome azimuth (degrees, North zero and increasing clockwise. i.e., 90 East, 180 South, 270 West)
-        */
+        /// Target dome azimuth (degrees, North zero and increasing clockwise. i.e., 90 East, 180 South, 270 West)
         #[serde(rename = "Azimuth")]
         azimuth: f64,
     }
@@ -2331,9 +1979,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct PutDomeSynctoazimuthPath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -2342,9 +1988,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct GetFilterwheelFocusoffsetsPath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -2358,9 +2002,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct GetFilterwheelNamesPath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -2374,9 +2016,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct GetFilterwheelPositionPath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -2390,9 +2030,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct PutFilterwheelPositionPath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -2401,9 +2039,7 @@ mod schemas {
     #[from_request(via(Form))]
 
     struct PutFilterwheelPositionRequest {
-        /**
-        The number of the filter wheel position to select
-        */
+        /// The number of the filter wheel position to select
         #[serde(rename = "Position")]
         position: i32,
     }
@@ -2412,9 +2048,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct GetFocuserAbsolutePath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -2428,9 +2062,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct GetFocuserIsmovingPath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -2444,9 +2076,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct GetFocuserMaxincrementPath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -2460,9 +2090,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct GetFocuserMaxstepPath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -2476,9 +2104,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct GetFocuserPositionPath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -2492,9 +2118,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct GetFocuserStepsizePath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -2508,9 +2132,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct GetFocuserTempcompPath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -2524,9 +2146,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct PutFocuserTempcompPath {
-        /**
-        Zero based device number as set on the server
-        */
+        /// Zero based device number as set on the server
         #[serde(rename = "device_number")]
         device_number: Option<i32>,
     }
@@ -2535,9 +2155,7 @@ mod schemas {
     #[from_request(via(Form))]
 
     struct PutFocuserTempcompRequest {
-        /**
-        Set true to enable the focuser's temperature compensation mode, otherwise false for normal operation.
-        */
+        /// Set true to enable the focuser's temperature compensation mode, otherwise false for normal operation.
         #[serde(rename = "TempComp")]
         temp_comp: bool,
     }
@@ -2546,9 +2164,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct GetFocuserTempcompavailablePath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -2562,9 +2178,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct GetFocuserTemperaturePath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -2578,9 +2192,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct PutFocuserHaltPath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -2589,9 +2201,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct PutFocuserMovePath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -2600,9 +2210,7 @@ mod schemas {
     #[from_request(via(Form))]
 
     struct PutFocuserMoveRequest {
-        /**
-        Step distance or absolute position, depending on the value of the Absolute property
-        */
+        /// Step distance or absolute position, depending on the value of the Absolute property
         #[serde(rename = "Position")]
         position: i32,
     }
@@ -2611,9 +2219,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct GetObservingconditionsAverageperiodPath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -2627,9 +2233,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct PutObservingconditionsAverageperiodPath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -2638,9 +2242,7 @@ mod schemas {
     #[from_request(via(Form))]
 
     struct PutObservingconditionsAverageperiodRequest {
-        /**
-        Time period (hours) over which to average sensor readings
-        */
+        /// Time period (hours) over which to average sensor readings
         #[serde(rename = "AveragePeriod")]
         average_period: f64,
     }
@@ -2649,9 +2251,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct GetObservingconditionsCloudcoverPath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -2665,9 +2265,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct GetObservingconditionsDewpointPath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -2681,9 +2279,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct GetObservingconditionsHumidityPath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -2697,9 +2293,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct GetObservingconditionsPressurePath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -2713,9 +2307,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct GetObservingconditionsRainratePath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -2729,9 +2321,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct GetObservingconditionsSkybrightnessPath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -2745,9 +2335,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct GetObservingconditionsSkyqualityPath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -2761,9 +2349,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct GetObservingconditionsSkytemperaturePath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -2777,9 +2363,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct GetObservingconditionsStarfwhmPath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -2793,9 +2377,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct GetObservingconditionsTemperaturePath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -2809,9 +2391,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct GetObservingconditionsWinddirectionPath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -2825,9 +2405,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct GetObservingconditionsWindgustPath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -2841,9 +2419,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct GetObservingconditionsWindspeedPath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -2857,9 +2433,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct PutObservingconditionsRefreshPath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -2868,9 +2442,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct GetObservingconditionsSensordescriptionPath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -2879,9 +2451,7 @@ mod schemas {
     #[from_request(via(Query))]
 
     struct GetObservingconditionsSensordescriptionQuery {
-        /**
-        Name of the sensor whose description is required
-        */
+        /// Name of the sensor whose description is required
         #[serde(rename = "SensorName")]
         sensor_name: Option<String>,
     }
@@ -2890,9 +2460,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct GetObservingconditionsTimesincelastupdatePath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -2901,9 +2469,7 @@ mod schemas {
     #[from_request(via(Query))]
 
     struct GetObservingconditionsTimesincelastupdateQuery {
-        /**
-        Name of the sensor whose last update time is required
-        */
+        /// Name of the sensor whose last update time is required
         #[serde(rename = "SensorName")]
         sensor_name: Option<String>,
     }
@@ -2912,9 +2478,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct GetRotatorCanreversePath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -2928,9 +2492,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct GetRotatorIsmovingPath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -2944,9 +2506,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct GetRotatorMechanicalpositionPath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -2960,9 +2520,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct GetRotatorPositionPath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -2976,9 +2534,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct GetRotatorReversePath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -2992,9 +2548,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct PutRotatorReversePath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -3003,9 +2557,7 @@ mod schemas {
     #[from_request(via(Form))]
 
     struct PutRotatorReverseRequest {
-        /**
-        True if the rotation and angular direction must be reversed to match the optical characteristcs
-        */
+        /// True if the rotation and angular direction must be reversed to match the optical characteristcs
         #[serde(rename = "Reverse")]
         reverse: bool,
     }
@@ -3014,9 +2566,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct GetRotatorStepsizePath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -3030,9 +2580,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct GetRotatorTargetpositionPath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -3046,9 +2594,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct PutRotatorHaltPath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -3057,9 +2603,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct PutRotatorMovePath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -3068,9 +2612,7 @@ mod schemas {
     #[from_request(via(Form))]
 
     struct PutRotatorMoveRequest {
-        /**
-        Relative position to move in degrees from current Position.
-        */
+        /// Relative position to move in degrees from current Position.
         #[serde(rename = "Position")]
         position: f64,
     }
@@ -3079,9 +2621,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct PutRotatorMoveabsolutePath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -3090,9 +2630,7 @@ mod schemas {
     #[from_request(via(Form))]
 
     struct PutRotatorMoveabsoluteRequest {
-        /**
-        Absolute position in degrees.
-        */
+        /// Absolute position in degrees.
         #[serde(rename = "Position")]
         position: f64,
     }
@@ -3101,9 +2639,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct PutRotatorMovemechanicalPath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -3112,9 +2648,7 @@ mod schemas {
     #[from_request(via(Form))]
 
     struct PutRotatorMovemechanicalRequest {
-        /**
-        Absolute position in degrees.
-        */
+        /// Absolute position in degrees.
         #[serde(rename = "Position")]
         position: f64,
     }
@@ -3123,9 +2657,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct PutRotatorSyncPath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -3134,9 +2666,7 @@ mod schemas {
     #[from_request(via(Form))]
 
     struct PutRotatorSyncRequest {
-        /**
-        Absolute position in degrees.
-        */
+        /// Absolute position in degrees.
         #[serde(rename = "Position")]
         position: f64,
     }
@@ -3145,9 +2675,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct GetSafetymonitorIssafePath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -3161,9 +2689,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct GetSwitchMaxswitchPath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -3177,9 +2703,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct GetSwitchCanwritePath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -3188,9 +2712,7 @@ mod schemas {
     #[from_request(via(Query))]
 
     struct GetSwitchCanwriteQuery {
-        /**
-        The device number (0 to MaxSwitch - 1)
-        */
+        /// The device number (0 to MaxSwitch - 1)
         #[serde(rename = "Id")]
         id: Option<i32>,
     }
@@ -3199,9 +2721,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct GetSwitchGetswitchPath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -3210,9 +2730,7 @@ mod schemas {
     #[from_request(via(Query))]
 
     struct GetSwitchGetswitchQuery {
-        /**
-        The device number (0 to MaxSwitch - 1)
-        */
+        /// The device number (0 to MaxSwitch - 1)
         #[serde(rename = "Id")]
         id: Option<i32>,
     }
@@ -3221,9 +2739,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct GetSwitchGetswitchdescriptionPath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -3232,9 +2748,7 @@ mod schemas {
     #[from_request(via(Query))]
 
     struct GetSwitchGetswitchdescriptionQuery {
-        /**
-        The device number (0 to MaxSwitch - 1)
-        */
+        /// The device number (0 to MaxSwitch - 1)
         #[serde(rename = "Id")]
         id: Option<i32>,
     }
@@ -3243,9 +2757,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct GetSwitchGetswitchnamePath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -3254,9 +2766,7 @@ mod schemas {
     #[from_request(via(Query))]
 
     struct GetSwitchGetswitchnameQuery {
-        /**
-        The device number (0 to MaxSwitch - 1)
-        */
+        /// The device number (0 to MaxSwitch - 1)
         #[serde(rename = "Id")]
         id: Option<i32>,
     }
@@ -3265,9 +2775,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct GetSwitchGetswitchvaluePath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -3276,9 +2784,7 @@ mod schemas {
     #[from_request(via(Query))]
 
     struct GetSwitchGetswitchvalueQuery {
-        /**
-        The device number (0 to MaxSwitch - 1)
-        */
+        /// The device number (0 to MaxSwitch - 1)
         #[serde(rename = "Id")]
         id: Option<i32>,
     }
@@ -3287,9 +2793,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct GetSwitchMinswitchvaluePath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -3298,9 +2802,7 @@ mod schemas {
     #[from_request(via(Query))]
 
     struct GetSwitchMinswitchvalueQuery {
-        /**
-        The device number (0 to MaxSwitch - 1)
-        */
+        /// The device number (0 to MaxSwitch - 1)
         #[serde(rename = "Id")]
         id: Option<i32>,
     }
@@ -3309,9 +2811,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct GetSwitchMaxswitchvaluePath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -3320,9 +2820,7 @@ mod schemas {
     #[from_request(via(Query))]
 
     struct GetSwitchMaxswitchvalueQuery {
-        /**
-        The device number (0 to MaxSwitch - 1)
-        */
+        /// The device number (0 to MaxSwitch - 1)
         #[serde(rename = "Id")]
         id: Option<i32>,
     }
@@ -3331,9 +2829,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct PutSwitchSetswitchPath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -3342,15 +2838,11 @@ mod schemas {
     #[from_request(via(Form))]
 
     struct PutSwitchSetswitchRequest {
-        /**
-        The device number (0 to MaxSwitch - 1)
-        */
+        /// The device number (0 to MaxSwitch - 1)
         #[serde(rename = "Id")]
         id: i32,
 
-        /**
-        The required control state (True or False)
-        */
+        /// The required control state (True or False)
         #[serde(rename = "State")]
         state: bool,
     }
@@ -3359,9 +2851,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct PutSwitchSetswitchnamePath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -3370,15 +2860,11 @@ mod schemas {
     #[from_request(via(Form))]
 
     struct PutSwitchSetswitchnameRequest {
-        /**
-        The device number (0 to MaxSwitch - 1)
-        */
+        /// The device number (0 to MaxSwitch - 1)
         #[serde(rename = "Id")]
         id: i32,
 
-        /**
-        The name of the device
-        */
+        /// The name of the device
         #[serde(rename = "Name")]
         name: String,
     }
@@ -3387,9 +2873,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct PutSwitchSetswitchvaluePath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -3398,15 +2882,11 @@ mod schemas {
     #[from_request(via(Form))]
 
     struct PutSwitchSetswitchvalueRequest {
-        /**
-        The device number (0 to MaxSwitch - 1)
-        */
+        /// The device number (0 to MaxSwitch - 1)
         #[serde(rename = "Id")]
         id: i32,
 
-        /**
-        The value to be set, between MinSwitchValue and MaxSwitchValue
-        */
+        /// The value to be set, between MinSwitchValue and MaxSwitchValue
         #[serde(rename = "Value")]
         value: f64,
     }
@@ -3415,9 +2895,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct GetSwitchSwitchstepPath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -3426,9 +2904,7 @@ mod schemas {
     #[from_request(via(Query))]
 
     struct GetSwitchSwitchstepQuery {
-        /**
-        The device number (0 to MaxSwitch - 1)
-        */
+        /// The device number (0 to MaxSwitch - 1)
         #[serde(rename = "Id")]
         id: Option<i32>,
     }
@@ -3437,9 +2913,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct GetTelescopeAlignmentmodePath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -3453,9 +2927,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct GetTelescopeAltitudePath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -3469,9 +2941,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct GetTelescopeApertureareaPath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -3485,9 +2955,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct GetTelescopeAperturediameterPath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -3501,9 +2969,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct GetTelescopeAthomePath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -3517,9 +2983,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct GetTelescopeAtparkPath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -3533,9 +2997,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct GetTelescopeAzimuthPath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -3549,9 +3011,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct GetTelescopeCanfindhomePath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -3565,9 +3025,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct GetTelescopeCanparkPath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -3581,9 +3039,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct GetTelescopeCanpulseguidePath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -3597,9 +3053,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct GetTelescopeCansetdeclinationratePath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -3613,9 +3067,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct GetTelescopeCansetguideratesPath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -3629,9 +3081,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct GetTelescopeCansetparkPath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -3645,9 +3095,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct GetTelescopeCansetpiersidePath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -3661,9 +3109,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct GetTelescopeCansetrightascensionratePath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -3677,9 +3123,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct GetTelescopeCansettrackingPath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -3693,9 +3137,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct GetTelescopeCanslewPath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -3709,9 +3151,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct GetTelescopeCanslewaltazPath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -3725,9 +3165,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct GetTelescopeCanslewaltazasyncPath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -3741,9 +3179,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct GetTelescopeCanslewasyncPath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -3757,9 +3193,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct GetTelescopeCansyncPath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -3773,9 +3207,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct GetTelescopeCansyncaltazPath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -3789,9 +3221,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct GetTelescopeCanunparkPath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -3805,9 +3235,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct GetTelescopeDeclinationPath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -3821,9 +3249,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct GetTelescopeDeclinationratePath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -3837,9 +3263,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct PutTelescopeDeclinationratePath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -3848,9 +3272,7 @@ mod schemas {
     #[from_request(via(Form))]
 
     struct PutTelescopeDeclinationrateRequest {
-        /**
-        Declination tracking rate (arcseconds per second)
-        */
+        /// Declination tracking rate (arcseconds per second)
         #[serde(rename = "DeclinationRate")]
         declination_rate: f64,
     }
@@ -3859,9 +3281,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct GetTelescopeDoesrefractionPath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -3875,9 +3295,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct PutTelescopeDoesrefractionPath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -3886,9 +3304,7 @@ mod schemas {
     #[from_request(via(Form))]
 
     struct PutTelescopeDoesrefractionRequest {
-        /**
-        Set True to make the telescope or driver applie atmospheric refraction to coordinates.
-        */
+        /// Set True to make the telescope or driver applie atmospheric refraction to coordinates.
         #[serde(rename = "DoesRefraction")]
         does_refraction: bool,
     }
@@ -3897,9 +3313,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct GetTelescopeEquatorialsystemPath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -3913,9 +3327,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct GetTelescopeFocallengthPath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -3929,9 +3341,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct GetTelescopeGuideratedeclinationPath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -3945,9 +3355,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct PutTelescopeGuideratedeclinationPath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -3956,9 +3364,7 @@ mod schemas {
     #[from_request(via(Form))]
 
     struct PutTelescopeGuideratedeclinationRequest {
-        /**
-        Declination movement rate offset degrees/sec).
-        */
+        /// Declination movement rate offset degrees/sec).
         #[serde(rename = "GuideRateDeclination")]
         guide_rate_declination: f64,
     }
@@ -3967,9 +3373,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct GetTelescopeGuideraterightascensionPath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -3983,9 +3387,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct PutTelescopeGuideraterightascensionPath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -3994,9 +3396,7 @@ mod schemas {
     #[from_request(via(Form))]
 
     struct PutTelescopeGuideraterightascensionRequest {
-        /**
-        RightAscension movement rate offset degrees/sec).
-        */
+        /// RightAscension movement rate offset degrees/sec).
         #[serde(rename = "GuideRateRightAscension")]
         guide_rate_right_ascension: f64,
     }
@@ -4005,9 +3405,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct GetTelescopeIspulseguidingPath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -4021,9 +3419,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct GetTelescopeRightascensionPath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -4037,9 +3433,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct GetTelescopeRightascensionratePath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -4053,9 +3447,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct PutTelescopeRightascensionratePath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -4064,9 +3456,7 @@ mod schemas {
     #[from_request(via(Form))]
 
     struct PutTelescopeRightascensionrateRequest {
-        /**
-        Right ascension tracking rate (arcseconds per second)
-        */
+        /// Right ascension tracking rate (arcseconds per second)
         #[serde(rename = "RightAscensionRate")]
         right_ascension_rate: f64,
     }
@@ -4075,9 +3465,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct GetTelescopeSideofpierPath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -4091,9 +3479,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct PutTelescopeSideofpierPath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -4102,9 +3488,7 @@ mod schemas {
     #[from_request(via(Form))]
 
     struct PutTelescopeSideofpierRequest {
-        /**
-        New pointing state.
-        */
+        /// New pointing state.
         #[serde(rename = "SideOfPier")]
         side_of_pier: i32,
     }
@@ -4113,9 +3497,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct GetTelescopeSiderealtimePath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -4129,9 +3511,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct GetTelescopeSiteelevationPath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -4145,9 +3525,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct PutTelescopeSiteelevationPath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -4156,9 +3534,7 @@ mod schemas {
     #[from_request(via(Form))]
 
     struct PutTelescopeSiteelevationRequest {
-        /**
-        Elevation above mean sea level (metres).
-        */
+        /// Elevation above mean sea level (metres).
         #[serde(rename = "SiteElevation")]
         site_elevation: f64,
     }
@@ -4167,9 +3543,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct GetTelescopeSitelatitudePath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -4183,9 +3557,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct PutTelescopeSitelatitudePath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -4194,9 +3566,7 @@ mod schemas {
     #[from_request(via(Form))]
 
     struct PutTelescopeSitelatitudeRequest {
-        /**
-        Site latitude (degrees)
-        */
+        /// Site latitude (degrees)
         #[serde(rename = "SiteLatitude")]
         site_latitude: f64,
     }
@@ -4205,9 +3575,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct GetTelescopeSitelongitudePath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -4221,9 +3589,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct PutTelescopeSitelongitudePath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -4232,9 +3598,7 @@ mod schemas {
     #[from_request(via(Form))]
 
     struct PutTelescopeSitelongitudeRequest {
-        /**
-        Site longitude (degrees, positive East, WGS84)
-        */
+        /// Site longitude (degrees, positive East, WGS84)
         #[serde(rename = "SiteLongitude")]
         site_longitude: f64,
     }
@@ -4243,9 +3607,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct GetTelescopeSlewingPath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -4259,9 +3621,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct GetTelescopeSlewsettletimePath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -4275,9 +3635,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct PutTelescopeSlewsettletimePath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -4286,9 +3644,7 @@ mod schemas {
     #[from_request(via(Form))]
 
     struct PutTelescopeSlewsettletimeRequest {
-        /**
-        Settling time (integer sec.).
-        */
+        /// Settling time (integer sec.).
         #[serde(rename = "SlewSettleTime")]
         slew_settle_time: i32,
     }
@@ -4297,9 +3653,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct GetTelescopeTargetdeclinationPath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -4313,9 +3667,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct PutTelescopeTargetdeclinationPath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -4324,9 +3676,7 @@ mod schemas {
     #[from_request(via(Form))]
 
     struct PutTelescopeTargetdeclinationRequest {
-        /**
-        Target declination(degrees)
-        */
+        /// Target declination(degrees)
         #[serde(rename = "TargetDeclination")]
         target_declination: f64,
     }
@@ -4335,9 +3685,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct GetTelescopeTargetrightascensionPath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -4351,9 +3699,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct PutTelescopeTargetrightascensionPath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -4362,9 +3708,7 @@ mod schemas {
     #[from_request(via(Form))]
 
     struct PutTelescopeTargetrightascensionRequest {
-        /**
-        Target right ascension(hours)
-        */
+        /// Target right ascension(hours)
         #[serde(rename = "TargetRightAscension")]
         target_right_ascension: f64,
     }
@@ -4373,9 +3717,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct GetTelescopeTrackingPath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -4389,9 +3731,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct PutTelescopeTrackingPath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -4400,9 +3740,7 @@ mod schemas {
     #[from_request(via(Form))]
 
     struct PutTelescopeTrackingRequest {
-        /**
-        Tracking enabled / disabled
-        */
+        /// Tracking enabled / disabled
         #[serde(rename = "Tracking")]
         tracking: bool,
     }
@@ -4411,9 +3749,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct GetTelescopeTrackingratePath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -4427,9 +3763,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct PutTelescopeTrackingratePath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -4438,9 +3772,7 @@ mod schemas {
     #[from_request(via(Form))]
 
     struct PutTelescopeTrackingrateRequest {
-        /**
-        New tracking rate
-        */
+        /// New tracking rate
         #[serde(rename = "TrackingRate")]
         tracking_rate: i32,
     }
@@ -4449,9 +3781,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct GetTelescopeTrackingratesPath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -4465,9 +3795,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct GetTelescopeUtcdatePath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -4481,9 +3809,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct PutTelescopeUtcdatePath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -4492,9 +3818,7 @@ mod schemas {
     #[from_request(via(Form))]
 
     struct PutTelescopeUtcdateRequest {
-        /**
-        UTC date/time in ISO 8601 format.
-        */
+        /// UTC date/time in ISO 8601 format.
         #[serde(rename = "UTCDate")]
         utcdate: String,
     }
@@ -4503,9 +3827,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct PutTelescopeAbortslewPath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -4514,9 +3836,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct GetTelescopeAxisratesPath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -4525,9 +3845,7 @@ mod schemas {
     #[from_request(via(Query))]
 
     struct GetTelescopeAxisratesQuery {
-        /**
-        The axis about which rate information is desired. 0 = axisPrimary, 1 = axisSecondary, 2 = axisTertiary.
-        */
+        /// The axis about which rate information is desired. 0 = axisPrimary, 1 = axisSecondary, 2 = axisTertiary.
         #[serde(rename = "Axis")]
         axis: Option<i32>,
     }
@@ -4536,9 +3854,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct GetTelescopeCanmoveaxisPath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -4547,9 +3863,7 @@ mod schemas {
     #[from_request(via(Query))]
 
     struct GetTelescopeCanmoveaxisQuery {
-        /**
-        The axis about which rate information is desired. 0 = axisPrimary, 1 = axisSecondary, 2 = axisTertiary.
-        */
+        /// The axis about which rate information is desired. 0 = axisPrimary, 1 = axisSecondary, 2 = axisTertiary.
         #[serde(rename = "Axis")]
         axis: Option<i32>,
     }
@@ -4558,9 +3872,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct GetTelescopeDestinationsideofpierPath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -4569,15 +3881,11 @@ mod schemas {
     #[from_request(via(Query))]
 
     struct GetTelescopeDestinationsideofpierQuery {
-        /**
-        Right Ascension coordinate (0.0 to 23.99999999 hours)
-        */
+        /// Right Ascension coordinate (0.0 to 23.99999999 hours)
         #[serde(rename = "RightAscension")]
         right_ascension: Option<f64>,
 
-        /**
-        Declination coordinate (-90.0 to +90.0 degrees)
-        */
+        /// Declination coordinate (-90.0 to +90.0 degrees)
         #[serde(rename = "Declination")]
         declination: Option<f64>,
     }
@@ -4586,9 +3894,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct PutTelescopeFindhomePath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -4597,9 +3903,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct PutTelescopeMoveaxisPath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -4608,15 +3912,11 @@ mod schemas {
     #[from_request(via(Form))]
 
     struct PutTelescopeMoveaxisRequest {
-        /**
-        The axis about which rate information is desired. 0 = axisPrimary, 1 = axisSecondary, 2 = axisTertiary.
-        */
+        /// The axis about which rate information is desired. 0 = axisPrimary, 1 = axisSecondary, 2 = axisTertiary.
         #[serde(rename = "Axis")]
         axis: i32,
 
-        /**
-        The rate of motion (deg/sec) about the specified axis
-        */
+        /// The rate of motion (deg/sec) about the specified axis
         #[serde(rename = "Rate")]
         rate: f64,
     }
@@ -4625,9 +3925,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct PutTelescopeParkPath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -4636,9 +3934,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct PutTelescopePulseguidePath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -4647,15 +3943,11 @@ mod schemas {
     #[from_request(via(Form))]
 
     struct PutTelescopePulseguideRequest {
-        /**
-        The direction in which the guide-rate motion is to be made. 0 = guideNorth, 1 = guideSouth, 2 = guideEast, 3 = guideWest
-        */
+        /// The direction in which the guide-rate motion is to be made. 0 = guideNorth, 1 = guideSouth, 2 = guideEast, 3 = guideWest
         #[serde(rename = "Direction")]
         direction: i32,
 
-        /**
-        The duration of the guide-rate motion (milliseconds)
-        */
+        /// The duration of the guide-rate motion (milliseconds)
         #[serde(rename = "Duration")]
         duration: i32,
     }
@@ -4664,9 +3956,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct PutTelescopeSetparkPath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -4675,9 +3965,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct PutTelescopeSlewtoaltazPath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -4686,15 +3974,11 @@ mod schemas {
     #[from_request(via(Form))]
 
     struct PutTelescopeSlewtoaltazRequest {
-        /**
-        Azimuth coordinate (degrees, North-referenced, positive East/clockwise)
-        */
+        /// Azimuth coordinate (degrees, North-referenced, positive East/clockwise)
         #[serde(rename = "Azimuth")]
         azimuth: f64,
 
-        /**
-        Altitude coordinate (degrees, positive up)
-        */
+        /// Altitude coordinate (degrees, positive up)
         #[serde(rename = "Altitude")]
         altitude: f64,
     }
@@ -4703,9 +3987,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct PutTelescopeSlewtoaltazasyncPath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -4714,9 +3996,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct PutTelescopeSlewtocoordinatesPath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -4725,15 +4005,11 @@ mod schemas {
     #[from_request(via(Form))]
 
     struct PutTelescopeSlewtocoordinatesRequest {
-        /**
-        Right Ascension coordinate (hours)
-        */
+        /// Right Ascension coordinate (hours)
         #[serde(rename = "RightAscension")]
         right_ascension: f64,
 
-        /**
-        Declination coordinate (degrees)
-        */
+        /// Declination coordinate (degrees)
         #[serde(rename = "Declination")]
         declination: f64,
     }
@@ -4742,9 +4018,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct PutTelescopeSlewtocoordinatesasyncPath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -4753,9 +4027,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct PutTelescopeSlewtotargetPath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -4764,9 +4036,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct PutTelescopeSlewtotargetasyncPath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -4775,9 +4045,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct PutTelescopeSynctoaltazPath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -4786,9 +4054,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct PutTelescopeSynctocoordinatesPath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -4797,9 +4063,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct PutTelescopeSynctotargetPath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -4808,9 +4072,7 @@ mod schemas {
     #[from_request(via(Path))]
 
     struct PutTelescopeUnparkPath {
-        /**
-        Zero based device number as set on the server (0 to 4294967295)
-        */
+        /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
@@ -4889,9 +4151,7 @@ fn put_commandstring(
 ) -> Result<schemas::StringResponse> {
 }
 
-/**
-Retrieves the connected state of the device
-*/
+/// Retrieves the connected state of the device
 #[get("/<device_type>/<device_number>/connected")]
 fn get_connected(
     schemas::GetConnectedPath { device_type, device_number }: schemas::GetConnectedPath,
@@ -4902,9 +4162,7 @@ fn get_connected(
 ) -> Result<schemas::BoolResponse> {
 }
 
-/**
-Sets the connected state of the device
-*/
+/// Sets the connected state of the device
 #[put("/<device_type>/<device_number>/connected")]
 fn put_connected(
     schemas::PutConnectedPath { device_type, device_number }: schemas::PutConnectedPath,
@@ -4990,9 +4248,7 @@ fn get_name(
 ) -> Result<schemas::StringResponse> {
 }
 
-/**
-Returns the list of action names supported by this driver.
-*/
+/// Returns the list of action names supported by this driver.
 #[get("/<device_type>/<device_number>/supportedactions")]
 fn get_supportedactions(
     schemas::GetSupportedactionsPath { device_type, device_number }: schemas::GetSupportedactionsPath,
@@ -5033,9 +4289,7 @@ fn get_camera_bayeroffsety(
 ) -> Result<schemas::IntResponse> {
 }
 
-/**
-Returns the binning factor for the X axis.
-*/
+/// Returns the binning factor for the X axis.
 #[get("/camera/<device_number>/binx")]
 fn get_camera_binx(
     schemas::GetCameraBinxPath { device_number }: schemas::GetCameraBinxPath,
@@ -5046,9 +4300,7 @@ fn get_camera_binx(
 ) -> Result<schemas::IntResponse> {
 }
 
-/**
-Sets the binning factor for the X axis.
-*/
+/// Sets the binning factor for the X axis.
 #[put("/camera/<device_number>/binx")]
 fn put_camera_binx(
     schemas::PutCameraBinxPath { device_number }: schemas::PutCameraBinxPath,
@@ -5059,9 +4311,7 @@ fn put_camera_binx(
 ) -> Result<schemas::MethodResponse> {
 }
 
-/**
-Returns the binning factor for the Y axis.
-*/
+/// Returns the binning factor for the Y axis.
 #[get("/camera/<device_number>/biny")]
 fn get_camera_biny(
     schemas::GetCameraBinyPath { device_number }: schemas::GetCameraBinyPath,
@@ -5072,9 +4322,7 @@ fn get_camera_biny(
 ) -> Result<schemas::IntResponse> {
 }
 
-/**
-Sets the binning factor for the Y axis.
-*/
+/// Sets the binning factor for the Y axis.
 #[put("/camera/<device_number>/biny")]
 fn put_camera_biny(
     schemas::PutCameraBinyPath { device_number }: schemas::PutCameraBinyPath,
@@ -5160,9 +4408,7 @@ fn get_camera_canasymmetricbin(
 ) -> Result<schemas::BoolResponse> {
 }
 
-/**
-Indicates whether the camera has a fast readout mode.
-*/
+/// Indicates whether the camera has a fast readout mode.
 #[get("/camera/<device_number>/canfastreadout")]
 fn get_camera_canfastreadout(
     schemas::GetCameraCanfastreadoutPath { device_number }: schemas::GetCameraCanfastreadoutPath,
@@ -5218,9 +4464,7 @@ fn get_camera_cansetccdtemperature(
 ) -> Result<schemas::BoolResponse> {
 }
 
-/**
-Returns a flag indicating whether this camera can stop an exposure that is in progress
-*/
+/// Returns a flag indicating whether this camera can stop an exposure that is in progress
 #[get("/camera/<device_number>/canstopexposure")]
 fn get_camera_canstopexposure(
     schemas::GetCameraCanstopexposurePath { device_number }: schemas::GetCameraCanstopexposurePath,
@@ -5246,9 +4490,7 @@ fn get_camera_ccdtemperature(
 ) -> Result<schemas::DoubleResponse> {
 }
 
-/**
-Returns the current cooler on/off state.
-*/
+/// Returns the current cooler on/off state.
 #[get("/camera/<device_number>/cooleron")]
 fn get_camera_cooleron(
     schemas::GetCameraCooleronPath { device_number }: schemas::GetCameraCooleronPath,
@@ -5304,9 +4546,7 @@ fn get_camera_electronsperadu(
 ) -> Result<schemas::DoubleResponse> {
 }
 
-/**
-Returns the maximum exposure time supported by StartExposure.
-*/
+/// Returns the maximum exposure time supported by StartExposure.
 #[get("/camera/<device_number>/exposuremax")]
 fn get_camera_exposuremax(
     schemas::GetCameraExposuremaxPath { device_number }: schemas::GetCameraExposuremaxPath,
@@ -5332,9 +4572,7 @@ fn get_camera_exposuremin(
 ) -> Result<schemas::DoubleResponse> {
 }
 
-/**
-Returns the smallest increment in exposure time supported by StartExposure.
-*/
+/// Returns the smallest increment in exposure time supported by StartExposure.
 #[get("/camera/<device_number>/exposureresolution")]
 fn get_camera_exposureresolution(
     schemas::GetCameraExposureresolutionPath { device_number }: schemas::GetCameraExposureresolutionPath,
@@ -5345,9 +4583,7 @@ fn get_camera_exposureresolution(
 ) -> Result<schemas::DoubleResponse> {
 }
 
-/**
-Returns whenther Fast Readout Mode is enabled.
-*/
+/// Returns whenther Fast Readout Mode is enabled.
 #[get("/camera/<device_number>/fastreadout")]
 fn get_camera_fastreadout(
     schemas::GetCameraFastreadoutPath { device_number }: schemas::GetCameraFastreadoutPath,
@@ -5358,9 +4594,7 @@ fn get_camera_fastreadout(
 ) -> Result<schemas::BoolResponse> {
 }
 
-/**
-Sets whether Fast Readout Mode is enabled.
-*/
+/// Sets whether Fast Readout Mode is enabled.
 #[put("/camera/<device_number>/fastreadout")]
 fn put_camera_fastreadout(
     schemas::PutCameraFastreadoutPath { device_number }: schemas::PutCameraFastreadoutPath,
@@ -6000,9 +5234,7 @@ fn get_camera_sensortype(
 ) -> Result<schemas::IntResponse> {
 }
 
-/**
-Returns the current camera cooler setpoint in degrees Celsius.
-*/
+/// Returns the current camera cooler setpoint in degrees Celsius.
 #[get("/camera/<device_number>/setccdtemperature")]
 fn get_camera_setccdtemperature(
     schemas::GetCameraSetccdtemperaturePath { device_number }: schemas::GetCameraSetccdtemperaturePath,
@@ -6568,9 +5800,7 @@ fn put_dome_abortslew(
 ) -> Result<schemas::MethodResponse> {
 }
 
-/**
-Close the shutter or otherwise shield telescope from the sky.
-*/
+/// Close the shutter or otherwise shield telescope from the sky.
 #[put("/dome/<device_number>/closeshutter")]
 fn put_dome_closeshutter(
     schemas::PutDomeCloseshutterPath { device_number }: schemas::PutDomeCloseshutterPath,
@@ -6596,9 +5826,7 @@ fn put_dome_findhome(
 ) -> Result<schemas::MethodResponse> {
 }
 
-/**
-Open shutter or otherwise expose telescope to the sky.
-*/
+/// Open shutter or otherwise expose telescope to the sky.
 #[put("/dome/<device_number>/openshutter")]
 fn put_dome_openshutter(
     schemas::PutDomeOpenshutterPath { device_number }: schemas::PutDomeOpenshutterPath,
@@ -6639,9 +5867,7 @@ fn put_dome_setpark(
 ) -> Result<schemas::MethodResponse> {
 }
 
-/**
-Slew the dome to the given altitude position.
-*/
+/// Slew the dome to the given altitude position.
 #[put("/dome/<device_number>/slewtoaltitude")]
 fn put_dome_slewtoaltitude(
     schemas::PutDomeSlewtoaltitudePath { device_number }: schemas::PutDomeSlewtoaltitudePath,
@@ -6652,9 +5878,7 @@ fn put_dome_slewtoaltitude(
 ) -> Result<schemas::MethodResponse> {
 }
 
-/**
-Slew the dome to the given azimuth position.
-*/
+/// Slew the dome to the given azimuth position.
 #[put("/dome/<device_number>/slewtoazimuth")]
 fn put_dome_slewtoazimuth(
     schemas::PutDomeSlewtoazimuthPath { device_number }: schemas::PutDomeSlewtoazimuthPath,
@@ -6665,9 +5889,7 @@ fn put_dome_slewtoazimuth(
 ) -> Result<schemas::MethodResponse> {
 }
 
-/**
-Synchronize the current position of the dome to the given azimuth.
-*/
+/// Synchronize the current position of the dome to the given azimuth.
 #[put("/dome/<device_number>/synctoazimuth")]
 fn put_dome_synctoazimuth(
     schemas::PutDomeSynctoazimuthPath { device_number }: schemas::PutDomeSynctoazimuthPath,
@@ -6708,9 +5930,7 @@ fn get_filterwheel_names(
 ) -> Result<schemas::StringArrayResponse> {
 }
 
-/**
-Returns the current filter wheel position
-*/
+/// Returns the current filter wheel position
 #[get("/filterwheel/<device_number>/position")]
 fn get_filterwheel_position(
     schemas::GetFilterwheelPositionPath { device_number }: schemas::GetFilterwheelPositionPath,
@@ -6721,9 +5941,7 @@ fn get_filterwheel_position(
 ) -> Result<schemas::IntResponse> {
 }
 
-/**
-Sets the filter wheel position
-*/
+/// Sets the filter wheel position
 #[put("/filterwheel/<device_number>/position")]
 fn put_filterwheel_position(
     schemas::PutFilterwheelPositionPath { device_number }: schemas::PutFilterwheelPositionPath,
@@ -6929,9 +6147,7 @@ fn get_observingconditions_averageperiod(
 ) -> Result<schemas::DoubleResponse> {
 }
 
-/**
-Sets the time period over which observations will be averaged
-*/
+/// Sets the time period over which observations will be averaged
 #[put("/observingconditions/<device_number>/averageperiod")]
 fn put_observingconditions_averageperiod(
     schemas::PutObservingconditionsAverageperiodPath { device_number }: schemas::PutObservingconditionsAverageperiodPath,
@@ -7242,9 +6458,7 @@ fn get_rotator_position(
 ) -> Result<schemas::DoubleResponse> {
 }
 
-/**
-Returns the rotator’s Reverse state.
-*/
+/// Returns the rotator’s Reverse state.
 #[get("/rotator/<device_number>/reverse")]
 fn get_rotator_reverse(
     schemas::GetRotatorReversePath { device_number }: schemas::GetRotatorReversePath,
@@ -7255,9 +6469,7 @@ fn get_rotator_reverse(
 ) -> Result<schemas::BoolResponse> {
 }
 
-/**
-Sets the rotator’s Reverse state.
-*/
+/// Sets the rotator’s Reverse state.
 #[put("/rotator/<device_number>/reverse")]
 fn put_rotator_reverse(
     schemas::PutRotatorReversePath { device_number }: schemas::PutRotatorReversePath,
