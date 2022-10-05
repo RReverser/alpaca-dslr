@@ -6,6 +6,50 @@
 
 use axum::{Router, routing::{get, post}};
 
+pub struct TransactionResponse {
+  client_transaction_id: u32,
+  server_transaction_id: u32,
+}
+
+pub struct ASCOMError {
+  code: i32,
+  message: String,
+}
+
+#[derive(Serialize)]
+pub struct ASCOMResponse<T> {
+  #[serde(flatten)]
+  transaction: TransactionResponse,
+  #[serde(flatten)]
+  result: std::result::Result<T, ASCOMError>,
+}
+
+impl<T: Serialize> IntoResponse for ASCOMResponse<T> {
+  fn into_response(self) -> Response {
+    Json(self).into_response()
+  }
+}
+
+#[derive(Debug)]
+pub enum AlpacaError {
+  /// Method or parameter value error, check error message
+  ValueError(String),
+
+  // Server internal error, check error message
+  InternalError(String),
+}
+
+impl IntoResponse for AlpacaError {
+  fn into_response(self) -> Response {
+    match self {
+      Self::ValueError(message) => (StatusCode::BAD_REQUEST, message),
+      Self::InternalError(message) => (StatusCode::INTERNAL_SERVER_ERROR, message),
+    }.into_response()
+  }
+}
+
+pub type Result<T> = std::result::Result<ASCOMResponse<T>, AlpacaError>;
+
 <%
 const toTypeName = toPascalCase;
 
@@ -98,22 +142,15 @@ mod parameters {
 
 mod schemas {
   <% for (let [schemaName, schema] of Object.entries(api.components.schemas)) { %>
-    <% if (schema['x-request']) { %>
-      #[derive(Deserialize, FromRequest)]
-      #[from_request(via(<%= schema['x-request'] %>))]
-    <% } %>
-    <% if (schema['x-response']) { %>
+    <% if (schema['x-kind'] === 'Response') { %>
       #[derive(Serialize)]
+    <% } else if (schema['x-kind']) { %>
+      #[derive(Deserialize, FromRequest)]
+      #[from_request(via(<%= schema['x-kind'] %>))]
+    <% } else { %>
+      #[derive(Deserialize)]
     <% } %>
     <%= handleSchema(schemaName, schema) %>
-
-    <% if (schema['x-response']) { %>
-      impl IntoResponse for <%= toTypeName(schemaName) %> {
-        fn into_response(self) -> Response<UnsyncBoxBody<Bytes, Error>> {
-          Json(self).into_response()
-        }
-      }
-    <% } %>
   <% } %>
 }
 
@@ -128,7 +165,7 @@ mod schemas {
         <% } %>
       }: <%= refToName(ref) %>,
     <% } %>
-  ) -> <%= refToName(method.responses[200].content['application/json'].schema) %> {
+  ) -> Result<<%= refToName(method.responses[200].content['application/json'].schema) %>> {
 
   }
 

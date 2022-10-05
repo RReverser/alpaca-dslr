@@ -40,6 +40,51 @@ use axum::{
     Router,
 };
 
+pub struct TransactionResponse {
+    client_transaction_id: u32,
+    server_transaction_id: u32,
+}
+
+pub struct ASCOMError {
+    code: i32,
+    message: String,
+}
+
+#[derive(Serialize)]
+pub struct ASCOMResponse<T> {
+    #[serde(flatten)]
+    transaction: TransactionResponse,
+    #[serde(flatten)]
+    result: std::result::Result<T, ASCOMError>,
+}
+
+impl<T: Serialize> IntoResponse for ASCOMResponse<T> {
+    fn into_response(self) -> Response {
+        Json(self).into_response()
+    }
+}
+
+#[derive(Debug)]
+pub enum AlpacaError {
+    /// Method or parameter value error, check error message
+    ValueError(String),
+
+    // Server internal error, check error message
+    InternalError(String),
+}
+
+impl IntoResponse for AlpacaError {
+    fn into_response(self) -> Response {
+        match self {
+            Self::ValueError(message) => (StatusCode::BAD_REQUEST, message),
+            Self::InternalError(message) => (StatusCode::INTERNAL_SERVER_ERROR, message),
+        }
+        .into_response()
+    }
+}
+
+pub type Result<T> = std::result::Result<ASCOMResponse<T>, AlpacaError>;
+
 mod parameters {
 
     /**
@@ -121,36 +166,6 @@ mod schemas {
         */
         #[serde(rename = "Value")]
         value: Option<Vec<Vec<f64>>>,
-
-        /**
-        Client's transaction ID (0 to 4294967295), as supplied by the client in the command request.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
-
-        /**
-        Server's transaction ID (0 to 4294967295), should be unique for each client transaction so that log messages on the client can be associated with logs on the device.
-        */
-        #[serde(rename = "ServerTransactionID")]
-        server_transaction_id: Option<u32>,
-
-        /**
-        Zero for a successful transaction, or a non-zero integer (-2147483648 to 2147483647) if the device encountered an issue. Devices must use ASCOM reserved error numbers whenever appropriate so that clients can take informed actions. E.g. returning 0x401 (1025) to indicate that an invalid value was received (see Alpaca API definition and developer documentation for further information).
-        */
-        #[serde(rename = "ErrorNumber")]
-        error_number: Option<i32>,
-
-        /**
-        Empty string for a successful transaction, or a message describing the issue that was encountered.
-        */
-        #[serde(rename = "ErrorMessage")]
-        error_message: Option<String>,
-    }
-
-    impl IntoResponse for ImageArrayResponse {
-        fn into_response(self) -> Response<UnsyncBoxBody<Bytes, Error>> {
-            Json(self).into_response()
-        }
     }
 
     #[derive(Serialize)]
@@ -161,36 +176,6 @@ mod schemas {
         */
         #[serde(rename = "Value")]
         value: Option<bool>,
-
-        /**
-        Client's transaction ID (0 to 4294967295), as supplied by the client in the command request.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
-
-        /**
-        Server's transaction ID (0 to 4294967295), should be unique for each client transaction so that log messages on the client can be associated with logs on the device.
-        */
-        #[serde(rename = "ServerTransactionID")]
-        server_transaction_id: Option<u32>,
-
-        /**
-        Zero for a successful transaction, or a non-zero integer (-2147483648 to 2147483647) if the device encountered an issue. Devices must use ASCOM reserved error numbers whenever appropriate so that clients can take informed actions. E.g. returning 0x401 (1025) to indicate that an invalid value was received (see Alpaca API definition and developer documentation for further information).
-        */
-        #[serde(rename = "ErrorNumber")]
-        error_number: Option<i32>,
-
-        /**
-        Empty string for a successful transaction, or a message describing the issue that was encountered. If an error message is returned, a non zero error number must also be returned.
-        */
-        #[serde(rename = "ErrorMessage")]
-        error_message: Option<String>,
-    }
-
-    impl IntoResponse for BoolResponse {
-        fn into_response(self) -> Response<UnsyncBoxBody<Bytes, Error>> {
-            Json(self).into_response()
-        }
     }
 
     #[derive(Serialize)]
@@ -201,36 +186,6 @@ mod schemas {
         */
         #[serde(rename = "Value")]
         value: Option<f64>,
-
-        /**
-        Client's transaction ID (0 to 4294967295), as supplied by the client in the command request.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
-
-        /**
-        Server's transaction ID (0 to 4294967295), should be unique for each client transaction so that log messages on the client can be associated with logs on the device.
-        */
-        #[serde(rename = "ServerTransactionID")]
-        server_transaction_id: Option<u32>,
-
-        /**
-        Zero for a successful transaction, or a non-zero integer (-2147483648 to 2147483647) if the device encountered an issue. Devices must use ASCOM reserved error numbers whenever appropriate so that clients can take informed actions. E.g. returning 0x401 (1025) to indicate that an invalid value was received (see Alpaca API definition and developer documentation for further information).
-        */
-        #[serde(rename = "ErrorNumber")]
-        error_number: Option<i32>,
-
-        /**
-        Empty string for a successful transaction, or a message describing the issue that was encountered. If an error message is returned, a non zero error number must also be returned.
-        */
-        #[serde(rename = "ErrorMessage")]
-        error_message: Option<String>,
-    }
-
-    impl IntoResponse for DoubleResponse {
-        fn into_response(self) -> Response<UnsyncBoxBody<Bytes, Error>> {
-            Json(self).into_response()
-        }
     }
 
     #[derive(Serialize)]
@@ -241,36 +196,6 @@ mod schemas {
         */
         #[serde(rename = "Value")]
         value: Option<i32>,
-
-        /**
-        Client's transaction ID (0 to 4294967295), as supplied by the client in the command request.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
-
-        /**
-        Server's transaction ID (0 to 4294967295), should be unique for each client transaction so that log messages on the client can be associated with logs on the device.
-        */
-        #[serde(rename = "ServerTransactionID")]
-        server_transaction_id: Option<u32>,
-
-        /**
-        Zero for a successful transaction, or a non-zero integer (-2147483648 to 2147483647) if the device encountered an issue. Devices must use ASCOM reserved error numbers whenever appropriate so that clients can take informed actions. E.g. returning 0x401 (1025) to indicate that an invalid value was received (see Alpaca API definition and developer documentation for further information).
-        */
-        #[serde(rename = "ErrorNumber")]
-        error_number: Option<i32>,
-
-        /**
-        Empty string for a successful transaction, or a message describing the issue that was encountered. If an error message is returned, a non zero error number must also be returned.
-        */
-        #[serde(rename = "ErrorMessage")]
-        error_message: Option<String>,
-    }
-
-    impl IntoResponse for IntResponse {
-        fn into_response(self) -> Response<UnsyncBoxBody<Bytes, Error>> {
-            Json(self).into_response()
-        }
     }
 
     #[derive(Serialize)]
@@ -281,71 +206,11 @@ mod schemas {
         */
         #[serde(rename = "Value")]
         value: Option<Vec<i32>>,
-
-        /**
-        Client's transaction ID (0 to 4294967295), as supplied by the client in the command request.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
-
-        /**
-        Server's transaction ID (0 to 4294967295), should be unique for each client transaction so that log messages on the client can be associated with logs on the device.
-        */
-        #[serde(rename = "ServerTransactionID")]
-        server_transaction_id: Option<u32>,
-
-        /**
-        Zero for a successful transaction, or a non-zero integer (-2147483648 to 2147483647) if the device encountered an issue. Devices must use ASCOM reserved error numbers whenever appropriate so that clients can take informed actions. E.g. returning 0x401 (1025) to indicate that an invalid value was received (see Alpaca API definition and developer documentation for further information).
-        */
-        #[serde(rename = "ErrorNumber")]
-        error_number: Option<i32>,
-
-        /**
-        Empty string for a successful transaction, or a message describing the issue that was encountered. If an error message is returned, a non zero error number must also be returned.
-        */
-        #[serde(rename = "ErrorMessage")]
-        error_message: Option<String>,
-    }
-
-    impl IntoResponse for IntArrayResponse {
-        fn into_response(self) -> Response<UnsyncBoxBody<Bytes, Error>> {
-            Json(self).into_response()
-        }
     }
 
     #[derive(Serialize)]
 
-    struct MethodResponse {
-        /**
-        Client's transaction ID (0 to 4294967295), as supplied by the client in the command request.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
-
-        /**
-        Server's transaction ID (0 to 4294967295), should be unique for each client transaction so that log messages on the client can be associated with logs on the device.
-        */
-        #[serde(rename = "ServerTransactionID")]
-        server_transaction_id: Option<u32>,
-
-        /**
-        Zero for a successful transaction, or a non-zero integer (-2147483648 to 2147483647) if the device encountered an issue. Devices must use ASCOM reserved error numbers whenever appropriate so that clients can take informed actions. E.g. returning 0x401 (1025) to indicate that an invalid value was received (see Alpaca API definition and developer documentation for further information).
-        */
-        #[serde(rename = "ErrorNumber")]
-        error_number: Option<i32>,
-
-        /**
-        Empty string for a successful transaction, or a message describing the issue that was encountered. If an error message is returned, a non zero error number must also be returned.
-        */
-        #[serde(rename = "ErrorMessage")]
-        error_message: Option<String>,
-    }
-
-    impl IntoResponse for MethodResponse {
-        fn into_response(self) -> Response<UnsyncBoxBody<Bytes, Error>> {
-            Json(self).into_response()
-        }
-    }
+    struct MethodResponse {}
 
     #[derive(Serialize)]
 
@@ -355,36 +220,6 @@ mod schemas {
         */
         #[serde(rename = "Value")]
         value: Option<String>,
-
-        /**
-        Client's transaction ID (0 to 4294967295), as supplied by the client in the command request.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
-
-        /**
-        Server's transaction ID (0 to 4294967295), should be unique for each client transaction so that log messages on the client can be associated with logs on the device.
-        */
-        #[serde(rename = "ServerTransactionID")]
-        server_transaction_id: Option<u32>,
-
-        /**
-        Zero for a successful transaction, or a non-zero integer (-2147483648 to 2147483647) if the device encountered an issue. Devices must use ASCOM reserved error numbers whenever appropriate so that clients can take informed actions. E.g. returning 0x401 (1025) to indicate that an invalid value was received (see Alpaca API definition and developer documentation for further information).
-        */
-        #[serde(rename = "ErrorNumber")]
-        error_number: Option<i32>,
-
-        /**
-        Empty string for a successful transaction, or a message describing the issue that was encountered. If an error message is returned, a non zero error number must also be returned.
-        */
-        #[serde(rename = "ErrorMessage")]
-        error_message: Option<String>,
-    }
-
-    impl IntoResponse for StringResponse {
-        fn into_response(self) -> Response<UnsyncBoxBody<Bytes, Error>> {
-            Json(self).into_response()
-        }
     }
 
     #[derive(Serialize)]
@@ -395,36 +230,6 @@ mod schemas {
         */
         #[serde(rename = "Value")]
         value: Option<Vec<String>>,
-
-        /**
-        Client's transaction ID (0 to 4294967295), as supplied by the client in the command request.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
-
-        /**
-        Server's transaction ID (0 to 4294967295), should be unique for each client transaction so that log messages on the client can be associated with logs on the device.
-        */
-        #[serde(rename = "ServerTransactionID")]
-        server_transaction_id: Option<u32>,
-
-        /**
-        Zero for a successful transaction, or a non-zero integer (-2147483648 to 2147483647) if the device encountered an issue. Devices must use ASCOM reserved error numbers whenever appropriate so that clients can take informed actions. E.g. returning 0x401 (1025) to indicate that an invalid value was received (see Alpaca API definition and developer documentation for further information).
-        */
-        #[serde(rename = "ErrorNumber")]
-        error_number: Option<i32>,
-
-        /**
-        Empty string for a successful transaction, or a message describing the issue that was encountered. If an error message is returned, a non zero error number must also be returned.
-        */
-        #[serde(rename = "ErrorMessage")]
-        error_message: Option<String>,
-    }
-
-    impl IntoResponse for StringArrayResponse {
-        fn into_response(self) -> Response<UnsyncBoxBody<Bytes, Error>> {
-            Json(self).into_response()
-        }
     }
 
     #[derive(Serialize)]
@@ -435,37 +240,9 @@ mod schemas {
         */
         #[serde(rename = "Value")]
         value: Option<Vec<schemas::AxisRate>>,
-
-        /**
-        Client's transaction ID (0 to 4294967295), as supplied by the client in the command request.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
-
-        /**
-        Server's transaction ID (0 to 4294967295), should be unique for each client transaction so that log messages on the client can be associated with logs on the device.
-        */
-        #[serde(rename = "ServerTransactionID")]
-        server_transaction_id: Option<u32>,
-
-        /**
-        Zero for a successful transaction, or a non-zero integer (-2147483648 to 2147483647) if the device encountered an issue. Devices must use ASCOM reserved error numbers whenever appropriate so that clients can take informed actions. E.g. returning 0x401 (1025) to indicate that an invalid value was received (see Alpaca API definition and developer documentation for further information).
-        */
-        #[serde(rename = "ErrorNumber")]
-        error_number: Option<i32>,
-
-        /**
-        Empty string for a successful transaction, or a message describing the issue that was encountered. If an error message is returned, a non zero error number must also be returned.
-        */
-        #[serde(rename = "ErrorMessage")]
-        error_message: Option<String>,
     }
 
-    impl IntoResponse for AxisRatesResponse {
-        fn into_response(self) -> Response<UnsyncBoxBody<Bytes, Error>> {
-            Json(self).into_response()
-        }
-    }
+    #[derive(Deserialize)]
 
     struct AxisRate {
         /**
@@ -489,38 +266,9 @@ mod schemas {
         */
         #[serde(rename = "Value")]
         value: Option<Vec<schemas::DriveRate>>,
-
-        /**
-        Client's transaction ID (0 to 4294967295), as supplied by the client in the command request.
-        */
-        #[serde(rename = "ClientTransactionID")]
-        client_transaction_id: Option<u32>,
-
-        /**
-        Server's transaction ID (0 to 4294967295), should be unique for each client transaction so that log messages on the client can be associated with logs on the device.
-        */
-        #[serde(rename = "ServerTransactionID")]
-        server_transaction_id: Option<u32>,
-
-        /**
-        Zero for a successful transaction, or a non-zero integer (-2147483648 to 2147483647) if the device encountered an issue. Devices must use ASCOM reserved error numbers whenever appropriate so that clients can take informed actions. E.g. returning 0x401 (1025) to indicate that an invalid value was received (see Alpaca API definition and developer documentation for further information).
-        */
-        #[serde(rename = "ErrorNumber")]
-        error_number: Option<i32>,
-
-        /**
-        Empty string for a successful transaction, or a message describing the issue that was encountered. If an error message is returned, a non zero error number must also be returned.
-        */
-        #[serde(rename = "ErrorMessage")]
-        error_message: Option<String>,
     }
 
-    impl IntoResponse for DriveRatesResponse {
-        fn into_response(self) -> Response<UnsyncBoxBody<Bytes, Error>> {
-            Json(self).into_response()
-        }
-    }
-
+    #[derive(Deserialize)]
     #[repr(transparent)]
     struct DriveRate(f64);
 
@@ -7827,7 +7575,7 @@ fn put_action(
 
         client_transaction_id,
     }: schemas::PutActionRequest,
-) -> schemas::StringResponse {
+) -> Result<schemas::StringResponse> {
 }
 
 /**
@@ -7848,7 +7596,7 @@ fn put_commandblind(
 
         client_transaction_id,
     }: schemas::PutCommandblindRequest,
-) -> schemas::MethodResponse {
+) -> Result<schemas::MethodResponse> {
 }
 
 /**
@@ -7869,7 +7617,7 @@ fn put_commandbool(
 
         client_transaction_id,
     }: schemas::PutCommandblindRequest,
-) -> schemas::BoolResponse {
+) -> Result<schemas::BoolResponse> {
 }
 
 /**
@@ -7890,7 +7638,7 @@ fn put_commandstring(
 
         client_transaction_id,
     }: schemas::PutCommandblindRequest,
-) -> schemas::StringResponse {
+) -> Result<schemas::StringResponse> {
 }
 
 /**
@@ -7903,7 +7651,7 @@ fn get_connected(
     schemas::GetConnectedPath { device_type, device_number }: schemas::GetConnectedPath,
 
     schemas::GetConnectedQuery { client_id, client_transaction_id }: schemas::GetConnectedQuery,
-) -> schemas::BoolResponse {
+) -> Result<schemas::BoolResponse> {
 }
 
 /**
@@ -7922,7 +7670,7 @@ fn put_connected(
 
         client_transaction_id,
     }: schemas::PutConnectedRequest,
-) -> schemas::MethodResponse {
+) -> Result<schemas::MethodResponse> {
 }
 
 /**
@@ -7935,7 +7683,7 @@ fn get_description(
     schemas::GetDescriptionPath { device_type, device_number }: schemas::GetDescriptionPath,
 
     schemas::GetDescriptionQuery { client_id, client_transaction_id }: schemas::GetDescriptionQuery,
-) -> schemas::StringResponse {
+) -> Result<schemas::StringResponse> {
 }
 
 /**
@@ -7948,7 +7696,7 @@ fn get_driverinfo(
     schemas::GetDriverinfoPath { device_type, device_number }: schemas::GetDriverinfoPath,
 
     schemas::GetDriverinfoQuery { client_id, client_transaction_id }: schemas::GetDriverinfoQuery,
-) -> schemas::StringResponse {
+) -> Result<schemas::StringResponse> {
 }
 
 /**
@@ -7961,7 +7709,7 @@ fn get_driverversion(
     schemas::GetDriverversionPath { device_type, device_number }: schemas::GetDriverversionPath,
 
     schemas::GetDriverversionQuery { client_id, client_transaction_id }: schemas::GetDriverversionQuery,
-) -> schemas::StringResponse {
+) -> Result<schemas::StringResponse> {
 }
 
 /**
@@ -7974,7 +7722,7 @@ fn get_interfaceversion(
     schemas::GetInterfaceversionPath { device_type, device_number }: schemas::GetInterfaceversionPath,
 
     schemas::GetInterfaceversionQuery { client_id, client_transaction_id }: schemas::GetInterfaceversionQuery,
-) -> schemas::IntResponse {
+) -> Result<schemas::IntResponse> {
 }
 
 /**
@@ -7983,7 +7731,12 @@ Device name
 The name of the device
 */
 #[get("/<device_type>/<device_number>/name")]
-fn get_name(schemas::GetNamePath { device_type, device_number }: schemas::GetNamePath, schemas::GetNameQuery { client_id, client_transaction_id }: schemas::GetNameQuery) -> schemas::StringResponse {}
+fn get_name(
+    schemas::GetNamePath { device_type, device_number }: schemas::GetNamePath,
+
+    schemas::GetNameQuery { client_id, client_transaction_id }: schemas::GetNameQuery,
+) -> Result<schemas::StringResponse> {
+}
 
 /**
 Returns the list of action names supported by this driver.
@@ -7995,7 +7748,7 @@ fn get_supportedactions(
     schemas::GetSupportedactionsPath { device_type, device_number }: schemas::GetSupportedactionsPath,
 
     schemas::GetSupportedactionsQuery { client_id, client_transaction_id }: schemas::GetSupportedactionsQuery,
-) -> schemas::StringArrayResponse {
+) -> Result<schemas::StringArrayResponse> {
 }
 
 /**
@@ -8008,7 +7761,7 @@ fn get_camera_bayeroffsetx(
     schemas::GetCameraBayeroffsetxPath { device_number }: schemas::GetCameraBayeroffsetxPath,
 
     schemas::GetCameraBayeroffsetxQuery { client_id, client_transaction_id }: schemas::GetCameraBayeroffsetxQuery,
-) -> schemas::IntResponse {
+) -> Result<schemas::IntResponse> {
 }
 
 /**
@@ -8021,7 +7774,7 @@ fn get_camera_bayeroffsety(
     schemas::GetCameraBayeroffsetyPath { device_number }: schemas::GetCameraBayeroffsetyPath,
 
     schemas::GetCameraBayeroffsetyQuery { client_id, client_transaction_id }: schemas::GetCameraBayeroffsetyQuery,
-) -> schemas::IntResponse {
+) -> Result<schemas::IntResponse> {
 }
 
 /**
@@ -8034,7 +7787,7 @@ fn get_camera_binx(
     schemas::GetCameraBinxPath { device_number }: schemas::GetCameraBinxPath,
 
     schemas::GetCameraBinxQuery { client_id, client_transaction_id }: schemas::GetCameraBinxQuery,
-) -> schemas::IntResponse {
+) -> Result<schemas::IntResponse> {
 }
 
 /**
@@ -8053,7 +7806,7 @@ fn put_camera_binx(
 
         client_transaction_id,
     }: schemas::PutCameraBinxRequest,
-) -> schemas::MethodResponse {
+) -> Result<schemas::MethodResponse> {
 }
 
 /**
@@ -8066,7 +7819,7 @@ fn get_camera_biny(
     schemas::GetCameraBinyPath { device_number }: schemas::GetCameraBinyPath,
 
     schemas::GetCameraBinyQuery { client_id, client_transaction_id }: schemas::GetCameraBinyQuery,
-) -> schemas::IntResponse {
+) -> Result<schemas::IntResponse> {
 }
 
 /**
@@ -8085,7 +7838,7 @@ fn put_camera_biny(
 
         client_transaction_id,
     }: schemas::PutCameraBinyRequest,
-) -> schemas::MethodResponse {
+) -> Result<schemas::MethodResponse> {
 }
 
 /**
@@ -8098,7 +7851,7 @@ fn get_camera_camerastate(
     schemas::GetCameraCamerastatePath { device_number }: schemas::GetCameraCamerastatePath,
 
     schemas::GetCameraCamerastateQuery { client_id, client_transaction_id }: schemas::GetCameraCamerastateQuery,
-) -> schemas::IntResponse {
+) -> Result<schemas::IntResponse> {
 }
 
 /**
@@ -8111,7 +7864,7 @@ fn get_camera_cameraxsize(
     schemas::GetCameraCameraxsizePath { device_number }: schemas::GetCameraCameraxsizePath,
 
     schemas::GetCameraCameraxsizeQuery { client_id, client_transaction_id }: schemas::GetCameraCameraxsizeQuery,
-) -> schemas::IntResponse {
+) -> Result<schemas::IntResponse> {
 }
 
 /**
@@ -8124,7 +7877,7 @@ fn get_camera_cameraysize(
     schemas::GetCameraCameraysizePath { device_number }: schemas::GetCameraCameraysizePath,
 
     schemas::GetCameraCameraysizeQuery { client_id, client_transaction_id }: schemas::GetCameraCameraysizeQuery,
-) -> schemas::IntResponse {
+) -> Result<schemas::IntResponse> {
 }
 
 /**
@@ -8137,7 +7890,7 @@ fn get_camera_canabortexposure(
     schemas::GetCameraCanabortexposurePath { device_number }: schemas::GetCameraCanabortexposurePath,
 
     schemas::GetCameraCanabortexposureQuery { client_id, client_transaction_id }: schemas::GetCameraCanabortexposureQuery,
-) -> schemas::BoolResponse {
+) -> Result<schemas::BoolResponse> {
 }
 
 /**
@@ -8150,7 +7903,7 @@ fn get_camera_canasymmetricbin(
     schemas::GetCameraCanasymmetricbinPath { device_number }: schemas::GetCameraCanasymmetricbinPath,
 
     schemas::GetCameraCanasymmetricbinQuery { client_id, client_transaction_id }: schemas::GetCameraCanasymmetricbinQuery,
-) -> schemas::BoolResponse {
+) -> Result<schemas::BoolResponse> {
 }
 
 /**
@@ -8163,7 +7916,7 @@ fn get_camera_canfastreadout(
     schemas::GetCameraCanfastreadoutPath { device_number }: schemas::GetCameraCanfastreadoutPath,
 
     schemas::GetCameraCanfastreadoutQuery { client_id, client_transaction_id }: schemas::GetCameraCanfastreadoutQuery,
-) -> schemas::BoolResponse {
+) -> Result<schemas::BoolResponse> {
 }
 
 /**
@@ -8176,7 +7929,7 @@ fn get_camera_cangetcoolerpower(
     schemas::GetCameraCangetcoolerpowerPath { device_number }: schemas::GetCameraCangetcoolerpowerPath,
 
     schemas::GetCameraCangetcoolerpowerQuery { client_id, client_transaction_id }: schemas::GetCameraCangetcoolerpowerQuery,
-) -> schemas::BoolResponse {
+) -> Result<schemas::BoolResponse> {
 }
 
 /**
@@ -8189,7 +7942,7 @@ fn get_camera_canpulseguide(
     schemas::GetCameraCanpulseguidePath { device_number }: schemas::GetCameraCanpulseguidePath,
 
     schemas::GetCameraCanpulseguideQuery { client_id, client_transaction_id }: schemas::GetCameraCanpulseguideQuery,
-) -> schemas::BoolResponse {
+) -> Result<schemas::BoolResponse> {
 }
 
 /**
@@ -8202,7 +7955,7 @@ fn get_camera_cansetccdtemperature(
     schemas::GetCameraCansetccdtemperaturePath { device_number }: schemas::GetCameraCansetccdtemperaturePath,
 
     schemas::GetCameraCansetccdtemperatureQuery { client_id, client_transaction_id }: schemas::GetCameraCansetccdtemperatureQuery,
-) -> schemas::BoolResponse {
+) -> Result<schemas::BoolResponse> {
 }
 
 /**
@@ -8215,7 +7968,7 @@ fn get_camera_canstopexposure(
     schemas::GetCameraCanstopexposurePath { device_number }: schemas::GetCameraCanstopexposurePath,
 
     schemas::GetCameraCanstopexposureQuery { client_id, client_transaction_id }: schemas::GetCameraCanstopexposureQuery,
-) -> schemas::BoolResponse {
+) -> Result<schemas::BoolResponse> {
 }
 
 /**
@@ -8228,7 +7981,7 @@ fn get_camera_ccdtemperature(
     schemas::GetCameraCcdtemperaturePath { device_number }: schemas::GetCameraCcdtemperaturePath,
 
     schemas::GetCameraCcdtemperatureQuery { client_id, client_transaction_id }: schemas::GetCameraCcdtemperatureQuery,
-) -> schemas::DoubleResponse {
+) -> Result<schemas::DoubleResponse> {
 }
 
 /**
@@ -8241,7 +7994,7 @@ fn get_camera_cooleron(
     schemas::GetCameraCooleronPath { device_number }: schemas::GetCameraCooleronPath,
 
     schemas::GetCameraCooleronQuery { client_id, client_transaction_id }: schemas::GetCameraCooleronQuery,
-) -> schemas::BoolResponse {
+) -> Result<schemas::BoolResponse> {
 }
 
 /**
@@ -8260,7 +8013,7 @@ fn put_camera_cooleron(
 
         client_transaction_id,
     }: schemas::PutCameraCooleronRequest,
-) -> schemas::MethodResponse {
+) -> Result<schemas::MethodResponse> {
 }
 
 /**
@@ -8273,7 +8026,7 @@ fn get_camera_coolerpower(
     schemas::GetCameraCoolerpowerPath { device_number }: schemas::GetCameraCoolerpowerPath,
 
     schemas::GetCameraCoolerpowerQuery { client_id, client_transaction_id }: schemas::GetCameraCoolerpowerQuery,
-) -> schemas::DoubleResponse {
+) -> Result<schemas::DoubleResponse> {
 }
 
 /**
@@ -8286,7 +8039,7 @@ fn get_camera_electronsperadu(
     schemas::GetCameraElectronsperaduPath { device_number }: schemas::GetCameraElectronsperaduPath,
 
     schemas::GetCameraElectronsperaduQuery { client_id, client_transaction_id }: schemas::GetCameraElectronsperaduQuery,
-) -> schemas::DoubleResponse {
+) -> Result<schemas::DoubleResponse> {
 }
 
 /**
@@ -8299,7 +8052,7 @@ fn get_camera_exposuremax(
     schemas::GetCameraExposuremaxPath { device_number }: schemas::GetCameraExposuremaxPath,
 
     schemas::GetCameraExposuremaxQuery { client_id, client_transaction_id }: schemas::GetCameraExposuremaxQuery,
-) -> schemas::DoubleResponse {
+) -> Result<schemas::DoubleResponse> {
 }
 
 /**
@@ -8312,7 +8065,7 @@ fn get_camera_exposuremin(
     schemas::GetCameraExposureminPath { device_number }: schemas::GetCameraExposureminPath,
 
     schemas::GetCameraExposureminQuery { client_id, client_transaction_id }: schemas::GetCameraExposureminQuery,
-) -> schemas::DoubleResponse {
+) -> Result<schemas::DoubleResponse> {
 }
 
 /**
@@ -8325,7 +8078,7 @@ fn get_camera_exposureresolution(
     schemas::GetCameraExposureresolutionPath { device_number }: schemas::GetCameraExposureresolutionPath,
 
     schemas::GetCameraExposureresolutionQuery { client_id, client_transaction_id }: schemas::GetCameraExposureresolutionQuery,
-) -> schemas::DoubleResponse {
+) -> Result<schemas::DoubleResponse> {
 }
 
 /**
@@ -8338,7 +8091,7 @@ fn get_camera_fastreadout(
     schemas::GetCameraFastreadoutPath { device_number }: schemas::GetCameraFastreadoutPath,
 
     schemas::GetCameraFastreadoutQuery { client_id, client_transaction_id }: schemas::GetCameraFastreadoutQuery,
-) -> schemas::BoolResponse {
+) -> Result<schemas::BoolResponse> {
 }
 
 /**
@@ -8357,7 +8110,7 @@ fn put_camera_fastreadout(
 
         client_transaction_id,
     }: schemas::PutCameraFastreadoutRequest,
-) -> schemas::MethodResponse {
+) -> Result<schemas::MethodResponse> {
 }
 
 /**
@@ -8370,7 +8123,7 @@ fn get_camera_fullwellcapacity(
     schemas::GetCameraFullwellcapacityPath { device_number }: schemas::GetCameraFullwellcapacityPath,
 
     schemas::GetCameraFullwellcapacityQuery { client_id, client_transaction_id }: schemas::GetCameraFullwellcapacityQuery,
-) -> schemas::DoubleResponse {
+) -> Result<schemas::DoubleResponse> {
 }
 
 /**
@@ -8383,7 +8136,7 @@ fn get_camera_gain(
     schemas::GetCameraGainPath { device_number }: schemas::GetCameraGainPath,
 
     schemas::GetCameraGainQuery { client_id, client_transaction_id }: schemas::GetCameraGainQuery,
-) -> schemas::IntResponse {
+) -> Result<schemas::IntResponse> {
 }
 
 /**
@@ -8402,7 +8155,7 @@ fn put_camera_gain(
 
         client_transaction_id,
     }: schemas::PutCameraGainRequest,
-) -> schemas::MethodResponse {
+) -> Result<schemas::MethodResponse> {
 }
 
 /**
@@ -8415,7 +8168,7 @@ fn get_camera_gainmax(
     schemas::GetCameraGainmaxPath { device_number }: schemas::GetCameraGainmaxPath,
 
     schemas::GetCameraGainmaxQuery { client_id, client_transaction_id }: schemas::GetCameraGainmaxQuery,
-) -> schemas::IntResponse {
+) -> Result<schemas::IntResponse> {
 }
 
 /**
@@ -8428,7 +8181,7 @@ fn get_camera_gainmin(
     schemas::GetCameraGainminPath { device_number }: schemas::GetCameraGainminPath,
 
     schemas::GetCameraGainminQuery { client_id, client_transaction_id }: schemas::GetCameraGainminQuery,
-) -> schemas::IntResponse {
+) -> Result<schemas::IntResponse> {
 }
 
 /**
@@ -8441,7 +8194,7 @@ fn get_camera_gains(
     schemas::GetCameraGainsPath { device_number }: schemas::GetCameraGainsPath,
 
     schemas::GetCameraGainsQuery { client_id, client_transaction_id }: schemas::GetCameraGainsQuery,
-) -> schemas::StringArrayResponse {
+) -> Result<schemas::StringArrayResponse> {
 }
 
 /**
@@ -8454,7 +8207,7 @@ fn get_camera_hasshutter(
     schemas::GetCameraHasshutterPath { device_number }: schemas::GetCameraHasshutterPath,
 
     schemas::GetCameraHasshutterQuery { client_id, client_transaction_id }: schemas::GetCameraHasshutterQuery,
-) -> schemas::BoolResponse {
+) -> Result<schemas::BoolResponse> {
 }
 
 /**
@@ -8467,7 +8220,7 @@ fn get_camera_heatsinktemperature(
     schemas::GetCameraHeatsinktemperaturePath { device_number }: schemas::GetCameraHeatsinktemperaturePath,
 
     schemas::GetCameraHeatsinktemperatureQuery { client_id, client_transaction_id }: schemas::GetCameraHeatsinktemperatureQuery,
-) -> schemas::DoubleResponse {
+) -> Result<schemas::DoubleResponse> {
 }
 
 /**
@@ -8535,7 +8288,7 @@ fn get_camera_imagearray(
     schemas::GetCameraImagearrayPath { device_number }: schemas::GetCameraImagearrayPath,
 
     schemas::GetCameraImagearrayQuery { client_id, client_transaction_id }: schemas::GetCameraImagearrayQuery,
-) -> schemas::ImageArrayResponse {
+) -> Result<schemas::ImageArrayResponse> {
 }
 
 /**
@@ -8603,7 +8356,7 @@ fn get_camera_imagearrayvariant(
     schemas::GetCameraImagearrayvariantPath { device_number }: schemas::GetCameraImagearrayvariantPath,
 
     schemas::GetCameraImagearrayvariantQuery { client_id, client_transaction_id }: schemas::GetCameraImagearrayvariantQuery,
-) -> schemas::ImageArrayResponse {
+) -> Result<schemas::ImageArrayResponse> {
 }
 
 /**
@@ -8616,7 +8369,7 @@ fn get_camera_imageready(
     schemas::GetCameraImagereadyPath { device_number }: schemas::GetCameraImagereadyPath,
 
     schemas::GetCameraImagereadyQuery { client_id, client_transaction_id }: schemas::GetCameraImagereadyQuery,
-) -> schemas::BoolResponse {
+) -> Result<schemas::BoolResponse> {
 }
 
 /**
@@ -8629,7 +8382,7 @@ fn get_camera_ispulseguiding(
     schemas::GetCameraIspulseguidingPath { device_number }: schemas::GetCameraIspulseguidingPath,
 
     schemas::GetCameraIspulseguidingQuery { client_id, client_transaction_id }: schemas::GetCameraIspulseguidingQuery,
-) -> schemas::BoolResponse {
+) -> Result<schemas::BoolResponse> {
 }
 
 /**
@@ -8642,7 +8395,7 @@ fn get_camera_lastexposureduration(
     schemas::GetCameraLastexposuredurationPath { device_number }: schemas::GetCameraLastexposuredurationPath,
 
     schemas::GetCameraLastexposuredurationQuery { client_id, client_transaction_id }: schemas::GetCameraLastexposuredurationQuery,
-) -> schemas::DoubleResponse {
+) -> Result<schemas::DoubleResponse> {
 }
 
 /**
@@ -8655,7 +8408,7 @@ fn get_camera_lastexposurestarttime(
     schemas::GetCameraLastexposurestarttimePath { device_number }: schemas::GetCameraLastexposurestarttimePath,
 
     schemas::GetCameraLastexposurestarttimeQuery { client_id, client_transaction_id }: schemas::GetCameraLastexposurestarttimeQuery,
-) -> schemas::StringResponse {
+) -> Result<schemas::StringResponse> {
 }
 
 /**
@@ -8668,7 +8421,7 @@ fn get_camera_maxadu(
     schemas::GetCameraMaxaduPath { device_number }: schemas::GetCameraMaxaduPath,
 
     schemas::GetCameraMaxaduQuery { client_id, client_transaction_id }: schemas::GetCameraMaxaduQuery,
-) -> schemas::IntResponse {
+) -> Result<schemas::IntResponse> {
 }
 
 /**
@@ -8681,7 +8434,7 @@ fn get_camera_maxbinx(
     schemas::GetCameraMaxbinxPath { device_number }: schemas::GetCameraMaxbinxPath,
 
     schemas::GetCameraMaxbinxQuery { client_id, client_transaction_id }: schemas::GetCameraMaxbinxQuery,
-) -> schemas::IntResponse {
+) -> Result<schemas::IntResponse> {
 }
 
 /**
@@ -8694,7 +8447,7 @@ fn get_camera_maxbiny(
     schemas::GetCameraMaxbinyPath { device_number }: schemas::GetCameraMaxbinyPath,
 
     schemas::GetCameraMaxbinyQuery { client_id, client_transaction_id }: schemas::GetCameraMaxbinyQuery,
-) -> schemas::IntResponse {
+) -> Result<schemas::IntResponse> {
 }
 
 /**
@@ -8707,7 +8460,7 @@ fn get_camera_numx(
     schemas::GetCameraNumxPath { device_number }: schemas::GetCameraNumxPath,
 
     schemas::GetCameraNumxQuery { client_id, client_transaction_id }: schemas::GetCameraNumxQuery,
-) -> schemas::IntResponse {
+) -> Result<schemas::IntResponse> {
 }
 
 /**
@@ -8726,7 +8479,7 @@ fn put_camera_numx(
 
         client_transaction_id,
     }: schemas::PutCameraNumxRequest,
-) -> schemas::MethodResponse {
+) -> Result<schemas::MethodResponse> {
 }
 
 /**
@@ -8739,7 +8492,7 @@ fn get_camera_numy(
     schemas::GetCameraNumyPath { device_number }: schemas::GetCameraNumyPath,
 
     schemas::GetCameraNumyQuery { client_id, client_transaction_id }: schemas::GetCameraNumyQuery,
-) -> schemas::IntResponse {
+) -> Result<schemas::IntResponse> {
 }
 
 /**
@@ -8758,7 +8511,7 @@ fn put_camera_numy(
 
         client_transaction_id,
     }: schemas::PutCameraNumyRequest,
-) -> schemas::MethodResponse {
+) -> Result<schemas::MethodResponse> {
 }
 
 /**
@@ -8771,7 +8524,7 @@ fn get_camera_offset(
     schemas::GetCameraOffsetPath { device_number }: schemas::GetCameraOffsetPath,
 
     schemas::GetCameraOffsetQuery { client_id, client_transaction_id }: schemas::GetCameraOffsetQuery,
-) -> schemas::IntResponse {
+) -> Result<schemas::IntResponse> {
 }
 
 /**
@@ -8790,7 +8543,7 @@ fn put_camera_offset(
 
         client_transaction_id,
     }: schemas::PutCameraOffsetRequest,
-) -> schemas::MethodResponse {
+) -> Result<schemas::MethodResponse> {
 }
 
 /**
@@ -8803,7 +8556,7 @@ fn get_camera_offsetmax(
     schemas::GetCameraOffsetmaxPath { device_number }: schemas::GetCameraOffsetmaxPath,
 
     schemas::GetCameraOffsetmaxQuery { client_id, client_transaction_id }: schemas::GetCameraOffsetmaxQuery,
-) -> schemas::IntResponse {
+) -> Result<schemas::IntResponse> {
 }
 
 /**
@@ -8816,7 +8569,7 @@ fn get_camera_offsetmin(
     schemas::GetCameraOffsetminPath { device_number }: schemas::GetCameraOffsetminPath,
 
     schemas::GetCameraOffsetminQuery { client_id, client_transaction_id }: schemas::GetCameraOffsetminQuery,
-) -> schemas::IntResponse {
+) -> Result<schemas::IntResponse> {
 }
 
 /**
@@ -8829,7 +8582,7 @@ fn get_camera_offsets(
     schemas::GetCameraOffsetsPath { device_number }: schemas::GetCameraOffsetsPath,
 
     schemas::GetCameraOffsetsQuery { client_id, client_transaction_id }: schemas::GetCameraOffsetsQuery,
-) -> schemas::StringArrayResponse {
+) -> Result<schemas::StringArrayResponse> {
 }
 
 /**
@@ -8842,7 +8595,7 @@ fn get_camera_percentcompleted(
     schemas::GetCameraPercentcompletedPath { device_number }: schemas::GetCameraPercentcompletedPath,
 
     schemas::GetCameraPercentcompletedQuery { client_id, client_transaction_id }: schemas::GetCameraPercentcompletedQuery,
-) -> schemas::IntResponse {
+) -> Result<schemas::IntResponse> {
 }
 
 /**
@@ -8855,7 +8608,7 @@ fn get_camera_pixelsizex(
     schemas::GetCameraPixelsizexPath { device_number }: schemas::GetCameraPixelsizexPath,
 
     schemas::GetCameraPixelsizexQuery { client_id, client_transaction_id }: schemas::GetCameraPixelsizexQuery,
-) -> schemas::DoubleResponse {
+) -> Result<schemas::DoubleResponse> {
 }
 
 /**
@@ -8868,7 +8621,7 @@ fn get_camera_pixelsizey(
     schemas::GetCameraPixelsizeyPath { device_number }: schemas::GetCameraPixelsizeyPath,
 
     schemas::GetCameraPixelsizeyQuery { client_id, client_transaction_id }: schemas::GetCameraPixelsizeyQuery,
-) -> schemas::DoubleResponse {
+) -> Result<schemas::DoubleResponse> {
 }
 
 /**
@@ -8881,7 +8634,7 @@ fn get_camera_readoutmode(
     schemas::GetCameraReadoutmodePath { device_number }: schemas::GetCameraReadoutmodePath,
 
     schemas::GetCameraReadoutmodeQuery { client_id, client_transaction_id }: schemas::GetCameraReadoutmodeQuery,
-) -> schemas::IntResponse {
+) -> Result<schemas::IntResponse> {
 }
 
 /**
@@ -8900,7 +8653,7 @@ fn put_camera_readoutmode(
 
         client_transaction_id,
     }: schemas::PutCameraReadoutmodeRequest,
-) -> schemas::MethodResponse {
+) -> Result<schemas::MethodResponse> {
 }
 
 /**
@@ -8913,7 +8666,7 @@ fn get_camera_readoutmodes(
     schemas::GetCameraReadoutmodesPath { device_number }: schemas::GetCameraReadoutmodesPath,
 
     schemas::GetCameraReadoutmodesQuery { client_id, client_transaction_id }: schemas::GetCameraReadoutmodesQuery,
-) -> schemas::StringArrayResponse {
+) -> Result<schemas::StringArrayResponse> {
 }
 
 /**
@@ -8926,7 +8679,7 @@ fn get_camera_sensorname(
     schemas::GetCameraSensornamePath { device_number }: schemas::GetCameraSensornamePath,
 
     schemas::GetCameraSensornameQuery { client_id, client_transaction_id }: schemas::GetCameraSensornameQuery,
-) -> schemas::StringResponse {
+) -> Result<schemas::StringResponse> {
 }
 
 /**
@@ -8948,7 +8701,7 @@ fn get_camera_sensortype(
     schemas::GetCameraSensortypePath { device_number }: schemas::GetCameraSensortypePath,
 
     schemas::GetCameraSensortypeQuery { client_id, client_transaction_id }: schemas::GetCameraSensortypeQuery,
-) -> schemas::IntResponse {
+) -> Result<schemas::IntResponse> {
 }
 
 /**
@@ -8961,7 +8714,7 @@ fn get_camera_setccdtemperature(
     schemas::GetCameraSetccdtemperaturePath { device_number }: schemas::GetCameraSetccdtemperaturePath,
 
     schemas::GetCameraSetccdtemperatureQuery { client_id, client_transaction_id }: schemas::GetCameraSetccdtemperatureQuery,
-) -> schemas::DoubleResponse {
+) -> Result<schemas::DoubleResponse> {
 }
 
 /**
@@ -8980,7 +8733,7 @@ fn put_camera_setccdtemperature(
 
         client_transaction_id,
     }: schemas::PutCameraSetccdtemperatureRequest,
-) -> schemas::MethodResponse {
+) -> Result<schemas::MethodResponse> {
 }
 
 /**
@@ -8993,7 +8746,7 @@ fn get_camera_startx(
     schemas::GetCameraStartxPath { device_number }: schemas::GetCameraStartxPath,
 
     schemas::GetCameraStartxQuery { client_id, client_transaction_id }: schemas::GetCameraStartxQuery,
-) -> schemas::IntResponse {
+) -> Result<schemas::IntResponse> {
 }
 
 /**
@@ -9012,7 +8765,7 @@ fn put_camera_startx(
 
         client_transaction_id,
     }: schemas::PutCameraStartxRequest,
-) -> schemas::MethodResponse {
+) -> Result<schemas::MethodResponse> {
 }
 
 /**
@@ -9025,7 +8778,7 @@ fn get_camera_starty(
     schemas::GetCameraStartyPath { device_number }: schemas::GetCameraStartyPath,
 
     schemas::GetCameraStartyQuery { client_id, client_transaction_id }: schemas::GetCameraStartyQuery,
-) -> schemas::IntResponse {
+) -> Result<schemas::IntResponse> {
 }
 
 /**
@@ -9044,7 +8797,7 @@ fn put_camera_starty(
 
         client_transaction_id,
     }: schemas::PutCameraStartyRequest,
-) -> schemas::MethodResponse {
+) -> Result<schemas::MethodResponse> {
 }
 
 /**
@@ -9057,7 +8810,7 @@ fn get_camera_subexposureduration(
     schemas::GetCameraSubexposuredurationPath { device_number }: schemas::GetCameraSubexposuredurationPath,
 
     schemas::GetCameraSubexposuredurationQuery { client_id, client_transaction_id }: schemas::GetCameraSubexposuredurationQuery,
-) -> schemas::DoubleResponse {
+) -> Result<schemas::DoubleResponse> {
 }
 
 /**
@@ -9076,7 +8829,7 @@ fn put_camera_subexposureduration(
 
         client_transaction_id,
     }: schemas::PutCameraSubexposuredurationRequest,
-) -> schemas::MethodResponse {
+) -> Result<schemas::MethodResponse> {
 }
 
 /**
@@ -9089,7 +8842,7 @@ fn put_camera_abortexposure(
     schemas::PutCameraAbortexposurePath { device_number }: schemas::PutCameraAbortexposurePath,
 
     schemas::PutCameraAbortexposureRequest { client_id, client_transaction_id }: schemas::PutCameraAbortexposureRequest,
-) -> schemas::MethodResponse {
+) -> Result<schemas::MethodResponse> {
 }
 
 /**
@@ -9110,7 +8863,7 @@ fn put_camera_pulseguide(
 
         client_transaction_id,
     }: schemas::PutCameraPulseguideRequest,
-) -> schemas::MethodResponse {
+) -> Result<schemas::MethodResponse> {
 }
 
 /**
@@ -9131,7 +8884,7 @@ fn put_camera_startexposure(
 
         client_transaction_id,
     }: schemas::PutCameraStartexposureRequest,
-) -> schemas::MethodResponse {
+) -> Result<schemas::MethodResponse> {
 }
 
 /**
@@ -9144,7 +8897,7 @@ fn put_camera_stopexposure(
     schemas::PutCameraStopexposurePath { device_number }: schemas::PutCameraStopexposurePath,
 
     schemas::PutCameraAbortexposureRequest { client_id, client_transaction_id }: schemas::PutCameraAbortexposureRequest,
-) -> schemas::MethodResponse {
+) -> Result<schemas::MethodResponse> {
 }
 
 /**
@@ -9157,7 +8910,7 @@ fn get_covercalibrator_brightness(
     schemas::GetCovercalibratorBrightnessPath { device_number }: schemas::GetCovercalibratorBrightnessPath,
 
     schemas::GetCovercalibratorBrightnessQuery { client_id, client_transaction_id }: schemas::GetCovercalibratorBrightnessQuery,
-) -> schemas::IntResponse {
+) -> Result<schemas::IntResponse> {
 }
 
 /**
@@ -9170,7 +8923,7 @@ fn get_covercalibrator_calibratorstate(
     schemas::GetCovercalibratorCalibratorstatePath { device_number }: schemas::GetCovercalibratorCalibratorstatePath,
 
     schemas::GetCovercalibratorCalibratorstateQuery { client_id, client_transaction_id }: schemas::GetCovercalibratorCalibratorstateQuery,
-) -> schemas::IntResponse {
+) -> Result<schemas::IntResponse> {
 }
 
 /**
@@ -9183,7 +8936,7 @@ fn get_covercalibrator_coverstate(
     schemas::GetCovercalibratorCoverstatePath { device_number }: schemas::GetCovercalibratorCoverstatePath,
 
     schemas::GetCovercalibratorCoverstateQuery { client_id, client_transaction_id }: schemas::GetCovercalibratorCoverstateQuery,
-) -> schemas::IntResponse {
+) -> Result<schemas::IntResponse> {
 }
 
 /**
@@ -9196,7 +8949,7 @@ fn get_covercalibrator_maxbrightness(
     schemas::GetCovercalibratorMaxbrightnessPath { device_number }: schemas::GetCovercalibratorMaxbrightnessPath,
 
     schemas::GetCovercalibratorMaxbrightnessQuery { client_id, client_transaction_id }: schemas::GetCovercalibratorMaxbrightnessQuery,
-) -> schemas::IntResponse {
+) -> Result<schemas::IntResponse> {
 }
 
 /**
@@ -9209,7 +8962,7 @@ fn put_covercalibrator_calibratoroff(
     schemas::PutCovercalibratorCalibratoroffPath { device_number }: schemas::PutCovercalibratorCalibratoroffPath,
 
     schemas::PutCameraAbortexposureRequest { client_id, client_transaction_id }: schemas::PutCameraAbortexposureRequest,
-) -> schemas::MethodResponse {
+) -> Result<schemas::MethodResponse> {
 }
 
 /**
@@ -9228,7 +8981,7 @@ fn put_covercalibrator_calibratoron(
 
         client_transaction_id,
     }: schemas::PutCovercalibratorCalibratoronRequest,
-) -> schemas::MethodResponse {
+) -> Result<schemas::MethodResponse> {
 }
 
 /**
@@ -9241,7 +8994,7 @@ fn put_covercalibrator_closecover(
     schemas::PutCovercalibratorClosecoverPath { device_number }: schemas::PutCovercalibratorClosecoverPath,
 
     schemas::PutCameraAbortexposureRequest { client_id, client_transaction_id }: schemas::PutCameraAbortexposureRequest,
-) -> schemas::MethodResponse {
+) -> Result<schemas::MethodResponse> {
 }
 
 /**
@@ -9254,7 +9007,7 @@ fn put_covercalibrator_haltcover(
     schemas::PutCovercalibratorHaltcoverPath { device_number }: schemas::PutCovercalibratorHaltcoverPath,
 
     schemas::PutCameraAbortexposureRequest { client_id, client_transaction_id }: schemas::PutCameraAbortexposureRequest,
-) -> schemas::MethodResponse {
+) -> Result<schemas::MethodResponse> {
 }
 
 /**
@@ -9267,7 +9020,7 @@ fn put_covercalibrator_opencover(
     schemas::PutCovercalibratorOpencoverPath { device_number }: schemas::PutCovercalibratorOpencoverPath,
 
     schemas::PutCameraAbortexposureRequest { client_id, client_transaction_id }: schemas::PutCameraAbortexposureRequest,
-) -> schemas::MethodResponse {
+) -> Result<schemas::MethodResponse> {
 }
 
 /**
@@ -9280,7 +9033,7 @@ fn get_dome_altitude(
     schemas::GetDomeAltitudePath { device_number }: schemas::GetDomeAltitudePath,
 
     schemas::GetDomeAltitudeQuery { client_id, client_transaction_id }: schemas::GetDomeAltitudeQuery,
-) -> schemas::DoubleResponse {
+) -> Result<schemas::DoubleResponse> {
 }
 
 /**
@@ -9293,7 +9046,7 @@ fn get_dome_athome(
     schemas::GetDomeAthomePath { device_number }: schemas::GetDomeAthomePath,
 
     schemas::GetDomeAthomeQuery { client_id, client_transaction_id }: schemas::GetDomeAthomeQuery,
-) -> schemas::BoolResponse {
+) -> Result<schemas::BoolResponse> {
 }
 
 /**
@@ -9306,7 +9059,7 @@ fn get_dome_atpark(
     schemas::GetDomeAtparkPath { device_number }: schemas::GetDomeAtparkPath,
 
     schemas::GetDomeAtparkQuery { client_id, client_transaction_id }: schemas::GetDomeAtparkQuery,
-) -> schemas::BoolResponse {
+) -> Result<schemas::BoolResponse> {
 }
 
 /**
@@ -9319,7 +9072,7 @@ fn get_dome_azimuth(
     schemas::GetDomeAzimuthPath { device_number }: schemas::GetDomeAzimuthPath,
 
     schemas::GetDomeAzimuthQuery { client_id, client_transaction_id }: schemas::GetDomeAzimuthQuery,
-) -> schemas::DoubleResponse {
+) -> Result<schemas::DoubleResponse> {
 }
 
 /**
@@ -9332,7 +9085,7 @@ fn get_dome_canfindhome(
     schemas::GetDomeCanfindhomePath { device_number }: schemas::GetDomeCanfindhomePath,
 
     schemas::GetDomeCanfindhomeQuery { client_id, client_transaction_id }: schemas::GetDomeCanfindhomeQuery,
-) -> schemas::BoolResponse {
+) -> Result<schemas::BoolResponse> {
 }
 
 /**
@@ -9345,7 +9098,7 @@ fn get_dome_canpark(
     schemas::GetDomeCanparkPath { device_number }: schemas::GetDomeCanparkPath,
 
     schemas::GetDomeCanparkQuery { client_id, client_transaction_id }: schemas::GetDomeCanparkQuery,
-) -> schemas::BoolResponse {
+) -> Result<schemas::BoolResponse> {
 }
 
 /**
@@ -9358,7 +9111,7 @@ fn get_dome_cansetaltitude(
     schemas::GetDomeCansetaltitudePath { device_number }: schemas::GetDomeCansetaltitudePath,
 
     schemas::GetDomeCansetaltitudeQuery { client_id, client_transaction_id }: schemas::GetDomeCansetaltitudeQuery,
-) -> schemas::BoolResponse {
+) -> Result<schemas::BoolResponse> {
 }
 
 /**
@@ -9371,7 +9124,7 @@ fn get_dome_cansetazimuth(
     schemas::GetDomeCansetazimuthPath { device_number }: schemas::GetDomeCansetazimuthPath,
 
     schemas::GetDomeCansetazimuthQuery { client_id, client_transaction_id }: schemas::GetDomeCansetazimuthQuery,
-) -> schemas::BoolResponse {
+) -> Result<schemas::BoolResponse> {
 }
 
 /**
@@ -9384,7 +9137,7 @@ fn get_dome_cansetpark(
     schemas::GetDomeCansetparkPath { device_number }: schemas::GetDomeCansetparkPath,
 
     schemas::GetDomeCansetparkQuery { client_id, client_transaction_id }: schemas::GetDomeCansetparkQuery,
-) -> schemas::BoolResponse {
+) -> Result<schemas::BoolResponse> {
 }
 
 /**
@@ -9397,7 +9150,7 @@ fn get_dome_cansetshutter(
     schemas::GetDomeCansetshutterPath { device_number }: schemas::GetDomeCansetshutterPath,
 
     schemas::GetDomeCansetshutterQuery { client_id, client_transaction_id }: schemas::GetDomeCansetshutterQuery,
-) -> schemas::BoolResponse {
+) -> Result<schemas::BoolResponse> {
 }
 
 /**
@@ -9410,7 +9163,7 @@ fn get_dome_canslave(
     schemas::GetDomeCanslavePath { device_number }: schemas::GetDomeCanslavePath,
 
     schemas::GetDomeCanslaveQuery { client_id, client_transaction_id }: schemas::GetDomeCanslaveQuery,
-) -> schemas::BoolResponse {
+) -> Result<schemas::BoolResponse> {
 }
 
 /**
@@ -9423,7 +9176,7 @@ fn get_dome_cansyncazimuth(
     schemas::GetDomeCansyncazimuthPath { device_number }: schemas::GetDomeCansyncazimuthPath,
 
     schemas::GetDomeCansyncazimuthQuery { client_id, client_transaction_id }: schemas::GetDomeCansyncazimuthQuery,
-) -> schemas::BoolResponse {
+) -> Result<schemas::BoolResponse> {
 }
 
 /**
@@ -9436,7 +9189,7 @@ fn get_dome_shutterstatus(
     schemas::GetDomeShutterstatusPath { device_number }: schemas::GetDomeShutterstatusPath,
 
     schemas::GetDomeShutterstatusQuery { client_id, client_transaction_id }: schemas::GetDomeShutterstatusQuery,
-) -> schemas::IntResponse {
+) -> Result<schemas::IntResponse> {
 }
 
 /**
@@ -9449,7 +9202,7 @@ fn get_dome_slaved(
     schemas::GetDomeSlavedPath { device_number }: schemas::GetDomeSlavedPath,
 
     schemas::GetDomeSlavedQuery { client_id, client_transaction_id }: schemas::GetDomeSlavedQuery,
-) -> schemas::BoolResponse {
+) -> Result<schemas::BoolResponse> {
 }
 
 /**
@@ -9468,7 +9221,7 @@ fn put_dome_slaved(
 
         client_transaction_id,
     }: schemas::PutDomeSlavedRequest,
-) -> schemas::MethodResponse {
+) -> Result<schemas::MethodResponse> {
 }
 
 /**
@@ -9481,7 +9234,7 @@ fn get_dome_slewing(
     schemas::GetDomeSlewingPath { device_number }: schemas::GetDomeSlewingPath,
 
     schemas::GetDomeSlewingQuery { client_id, client_transaction_id }: schemas::GetDomeSlewingQuery,
-) -> schemas::BoolResponse {
+) -> Result<schemas::BoolResponse> {
 }
 
 /**
@@ -9494,7 +9247,7 @@ fn put_dome_abortslew(
     schemas::PutDomeAbortslewPath { device_number }: schemas::PutDomeAbortslewPath,
 
     schemas::PutCameraAbortexposureRequest { client_id, client_transaction_id }: schemas::PutCameraAbortexposureRequest,
-) -> schemas::MethodResponse {
+) -> Result<schemas::MethodResponse> {
 }
 
 /**
@@ -9507,7 +9260,7 @@ fn put_dome_closeshutter(
     schemas::PutDomeCloseshutterPath { device_number }: schemas::PutDomeCloseshutterPath,
 
     schemas::PutCameraAbortexposureRequest { client_id, client_transaction_id }: schemas::PutCameraAbortexposureRequest,
-) -> schemas::MethodResponse {
+) -> Result<schemas::MethodResponse> {
 }
 
 /**
@@ -9520,7 +9273,7 @@ fn put_dome_findhome(
     schemas::PutDomeFindhomePath { device_number }: schemas::PutDomeFindhomePath,
 
     schemas::PutCameraAbortexposureRequest { client_id, client_transaction_id }: schemas::PutCameraAbortexposureRequest,
-) -> schemas::MethodResponse {
+) -> Result<schemas::MethodResponse> {
 }
 
 /**
@@ -9533,7 +9286,7 @@ fn put_dome_openshutter(
     schemas::PutDomeOpenshutterPath { device_number }: schemas::PutDomeOpenshutterPath,
 
     schemas::PutCameraAbortexposureRequest { client_id, client_transaction_id }: schemas::PutCameraAbortexposureRequest,
-) -> schemas::MethodResponse {
+) -> Result<schemas::MethodResponse> {
 }
 
 /**
@@ -9546,7 +9299,7 @@ fn put_dome_park(
     schemas::PutDomeParkPath { device_number }: schemas::PutDomeParkPath,
 
     schemas::PutCameraAbortexposureRequest { client_id, client_transaction_id }: schemas::PutCameraAbortexposureRequest,
-) -> schemas::MethodResponse {
+) -> Result<schemas::MethodResponse> {
 }
 
 /**
@@ -9559,7 +9312,7 @@ fn put_dome_setpark(
     schemas::PutDomeSetparkPath { device_number }: schemas::PutDomeSetparkPath,
 
     schemas::PutCameraAbortexposureRequest { client_id, client_transaction_id }: schemas::PutCameraAbortexposureRequest,
-) -> schemas::MethodResponse {
+) -> Result<schemas::MethodResponse> {
 }
 
 /**
@@ -9578,7 +9331,7 @@ fn put_dome_slewtoaltitude(
 
         client_transaction_id,
     }: schemas::PutDomeSlewtoaltitudeRequest,
-) -> schemas::MethodResponse {
+) -> Result<schemas::MethodResponse> {
 }
 
 /**
@@ -9597,7 +9350,7 @@ fn put_dome_slewtoazimuth(
 
         client_transaction_id,
     }: schemas::PutDomeSlewtoazimuthRequest,
-) -> schemas::MethodResponse {
+) -> Result<schemas::MethodResponse> {
 }
 
 /**
@@ -9616,7 +9369,7 @@ fn put_dome_synctoazimuth(
 
         client_transaction_id,
     }: schemas::PutDomeSlewtoazimuthRequest,
-) -> schemas::MethodResponse {
+) -> Result<schemas::MethodResponse> {
 }
 
 /**
@@ -9629,7 +9382,7 @@ fn get_filterwheel_focusoffsets(
     schemas::GetFilterwheelFocusoffsetsPath { device_number }: schemas::GetFilterwheelFocusoffsetsPath,
 
     schemas::GetFilterwheelFocusoffsetsQuery { client_id, client_transaction_id }: schemas::GetFilterwheelFocusoffsetsQuery,
-) -> schemas::IntArrayResponse {
+) -> Result<schemas::IntArrayResponse> {
 }
 
 /**
@@ -9642,7 +9395,7 @@ fn get_filterwheel_names(
     schemas::GetFilterwheelNamesPath { device_number }: schemas::GetFilterwheelNamesPath,
 
     schemas::GetFilterwheelNamesQuery { client_id, client_transaction_id }: schemas::GetFilterwheelNamesQuery,
-) -> schemas::StringArrayResponse {
+) -> Result<schemas::StringArrayResponse> {
 }
 
 /**
@@ -9655,7 +9408,7 @@ fn get_filterwheel_position(
     schemas::GetFilterwheelPositionPath { device_number }: schemas::GetFilterwheelPositionPath,
 
     schemas::GetFilterwheelPositionQuery { client_id, client_transaction_id }: schemas::GetFilterwheelPositionQuery,
-) -> schemas::IntResponse {
+) -> Result<schemas::IntResponse> {
 }
 
 /**
@@ -9674,7 +9427,7 @@ fn put_filterwheel_position(
 
         client_transaction_id,
     }: schemas::PutFilterwheelPositionRequest,
-) -> schemas::MethodResponse {
+) -> Result<schemas::MethodResponse> {
 }
 
 /**
@@ -9687,7 +9440,7 @@ fn get_focuser_absolute(
     schemas::GetFocuserAbsolutePath { device_number }: schemas::GetFocuserAbsolutePath,
 
     schemas::GetFocuserAbsoluteQuery { client_id, client_transaction_id }: schemas::GetFocuserAbsoluteQuery,
-) -> schemas::BoolResponse {
+) -> Result<schemas::BoolResponse> {
 }
 
 /**
@@ -9700,7 +9453,7 @@ fn get_focuser_ismoving(
     schemas::GetFocuserIsmovingPath { device_number }: schemas::GetFocuserIsmovingPath,
 
     schemas::GetFocuserIsmovingQuery { client_id, client_transaction_id }: schemas::GetFocuserIsmovingQuery,
-) -> schemas::BoolResponse {
+) -> Result<schemas::BoolResponse> {
 }
 
 /**
@@ -9713,7 +9466,7 @@ fn get_focuser_maxincrement(
     schemas::GetFocuserMaxincrementPath { device_number }: schemas::GetFocuserMaxincrementPath,
 
     schemas::GetFocuserMaxincrementQuery { client_id, client_transaction_id }: schemas::GetFocuserMaxincrementQuery,
-) -> schemas::IntResponse {
+) -> Result<schemas::IntResponse> {
 }
 
 /**
@@ -9726,7 +9479,7 @@ fn get_focuser_maxstep(
     schemas::GetFocuserMaxstepPath { device_number }: schemas::GetFocuserMaxstepPath,
 
     schemas::GetFocuserMaxstepQuery { client_id, client_transaction_id }: schemas::GetFocuserMaxstepQuery,
-) -> schemas::IntResponse {
+) -> Result<schemas::IntResponse> {
 }
 
 /**
@@ -9739,7 +9492,7 @@ fn get_focuser_position(
     schemas::GetFocuserPositionPath { device_number }: schemas::GetFocuserPositionPath,
 
     schemas::GetFocuserPositionQuery { client_id, client_transaction_id }: schemas::GetFocuserPositionQuery,
-) -> schemas::IntResponse {
+) -> Result<schemas::IntResponse> {
 }
 
 /**
@@ -9752,7 +9505,7 @@ fn get_focuser_stepsize(
     schemas::GetFocuserStepsizePath { device_number }: schemas::GetFocuserStepsizePath,
 
     schemas::GetFocuserStepsizeQuery { client_id, client_transaction_id }: schemas::GetFocuserStepsizeQuery,
-) -> schemas::DoubleResponse {
+) -> Result<schemas::DoubleResponse> {
 }
 
 /**
@@ -9765,7 +9518,7 @@ fn get_focuser_tempcomp(
     schemas::GetFocuserTempcompPath { device_number }: schemas::GetFocuserTempcompPath,
 
     schemas::GetFocuserTempcompQuery { client_id, client_transaction_id }: schemas::GetFocuserTempcompQuery,
-) -> schemas::BoolResponse {
+) -> Result<schemas::BoolResponse> {
 }
 
 /**
@@ -9784,7 +9537,7 @@ fn put_focuser_tempcomp(
 
         client_transaction_idform,
     }: schemas::PutFocuserTempcompRequest,
-) -> schemas::MethodResponse {
+) -> Result<schemas::MethodResponse> {
 }
 
 /**
@@ -9797,7 +9550,7 @@ fn get_focuser_tempcompavailable(
     schemas::GetFocuserTempcompavailablePath { device_number }: schemas::GetFocuserTempcompavailablePath,
 
     schemas::GetFocuserTempcompavailableQuery { client_id, client_transaction_id }: schemas::GetFocuserTempcompavailableQuery,
-) -> schemas::BoolResponse {
+) -> Result<schemas::BoolResponse> {
 }
 
 /**
@@ -9810,7 +9563,7 @@ fn get_focuser_temperature(
     schemas::GetFocuserTemperaturePath { device_number }: schemas::GetFocuserTemperaturePath,
 
     schemas::GetFocuserTemperatureQuery { client_id, client_transaction_id }: schemas::GetFocuserTemperatureQuery,
-) -> schemas::DoubleResponse {
+) -> Result<schemas::DoubleResponse> {
 }
 
 /**
@@ -9823,7 +9576,7 @@ fn put_focuser_halt(
     schemas::PutFocuserHaltPath { device_number }: schemas::PutFocuserHaltPath,
 
     schemas::PutCameraAbortexposureRequest { client_id, client_transaction_id }: schemas::PutCameraAbortexposureRequest,
-) -> schemas::MethodResponse {
+) -> Result<schemas::MethodResponse> {
 }
 
 /**
@@ -9842,7 +9595,7 @@ fn put_focuser_move(
 
         client_transaction_id,
     }: schemas::PutFocuserMoveRequest,
-) -> schemas::MethodResponse {
+) -> Result<schemas::MethodResponse> {
 }
 
 /**
@@ -9855,7 +9608,7 @@ fn get_observingconditions_averageperiod(
     schemas::GetObservingconditionsAverageperiodPath { device_number }: schemas::GetObservingconditionsAverageperiodPath,
 
     schemas::GetObservingconditionsAverageperiodQuery { client_id, client_transaction_id }: schemas::GetObservingconditionsAverageperiodQuery,
-) -> schemas::DoubleResponse {
+) -> Result<schemas::DoubleResponse> {
 }
 
 /**
@@ -9874,7 +9627,7 @@ fn put_observingconditions_averageperiod(
 
         client_transaction_id,
     }: schemas::PutObservingconditionsAverageperiodRequest,
-) -> schemas::MethodResponse {
+) -> Result<schemas::MethodResponse> {
 }
 
 /**
@@ -9887,7 +9640,7 @@ fn get_observingconditions_cloudcover(
     schemas::GetObservingconditionsCloudcoverPath { device_number }: schemas::GetObservingconditionsCloudcoverPath,
 
     schemas::GetObservingconditionsCloudcoverQuery { client_id, client_transaction_id }: schemas::GetObservingconditionsCloudcoverQuery,
-) -> schemas::DoubleResponse {
+) -> Result<schemas::DoubleResponse> {
 }
 
 /**
@@ -9900,7 +9653,7 @@ fn get_observingconditions_dewpoint(
     schemas::GetObservingconditionsDewpointPath { device_number }: schemas::GetObservingconditionsDewpointPath,
 
     schemas::GetObservingconditionsDewpointQuery { client_id, client_transaction_id }: schemas::GetObservingconditionsDewpointQuery,
-) -> schemas::DoubleResponse {
+) -> Result<schemas::DoubleResponse> {
 }
 
 /**
@@ -9913,7 +9666,7 @@ fn get_observingconditions_humidity(
     schemas::GetObservingconditionsHumidityPath { device_number }: schemas::GetObservingconditionsHumidityPath,
 
     schemas::GetObservingconditionsHumidityQuery { client_id, client_transaction_id }: schemas::GetObservingconditionsHumidityQuery,
-) -> schemas::DoubleResponse {
+) -> Result<schemas::DoubleResponse> {
 }
 
 /**
@@ -9926,7 +9679,7 @@ fn get_observingconditions_pressure(
     schemas::GetObservingconditionsPressurePath { device_number }: schemas::GetObservingconditionsPressurePath,
 
     schemas::GetObservingconditionsPressureQuery { client_id, client_transaction_id }: schemas::GetObservingconditionsPressureQuery,
-) -> schemas::DoubleResponse {
+) -> Result<schemas::DoubleResponse> {
 }
 
 /**
@@ -9939,7 +9692,7 @@ fn get_observingconditions_rainrate(
     schemas::GetObservingconditionsRainratePath { device_number }: schemas::GetObservingconditionsRainratePath,
 
     schemas::GetObservingconditionsRainrateQuery { client_id, client_transaction_id }: schemas::GetObservingconditionsRainrateQuery,
-) -> schemas::DoubleResponse {
+) -> Result<schemas::DoubleResponse> {
 }
 
 /**
@@ -9952,7 +9705,7 @@ fn get_observingconditions_skybrightness(
     schemas::GetObservingconditionsSkybrightnessPath { device_number }: schemas::GetObservingconditionsSkybrightnessPath,
 
     schemas::GetObservingconditionsSkybrightnessQuery { client_id, client_transaction_id }: schemas::GetObservingconditionsSkybrightnessQuery,
-) -> schemas::DoubleResponse {
+) -> Result<schemas::DoubleResponse> {
 }
 
 /**
@@ -9965,7 +9718,7 @@ fn get_observingconditions_skyquality(
     schemas::GetObservingconditionsSkyqualityPath { device_number }: schemas::GetObservingconditionsSkyqualityPath,
 
     schemas::GetObservingconditionsSkyqualityQuery { client_id, client_transaction_id }: schemas::GetObservingconditionsSkyqualityQuery,
-) -> schemas::DoubleResponse {
+) -> Result<schemas::DoubleResponse> {
 }
 
 /**
@@ -9978,7 +9731,7 @@ fn get_observingconditions_skytemperature(
     schemas::GetObservingconditionsSkytemperaturePath { device_number }: schemas::GetObservingconditionsSkytemperaturePath,
 
     schemas::GetObservingconditionsSkytemperatureQuery { client_id, client_transaction_id }: schemas::GetObservingconditionsSkytemperatureQuery,
-) -> schemas::DoubleResponse {
+) -> Result<schemas::DoubleResponse> {
 }
 
 /**
@@ -9991,7 +9744,7 @@ fn get_observingconditions_starfwhm(
     schemas::GetObservingconditionsStarfwhmPath { device_number }: schemas::GetObservingconditionsStarfwhmPath,
 
     schemas::GetObservingconditionsStarfwhmQuery { client_id, client_transaction_id }: schemas::GetObservingconditionsStarfwhmQuery,
-) -> schemas::DoubleResponse {
+) -> Result<schemas::DoubleResponse> {
 }
 
 /**
@@ -10004,7 +9757,7 @@ fn get_observingconditions_temperature(
     schemas::GetObservingconditionsTemperaturePath { device_number }: schemas::GetObservingconditionsTemperaturePath,
 
     schemas::GetObservingconditionsTemperatureQuery { client_id, client_transaction_id }: schemas::GetObservingconditionsTemperatureQuery,
-) -> schemas::DoubleResponse {
+) -> Result<schemas::DoubleResponse> {
 }
 
 /**
@@ -10017,7 +9770,7 @@ fn get_observingconditions_winddirection(
     schemas::GetObservingconditionsWinddirectionPath { device_number }: schemas::GetObservingconditionsWinddirectionPath,
 
     schemas::GetObservingconditionsWinddirectionQuery { client_id, client_transaction_id }: schemas::GetObservingconditionsWinddirectionQuery,
-) -> schemas::DoubleResponse {
+) -> Result<schemas::DoubleResponse> {
 }
 
 /**
@@ -10030,7 +9783,7 @@ fn get_observingconditions_windgust(
     schemas::GetObservingconditionsWindgustPath { device_number }: schemas::GetObservingconditionsWindgustPath,
 
     schemas::GetObservingconditionsWindgustQuery { client_id, client_transaction_id }: schemas::GetObservingconditionsWindgustQuery,
-) -> schemas::DoubleResponse {
+) -> Result<schemas::DoubleResponse> {
 }
 
 /**
@@ -10043,7 +9796,7 @@ fn get_observingconditions_windspeed(
     schemas::GetObservingconditionsWindspeedPath { device_number }: schemas::GetObservingconditionsWindspeedPath,
 
     schemas::GetObservingconditionsWindspeedQuery { client_id, client_transaction_id }: schemas::GetObservingconditionsWindspeedQuery,
-) -> schemas::DoubleResponse {
+) -> Result<schemas::DoubleResponse> {
 }
 
 /**
@@ -10056,7 +9809,7 @@ fn put_observingconditions_refresh(
     schemas::PutObservingconditionsRefreshPath { device_number }: schemas::PutObservingconditionsRefreshPath,
 
     schemas::PutCameraAbortexposureRequest { client_id, client_transaction_id }: schemas::PutCameraAbortexposureRequest,
-) -> schemas::MethodResponse {
+) -> Result<schemas::MethodResponse> {
 }
 
 /**
@@ -10075,7 +9828,7 @@ fn get_observingconditions_sensordescription(
 
         client_transaction_id,
     }: schemas::GetObservingconditionsSensordescriptionQuery,
-) -> schemas::StringResponse {
+) -> Result<schemas::StringResponse> {
 }
 
 /**
@@ -10094,7 +9847,7 @@ fn get_observingconditions_timesincelastupdate(
 
         client_transaction_id,
     }: schemas::GetObservingconditionsTimesincelastupdateQuery,
-) -> schemas::DoubleResponse {
+) -> Result<schemas::DoubleResponse> {
 }
 
 /**
@@ -10107,7 +9860,7 @@ fn get_rotator_canreverse(
     schemas::GetRotatorCanreversePath { device_number }: schemas::GetRotatorCanreversePath,
 
     schemas::GetRotatorCanreverseQuery { client_id, client_transaction_id }: schemas::GetRotatorCanreverseQuery,
-) -> schemas::BoolResponse {
+) -> Result<schemas::BoolResponse> {
 }
 
 /**
@@ -10120,7 +9873,7 @@ fn get_rotator_ismoving(
     schemas::GetRotatorIsmovingPath { device_number }: schemas::GetRotatorIsmovingPath,
 
     schemas::GetRotatorIsmovingQuery { client_id, client_transaction_id }: schemas::GetRotatorIsmovingQuery,
-) -> schemas::BoolResponse {
+) -> Result<schemas::BoolResponse> {
 }
 
 /**
@@ -10133,7 +9886,7 @@ fn get_rotator_mechanicalposition(
     schemas::GetRotatorMechanicalpositionPath { device_number }: schemas::GetRotatorMechanicalpositionPath,
 
     schemas::GetRotatorMechanicalpositionQuery { client_id, client_transaction_id }: schemas::GetRotatorMechanicalpositionQuery,
-) -> schemas::DoubleResponse {
+) -> Result<schemas::DoubleResponse> {
 }
 
 /**
@@ -10146,7 +9899,7 @@ fn get_rotator_position(
     schemas::GetRotatorPositionPath { device_number }: schemas::GetRotatorPositionPath,
 
     schemas::GetRotatorPositionQuery { client_id, client_transaction_id }: schemas::GetRotatorPositionQuery,
-) -> schemas::DoubleResponse {
+) -> Result<schemas::DoubleResponse> {
 }
 
 /**
@@ -10159,7 +9912,7 @@ fn get_rotator_reverse(
     schemas::GetRotatorReversePath { device_number }: schemas::GetRotatorReversePath,
 
     schemas::GetRotatorReverseQuery { client_id, client_transaction_id }: schemas::GetRotatorReverseQuery,
-) -> schemas::BoolResponse {
+) -> Result<schemas::BoolResponse> {
 }
 
 /**
@@ -10178,7 +9931,7 @@ fn put_rotator_reverse(
 
         client_transaction_id,
     }: schemas::PutRotatorReverseRequest,
-) -> schemas::MethodResponse {
+) -> Result<schemas::MethodResponse> {
 }
 
 /**
@@ -10191,7 +9944,7 @@ fn get_rotator_stepsize(
     schemas::GetRotatorStepsizePath { device_number }: schemas::GetRotatorStepsizePath,
 
     schemas::GetRotatorStepsizeQuery { client_id, client_transaction_id }: schemas::GetRotatorStepsizeQuery,
-) -> schemas::DoubleResponse {
+) -> Result<schemas::DoubleResponse> {
 }
 
 /**
@@ -10204,7 +9957,7 @@ fn get_rotator_targetposition(
     schemas::GetRotatorTargetpositionPath { device_number }: schemas::GetRotatorTargetpositionPath,
 
     schemas::GetRotatorTargetpositionQuery { client_id, client_transaction_id }: schemas::GetRotatorTargetpositionQuery,
-) -> schemas::DoubleResponse {
+) -> Result<schemas::DoubleResponse> {
 }
 
 /**
@@ -10217,7 +9970,7 @@ fn put_rotator_halt(
     schemas::PutRotatorHaltPath { device_number }: schemas::PutRotatorHaltPath,
 
     schemas::PutCameraAbortexposureRequest { client_id, client_transaction_id }: schemas::PutCameraAbortexposureRequest,
-) -> schemas::MethodResponse {
+) -> Result<schemas::MethodResponse> {
 }
 
 /**
@@ -10236,7 +9989,7 @@ fn put_rotator_move(
 
         client_transaction_id,
     }: schemas::PutRotatorMoveRequest,
-) -> schemas::MethodResponse {
+) -> Result<schemas::MethodResponse> {
 }
 
 /**
@@ -10255,7 +10008,7 @@ fn put_rotator_moveabsolute(
 
         client_transaction_id,
     }: schemas::PutRotatorMoveabsoluteRequest,
-) -> schemas::MethodResponse {
+) -> Result<schemas::MethodResponse> {
 }
 
 /**
@@ -10274,7 +10027,7 @@ fn put_rotator_movemechanical(
 
         client_transaction_id,
     }: schemas::PutRotatorMovemechanicalRequest,
-) -> schemas::MethodResponse {
+) -> Result<schemas::MethodResponse> {
 }
 
 /**
@@ -10293,7 +10046,7 @@ fn put_rotator_sync(
 
         client_transaction_id,
     }: schemas::PutRotatorSyncRequest,
-) -> schemas::MethodResponse {
+) -> Result<schemas::MethodResponse> {
 }
 
 /**
@@ -10306,7 +10059,7 @@ fn get_safetymonitor_issafe(
     schemas::GetSafetymonitorIssafePath { device_number }: schemas::GetSafetymonitorIssafePath,
 
     schemas::GetSafetymonitorIssafeQuery { client_id, client_transaction_id }: schemas::GetSafetymonitorIssafeQuery,
-) -> schemas::BoolResponse {
+) -> Result<schemas::BoolResponse> {
 }
 
 /**
@@ -10319,7 +10072,7 @@ fn get_switch_maxswitch(
     schemas::GetSwitchMaxswitchPath { device_number }: schemas::GetSwitchMaxswitchPath,
 
     schemas::GetSwitchMaxswitchQuery { client_id, client_transaction_id }: schemas::GetSwitchMaxswitchQuery,
-) -> schemas::IntResponse {
+) -> Result<schemas::IntResponse> {
 }
 
 /**
@@ -10332,7 +10085,7 @@ fn get_switch_canwrite(
     schemas::GetSwitchCanwritePath { device_number }: schemas::GetSwitchCanwritePath,
 
     schemas::GetSwitchCanwriteQuery { id, client_id, client_transaction_id }: schemas::GetSwitchCanwriteQuery,
-) -> schemas::BoolResponse {
+) -> Result<schemas::BoolResponse> {
 }
 
 /**
@@ -10345,7 +10098,7 @@ fn get_switch_getswitch(
     schemas::GetSwitchGetswitchPath { device_number }: schemas::GetSwitchGetswitchPath,
 
     schemas::GetSwitchGetswitchQuery { id, client_id, client_transaction_id }: schemas::GetSwitchGetswitchQuery,
-) -> schemas::BoolResponse {
+) -> Result<schemas::BoolResponse> {
 }
 
 /**
@@ -10358,7 +10111,7 @@ fn get_switch_getswitchdescription(
     schemas::GetSwitchGetswitchdescriptionPath { device_number }: schemas::GetSwitchGetswitchdescriptionPath,
 
     schemas::GetSwitchGetswitchdescriptionQuery { id, client_id, client_transaction_id }: schemas::GetSwitchGetswitchdescriptionQuery,
-) -> schemas::StringResponse {
+) -> Result<schemas::StringResponse> {
 }
 
 /**
@@ -10371,7 +10124,7 @@ fn get_switch_getswitchname(
     schemas::GetSwitchGetswitchnamePath { device_number }: schemas::GetSwitchGetswitchnamePath,
 
     schemas::GetSwitchGetswitchnameQuery { id, client_id, client_transaction_id }: schemas::GetSwitchGetswitchnameQuery,
-) -> schemas::StringResponse {
+) -> Result<schemas::StringResponse> {
 }
 
 /**
@@ -10384,7 +10137,7 @@ fn get_switch_getswitchvalue(
     schemas::GetSwitchGetswitchvaluePath { device_number }: schemas::GetSwitchGetswitchvaluePath,
 
     schemas::GetSwitchGetswitchvalueQuery { id, client_id, client_transaction_id }: schemas::GetSwitchGetswitchvalueQuery,
-) -> schemas::DoubleResponse {
+) -> Result<schemas::DoubleResponse> {
 }
 
 /**
@@ -10397,7 +10150,7 @@ fn get_switch_minswitchvalue(
     schemas::GetSwitchMinswitchvaluePath { device_number }: schemas::GetSwitchMinswitchvaluePath,
 
     schemas::GetSwitchMinswitchvalueQuery { id, client_id, client_transaction_id }: schemas::GetSwitchMinswitchvalueQuery,
-) -> schemas::DoubleResponse {
+) -> Result<schemas::DoubleResponse> {
 }
 
 /**
@@ -10410,7 +10163,7 @@ fn get_switch_maxswitchvalue(
     schemas::GetSwitchMaxswitchvaluePath { device_number }: schemas::GetSwitchMaxswitchvaluePath,
 
     schemas::GetSwitchMaxswitchvalueQuery { id, client_id, client_transaction_id }: schemas::GetSwitchMaxswitchvalueQuery,
-) -> schemas::DoubleResponse {
+) -> Result<schemas::DoubleResponse> {
 }
 
 /**
@@ -10431,7 +10184,7 @@ fn put_switch_setswitch(
 
         client_transaction_id,
     }: schemas::PutSwitchSetswitchRequest,
-) -> schemas::MethodResponse {
+) -> Result<schemas::MethodResponse> {
 }
 
 /**
@@ -10452,7 +10205,7 @@ fn put_switch_setswitchname(
 
         client_transaction_id,
     }: schemas::PutSwitchSetswitchnameRequest,
-) -> schemas::MethodResponse {
+) -> Result<schemas::MethodResponse> {
 }
 
 /**
@@ -10473,7 +10226,7 @@ fn put_switch_setswitchvalue(
 
         client_transaction_id,
     }: schemas::PutSwitchSetswitchvalueRequest,
-) -> schemas::MethodResponse {
+) -> Result<schemas::MethodResponse> {
 }
 
 /**
@@ -10486,7 +10239,7 @@ fn get_switch_switchstep(
     schemas::GetSwitchSwitchstepPath { device_number }: schemas::GetSwitchSwitchstepPath,
 
     schemas::GetSwitchSwitchstepQuery { id, client_id, client_transaction_id }: schemas::GetSwitchSwitchstepQuery,
-) -> schemas::DoubleResponse {
+) -> Result<schemas::DoubleResponse> {
 }
 
 /**
@@ -10499,7 +10252,7 @@ fn get_telescope_alignmentmode(
     schemas::GetTelescopeAlignmentmodePath { device_number }: schemas::GetTelescopeAlignmentmodePath,
 
     schemas::GetTelescopeAlignmentmodeQuery { client_id, client_transaction_id }: schemas::GetTelescopeAlignmentmodeQuery,
-) -> schemas::IntResponse {
+) -> Result<schemas::IntResponse> {
 }
 
 /**
@@ -10512,7 +10265,7 @@ fn get_telescope_altitude(
     schemas::GetTelescopeAltitudePath { device_number }: schemas::GetTelescopeAltitudePath,
 
     schemas::GetTelescopeAltitudeQuery { client_id, client_transaction_id }: schemas::GetTelescopeAltitudeQuery,
-) -> schemas::DoubleResponse {
+) -> Result<schemas::DoubleResponse> {
 }
 
 /**
@@ -10525,7 +10278,7 @@ fn get_telescope_aperturearea(
     schemas::GetTelescopeApertureareaPath { device_number }: schemas::GetTelescopeApertureareaPath,
 
     schemas::GetTelescopeApertureareaQuery { client_id, client_transaction_id }: schemas::GetTelescopeApertureareaQuery,
-) -> schemas::DoubleResponse {
+) -> Result<schemas::DoubleResponse> {
 }
 
 /**
@@ -10538,7 +10291,7 @@ fn get_telescope_aperturediameter(
     schemas::GetTelescopeAperturediameterPath { device_number }: schemas::GetTelescopeAperturediameterPath,
 
     schemas::GetTelescopeAperturediameterQuery { client_id, client_transaction_id }: schemas::GetTelescopeAperturediameterQuery,
-) -> schemas::DoubleResponse {
+) -> Result<schemas::DoubleResponse> {
 }
 
 /**
@@ -10551,7 +10304,7 @@ fn get_telescope_athome(
     schemas::GetTelescopeAthomePath { device_number }: schemas::GetTelescopeAthomePath,
 
     schemas::GetTelescopeAthomeQuery { client_id, client_transaction_id }: schemas::GetTelescopeAthomeQuery,
-) -> schemas::BoolResponse {
+) -> Result<schemas::BoolResponse> {
 }
 
 /**
@@ -10564,7 +10317,7 @@ fn get_telescope_atpark(
     schemas::GetTelescopeAtparkPath { device_number }: schemas::GetTelescopeAtparkPath,
 
     schemas::GetTelescopeAtparkQuery { client_id, client_transaction_id }: schemas::GetTelescopeAtparkQuery,
-) -> schemas::BoolResponse {
+) -> Result<schemas::BoolResponse> {
 }
 
 /**
@@ -10577,7 +10330,7 @@ fn get_telescope_azimuth(
     schemas::GetTelescopeAzimuthPath { device_number }: schemas::GetTelescopeAzimuthPath,
 
     schemas::GetTelescopeAzimuthQuery { client_id, client_transaction_id }: schemas::GetTelescopeAzimuthQuery,
-) -> schemas::DoubleResponse {
+) -> Result<schemas::DoubleResponse> {
 }
 
 /**
@@ -10590,7 +10343,7 @@ fn get_telescope_canfindhome(
     schemas::GetTelescopeCanfindhomePath { device_number }: schemas::GetTelescopeCanfindhomePath,
 
     schemas::GetTelescopeCanfindhomeQuery { client_id, client_transaction_id }: schemas::GetTelescopeCanfindhomeQuery,
-) -> schemas::BoolResponse {
+) -> Result<schemas::BoolResponse> {
 }
 
 /**
@@ -10603,7 +10356,7 @@ fn get_telescope_canpark(
     schemas::GetTelescopeCanparkPath { device_number }: schemas::GetTelescopeCanparkPath,
 
     schemas::GetTelescopeCanparkQuery { client_id, client_transaction_id }: schemas::GetTelescopeCanparkQuery,
-) -> schemas::BoolResponse {
+) -> Result<schemas::BoolResponse> {
 }
 
 /**
@@ -10616,7 +10369,7 @@ fn get_telescope_canpulseguide(
     schemas::GetTelescopeCanpulseguidePath { device_number }: schemas::GetTelescopeCanpulseguidePath,
 
     schemas::GetTelescopeCanpulseguideQuery { client_id, client_transaction_id }: schemas::GetTelescopeCanpulseguideQuery,
-) -> schemas::BoolResponse {
+) -> Result<schemas::BoolResponse> {
 }
 
 /**
@@ -10629,7 +10382,7 @@ fn get_telescope_cansetdeclinationrate(
     schemas::GetTelescopeCansetdeclinationratePath { device_number }: schemas::GetTelescopeCansetdeclinationratePath,
 
     schemas::GetTelescopeCansetdeclinationrateQuery { client_id, client_transaction_id }: schemas::GetTelescopeCansetdeclinationrateQuery,
-) -> schemas::BoolResponse {
+) -> Result<schemas::BoolResponse> {
 }
 
 /**
@@ -10642,7 +10395,7 @@ fn get_telescope_cansetguiderates(
     schemas::GetTelescopeCansetguideratesPath { device_number }: schemas::GetTelescopeCansetguideratesPath,
 
     schemas::GetTelescopeCansetguideratesQuery { client_id, client_transaction_id }: schemas::GetTelescopeCansetguideratesQuery,
-) -> schemas::BoolResponse {
+) -> Result<schemas::BoolResponse> {
 }
 
 /**
@@ -10655,7 +10408,7 @@ fn get_telescope_cansetpark(
     schemas::GetTelescopeCansetparkPath { device_number }: schemas::GetTelescopeCansetparkPath,
 
     schemas::GetTelescopeCansetparkQuery { client_id, client_transaction_id }: schemas::GetTelescopeCansetparkQuery,
-) -> schemas::BoolResponse {
+) -> Result<schemas::BoolResponse> {
 }
 
 /**
@@ -10668,7 +10421,7 @@ fn get_telescope_cansetpierside(
     schemas::GetTelescopeCansetpiersidePath { device_number }: schemas::GetTelescopeCansetpiersidePath,
 
     schemas::GetTelescopeCansetpiersideQuery { client_id, client_transaction_id }: schemas::GetTelescopeCansetpiersideQuery,
-) -> schemas::BoolResponse {
+) -> Result<schemas::BoolResponse> {
 }
 
 /**
@@ -10681,7 +10434,7 @@ fn get_telescope_cansetrightascensionrate(
     schemas::GetTelescopeCansetrightascensionratePath { device_number }: schemas::GetTelescopeCansetrightascensionratePath,
 
     schemas::GetTelescopeCansetrightascensionrateQuery { client_id, client_transaction_id }: schemas::GetTelescopeCansetrightascensionrateQuery,
-) -> schemas::BoolResponse {
+) -> Result<schemas::BoolResponse> {
 }
 
 /**
@@ -10694,7 +10447,7 @@ fn get_telescope_cansettracking(
     schemas::GetTelescopeCansettrackingPath { device_number }: schemas::GetTelescopeCansettrackingPath,
 
     schemas::GetTelescopeCansettrackingQuery { client_id, client_transaction_id }: schemas::GetTelescopeCansettrackingQuery,
-) -> schemas::BoolResponse {
+) -> Result<schemas::BoolResponse> {
 }
 
 /**
@@ -10707,7 +10460,7 @@ fn get_telescope_canslew(
     schemas::GetTelescopeCanslewPath { device_number }: schemas::GetTelescopeCanslewPath,
 
     schemas::GetTelescopeCanslewQuery { client_id, client_transaction_id }: schemas::GetTelescopeCanslewQuery,
-) -> schemas::BoolResponse {
+) -> Result<schemas::BoolResponse> {
 }
 
 /**
@@ -10720,7 +10473,7 @@ fn get_telescope_canslewaltaz(
     schemas::GetTelescopeCanslewaltazPath { device_number }: schemas::GetTelescopeCanslewaltazPath,
 
     schemas::GetTelescopeCanslewaltazQuery { client_id, client_transaction_id }: schemas::GetTelescopeCanslewaltazQuery,
-) -> schemas::BoolResponse {
+) -> Result<schemas::BoolResponse> {
 }
 
 /**
@@ -10733,7 +10486,7 @@ fn get_telescope_canslewaltazasync(
     schemas::GetTelescopeCanslewaltazasyncPath { device_number }: schemas::GetTelescopeCanslewaltazasyncPath,
 
     schemas::GetTelescopeCanslewaltazasyncQuery { client_id, client_transaction_id }: schemas::GetTelescopeCanslewaltazasyncQuery,
-) -> schemas::BoolResponse {
+) -> Result<schemas::BoolResponse> {
 }
 
 /**
@@ -10746,7 +10499,7 @@ fn get_telescope_canslewasync(
     schemas::GetTelescopeCanslewasyncPath { device_number }: schemas::GetTelescopeCanslewasyncPath,
 
     schemas::GetTelescopeCanslewasyncQuery { client_id, client_transaction_id }: schemas::GetTelescopeCanslewasyncQuery,
-) -> schemas::BoolResponse {
+) -> Result<schemas::BoolResponse> {
 }
 
 /**
@@ -10759,7 +10512,7 @@ fn get_telescope_cansync(
     schemas::GetTelescopeCansyncPath { device_number }: schemas::GetTelescopeCansyncPath,
 
     schemas::GetTelescopeCansyncQuery { client_id, client_transaction_id }: schemas::GetTelescopeCansyncQuery,
-) -> schemas::BoolResponse {
+) -> Result<schemas::BoolResponse> {
 }
 
 /**
@@ -10772,7 +10525,7 @@ fn get_telescope_cansyncaltaz(
     schemas::GetTelescopeCansyncaltazPath { device_number }: schemas::GetTelescopeCansyncaltazPath,
 
     schemas::GetTelescopeCansyncaltazQuery { client_id, client_transaction_id }: schemas::GetTelescopeCansyncaltazQuery,
-) -> schemas::BoolResponse {
+) -> Result<schemas::BoolResponse> {
 }
 
 /**
@@ -10785,7 +10538,7 @@ fn get_telescope_canunpark(
     schemas::GetTelescopeCanunparkPath { device_number }: schemas::GetTelescopeCanunparkPath,
 
     schemas::GetTelescopeCanunparkQuery { client_id, client_transaction_id }: schemas::GetTelescopeCanunparkQuery,
-) -> schemas::BoolResponse {
+) -> Result<schemas::BoolResponse> {
 }
 
 /**
@@ -10798,7 +10551,7 @@ fn get_telescope_declination(
     schemas::GetTelescopeDeclinationPath { device_number }: schemas::GetTelescopeDeclinationPath,
 
     schemas::GetTelescopeDeclinationQuery { client_id, client_transaction_id }: schemas::GetTelescopeDeclinationQuery,
-) -> schemas::DoubleResponse {
+) -> Result<schemas::DoubleResponse> {
 }
 
 /**
@@ -10811,7 +10564,7 @@ fn get_telescope_declinationrate(
     schemas::GetTelescopeDeclinationratePath { device_number }: schemas::GetTelescopeDeclinationratePath,
 
     schemas::GetTelescopeDeclinationrateQuery { client_id, client_transaction_id }: schemas::GetTelescopeDeclinationrateQuery,
-) -> schemas::DoubleResponse {
+) -> Result<schemas::DoubleResponse> {
 }
 
 /**
@@ -10830,7 +10583,7 @@ fn put_telescope_declinationrate(
 
         client_transaction_id,
     }: schemas::PutTelescopeDeclinationrateRequest,
-) -> schemas::MethodResponse {
+) -> Result<schemas::MethodResponse> {
 }
 
 /**
@@ -10843,7 +10596,7 @@ fn get_telescope_doesrefraction(
     schemas::GetTelescopeDoesrefractionPath { device_number }: schemas::GetTelescopeDoesrefractionPath,
 
     schemas::GetTelescopeDoesrefractionQuery { client_id, client_transaction_id }: schemas::GetTelescopeDoesrefractionQuery,
-) -> schemas::BoolResponse {
+) -> Result<schemas::BoolResponse> {
 }
 
 /**
@@ -10862,7 +10615,7 @@ fn put_telescope_doesrefraction(
 
         client_transaction_id,
     }: schemas::PutTelescopeDoesrefractionRequest,
-) -> schemas::MethodResponse {
+) -> Result<schemas::MethodResponse> {
 }
 
 /**
@@ -10875,7 +10628,7 @@ fn get_telescope_equatorialsystem(
     schemas::GetTelescopeEquatorialsystemPath { device_number }: schemas::GetTelescopeEquatorialsystemPath,
 
     schemas::GetTelescopeEquatorialsystemQuery { client_id, client_transaction_id }: schemas::GetTelescopeEquatorialsystemQuery,
-) -> schemas::IntResponse {
+) -> Result<schemas::IntResponse> {
 }
 
 /**
@@ -10888,7 +10641,7 @@ fn get_telescope_focallength(
     schemas::GetTelescopeFocallengthPath { device_number }: schemas::GetTelescopeFocallengthPath,
 
     schemas::GetTelescopeFocallengthQuery { client_id, client_transaction_id }: schemas::GetTelescopeFocallengthQuery,
-) -> schemas::DoubleResponse {
+) -> Result<schemas::DoubleResponse> {
 }
 
 /**
@@ -10901,7 +10654,7 @@ fn get_telescope_guideratedeclination(
     schemas::GetTelescopeGuideratedeclinationPath { device_number }: schemas::GetTelescopeGuideratedeclinationPath,
 
     schemas::GetTelescopeGuideratedeclinationQuery { client_id, client_transaction_id }: schemas::GetTelescopeGuideratedeclinationQuery,
-) -> schemas::DoubleResponse {
+) -> Result<schemas::DoubleResponse> {
 }
 
 /**
@@ -10920,7 +10673,7 @@ fn put_telescope_guideratedeclination(
 
         client_transaction_id,
     }: schemas::PutTelescopeGuideratedeclinationRequest,
-) -> schemas::MethodResponse {
+) -> Result<schemas::MethodResponse> {
 }
 
 /**
@@ -10933,7 +10686,7 @@ fn get_telescope_guideraterightascension(
     schemas::GetTelescopeGuideraterightascensionPath { device_number }: schemas::GetTelescopeGuideraterightascensionPath,
 
     schemas::GetTelescopeGuideraterightascensionQuery { client_id, client_transaction_id }: schemas::GetTelescopeGuideraterightascensionQuery,
-) -> schemas::DoubleResponse {
+) -> Result<schemas::DoubleResponse> {
 }
 
 /**
@@ -10952,7 +10705,7 @@ fn put_telescope_guideraterightascension(
 
         client_transaction_id,
     }: schemas::PutTelescopeGuideraterightascensionRequest,
-) -> schemas::MethodResponse {
+) -> Result<schemas::MethodResponse> {
 }
 
 /**
@@ -10965,7 +10718,7 @@ fn get_telescope_ispulseguiding(
     schemas::GetTelescopeIspulseguidingPath { device_number }: schemas::GetTelescopeIspulseguidingPath,
 
     schemas::GetTelescopeIspulseguidingQuery { client_id, client_transaction_id }: schemas::GetTelescopeIspulseguidingQuery,
-) -> schemas::BoolResponse {
+) -> Result<schemas::BoolResponse> {
 }
 
 /**
@@ -10978,7 +10731,7 @@ fn get_telescope_rightascension(
     schemas::GetTelescopeRightascensionPath { device_number }: schemas::GetTelescopeRightascensionPath,
 
     schemas::GetTelescopeRightascensionQuery { client_id, client_transaction_id }: schemas::GetTelescopeRightascensionQuery,
-) -> schemas::DoubleResponse {
+) -> Result<schemas::DoubleResponse> {
 }
 
 /**
@@ -10991,7 +10744,7 @@ fn get_telescope_rightascensionrate(
     schemas::GetTelescopeRightascensionratePath { device_number }: schemas::GetTelescopeRightascensionratePath,
 
     schemas::GetTelescopeRightascensionrateQuery { client_id, client_transaction_id }: schemas::GetTelescopeRightascensionrateQuery,
-) -> schemas::DoubleResponse {
+) -> Result<schemas::DoubleResponse> {
 }
 
 /**
@@ -11010,7 +10763,7 @@ fn put_telescope_rightascensionrate(
 
         client_transaction_id,
     }: schemas::PutTelescopeRightascensionrateRequest,
-) -> schemas::MethodResponse {
+) -> Result<schemas::MethodResponse> {
 }
 
 /**
@@ -11023,7 +10776,7 @@ fn get_telescope_sideofpier(
     schemas::GetTelescopeSideofpierPath { device_number }: schemas::GetTelescopeSideofpierPath,
 
     schemas::GetTelescopeSideofpierQuery { client_id, client_transaction_id }: schemas::GetTelescopeSideofpierQuery,
-) -> schemas::IntResponse {
+) -> Result<schemas::IntResponse> {
 }
 
 /**
@@ -11042,7 +10795,7 @@ fn put_telescope_sideofpier(
 
         client_transaction_id,
     }: schemas::PutTelescopeSideofpierRequest,
-) -> schemas::MethodResponse {
+) -> Result<schemas::MethodResponse> {
 }
 
 /**
@@ -11055,7 +10808,7 @@ fn get_telescope_siderealtime(
     schemas::GetTelescopeSiderealtimePath { device_number }: schemas::GetTelescopeSiderealtimePath,
 
     schemas::GetTelescopeSiderealtimeQuery { client_id, client_transaction_id }: schemas::GetTelescopeSiderealtimeQuery,
-) -> schemas::DoubleResponse {
+) -> Result<schemas::DoubleResponse> {
 }
 
 /**
@@ -11068,7 +10821,7 @@ fn get_telescope_siteelevation(
     schemas::GetTelescopeSiteelevationPath { device_number }: schemas::GetTelescopeSiteelevationPath,
 
     schemas::GetTelescopeSiteelevationQuery { client_id, client_transaction_id }: schemas::GetTelescopeSiteelevationQuery,
-) -> schemas::DoubleResponse {
+) -> Result<schemas::DoubleResponse> {
 }
 
 /**
@@ -11087,7 +10840,7 @@ fn put_telescope_siteelevation(
 
         client_transaction_id,
     }: schemas::PutTelescopeSiteelevationRequest,
-) -> schemas::MethodResponse {
+) -> Result<schemas::MethodResponse> {
 }
 
 /**
@@ -11100,7 +10853,7 @@ fn get_telescope_sitelatitude(
     schemas::GetTelescopeSitelatitudePath { device_number }: schemas::GetTelescopeSitelatitudePath,
 
     schemas::GetTelescopeSitelatitudeQuery { client_id, client_transaction_id }: schemas::GetTelescopeSitelatitudeQuery,
-) -> schemas::DoubleResponse {
+) -> Result<schemas::DoubleResponse> {
 }
 
 /**
@@ -11119,7 +10872,7 @@ fn put_telescope_sitelatitude(
 
         client_transaction_id,
     }: schemas::PutTelescopeSitelatitudeRequest,
-) -> schemas::MethodResponse {
+) -> Result<schemas::MethodResponse> {
 }
 
 /**
@@ -11132,7 +10885,7 @@ fn get_telescope_sitelongitude(
     schemas::GetTelescopeSitelongitudePath { device_number }: schemas::GetTelescopeSitelongitudePath,
 
     schemas::GetTelescopeSitelongitudeQuery { client_id, client_transaction_id }: schemas::GetTelescopeSitelongitudeQuery,
-) -> schemas::DoubleResponse {
+) -> Result<schemas::DoubleResponse> {
 }
 
 /**
@@ -11151,7 +10904,7 @@ fn put_telescope_sitelongitude(
 
         client_transaction_id,
     }: schemas::PutTelescopeSitelongitudeRequest,
-) -> schemas::MethodResponse {
+) -> Result<schemas::MethodResponse> {
 }
 
 /**
@@ -11164,7 +10917,7 @@ fn get_telescope_slewing(
     schemas::GetTelescopeSlewingPath { device_number }: schemas::GetTelescopeSlewingPath,
 
     schemas::GetTelescopeSlewingQuery { client_id, client_transaction_id }: schemas::GetTelescopeSlewingQuery,
-) -> schemas::BoolResponse {
+) -> Result<schemas::BoolResponse> {
 }
 
 /**
@@ -11177,7 +10930,7 @@ fn get_telescope_slewsettletime(
     schemas::GetTelescopeSlewsettletimePath { device_number }: schemas::GetTelescopeSlewsettletimePath,
 
     schemas::GetTelescopeSlewsettletimeQuery { client_id, client_transaction_id }: schemas::GetTelescopeSlewsettletimeQuery,
-) -> schemas::IntResponse {
+) -> Result<schemas::IntResponse> {
 }
 
 /**
@@ -11196,7 +10949,7 @@ fn put_telescope_slewsettletime(
 
         client_transaction_id,
     }: schemas::PutTelescopeSlewsettletimeRequest,
-) -> schemas::MethodResponse {
+) -> Result<schemas::MethodResponse> {
 }
 
 /**
@@ -11209,7 +10962,7 @@ fn get_telescope_targetdeclination(
     schemas::GetTelescopeTargetdeclinationPath { device_number }: schemas::GetTelescopeTargetdeclinationPath,
 
     schemas::GetTelescopeTargetdeclinationQuery { client_id, client_transaction_id }: schemas::GetTelescopeTargetdeclinationQuery,
-) -> schemas::DoubleResponse {
+) -> Result<schemas::DoubleResponse> {
 }
 
 /**
@@ -11228,7 +10981,7 @@ fn put_telescope_targetdeclination(
 
         client_transaction_id,
     }: schemas::PutTelescopeTargetdeclinationRequest,
-) -> schemas::MethodResponse {
+) -> Result<schemas::MethodResponse> {
 }
 
 /**
@@ -11241,7 +10994,7 @@ fn get_telescope_targetrightascension(
     schemas::GetTelescopeTargetrightascensionPath { device_number }: schemas::GetTelescopeTargetrightascensionPath,
 
     schemas::GetTelescopeTargetrightascensionQuery { client_id, client_transaction_id }: schemas::GetTelescopeTargetrightascensionQuery,
-) -> schemas::DoubleResponse {
+) -> Result<schemas::DoubleResponse> {
 }
 
 /**
@@ -11260,7 +11013,7 @@ fn put_telescope_targetrightascension(
 
         client_transaction_id,
     }: schemas::PutTelescopeTargetrightascensionRequest,
-) -> schemas::MethodResponse {
+) -> Result<schemas::MethodResponse> {
 }
 
 /**
@@ -11273,7 +11026,7 @@ fn get_telescope_tracking(
     schemas::GetTelescopeTrackingPath { device_number }: schemas::GetTelescopeTrackingPath,
 
     schemas::GetTelescopeTrackingQuery { client_id, client_transaction_id }: schemas::GetTelescopeTrackingQuery,
-) -> schemas::BoolResponse {
+) -> Result<schemas::BoolResponse> {
 }
 
 /**
@@ -11292,7 +11045,7 @@ fn put_telescope_tracking(
 
         client_transaction_id,
     }: schemas::PutTelescopeTrackingRequest,
-) -> schemas::MethodResponse {
+) -> Result<schemas::MethodResponse> {
 }
 
 /**
@@ -11305,7 +11058,7 @@ fn get_telescope_trackingrate(
     schemas::GetTelescopeTrackingratePath { device_number }: schemas::GetTelescopeTrackingratePath,
 
     schemas::GetTelescopeTrackingrateQuery { client_id, client_transaction_id }: schemas::GetTelescopeTrackingrateQuery,
-) -> schemas::IntResponse {
+) -> Result<schemas::IntResponse> {
 }
 
 /**
@@ -11324,7 +11077,7 @@ fn put_telescope_trackingrate(
 
         client_transaction_id,
     }: schemas::PutTelescopeTrackingrateRequest,
-) -> schemas::MethodResponse {
+) -> Result<schemas::MethodResponse> {
 }
 
 /**
@@ -11337,7 +11090,7 @@ fn get_telescope_trackingrates(
     schemas::GetTelescopeTrackingratesPath { device_number }: schemas::GetTelescopeTrackingratesPath,
 
     schemas::GetTelescopeTrackingratesQuery { client_id, client_transaction_id }: schemas::GetTelescopeTrackingratesQuery,
-) -> schemas::DriveRatesResponse {
+) -> Result<schemas::DriveRatesResponse> {
 }
 
 /**
@@ -11350,7 +11103,7 @@ fn get_telescope_utcdate(
     schemas::GetTelescopeUtcdatePath { device_number }: schemas::GetTelescopeUtcdatePath,
 
     schemas::GetTelescopeUtcdateQuery { client_id, client_transaction_id }: schemas::GetTelescopeUtcdateQuery,
-) -> schemas::StringResponse {
+) -> Result<schemas::StringResponse> {
 }
 
 /**
@@ -11369,7 +11122,7 @@ fn put_telescope_utcdate(
 
         client_transaction_id,
     }: schemas::PutTelescopeUtcdateRequest,
-) -> schemas::MethodResponse {
+) -> Result<schemas::MethodResponse> {
 }
 
 /**
@@ -11382,7 +11135,7 @@ fn put_telescope_abortslew(
     schemas::PutTelescopeAbortslewPath { device_number }: schemas::PutTelescopeAbortslewPath,
 
     schemas::PutCameraAbortexposureRequest { client_id, client_transaction_id }: schemas::PutCameraAbortexposureRequest,
-) -> schemas::MethodResponse {
+) -> Result<schemas::MethodResponse> {
 }
 
 /**
@@ -11401,7 +11154,7 @@ fn get_telescope_axisrates(
 
         axis,
     }: schemas::GetTelescopeAxisratesQuery,
-) -> schemas::AxisRatesResponse {
+) -> Result<schemas::AxisRatesResponse> {
 }
 
 /**
@@ -11420,7 +11173,7 @@ fn get_telescope_canmoveaxis(
 
         client_transaction_id,
     }: schemas::GetTelescopeCanmoveaxisQuery,
-) -> schemas::BoolResponse {
+) -> Result<schemas::BoolResponse> {
 }
 
 /**
@@ -11441,7 +11194,7 @@ fn get_telescope_destinationsideofpier(
 
         client_transaction_id,
     }: schemas::GetTelescopeDestinationsideofpierQuery,
-) -> schemas::IntResponse {
+) -> Result<schemas::IntResponse> {
 }
 
 /**
@@ -11454,7 +11207,7 @@ fn put_telescope_findhome(
     schemas::PutTelescopeFindhomePath { device_number }: schemas::PutTelescopeFindhomePath,
 
     schemas::PutCameraAbortexposureRequest { client_id, client_transaction_id }: schemas::PutCameraAbortexposureRequest,
-) -> schemas::MethodResponse {
+) -> Result<schemas::MethodResponse> {
 }
 
 /**
@@ -11475,7 +11228,7 @@ fn put_telescope_moveaxis(
 
         client_transaction_id,
     }: schemas::PutTelescopeMoveaxisRequest,
-) -> schemas::MethodResponse {
+) -> Result<schemas::MethodResponse> {
 }
 
 /**
@@ -11488,7 +11241,7 @@ fn put_telescope_park(
     schemas::PutTelescopeParkPath { device_number }: schemas::PutTelescopeParkPath,
 
     schemas::PutCameraAbortexposureRequest { client_id, client_transaction_id }: schemas::PutCameraAbortexposureRequest,
-) -> schemas::MethodResponse {
+) -> Result<schemas::MethodResponse> {
 }
 
 /**
@@ -11509,7 +11262,7 @@ fn put_telescope_pulseguide(
 
         client_transaction_id,
     }: schemas::PutTelescopePulseguideRequest,
-) -> schemas::MethodResponse {
+) -> Result<schemas::MethodResponse> {
 }
 
 /**
@@ -11522,7 +11275,7 @@ fn put_telescope_setpark(
     schemas::PutTelescopeSetparkPath { device_number }: schemas::PutTelescopeSetparkPath,
 
     schemas::PutCameraAbortexposureRequest { client_id, client_transaction_id }: schemas::PutCameraAbortexposureRequest,
-) -> schemas::MethodResponse {
+) -> Result<schemas::MethodResponse> {
 }
 
 /**
@@ -11543,7 +11296,7 @@ fn put_telescope_slewtoaltaz(
 
         client_transaction_id,
     }: schemas::PutTelescopeSlewtoaltazRequest,
-) -> schemas::MethodResponse {
+) -> Result<schemas::MethodResponse> {
 }
 
 /**
@@ -11564,7 +11317,7 @@ fn put_telescope_slewtoaltazasync(
 
         client_transaction_id,
     }: schemas::PutTelescopeSlewtoaltazRequest,
-) -> schemas::MethodResponse {
+) -> Result<schemas::MethodResponse> {
 }
 
 /**
@@ -11585,7 +11338,7 @@ fn put_telescope_slewtocoordinates(
 
         client_transaction_id,
     }: schemas::PutTelescopeSlewtocoordinatesRequest,
-) -> schemas::MethodResponse {
+) -> Result<schemas::MethodResponse> {
 }
 
 /**
@@ -11606,7 +11359,7 @@ fn put_telescope_slewtocoordinatesasync(
 
         client_transaction_id,
     }: schemas::PutTelescopeSlewtocoordinatesRequest,
-) -> schemas::MethodResponse {
+) -> Result<schemas::MethodResponse> {
 }
 
 /**
@@ -11619,7 +11372,7 @@ fn put_telescope_slewtotarget(
     schemas::PutTelescopeSlewtotargetPath { device_number }: schemas::PutTelescopeSlewtotargetPath,
 
     schemas::PutCameraAbortexposureRequest { client_id, client_transaction_id }: schemas::PutCameraAbortexposureRequest,
-) -> schemas::MethodResponse {
+) -> Result<schemas::MethodResponse> {
 }
 
 /**
@@ -11632,7 +11385,7 @@ fn put_telescope_slewtotargetasync(
     schemas::PutTelescopeSlewtotargetasyncPath { device_number }: schemas::PutTelescopeSlewtotargetasyncPath,
 
     schemas::PutCameraAbortexposureRequest { client_id, client_transaction_id }: schemas::PutCameraAbortexposureRequest,
-) -> schemas::MethodResponse {
+) -> Result<schemas::MethodResponse> {
 }
 
 /**
@@ -11653,7 +11406,7 @@ fn put_telescope_synctoaltaz(
 
         client_transaction_id,
     }: schemas::PutTelescopeSlewtoaltazRequest,
-) -> schemas::MethodResponse {
+) -> Result<schemas::MethodResponse> {
 }
 
 /**
@@ -11674,7 +11427,7 @@ fn put_telescope_synctocoordinates(
 
         client_transaction_id,
     }: schemas::PutTelescopeSlewtocoordinatesRequest,
-) -> schemas::MethodResponse {
+) -> Result<schemas::MethodResponse> {
 }
 
 /**
@@ -11687,7 +11440,7 @@ fn put_telescope_synctotarget(
     schemas::PutTelescopeSynctotargetPath { device_number }: schemas::PutTelescopeSynctotargetPath,
 
     schemas::PutCameraAbortexposureRequest { client_id, client_transaction_id }: schemas::PutCameraAbortexposureRequest,
-) -> schemas::MethodResponse {
+) -> Result<schemas::MethodResponse> {
 }
 
 /**
@@ -11700,7 +11453,7 @@ fn put_telescope_unpark(
     schemas::PutTelescopeUnparkPath { device_number }: schemas::PutTelescopeUnparkPath,
 
     schemas::PutCameraAbortexposureRequest { client_id, client_transaction_id }: schemas::PutCameraAbortexposureRequest,
-) -> schemas::MethodResponse {
+) -> Result<schemas::MethodResponse> {
 }
 
 #[actix_web::main]

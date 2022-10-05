@@ -65,6 +65,28 @@ function getContent(
   return { schema: schema, content: content[contentType] };
 }
 
+function withoutDescriptions<T>(obj: T): T {
+  return JSON.parse(
+    JSON.stringify(obj, (k, v) => (k === 'description' ? undefined : v))
+  );
+}
+
+function setXKind(schema: OpenAPIV3.SchemaObject, kind: string) {
+  let prev = (schema as any)['x-kind'];
+  if (prev) {
+    assert.equal(prev, kind, `Conflicting x-kind: ${prev} vs ${kind}`);
+  }
+  (schema as any)['x-kind'] = kind;
+}
+
+function registerSchema(
+  name: string,
+  schema: OpenAPIV3.SchemaObject
+): OpenAPIV3.ReferenceObject {
+  api.components!.schemas![name] = schema;
+  return { $ref: `#/components/schemas/${name}` };
+}
+
 // Extract path parameters, query parameters and bodies that are not in api.components yet.
 // Add all of them to api.components, and replace the originals with $ref references.
 for (let { method, path, id, operation } of ops()) {
@@ -96,14 +118,8 @@ for (let { method, path, id, operation } of ops()) {
           throw new Error(`Unsupported parameter group: ${group}`);
       }
 
-      let name = `${typeId}${toPascalCase(group)}`;
-      api.components!.schemas![name] = params;
-      let existingVia = (params as any)['x-request'];
-      if (existingVia) {
-        assert.equal(via, existingVia);
-      }
-      (params as any)['x-request'] = via;
-      return { $ref: `#/components/schemas/${name}` };
+      setXKind(params, via);
+      return registerSchema(`${typeId}${toPascalCase(group)}`, params);
     }
   );
 
@@ -115,17 +131,10 @@ for (let { method, path, id, operation } of ops()) {
     );
 
     if (!isRef(content.schema)) {
-      let via = 'Form';
-      let name = `${typeId}Request`;
-      api.components!.schemas![name] = schema;
-      let existingVia = (schema as any)['x-request'];
-      if (existingVia) {
-        assert.equal(via, existingVia);
-      }
-      (schema as any)['x-request'] = via;
-      content.schema = { $ref: `#/components/schemas/${name}` };
+      content.schema = registerSchema(`${typeId}Request`, schema);
     }
 
+    setXKind(schema, 'Form');
     operation['x-parameterSchemas'].push(content.schema);
   }
 
@@ -136,21 +145,6 @@ for (let { method, path, id, operation } of ops()) {
     `Missing successful response for ${method} ${path}`
   );
 
-  successfulResponse = resolveMaybeRef(successfulResponse);
-
-  let { content, schema } = getContent(successfulResponse, 'application/json');
-
-  if (!isRef(content.schema)) {
-    let name = `${typeId}Response`;
-    api.components!.schemas![name] = schema;
-    content.schema = {
-      $ref: `#/components/schemas/${name}`
-    };
-  }
-
-  (schema as any)['x-response'] = true;
-  operation['x-response'] = content.schema;
-
   let errorResponseShape: Partial<OpenAPIV3.ResponseObject> = {
     content: {
       'text/plain': {
@@ -160,15 +154,70 @@ for (let { method, path, id, operation } of ops()) {
       }
     }
   };
-  let errorResponsesWithoutDescriptions = JSON.parse(
-    JSON.stringify(errorResponses, (k, v) =>
-      k === 'description' ? undefined : v
-    )
-  );
-  assert.deepEqual(errorResponsesWithoutDescriptions, {
+  assert.deepEqual(withoutDescriptions(errorResponses), {
     400: errorResponseShape,
     500: errorResponseShape
   });
+
+  successfulResponse = resolveMaybeRef(successfulResponse);
+
+  let { content, schema } = getContent(successfulResponse, 'application/json');
+
+  if (!isRef(content.schema)) {
+    content.schema = registerSchema(`${typeId}Response`, schema);
+  }
+
+  setXKind(schema, 'Response');
+}
+
+for (let schema of Object.values(api.components!.schemas!)) {
+  schema = resolveMaybeRef(schema);
+
+  switch ((schema as any)['x-kind']) {
+    case 'Response': {
+      let {
+        ClientTransactionID,
+        ServerTransactionID,
+        ErrorNumber,
+        ErrorMessage,
+        ...otherProperties
+      } = schema.properties!;
+      assert.deepEqual(
+        withoutDescriptions({
+          ClientTransactionID,
+          ServerTransactionID,
+          ErrorNumber,
+          ErrorMessage
+        }),
+        {
+          ClientTransactionID: {
+            type: 'integer',
+            format: 'uint32',
+            minimum: 0,
+            maximum: 4294967295
+          },
+          ServerTransactionID: {
+            type: 'integer',
+            format: 'uint32',
+            minimum: 0,
+            maximum: 4294967295
+          },
+          ErrorNumber: {
+            type: 'integer',
+            format: 'int32',
+            minimum: -2147483648,
+            maximum: 2147483647
+          },
+          ErrorMessage: {
+            type: 'string'
+          }
+        }
+      );
+
+      schema.properties = otherProperties;
+      break;
+    }
+  }
 }
 
 let rendered = render(
