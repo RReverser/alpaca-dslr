@@ -87,11 +87,22 @@ function doc(description) {
   }
 }
 
+function getRefTarget(ref) {
+  return (refReplacements[ref.$ref] || ref).$ref;
+}
+
+function resolveRef(ref) {
+  return refs.get(getRefTarget(ref));
+}
+
 function refToName(ref) {
-  if (ref?.$ref === '#/TransactionRequest') {
-    return 'TransactionRequest';
+  let $ref = getRefTarget(ref);
+  assert.ok($ref, `Not a reference ${dbg(ref)}`);
+  let refReplacement = refReplacements[$ref];
+  if (refReplacement) {
+    return refReplacement;
   }
-  let match = ref?.$ref?.match(/^#\/components\/(parameters|schemas|requestBodies|responses)\/(\w+)$/);
+  let match = $ref.match(/^#\/components\/(parameters|schemas|requestBodies|responses)\/(\w+)$/);
   assert.ok(match, `Invalid reference ${dbg(ref)}`);
   return `${toSnakeCase(match[1])}::${toTypeName(match[2])}`;
 }
@@ -183,14 +194,14 @@ mod schemas {
   fn <%= id %>(
     <% let { 'x-path': pathRef, 'x-body': bodyRef } = method; %>
     <%= refToName(pathRef) %> {
-      <% for (let param in refs.get(pathRef.$ref).properties) { %>
+      <% for (let param in resolveRef(pathRef).properties) { %>
         <%= toPropName(param) %>,
       <% } %>
     }: <%= refToName(pathRef) %>,
     ASCOMRequest {
       transaction,
       request: <%= refToName(bodyRef) %> {
-        <% for (let param in refs.get(bodyRef.$ref).properties) { %>
+        <% for (let param in resolveRef(bodyRef).properties) { %>
           <%= toPropName(param) %>,
         <% } %>
       },

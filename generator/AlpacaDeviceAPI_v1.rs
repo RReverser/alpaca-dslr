@@ -200,10 +200,6 @@ mod schemas {
 
     #[derive(Serialize)]
 
-    struct MethodResponse {}
-
-    #[derive(Serialize)]
-
     struct StringResponse {
         /// String response from the device.
         #[serde(rename = "Value")]
@@ -342,11 +338,6 @@ mod schemas {
     }
 
     #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Query))]
-
-    struct GetConnectedQuery {}
-
-    #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
 
     struct PutConnectedPath {
@@ -382,11 +373,6 @@ mod schemas {
     }
 
     #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Query))]
-
-    struct GetDescriptionQuery {}
-
-    #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
 
     struct GetDriverinfoPath {
@@ -398,11 +384,6 @@ mod schemas {
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Query))]
-
-    struct GetDriverinfoQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -418,11 +399,6 @@ mod schemas {
     }
 
     #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Query))]
-
-    struct GetDriverversionQuery {}
-
-    #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
 
     struct GetInterfaceversionPath {
@@ -434,11 +410,6 @@ mod schemas {
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Query))]
-
-    struct GetInterfaceversionQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -454,11 +425,6 @@ mod schemas {
     }
 
     #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Query))]
-
-    struct GetNameQuery {}
-
-    #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
 
     struct GetSupportedactionsPath {
@@ -472,11 +438,6 @@ mod schemas {
     }
 
     #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Query))]
-
-    struct GetSupportedactionsQuery {}
-
-    #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
 
     struct GetCameraBayeroffsetxPath {
@@ -484,11 +445,6 @@ mod schemas {
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Query))]
-
-    struct GetCameraBayeroffsetxQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -500,11 +456,6 @@ mod schemas {
     }
 
     #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Query))]
-
-    struct GetCameraBayeroffsetyQuery {}
-
-    #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
 
     struct GetCameraBinxPath {
@@ -512,11 +463,6 @@ mod schemas {
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Query))]
-
-    struct GetCameraBinxQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -546,11 +492,6 @@ mod schemas {
     }
 
     #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Query))]
-
-    struct GetCameraBinyQuery {}
-
-    #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
 
     struct PutCameraBinyPath {
@@ -578,11 +519,6 @@ mod schemas {
     }
 
     #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Query))]
-
-    struct GetCameraCamerastateQuery {}
-
-    #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
 
     struct GetCameraCameraxsizePath {
@@ -590,11 +526,6 @@ mod schemas {
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Query))]
-
-    struct GetCameraCameraxsizeQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -606,11 +537,6 @@ mod schemas {
     }
 
     #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Query))]
-
-    struct GetCameraCameraysizeQuery {}
-
-    #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
 
     struct GetCameraCanabortexposurePath {
@@ -618,11 +544,6 @@ mod schemas {
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Query))]
-
-    struct GetCameraCanabortexposureQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -634,11 +555,6 @@ mod schemas {
     }
 
     #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Query))]
-
-    struct GetCameraCanasymmetricbinQuery {}
-
-    #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
 
     struct GetCameraCanfastreadoutPath {
@@ -646,11 +562,6 @@ mod schemas {
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Query))]
-
-    struct GetCameraCanfastreadoutQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -662,11 +573,6 @@ mod schemas {
     }
 
     #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Query))]
-
-    struct GetCameraCangetcoolerpowerQuery {}
-
-    #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
 
     struct GetCameraCanpulseguidePath {
@@ -674,11 +580,6 @@ mod schemas {
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Query))]
-
-    struct GetCameraCanpulseguideQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -690,11 +591,6 @@ mod schemas {
     }
 
     #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Query))]
-
-    struct GetCameraCansetccdtemperatureQuery {}
-
-    #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
 
     struct GetCameraCanstopexposurePath {
@@ -702,11 +598,6 @@ mod schemas {
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Query))]
-
-    struct GetCameraCanstopexposureQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -718,11 +609,6 @@ mod schemas {
     }
 
     #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Query))]
-
-    struct GetCameraCcdtemperatureQuery {}
-
-    #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
 
     struct GetCameraCooleronPath {
@@ -730,11 +616,6 @@ mod schemas {
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Query))]
-
-    struct GetCameraCooleronQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -764,11 +645,6 @@ mod schemas {
     }
 
     #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Query))]
-
-    struct GetCameraCoolerpowerQuery {}
-
-    #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
 
     struct GetCameraElectronsperaduPath {
@@ -776,11 +652,6 @@ mod schemas {
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Query))]
-
-    struct GetCameraElectronsperaduQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -792,11 +663,6 @@ mod schemas {
     }
 
     #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Query))]
-
-    struct GetCameraExposuremaxQuery {}
-
-    #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
 
     struct GetCameraExposureminPath {
@@ -804,11 +670,6 @@ mod schemas {
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Query))]
-
-    struct GetCameraExposureminQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -820,11 +681,6 @@ mod schemas {
     }
 
     #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Query))]
-
-    struct GetCameraExposureresolutionQuery {}
-
-    #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
 
     struct GetCameraFastreadoutPath {
@@ -832,11 +688,6 @@ mod schemas {
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Query))]
-
-    struct GetCameraFastreadoutQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -866,11 +717,6 @@ mod schemas {
     }
 
     #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Query))]
-
-    struct GetCameraFullwellcapacityQuery {}
-
-    #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
 
     struct GetCameraGainPath {
@@ -878,11 +724,6 @@ mod schemas {
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Query))]
-
-    struct GetCameraGainQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -912,11 +753,6 @@ mod schemas {
     }
 
     #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Query))]
-
-    struct GetCameraGainmaxQuery {}
-
-    #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
 
     struct GetCameraGainminPath {
@@ -924,11 +760,6 @@ mod schemas {
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Query))]
-
-    struct GetCameraGainminQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -940,11 +771,6 @@ mod schemas {
     }
 
     #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Query))]
-
-    struct GetCameraGainsQuery {}
-
-    #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
 
     struct GetCameraHasshutterPath {
@@ -952,11 +778,6 @@ mod schemas {
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Query))]
-
-    struct GetCameraHasshutterQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -968,11 +789,6 @@ mod schemas {
     }
 
     #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Query))]
-
-    struct GetCameraHeatsinktemperatureQuery {}
-
-    #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
 
     struct GetCameraImagearrayPath {
@@ -980,11 +796,6 @@ mod schemas {
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Query))]
-
-    struct GetCameraImagearrayQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -996,11 +807,6 @@ mod schemas {
     }
 
     #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Query))]
-
-    struct GetCameraImagearrayvariantQuery {}
-
-    #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
 
     struct GetCameraImagereadyPath {
@@ -1008,11 +814,6 @@ mod schemas {
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Query))]
-
-    struct GetCameraImagereadyQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -1024,11 +825,6 @@ mod schemas {
     }
 
     #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Query))]
-
-    struct GetCameraIspulseguidingQuery {}
-
-    #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
 
     struct GetCameraLastexposuredurationPath {
@@ -1036,11 +832,6 @@ mod schemas {
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Query))]
-
-    struct GetCameraLastexposuredurationQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -1052,11 +843,6 @@ mod schemas {
     }
 
     #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Query))]
-
-    struct GetCameraLastexposurestarttimeQuery {}
-
-    #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
 
     struct GetCameraMaxaduPath {
@@ -1064,11 +850,6 @@ mod schemas {
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Query))]
-
-    struct GetCameraMaxaduQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -1080,11 +861,6 @@ mod schemas {
     }
 
     #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Query))]
-
-    struct GetCameraMaxbinxQuery {}
-
-    #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
 
     struct GetCameraMaxbinyPath {
@@ -1094,11 +870,6 @@ mod schemas {
     }
 
     #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Query))]
-
-    struct GetCameraMaxbinyQuery {}
-
-    #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
 
     struct GetCameraNumxPath {
@@ -1106,11 +877,6 @@ mod schemas {
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Query))]
-
-    struct GetCameraNumxQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -1140,11 +906,6 @@ mod schemas {
     }
 
     #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Query))]
-
-    struct GetCameraNumyQuery {}
-
-    #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
 
     struct PutCameraNumyPath {
@@ -1170,11 +931,6 @@ mod schemas {
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Query))]
-
-    struct GetCameraOffsetQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -1204,11 +960,6 @@ mod schemas {
     }
 
     #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Query))]
-
-    struct GetCameraOffsetmaxQuery {}
-
-    #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
 
     struct GetCameraOffsetminPath {
@@ -1216,11 +967,6 @@ mod schemas {
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Query))]
-
-    struct GetCameraOffsetminQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -1232,11 +978,6 @@ mod schemas {
     }
 
     #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Query))]
-
-    struct GetCameraOffsetsQuery {}
-
-    #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
 
     struct GetCameraPercentcompletedPath {
@@ -1244,11 +985,6 @@ mod schemas {
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Query))]
-
-    struct GetCameraPercentcompletedQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -1260,11 +996,6 @@ mod schemas {
     }
 
     #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Query))]
-
-    struct GetCameraPixelsizexQuery {}
-
-    #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
 
     struct GetCameraPixelsizeyPath {
@@ -1274,11 +1005,6 @@ mod schemas {
     }
 
     #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Query))]
-
-    struct GetCameraPixelsizeyQuery {}
-
-    #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
 
     struct GetCameraReadoutmodePath {
@@ -1286,11 +1012,6 @@ mod schemas {
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Query))]
-
-    struct GetCameraReadoutmodeQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -1320,11 +1041,6 @@ mod schemas {
     }
 
     #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Query))]
-
-    struct GetCameraReadoutmodesQuery {}
-
-    #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
 
     struct GetCameraSensornamePath {
@@ -1332,11 +1048,6 @@ mod schemas {
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Query))]
-
-    struct GetCameraSensornameQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -1348,11 +1059,6 @@ mod schemas {
     }
 
     #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Query))]
-
-    struct GetCameraSensortypeQuery {}
-
-    #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
 
     struct GetCameraSetccdtemperaturePath {
@@ -1360,11 +1066,6 @@ mod schemas {
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Query))]
-
-    struct GetCameraSetccdtemperatureQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -1394,11 +1095,6 @@ mod schemas {
     }
 
     #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Query))]
-
-    struct GetCameraStartxQuery {}
-
-    #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
 
     struct PutCameraStartxPath {
@@ -1424,11 +1120,6 @@ mod schemas {
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Query))]
-
-    struct GetCameraStartyQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -1458,11 +1149,6 @@ mod schemas {
     }
 
     #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Query))]
-
-    struct GetCameraSubexposuredurationQuery {}
-
-    #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
 
     struct PutCameraSubexposuredurationPath {
@@ -1488,11 +1174,6 @@ mod schemas {
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Form))]
-
-    struct PutCameraAbortexposureRequest {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -1557,11 +1238,6 @@ mod schemas {
     }
 
     #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Query))]
-
-    struct GetCovercalibratorBrightnessQuery {}
-
-    #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
 
     struct GetCovercalibratorCalibratorstatePath {
@@ -1569,11 +1245,6 @@ mod schemas {
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Query))]
-
-    struct GetCovercalibratorCalibratorstateQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -1585,11 +1256,6 @@ mod schemas {
     }
 
     #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Query))]
-
-    struct GetCovercalibratorCoverstateQuery {}
-
-    #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
 
     struct GetCovercalibratorMaxbrightnessPath {
@@ -1597,11 +1263,6 @@ mod schemas {
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Query))]
-
-    struct GetCovercalibratorMaxbrightnessQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -1667,11 +1328,6 @@ mod schemas {
     }
 
     #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Query))]
-
-    struct GetDomeAltitudeQuery {}
-
-    #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
 
     struct GetDomeAthomePath {
@@ -1679,11 +1335,6 @@ mod schemas {
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Query))]
-
-    struct GetDomeAthomeQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -1695,11 +1346,6 @@ mod schemas {
     }
 
     #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Query))]
-
-    struct GetDomeAtparkQuery {}
-
-    #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
 
     struct GetDomeAzimuthPath {
@@ -1707,11 +1353,6 @@ mod schemas {
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Query))]
-
-    struct GetDomeAzimuthQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -1723,11 +1364,6 @@ mod schemas {
     }
 
     #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Query))]
-
-    struct GetDomeCanfindhomeQuery {}
-
-    #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
 
     struct GetDomeCanparkPath {
@@ -1735,11 +1371,6 @@ mod schemas {
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Query))]
-
-    struct GetDomeCanparkQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -1751,11 +1382,6 @@ mod schemas {
     }
 
     #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Query))]
-
-    struct GetDomeCansetaltitudeQuery {}
-
-    #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
 
     struct GetDomeCansetazimuthPath {
@@ -1763,11 +1389,6 @@ mod schemas {
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Query))]
-
-    struct GetDomeCansetazimuthQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -1779,11 +1400,6 @@ mod schemas {
     }
 
     #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Query))]
-
-    struct GetDomeCansetparkQuery {}
-
-    #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
 
     struct GetDomeCansetshutterPath {
@@ -1791,11 +1407,6 @@ mod schemas {
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Query))]
-
-    struct GetDomeCansetshutterQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -1807,11 +1418,6 @@ mod schemas {
     }
 
     #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Query))]
-
-    struct GetDomeCanslaveQuery {}
-
-    #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
 
     struct GetDomeCansyncazimuthPath {
@@ -1819,11 +1425,6 @@ mod schemas {
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Query))]
-
-    struct GetDomeCansyncazimuthQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -1835,11 +1436,6 @@ mod schemas {
     }
 
     #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Query))]
-
-    struct GetDomeShutterstatusQuery {}
-
-    #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
 
     struct GetDomeSlavedPath {
@@ -1847,11 +1443,6 @@ mod schemas {
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Query))]
-
-    struct GetDomeSlavedQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -1879,11 +1470,6 @@ mod schemas {
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Query))]
-
-    struct GetDomeSlewingQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -1994,11 +1580,6 @@ mod schemas {
     }
 
     #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Query))]
-
-    struct GetFilterwheelFocusoffsetsQuery {}
-
-    #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
 
     struct GetFilterwheelNamesPath {
@@ -2008,11 +1589,6 @@ mod schemas {
     }
 
     #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Query))]
-
-    struct GetFilterwheelNamesQuery {}
-
-    #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
 
     struct GetFilterwheelPositionPath {
@@ -2020,11 +1596,6 @@ mod schemas {
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Query))]
-
-    struct GetFilterwheelPositionQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -2054,11 +1625,6 @@ mod schemas {
     }
 
     #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Query))]
-
-    struct GetFocuserAbsoluteQuery {}
-
-    #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
 
     struct GetFocuserIsmovingPath {
@@ -2066,11 +1632,6 @@ mod schemas {
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Query))]
-
-    struct GetFocuserIsmovingQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -2082,11 +1643,6 @@ mod schemas {
     }
 
     #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Query))]
-
-    struct GetFocuserMaxincrementQuery {}
-
-    #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
 
     struct GetFocuserMaxstepPath {
@@ -2094,11 +1650,6 @@ mod schemas {
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Query))]
-
-    struct GetFocuserMaxstepQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -2110,11 +1661,6 @@ mod schemas {
     }
 
     #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Query))]
-
-    struct GetFocuserPositionQuery {}
-
-    #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
 
     struct GetFocuserStepsizePath {
@@ -2124,11 +1670,6 @@ mod schemas {
     }
 
     #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Query))]
-
-    struct GetFocuserStepsizeQuery {}
-
-    #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
 
     struct GetFocuserTempcompPath {
@@ -2136,11 +1677,6 @@ mod schemas {
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Query))]
-
-    struct GetFocuserTempcompQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -2170,11 +1706,6 @@ mod schemas {
     }
 
     #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Query))]
-
-    struct GetFocuserTempcompavailableQuery {}
-
-    #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
 
     struct GetFocuserTemperaturePath {
@@ -2182,11 +1713,6 @@ mod schemas {
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Query))]
-
-    struct GetFocuserTemperatureQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -2225,11 +1751,6 @@ mod schemas {
     }
 
     #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Query))]
-
-    struct GetObservingconditionsAverageperiodQuery {}
-
-    #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
 
     struct PutObservingconditionsAverageperiodPath {
@@ -2257,11 +1778,6 @@ mod schemas {
     }
 
     #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Query))]
-
-    struct GetObservingconditionsCloudcoverQuery {}
-
-    #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
 
     struct GetObservingconditionsDewpointPath {
@@ -2269,11 +1785,6 @@ mod schemas {
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Query))]
-
-    struct GetObservingconditionsDewpointQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -2285,11 +1796,6 @@ mod schemas {
     }
 
     #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Query))]
-
-    struct GetObservingconditionsHumidityQuery {}
-
-    #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
 
     struct GetObservingconditionsPressurePath {
@@ -2297,11 +1803,6 @@ mod schemas {
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Query))]
-
-    struct GetObservingconditionsPressureQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -2313,11 +1814,6 @@ mod schemas {
     }
 
     #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Query))]
-
-    struct GetObservingconditionsRainrateQuery {}
-
-    #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
 
     struct GetObservingconditionsSkybrightnessPath {
@@ -2325,11 +1821,6 @@ mod schemas {
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Query))]
-
-    struct GetObservingconditionsSkybrightnessQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -2341,11 +1832,6 @@ mod schemas {
     }
 
     #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Query))]
-
-    struct GetObservingconditionsSkyqualityQuery {}
-
-    #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
 
     struct GetObservingconditionsSkytemperaturePath {
@@ -2353,11 +1839,6 @@ mod schemas {
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Query))]
-
-    struct GetObservingconditionsSkytemperatureQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -2369,11 +1850,6 @@ mod schemas {
     }
 
     #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Query))]
-
-    struct GetObservingconditionsStarfwhmQuery {}
-
-    #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
 
     struct GetObservingconditionsTemperaturePath {
@@ -2381,11 +1857,6 @@ mod schemas {
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Query))]
-
-    struct GetObservingconditionsTemperatureQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -2397,11 +1868,6 @@ mod schemas {
     }
 
     #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Query))]
-
-    struct GetObservingconditionsWinddirectionQuery {}
-
-    #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
 
     struct GetObservingconditionsWindgustPath {
@@ -2411,11 +1877,6 @@ mod schemas {
     }
 
     #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Query))]
-
-    struct GetObservingconditionsWindgustQuery {}
-
-    #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
 
     struct GetObservingconditionsWindspeedPath {
@@ -2423,11 +1884,6 @@ mod schemas {
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Query))]
-
-    struct GetObservingconditionsWindspeedQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -2484,11 +1940,6 @@ mod schemas {
     }
 
     #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Query))]
-
-    struct GetRotatorCanreverseQuery {}
-
-    #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
 
     struct GetRotatorIsmovingPath {
@@ -2496,11 +1947,6 @@ mod schemas {
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Query))]
-
-    struct GetRotatorIsmovingQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -2512,11 +1958,6 @@ mod schemas {
     }
 
     #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Query))]
-
-    struct GetRotatorMechanicalpositionQuery {}
-
-    #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
 
     struct GetRotatorPositionPath {
@@ -2526,11 +1967,6 @@ mod schemas {
     }
 
     #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Query))]
-
-    struct GetRotatorPositionQuery {}
-
-    #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
 
     struct GetRotatorReversePath {
@@ -2538,11 +1974,6 @@ mod schemas {
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Query))]
-
-    struct GetRotatorReverseQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -2572,11 +2003,6 @@ mod schemas {
     }
 
     #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Query))]
-
-    struct GetRotatorStepsizeQuery {}
-
-    #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
 
     struct GetRotatorTargetpositionPath {
@@ -2584,11 +2010,6 @@ mod schemas {
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Query))]
-
-    struct GetRotatorTargetpositionQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -2681,11 +2102,6 @@ mod schemas {
     }
 
     #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Query))]
-
-    struct GetSafetymonitorIssafeQuery {}
-
-    #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
 
     struct GetSwitchMaxswitchPath {
@@ -2693,11 +2109,6 @@ mod schemas {
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Query))]
-
-    struct GetSwitchMaxswitchQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -2919,11 +2330,6 @@ mod schemas {
     }
 
     #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Query))]
-
-    struct GetTelescopeAlignmentmodeQuery {}
-
-    #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
 
     struct GetTelescopeAltitudePath {
@@ -2931,11 +2337,6 @@ mod schemas {
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Query))]
-
-    struct GetTelescopeAltitudeQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -2947,11 +2348,6 @@ mod schemas {
     }
 
     #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Query))]
-
-    struct GetTelescopeApertureareaQuery {}
-
-    #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
 
     struct GetTelescopeAperturediameterPath {
@@ -2959,11 +2355,6 @@ mod schemas {
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Query))]
-
-    struct GetTelescopeAperturediameterQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -2975,11 +2366,6 @@ mod schemas {
     }
 
     #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Query))]
-
-    struct GetTelescopeAthomeQuery {}
-
-    #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
 
     struct GetTelescopeAtparkPath {
@@ -2987,11 +2373,6 @@ mod schemas {
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Query))]
-
-    struct GetTelescopeAtparkQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -3003,11 +2384,6 @@ mod schemas {
     }
 
     #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Query))]
-
-    struct GetTelescopeAzimuthQuery {}
-
-    #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
 
     struct GetTelescopeCanfindhomePath {
@@ -3015,11 +2391,6 @@ mod schemas {
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Query))]
-
-    struct GetTelescopeCanfindhomeQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -3031,11 +2402,6 @@ mod schemas {
     }
 
     #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Query))]
-
-    struct GetTelescopeCanparkQuery {}
-
-    #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
 
     struct GetTelescopeCanpulseguidePath {
@@ -3043,11 +2409,6 @@ mod schemas {
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Query))]
-
-    struct GetTelescopeCanpulseguideQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -3059,11 +2420,6 @@ mod schemas {
     }
 
     #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Query))]
-
-    struct GetTelescopeCansetdeclinationrateQuery {}
-
-    #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
 
     struct GetTelescopeCansetguideratesPath {
@@ -3071,11 +2427,6 @@ mod schemas {
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Query))]
-
-    struct GetTelescopeCansetguideratesQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -3087,11 +2438,6 @@ mod schemas {
     }
 
     #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Query))]
-
-    struct GetTelescopeCansetparkQuery {}
-
-    #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
 
     struct GetTelescopeCansetpiersidePath {
@@ -3099,11 +2445,6 @@ mod schemas {
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Query))]
-
-    struct GetTelescopeCansetpiersideQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -3115,11 +2456,6 @@ mod schemas {
     }
 
     #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Query))]
-
-    struct GetTelescopeCansetrightascensionrateQuery {}
-
-    #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
 
     struct GetTelescopeCansettrackingPath {
@@ -3127,11 +2463,6 @@ mod schemas {
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Query))]
-
-    struct GetTelescopeCansettrackingQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -3143,11 +2474,6 @@ mod schemas {
     }
 
     #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Query))]
-
-    struct GetTelescopeCanslewQuery {}
-
-    #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
 
     struct GetTelescopeCanslewaltazPath {
@@ -3155,11 +2481,6 @@ mod schemas {
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Query))]
-
-    struct GetTelescopeCanslewaltazQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -3171,11 +2492,6 @@ mod schemas {
     }
 
     #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Query))]
-
-    struct GetTelescopeCanslewaltazasyncQuery {}
-
-    #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
 
     struct GetTelescopeCanslewasyncPath {
@@ -3183,11 +2499,6 @@ mod schemas {
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Query))]
-
-    struct GetTelescopeCanslewasyncQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -3199,11 +2510,6 @@ mod schemas {
     }
 
     #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Query))]
-
-    struct GetTelescopeCansyncQuery {}
-
-    #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
 
     struct GetTelescopeCansyncaltazPath {
@@ -3211,11 +2517,6 @@ mod schemas {
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Query))]
-
-    struct GetTelescopeCansyncaltazQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -3227,11 +2528,6 @@ mod schemas {
     }
 
     #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Query))]
-
-    struct GetTelescopeCanunparkQuery {}
-
-    #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
 
     struct GetTelescopeDeclinationPath {
@@ -3241,11 +2537,6 @@ mod schemas {
     }
 
     #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Query))]
-
-    struct GetTelescopeDeclinationQuery {}
-
-    #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
 
     struct GetTelescopeDeclinationratePath {
@@ -3253,11 +2544,6 @@ mod schemas {
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Query))]
-
-    struct GetTelescopeDeclinationrateQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -3287,11 +2573,6 @@ mod schemas {
     }
 
     #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Query))]
-
-    struct GetTelescopeDoesrefractionQuery {}
-
-    #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
 
     struct PutTelescopeDoesrefractionPath {
@@ -3319,11 +2600,6 @@ mod schemas {
     }
 
     #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Query))]
-
-    struct GetTelescopeEquatorialsystemQuery {}
-
-    #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
 
     struct GetTelescopeFocallengthPath {
@@ -3333,11 +2609,6 @@ mod schemas {
     }
 
     #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Query))]
-
-    struct GetTelescopeFocallengthQuery {}
-
-    #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
 
     struct GetTelescopeGuideratedeclinationPath {
@@ -3345,11 +2616,6 @@ mod schemas {
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Query))]
-
-    struct GetTelescopeGuideratedeclinationQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -3379,11 +2645,6 @@ mod schemas {
     }
 
     #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Query))]
-
-    struct GetTelescopeGuideraterightascensionQuery {}
-
-    #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
 
     struct PutTelescopeGuideraterightascensionPath {
@@ -3411,11 +2672,6 @@ mod schemas {
     }
 
     #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Query))]
-
-    struct GetTelescopeIspulseguidingQuery {}
-
-    #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
 
     struct GetTelescopeRightascensionPath {
@@ -3425,11 +2681,6 @@ mod schemas {
     }
 
     #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Query))]
-
-    struct GetTelescopeRightascensionQuery {}
-
-    #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
 
     struct GetTelescopeRightascensionratePath {
@@ -3437,11 +2688,6 @@ mod schemas {
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Query))]
-
-    struct GetTelescopeRightascensionrateQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -3471,11 +2717,6 @@ mod schemas {
     }
 
     #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Query))]
-
-    struct GetTelescopeSideofpierQuery {}
-
-    #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
 
     struct PutTelescopeSideofpierPath {
@@ -3503,11 +2744,6 @@ mod schemas {
     }
 
     #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Query))]
-
-    struct GetTelescopeSiderealtimeQuery {}
-
-    #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
 
     struct GetTelescopeSiteelevationPath {
@@ -3515,11 +2751,6 @@ mod schemas {
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Query))]
-
-    struct GetTelescopeSiteelevationQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -3549,11 +2780,6 @@ mod schemas {
     }
 
     #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Query))]
-
-    struct GetTelescopeSitelatitudeQuery {}
-
-    #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
 
     struct PutTelescopeSitelatitudePath {
@@ -3579,11 +2805,6 @@ mod schemas {
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Query))]
-
-    struct GetTelescopeSitelongitudeQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -3613,11 +2834,6 @@ mod schemas {
     }
 
     #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Query))]
-
-    struct GetTelescopeSlewingQuery {}
-
-    #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
 
     struct GetTelescopeSlewsettletimePath {
@@ -3625,11 +2841,6 @@ mod schemas {
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Query))]
-
-    struct GetTelescopeSlewsettletimeQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -3659,11 +2870,6 @@ mod schemas {
     }
 
     #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Query))]
-
-    struct GetTelescopeTargetdeclinationQuery {}
-
-    #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
 
     struct PutTelescopeTargetdeclinationPath {
@@ -3689,11 +2895,6 @@ mod schemas {
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Query))]
-
-    struct GetTelescopeTargetrightascensionQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -3723,11 +2924,6 @@ mod schemas {
     }
 
     #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Query))]
-
-    struct GetTelescopeTrackingQuery {}
-
-    #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
 
     struct PutTelescopeTrackingPath {
@@ -3753,11 +2949,6 @@ mod schemas {
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Query))]
-
-    struct GetTelescopeTrackingrateQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -3787,11 +2978,6 @@ mod schemas {
     }
 
     #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Query))]
-
-    struct GetTelescopeTrackingratesQuery {}
-
-    #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
 
     struct GetTelescopeUtcdatePath {
@@ -3799,11 +2985,6 @@ mod schemas {
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Query))]
-
-    struct GetTelescopeUtcdateQuery {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
@@ -4076,6 +3257,20 @@ mod schemas {
         #[serde(rename = "device_number")]
         device_number: Option<u32>,
     }
+
+    #[derive(Serialize)]
+
+    struct EmptyResponse {}
+
+    #[derive(Deserialize, FromRequest)]
+    #[from_request(via(Query))]
+
+    struct EmptyQuery {}
+
+    #[derive(Deserialize, FromRequest)]
+    #[from_request(via(Form))]
+
+    struct EmptyForm {}
 }
 
 /**
@@ -4118,7 +3313,7 @@ fn put_commandblind(
         transaction,
         request: schemas::PutCommandblindRequest { command, raw },
     }: ASCOMRequest<schemas::PutCommandblindRequest>,
-) -> Result<schemas::MethodResponse> {
+) -> Result<schemas::EmptyResponse> {
 }
 
 /**
@@ -4157,8 +3352,8 @@ fn get_connected(
     schemas::GetConnectedPath { device_type, device_number }: schemas::GetConnectedPath,
     ASCOMRequest {
         transaction,
-        request: schemas::GetConnectedQuery {},
-    }: ASCOMRequest<schemas::GetConnectedQuery>,
+        request: schemas::EmptyQuery {},
+    }: ASCOMRequest<schemas::EmptyQuery>,
 ) -> Result<schemas::BoolResponse> {
 }
 
@@ -4170,7 +3365,7 @@ fn put_connected(
         transaction,
         request: schemas::PutConnectedRequest { connected },
     }: ASCOMRequest<schemas::PutConnectedRequest>,
-) -> Result<schemas::MethodResponse> {
+) -> Result<schemas::EmptyResponse> {
 }
 
 /**
@@ -4183,8 +3378,8 @@ fn get_description(
     schemas::GetDescriptionPath { device_type, device_number }: schemas::GetDescriptionPath,
     ASCOMRequest {
         transaction,
-        request: schemas::GetDescriptionQuery {},
-    }: ASCOMRequest<schemas::GetDescriptionQuery>,
+        request: schemas::EmptyQuery {},
+    }: ASCOMRequest<schemas::EmptyQuery>,
 ) -> Result<schemas::StringResponse> {
 }
 
@@ -4198,8 +3393,8 @@ fn get_driverinfo(
     schemas::GetDriverinfoPath { device_type, device_number }: schemas::GetDriverinfoPath,
     ASCOMRequest {
         transaction,
-        request: schemas::GetDriverinfoQuery {},
-    }: ASCOMRequest<schemas::GetDriverinfoQuery>,
+        request: schemas::EmptyQuery {},
+    }: ASCOMRequest<schemas::EmptyQuery>,
 ) -> Result<schemas::StringResponse> {
 }
 
@@ -4213,8 +3408,8 @@ fn get_driverversion(
     schemas::GetDriverversionPath { device_type, device_number }: schemas::GetDriverversionPath,
     ASCOMRequest {
         transaction,
-        request: schemas::GetDriverversionQuery {},
-    }: ASCOMRequest<schemas::GetDriverversionQuery>,
+        request: schemas::EmptyQuery {},
+    }: ASCOMRequest<schemas::EmptyQuery>,
 ) -> Result<schemas::StringResponse> {
 }
 
@@ -4228,8 +3423,8 @@ fn get_interfaceversion(
     schemas::GetInterfaceversionPath { device_type, device_number }: schemas::GetInterfaceversionPath,
     ASCOMRequest {
         transaction,
-        request: schemas::GetInterfaceversionQuery {},
-    }: ASCOMRequest<schemas::GetInterfaceversionQuery>,
+        request: schemas::EmptyQuery {},
+    }: ASCOMRequest<schemas::EmptyQuery>,
 ) -> Result<schemas::IntResponse> {
 }
 
@@ -4243,8 +3438,8 @@ fn get_name(
     schemas::GetNamePath { device_type, device_number }: schemas::GetNamePath,
     ASCOMRequest {
         transaction,
-        request: schemas::GetNameQuery {},
-    }: ASCOMRequest<schemas::GetNameQuery>,
+        request: schemas::EmptyQuery {},
+    }: ASCOMRequest<schemas::EmptyQuery>,
 ) -> Result<schemas::StringResponse> {
 }
 
@@ -4254,8 +3449,8 @@ fn get_supportedactions(
     schemas::GetSupportedactionsPath { device_type, device_number }: schemas::GetSupportedactionsPath,
     ASCOMRequest {
         transaction,
-        request: schemas::GetSupportedactionsQuery {},
-    }: ASCOMRequest<schemas::GetSupportedactionsQuery>,
+        request: schemas::EmptyQuery {},
+    }: ASCOMRequest<schemas::EmptyQuery>,
 ) -> Result<schemas::StringArrayResponse> {
 }
 
@@ -4269,8 +3464,8 @@ fn get_camera_bayeroffsetx(
     schemas::GetCameraBayeroffsetxPath { device_number }: schemas::GetCameraBayeroffsetxPath,
     ASCOMRequest {
         transaction,
-        request: schemas::GetCameraBayeroffsetxQuery {},
-    }: ASCOMRequest<schemas::GetCameraBayeroffsetxQuery>,
+        request: schemas::EmptyQuery {},
+    }: ASCOMRequest<schemas::EmptyQuery>,
 ) -> Result<schemas::IntResponse> {
 }
 
@@ -4284,8 +3479,8 @@ fn get_camera_bayeroffsety(
     schemas::GetCameraBayeroffsetyPath { device_number }: schemas::GetCameraBayeroffsetyPath,
     ASCOMRequest {
         transaction,
-        request: schemas::GetCameraBayeroffsetyQuery {},
-    }: ASCOMRequest<schemas::GetCameraBayeroffsetyQuery>,
+        request: schemas::EmptyQuery {},
+    }: ASCOMRequest<schemas::EmptyQuery>,
 ) -> Result<schemas::IntResponse> {
 }
 
@@ -4295,8 +3490,8 @@ fn get_camera_binx(
     schemas::GetCameraBinxPath { device_number }: schemas::GetCameraBinxPath,
     ASCOMRequest {
         transaction,
-        request: schemas::GetCameraBinxQuery {},
-    }: ASCOMRequest<schemas::GetCameraBinxQuery>,
+        request: schemas::EmptyQuery {},
+    }: ASCOMRequest<schemas::EmptyQuery>,
 ) -> Result<schemas::IntResponse> {
 }
 
@@ -4308,7 +3503,7 @@ fn put_camera_binx(
         transaction,
         request: schemas::PutCameraBinxRequest { bin_x },
     }: ASCOMRequest<schemas::PutCameraBinxRequest>,
-) -> Result<schemas::MethodResponse> {
+) -> Result<schemas::EmptyResponse> {
 }
 
 /// Returns the binning factor for the Y axis.
@@ -4317,8 +3512,8 @@ fn get_camera_biny(
     schemas::GetCameraBinyPath { device_number }: schemas::GetCameraBinyPath,
     ASCOMRequest {
         transaction,
-        request: schemas::GetCameraBinyQuery {},
-    }: ASCOMRequest<schemas::GetCameraBinyQuery>,
+        request: schemas::EmptyQuery {},
+    }: ASCOMRequest<schemas::EmptyQuery>,
 ) -> Result<schemas::IntResponse> {
 }
 
@@ -4330,7 +3525,7 @@ fn put_camera_biny(
         transaction,
         request: schemas::PutCameraBinyRequest { bin_y },
     }: ASCOMRequest<schemas::PutCameraBinyRequest>,
-) -> Result<schemas::MethodResponse> {
+) -> Result<schemas::EmptyResponse> {
 }
 
 /**
@@ -4343,8 +3538,8 @@ fn get_camera_camerastate(
     schemas::GetCameraCamerastatePath { device_number }: schemas::GetCameraCamerastatePath,
     ASCOMRequest {
         transaction,
-        request: schemas::GetCameraCamerastateQuery {},
-    }: ASCOMRequest<schemas::GetCameraCamerastateQuery>,
+        request: schemas::EmptyQuery {},
+    }: ASCOMRequest<schemas::EmptyQuery>,
 ) -> Result<schemas::IntResponse> {
 }
 
@@ -4358,8 +3553,8 @@ fn get_camera_cameraxsize(
     schemas::GetCameraCameraxsizePath { device_number }: schemas::GetCameraCameraxsizePath,
     ASCOMRequest {
         transaction,
-        request: schemas::GetCameraCameraxsizeQuery {},
-    }: ASCOMRequest<schemas::GetCameraCameraxsizeQuery>,
+        request: schemas::EmptyQuery {},
+    }: ASCOMRequest<schemas::EmptyQuery>,
 ) -> Result<schemas::IntResponse> {
 }
 
@@ -4373,8 +3568,8 @@ fn get_camera_cameraysize(
     schemas::GetCameraCameraysizePath { device_number }: schemas::GetCameraCameraysizePath,
     ASCOMRequest {
         transaction,
-        request: schemas::GetCameraCameraysizeQuery {},
-    }: ASCOMRequest<schemas::GetCameraCameraysizeQuery>,
+        request: schemas::EmptyQuery {},
+    }: ASCOMRequest<schemas::EmptyQuery>,
 ) -> Result<schemas::IntResponse> {
 }
 
@@ -4388,8 +3583,8 @@ fn get_camera_canabortexposure(
     schemas::GetCameraCanabortexposurePath { device_number }: schemas::GetCameraCanabortexposurePath,
     ASCOMRequest {
         transaction,
-        request: schemas::GetCameraCanabortexposureQuery {},
-    }: ASCOMRequest<schemas::GetCameraCanabortexposureQuery>,
+        request: schemas::EmptyQuery {},
+    }: ASCOMRequest<schemas::EmptyQuery>,
 ) -> Result<schemas::BoolResponse> {
 }
 
@@ -4403,8 +3598,8 @@ fn get_camera_canasymmetricbin(
     schemas::GetCameraCanasymmetricbinPath { device_number }: schemas::GetCameraCanasymmetricbinPath,
     ASCOMRequest {
         transaction,
-        request: schemas::GetCameraCanasymmetricbinQuery {},
-    }: ASCOMRequest<schemas::GetCameraCanasymmetricbinQuery>,
+        request: schemas::EmptyQuery {},
+    }: ASCOMRequest<schemas::EmptyQuery>,
 ) -> Result<schemas::BoolResponse> {
 }
 
@@ -4414,8 +3609,8 @@ fn get_camera_canfastreadout(
     schemas::GetCameraCanfastreadoutPath { device_number }: schemas::GetCameraCanfastreadoutPath,
     ASCOMRequest {
         transaction,
-        request: schemas::GetCameraCanfastreadoutQuery {},
-    }: ASCOMRequest<schemas::GetCameraCanfastreadoutQuery>,
+        request: schemas::EmptyQuery {},
+    }: ASCOMRequest<schemas::EmptyQuery>,
 ) -> Result<schemas::BoolResponse> {
 }
 
@@ -4429,8 +3624,8 @@ fn get_camera_cangetcoolerpower(
     schemas::GetCameraCangetcoolerpowerPath { device_number }: schemas::GetCameraCangetcoolerpowerPath,
     ASCOMRequest {
         transaction,
-        request: schemas::GetCameraCangetcoolerpowerQuery {},
-    }: ASCOMRequest<schemas::GetCameraCangetcoolerpowerQuery>,
+        request: schemas::EmptyQuery {},
+    }: ASCOMRequest<schemas::EmptyQuery>,
 ) -> Result<schemas::BoolResponse> {
 }
 
@@ -4444,8 +3639,8 @@ fn get_camera_canpulseguide(
     schemas::GetCameraCanpulseguidePath { device_number }: schemas::GetCameraCanpulseguidePath,
     ASCOMRequest {
         transaction,
-        request: schemas::GetCameraCanpulseguideQuery {},
-    }: ASCOMRequest<schemas::GetCameraCanpulseguideQuery>,
+        request: schemas::EmptyQuery {},
+    }: ASCOMRequest<schemas::EmptyQuery>,
 ) -> Result<schemas::BoolResponse> {
 }
 
@@ -4459,8 +3654,8 @@ fn get_camera_cansetccdtemperature(
     schemas::GetCameraCansetccdtemperaturePath { device_number }: schemas::GetCameraCansetccdtemperaturePath,
     ASCOMRequest {
         transaction,
-        request: schemas::GetCameraCansetccdtemperatureQuery {},
-    }: ASCOMRequest<schemas::GetCameraCansetccdtemperatureQuery>,
+        request: schemas::EmptyQuery {},
+    }: ASCOMRequest<schemas::EmptyQuery>,
 ) -> Result<schemas::BoolResponse> {
 }
 
@@ -4470,8 +3665,8 @@ fn get_camera_canstopexposure(
     schemas::GetCameraCanstopexposurePath { device_number }: schemas::GetCameraCanstopexposurePath,
     ASCOMRequest {
         transaction,
-        request: schemas::GetCameraCanstopexposureQuery {},
-    }: ASCOMRequest<schemas::GetCameraCanstopexposureQuery>,
+        request: schemas::EmptyQuery {},
+    }: ASCOMRequest<schemas::EmptyQuery>,
 ) -> Result<schemas::BoolResponse> {
 }
 
@@ -4485,8 +3680,8 @@ fn get_camera_ccdtemperature(
     schemas::GetCameraCcdtemperaturePath { device_number }: schemas::GetCameraCcdtemperaturePath,
     ASCOMRequest {
         transaction,
-        request: schemas::GetCameraCcdtemperatureQuery {},
-    }: ASCOMRequest<schemas::GetCameraCcdtemperatureQuery>,
+        request: schemas::EmptyQuery {},
+    }: ASCOMRequest<schemas::EmptyQuery>,
 ) -> Result<schemas::DoubleResponse> {
 }
 
@@ -4496,8 +3691,8 @@ fn get_camera_cooleron(
     schemas::GetCameraCooleronPath { device_number }: schemas::GetCameraCooleronPath,
     ASCOMRequest {
         transaction,
-        request: schemas::GetCameraCooleronQuery {},
-    }: ASCOMRequest<schemas::GetCameraCooleronQuery>,
+        request: schemas::EmptyQuery {},
+    }: ASCOMRequest<schemas::EmptyQuery>,
 ) -> Result<schemas::BoolResponse> {
 }
 
@@ -4513,7 +3708,7 @@ fn put_camera_cooleron(
         transaction,
         request: schemas::PutCameraCooleronRequest { cooler_on },
     }: ASCOMRequest<schemas::PutCameraCooleronRequest>,
-) -> Result<schemas::MethodResponse> {
+) -> Result<schemas::EmptyResponse> {
 }
 
 /**
@@ -4526,8 +3721,8 @@ fn get_camera_coolerpower(
     schemas::GetCameraCoolerpowerPath { device_number }: schemas::GetCameraCoolerpowerPath,
     ASCOMRequest {
         transaction,
-        request: schemas::GetCameraCoolerpowerQuery {},
-    }: ASCOMRequest<schemas::GetCameraCoolerpowerQuery>,
+        request: schemas::EmptyQuery {},
+    }: ASCOMRequest<schemas::EmptyQuery>,
 ) -> Result<schemas::DoubleResponse> {
 }
 
@@ -4541,8 +3736,8 @@ fn get_camera_electronsperadu(
     schemas::GetCameraElectronsperaduPath { device_number }: schemas::GetCameraElectronsperaduPath,
     ASCOMRequest {
         transaction,
-        request: schemas::GetCameraElectronsperaduQuery {},
-    }: ASCOMRequest<schemas::GetCameraElectronsperaduQuery>,
+        request: schemas::EmptyQuery {},
+    }: ASCOMRequest<schemas::EmptyQuery>,
 ) -> Result<schemas::DoubleResponse> {
 }
 
@@ -4552,8 +3747,8 @@ fn get_camera_exposuremax(
     schemas::GetCameraExposuremaxPath { device_number }: schemas::GetCameraExposuremaxPath,
     ASCOMRequest {
         transaction,
-        request: schemas::GetCameraExposuremaxQuery {},
-    }: ASCOMRequest<schemas::GetCameraExposuremaxQuery>,
+        request: schemas::EmptyQuery {},
+    }: ASCOMRequest<schemas::EmptyQuery>,
 ) -> Result<schemas::DoubleResponse> {
 }
 
@@ -4567,8 +3762,8 @@ fn get_camera_exposuremin(
     schemas::GetCameraExposureminPath { device_number }: schemas::GetCameraExposureminPath,
     ASCOMRequest {
         transaction,
-        request: schemas::GetCameraExposureminQuery {},
-    }: ASCOMRequest<schemas::GetCameraExposureminQuery>,
+        request: schemas::EmptyQuery {},
+    }: ASCOMRequest<schemas::EmptyQuery>,
 ) -> Result<schemas::DoubleResponse> {
 }
 
@@ -4578,8 +3773,8 @@ fn get_camera_exposureresolution(
     schemas::GetCameraExposureresolutionPath { device_number }: schemas::GetCameraExposureresolutionPath,
     ASCOMRequest {
         transaction,
-        request: schemas::GetCameraExposureresolutionQuery {},
-    }: ASCOMRequest<schemas::GetCameraExposureresolutionQuery>,
+        request: schemas::EmptyQuery {},
+    }: ASCOMRequest<schemas::EmptyQuery>,
 ) -> Result<schemas::DoubleResponse> {
 }
 
@@ -4589,8 +3784,8 @@ fn get_camera_fastreadout(
     schemas::GetCameraFastreadoutPath { device_number }: schemas::GetCameraFastreadoutPath,
     ASCOMRequest {
         transaction,
-        request: schemas::GetCameraFastreadoutQuery {},
-    }: ASCOMRequest<schemas::GetCameraFastreadoutQuery>,
+        request: schemas::EmptyQuery {},
+    }: ASCOMRequest<schemas::EmptyQuery>,
 ) -> Result<schemas::BoolResponse> {
 }
 
@@ -4602,7 +3797,7 @@ fn put_camera_fastreadout(
         transaction,
         request: schemas::PutCameraFastreadoutRequest { fast_readout },
     }: ASCOMRequest<schemas::PutCameraFastreadoutRequest>,
-) -> Result<schemas::MethodResponse> {
+) -> Result<schemas::EmptyResponse> {
 }
 
 /**
@@ -4615,8 +3810,8 @@ fn get_camera_fullwellcapacity(
     schemas::GetCameraFullwellcapacityPath { device_number }: schemas::GetCameraFullwellcapacityPath,
     ASCOMRequest {
         transaction,
-        request: schemas::GetCameraFullwellcapacityQuery {},
-    }: ASCOMRequest<schemas::GetCameraFullwellcapacityQuery>,
+        request: schemas::EmptyQuery {},
+    }: ASCOMRequest<schemas::EmptyQuery>,
 ) -> Result<schemas::DoubleResponse> {
 }
 
@@ -4630,8 +3825,8 @@ fn get_camera_gain(
     schemas::GetCameraGainPath { device_number }: schemas::GetCameraGainPath,
     ASCOMRequest {
         transaction,
-        request: schemas::GetCameraGainQuery {},
-    }: ASCOMRequest<schemas::GetCameraGainQuery>,
+        request: schemas::EmptyQuery {},
+    }: ASCOMRequest<schemas::EmptyQuery>,
 ) -> Result<schemas::IntResponse> {
 }
 
@@ -4647,7 +3842,7 @@ fn put_camera_gain(
         transaction,
         request: schemas::PutCameraGainRequest { gain },
     }: ASCOMRequest<schemas::PutCameraGainRequest>,
-) -> Result<schemas::MethodResponse> {
+) -> Result<schemas::EmptyResponse> {
 }
 
 /**
@@ -4660,8 +3855,8 @@ fn get_camera_gainmax(
     schemas::GetCameraGainmaxPath { device_number }: schemas::GetCameraGainmaxPath,
     ASCOMRequest {
         transaction,
-        request: schemas::GetCameraGainmaxQuery {},
-    }: ASCOMRequest<schemas::GetCameraGainmaxQuery>,
+        request: schemas::EmptyQuery {},
+    }: ASCOMRequest<schemas::EmptyQuery>,
 ) -> Result<schemas::IntResponse> {
 }
 
@@ -4675,8 +3870,8 @@ fn get_camera_gainmin(
     schemas::GetCameraGainminPath { device_number }: schemas::GetCameraGainminPath,
     ASCOMRequest {
         transaction,
-        request: schemas::GetCameraGainminQuery {},
-    }: ASCOMRequest<schemas::GetCameraGainminQuery>,
+        request: schemas::EmptyQuery {},
+    }: ASCOMRequest<schemas::EmptyQuery>,
 ) -> Result<schemas::IntResponse> {
 }
 
@@ -4690,8 +3885,8 @@ fn get_camera_gains(
     schemas::GetCameraGainsPath { device_number }: schemas::GetCameraGainsPath,
     ASCOMRequest {
         transaction,
-        request: schemas::GetCameraGainsQuery {},
-    }: ASCOMRequest<schemas::GetCameraGainsQuery>,
+        request: schemas::EmptyQuery {},
+    }: ASCOMRequest<schemas::EmptyQuery>,
 ) -> Result<schemas::StringArrayResponse> {
 }
 
@@ -4705,8 +3900,8 @@ fn get_camera_hasshutter(
     schemas::GetCameraHasshutterPath { device_number }: schemas::GetCameraHasshutterPath,
     ASCOMRequest {
         transaction,
-        request: schemas::GetCameraHasshutterQuery {},
-    }: ASCOMRequest<schemas::GetCameraHasshutterQuery>,
+        request: schemas::EmptyQuery {},
+    }: ASCOMRequest<schemas::EmptyQuery>,
 ) -> Result<schemas::BoolResponse> {
 }
 
@@ -4720,8 +3915,8 @@ fn get_camera_heatsinktemperature(
     schemas::GetCameraHeatsinktemperaturePath { device_number }: schemas::GetCameraHeatsinktemperaturePath,
     ASCOMRequest {
         transaction,
-        request: schemas::GetCameraHeatsinktemperatureQuery {},
-    }: ASCOMRequest<schemas::GetCameraHeatsinktemperatureQuery>,
+        request: schemas::EmptyQuery {},
+    }: ASCOMRequest<schemas::EmptyQuery>,
 ) -> Result<schemas::DoubleResponse> {
 }
 
@@ -4790,8 +3985,8 @@ fn get_camera_imagearray(
     schemas::GetCameraImagearrayPath { device_number }: schemas::GetCameraImagearrayPath,
     ASCOMRequest {
         transaction,
-        request: schemas::GetCameraImagearrayQuery {},
-    }: ASCOMRequest<schemas::GetCameraImagearrayQuery>,
+        request: schemas::EmptyQuery {},
+    }: ASCOMRequest<schemas::EmptyQuery>,
 ) -> Result<schemas::ImageArrayResponse> {
 }
 
@@ -4860,8 +4055,8 @@ fn get_camera_imagearrayvariant(
     schemas::GetCameraImagearrayvariantPath { device_number }: schemas::GetCameraImagearrayvariantPath,
     ASCOMRequest {
         transaction,
-        request: schemas::GetCameraImagearrayvariantQuery {},
-    }: ASCOMRequest<schemas::GetCameraImagearrayvariantQuery>,
+        request: schemas::EmptyQuery {},
+    }: ASCOMRequest<schemas::EmptyQuery>,
 ) -> Result<schemas::ImageArrayResponse> {
 }
 
@@ -4875,8 +4070,8 @@ fn get_camera_imageready(
     schemas::GetCameraImagereadyPath { device_number }: schemas::GetCameraImagereadyPath,
     ASCOMRequest {
         transaction,
-        request: schemas::GetCameraImagereadyQuery {},
-    }: ASCOMRequest<schemas::GetCameraImagereadyQuery>,
+        request: schemas::EmptyQuery {},
+    }: ASCOMRequest<schemas::EmptyQuery>,
 ) -> Result<schemas::BoolResponse> {
 }
 
@@ -4890,8 +4085,8 @@ fn get_camera_ispulseguiding(
     schemas::GetCameraIspulseguidingPath { device_number }: schemas::GetCameraIspulseguidingPath,
     ASCOMRequest {
         transaction,
-        request: schemas::GetCameraIspulseguidingQuery {},
-    }: ASCOMRequest<schemas::GetCameraIspulseguidingQuery>,
+        request: schemas::EmptyQuery {},
+    }: ASCOMRequest<schemas::EmptyQuery>,
 ) -> Result<schemas::BoolResponse> {
 }
 
@@ -4905,8 +4100,8 @@ fn get_camera_lastexposureduration(
     schemas::GetCameraLastexposuredurationPath { device_number }: schemas::GetCameraLastexposuredurationPath,
     ASCOMRequest {
         transaction,
-        request: schemas::GetCameraLastexposuredurationQuery {},
-    }: ASCOMRequest<schemas::GetCameraLastexposuredurationQuery>,
+        request: schemas::EmptyQuery {},
+    }: ASCOMRequest<schemas::EmptyQuery>,
 ) -> Result<schemas::DoubleResponse> {
 }
 
@@ -4920,8 +4115,8 @@ fn get_camera_lastexposurestarttime(
     schemas::GetCameraLastexposurestarttimePath { device_number }: schemas::GetCameraLastexposurestarttimePath,
     ASCOMRequest {
         transaction,
-        request: schemas::GetCameraLastexposurestarttimeQuery {},
-    }: ASCOMRequest<schemas::GetCameraLastexposurestarttimeQuery>,
+        request: schemas::EmptyQuery {},
+    }: ASCOMRequest<schemas::EmptyQuery>,
 ) -> Result<schemas::StringResponse> {
 }
 
@@ -4935,8 +4130,8 @@ fn get_camera_maxadu(
     schemas::GetCameraMaxaduPath { device_number }: schemas::GetCameraMaxaduPath,
     ASCOMRequest {
         transaction,
-        request: schemas::GetCameraMaxaduQuery {},
-    }: ASCOMRequest<schemas::GetCameraMaxaduQuery>,
+        request: schemas::EmptyQuery {},
+    }: ASCOMRequest<schemas::EmptyQuery>,
 ) -> Result<schemas::IntResponse> {
 }
 
@@ -4950,8 +4145,8 @@ fn get_camera_maxbinx(
     schemas::GetCameraMaxbinxPath { device_number }: schemas::GetCameraMaxbinxPath,
     ASCOMRequest {
         transaction,
-        request: schemas::GetCameraMaxbinxQuery {},
-    }: ASCOMRequest<schemas::GetCameraMaxbinxQuery>,
+        request: schemas::EmptyQuery {},
+    }: ASCOMRequest<schemas::EmptyQuery>,
 ) -> Result<schemas::IntResponse> {
 }
 
@@ -4965,8 +4160,8 @@ fn get_camera_maxbiny(
     schemas::GetCameraMaxbinyPath { device_number }: schemas::GetCameraMaxbinyPath,
     ASCOMRequest {
         transaction,
-        request: schemas::GetCameraMaxbinyQuery {},
-    }: ASCOMRequest<schemas::GetCameraMaxbinyQuery>,
+        request: schemas::EmptyQuery {},
+    }: ASCOMRequest<schemas::EmptyQuery>,
 ) -> Result<schemas::IntResponse> {
 }
 
@@ -4980,8 +4175,8 @@ fn get_camera_numx(
     schemas::GetCameraNumxPath { device_number }: schemas::GetCameraNumxPath,
     ASCOMRequest {
         transaction,
-        request: schemas::GetCameraNumxQuery {},
-    }: ASCOMRequest<schemas::GetCameraNumxQuery>,
+        request: schemas::EmptyQuery {},
+    }: ASCOMRequest<schemas::EmptyQuery>,
 ) -> Result<schemas::IntResponse> {
 }
 
@@ -4997,7 +4192,7 @@ fn put_camera_numx(
         transaction,
         request: schemas::PutCameraNumxRequest { num_x },
     }: ASCOMRequest<schemas::PutCameraNumxRequest>,
-) -> Result<schemas::MethodResponse> {
+) -> Result<schemas::EmptyResponse> {
 }
 
 /**
@@ -5010,8 +4205,8 @@ fn get_camera_numy(
     schemas::GetCameraNumyPath { device_number }: schemas::GetCameraNumyPath,
     ASCOMRequest {
         transaction,
-        request: schemas::GetCameraNumyQuery {},
-    }: ASCOMRequest<schemas::GetCameraNumyQuery>,
+        request: schemas::EmptyQuery {},
+    }: ASCOMRequest<schemas::EmptyQuery>,
 ) -> Result<schemas::IntResponse> {
 }
 
@@ -5027,7 +4222,7 @@ fn put_camera_numy(
         transaction,
         request: schemas::PutCameraNumyRequest { num_y },
     }: ASCOMRequest<schemas::PutCameraNumyRequest>,
-) -> Result<schemas::MethodResponse> {
+) -> Result<schemas::EmptyResponse> {
 }
 
 /**
@@ -5040,8 +4235,8 @@ fn get_camera_offset(
     schemas::GetCameraOffsetPath { device_number }: schemas::GetCameraOffsetPath,
     ASCOMRequest {
         transaction,
-        request: schemas::GetCameraOffsetQuery {},
-    }: ASCOMRequest<schemas::GetCameraOffsetQuery>,
+        request: schemas::EmptyQuery {},
+    }: ASCOMRequest<schemas::EmptyQuery>,
 ) -> Result<schemas::IntResponse> {
 }
 
@@ -5057,7 +4252,7 @@ fn put_camera_offset(
         transaction,
         request: schemas::PutCameraOffsetRequest { offset },
     }: ASCOMRequest<schemas::PutCameraOffsetRequest>,
-) -> Result<schemas::MethodResponse> {
+) -> Result<schemas::EmptyResponse> {
 }
 
 /**
@@ -5070,8 +4265,8 @@ fn get_camera_offsetmax(
     schemas::GetCameraOffsetmaxPath { device_number }: schemas::GetCameraOffsetmaxPath,
     ASCOMRequest {
         transaction,
-        request: schemas::GetCameraOffsetmaxQuery {},
-    }: ASCOMRequest<schemas::GetCameraOffsetmaxQuery>,
+        request: schemas::EmptyQuery {},
+    }: ASCOMRequest<schemas::EmptyQuery>,
 ) -> Result<schemas::IntResponse> {
 }
 
@@ -5085,8 +4280,8 @@ fn get_camera_offsetmin(
     schemas::GetCameraOffsetminPath { device_number }: schemas::GetCameraOffsetminPath,
     ASCOMRequest {
         transaction,
-        request: schemas::GetCameraOffsetminQuery {},
-    }: ASCOMRequest<schemas::GetCameraOffsetminQuery>,
+        request: schemas::EmptyQuery {},
+    }: ASCOMRequest<schemas::EmptyQuery>,
 ) -> Result<schemas::IntResponse> {
 }
 
@@ -5100,8 +4295,8 @@ fn get_camera_offsets(
     schemas::GetCameraOffsetsPath { device_number }: schemas::GetCameraOffsetsPath,
     ASCOMRequest {
         transaction,
-        request: schemas::GetCameraOffsetsQuery {},
-    }: ASCOMRequest<schemas::GetCameraOffsetsQuery>,
+        request: schemas::EmptyQuery {},
+    }: ASCOMRequest<schemas::EmptyQuery>,
 ) -> Result<schemas::StringArrayResponse> {
 }
 
@@ -5115,8 +4310,8 @@ fn get_camera_percentcompleted(
     schemas::GetCameraPercentcompletedPath { device_number }: schemas::GetCameraPercentcompletedPath,
     ASCOMRequest {
         transaction,
-        request: schemas::GetCameraPercentcompletedQuery {},
-    }: ASCOMRequest<schemas::GetCameraPercentcompletedQuery>,
+        request: schemas::EmptyQuery {},
+    }: ASCOMRequest<schemas::EmptyQuery>,
 ) -> Result<schemas::IntResponse> {
 }
 
@@ -5130,8 +4325,8 @@ fn get_camera_pixelsizex(
     schemas::GetCameraPixelsizexPath { device_number }: schemas::GetCameraPixelsizexPath,
     ASCOMRequest {
         transaction,
-        request: schemas::GetCameraPixelsizexQuery {},
-    }: ASCOMRequest<schemas::GetCameraPixelsizexQuery>,
+        request: schemas::EmptyQuery {},
+    }: ASCOMRequest<schemas::EmptyQuery>,
 ) -> Result<schemas::DoubleResponse> {
 }
 
@@ -5145,8 +4340,8 @@ fn get_camera_pixelsizey(
     schemas::GetCameraPixelsizeyPath { device_number }: schemas::GetCameraPixelsizeyPath,
     ASCOMRequest {
         transaction,
-        request: schemas::GetCameraPixelsizeyQuery {},
-    }: ASCOMRequest<schemas::GetCameraPixelsizeyQuery>,
+        request: schemas::EmptyQuery {},
+    }: ASCOMRequest<schemas::EmptyQuery>,
 ) -> Result<schemas::DoubleResponse> {
 }
 
@@ -5160,8 +4355,8 @@ fn get_camera_readoutmode(
     schemas::GetCameraReadoutmodePath { device_number }: schemas::GetCameraReadoutmodePath,
     ASCOMRequest {
         transaction,
-        request: schemas::GetCameraReadoutmodeQuery {},
-    }: ASCOMRequest<schemas::GetCameraReadoutmodeQuery>,
+        request: schemas::EmptyQuery {},
+    }: ASCOMRequest<schemas::EmptyQuery>,
 ) -> Result<schemas::IntResponse> {
 }
 
@@ -5177,7 +4372,7 @@ fn put_camera_readoutmode(
         transaction,
         request: schemas::PutCameraReadoutmodeRequest { readout_mode },
     }: ASCOMRequest<schemas::PutCameraReadoutmodeRequest>,
-) -> Result<schemas::MethodResponse> {
+) -> Result<schemas::EmptyResponse> {
 }
 
 /**
@@ -5190,8 +4385,8 @@ fn get_camera_readoutmodes(
     schemas::GetCameraReadoutmodesPath { device_number }: schemas::GetCameraReadoutmodesPath,
     ASCOMRequest {
         transaction,
-        request: schemas::GetCameraReadoutmodesQuery {},
-    }: ASCOMRequest<schemas::GetCameraReadoutmodesQuery>,
+        request: schemas::EmptyQuery {},
+    }: ASCOMRequest<schemas::EmptyQuery>,
 ) -> Result<schemas::StringArrayResponse> {
 }
 
@@ -5205,8 +4400,8 @@ fn get_camera_sensorname(
     schemas::GetCameraSensornamePath { device_number }: schemas::GetCameraSensornamePath,
     ASCOMRequest {
         transaction,
-        request: schemas::GetCameraSensornameQuery {},
-    }: ASCOMRequest<schemas::GetCameraSensornameQuery>,
+        request: schemas::EmptyQuery {},
+    }: ASCOMRequest<schemas::EmptyQuery>,
 ) -> Result<schemas::StringResponse> {
 }
 
@@ -5229,8 +4424,8 @@ fn get_camera_sensortype(
     schemas::GetCameraSensortypePath { device_number }: schemas::GetCameraSensortypePath,
     ASCOMRequest {
         transaction,
-        request: schemas::GetCameraSensortypeQuery {},
-    }: ASCOMRequest<schemas::GetCameraSensortypeQuery>,
+        request: schemas::EmptyQuery {},
+    }: ASCOMRequest<schemas::EmptyQuery>,
 ) -> Result<schemas::IntResponse> {
 }
 
@@ -5240,8 +4435,8 @@ fn get_camera_setccdtemperature(
     schemas::GetCameraSetccdtemperaturePath { device_number }: schemas::GetCameraSetccdtemperaturePath,
     ASCOMRequest {
         transaction,
-        request: schemas::GetCameraSetccdtemperatureQuery {},
-    }: ASCOMRequest<schemas::GetCameraSetccdtemperatureQuery>,
+        request: schemas::EmptyQuery {},
+    }: ASCOMRequest<schemas::EmptyQuery>,
 ) -> Result<schemas::DoubleResponse> {
 }
 
@@ -5257,7 +4452,7 @@ fn put_camera_setccdtemperature(
         transaction,
         request: schemas::PutCameraSetccdtemperatureRequest { set_ccdtemperature },
     }: ASCOMRequest<schemas::PutCameraSetccdtemperatureRequest>,
-) -> Result<schemas::MethodResponse> {
+) -> Result<schemas::EmptyResponse> {
 }
 
 /**
@@ -5270,8 +4465,8 @@ fn get_camera_startx(
     schemas::GetCameraStartxPath { device_number }: schemas::GetCameraStartxPath,
     ASCOMRequest {
         transaction,
-        request: schemas::GetCameraStartxQuery {},
-    }: ASCOMRequest<schemas::GetCameraStartxQuery>,
+        request: schemas::EmptyQuery {},
+    }: ASCOMRequest<schemas::EmptyQuery>,
 ) -> Result<schemas::IntResponse> {
 }
 
@@ -5287,7 +4482,7 @@ fn put_camera_startx(
         transaction,
         request: schemas::PutCameraStartxRequest { start_x },
     }: ASCOMRequest<schemas::PutCameraStartxRequest>,
-) -> Result<schemas::MethodResponse> {
+) -> Result<schemas::EmptyResponse> {
 }
 
 /**
@@ -5300,8 +4495,8 @@ fn get_camera_starty(
     schemas::GetCameraStartyPath { device_number }: schemas::GetCameraStartyPath,
     ASCOMRequest {
         transaction,
-        request: schemas::GetCameraStartyQuery {},
-    }: ASCOMRequest<schemas::GetCameraStartyQuery>,
+        request: schemas::EmptyQuery {},
+    }: ASCOMRequest<schemas::EmptyQuery>,
 ) -> Result<schemas::IntResponse> {
 }
 
@@ -5317,7 +4512,7 @@ fn put_camera_starty(
         transaction,
         request: schemas::PutCameraStartyRequest { start_y },
     }: ASCOMRequest<schemas::PutCameraStartyRequest>,
-) -> Result<schemas::MethodResponse> {
+) -> Result<schemas::EmptyResponse> {
 }
 
 /**
@@ -5330,8 +4525,8 @@ fn get_camera_subexposureduration(
     schemas::GetCameraSubexposuredurationPath { device_number }: schemas::GetCameraSubexposuredurationPath,
     ASCOMRequest {
         transaction,
-        request: schemas::GetCameraSubexposuredurationQuery {},
-    }: ASCOMRequest<schemas::GetCameraSubexposuredurationQuery>,
+        request: schemas::EmptyQuery {},
+    }: ASCOMRequest<schemas::EmptyQuery>,
 ) -> Result<schemas::DoubleResponse> {
 }
 
@@ -5347,7 +4542,7 @@ fn put_camera_subexposureduration(
         transaction,
         request: schemas::PutCameraSubexposuredurationRequest { sub_exposure_duration },
     }: ASCOMRequest<schemas::PutCameraSubexposuredurationRequest>,
-) -> Result<schemas::MethodResponse> {
+) -> Result<schemas::EmptyResponse> {
 }
 
 /**
@@ -5360,9 +4555,9 @@ fn put_camera_abortexposure(
     schemas::PutCameraAbortexposurePath { device_number }: schemas::PutCameraAbortexposurePath,
     ASCOMRequest {
         transaction,
-        request: schemas::PutCameraAbortexposureRequest {},
-    }: ASCOMRequest<schemas::PutCameraAbortexposureRequest>,
-) -> Result<schemas::MethodResponse> {
+        request: schemas::EmptyForm {},
+    }: ASCOMRequest<schemas::EmptyForm>,
+) -> Result<schemas::EmptyResponse> {
 }
 
 /**
@@ -5377,7 +4572,7 @@ fn put_camera_pulseguide(
         transaction,
         request: schemas::PutCameraPulseguideRequest { direction, duration },
     }: ASCOMRequest<schemas::PutCameraPulseguideRequest>,
-) -> Result<schemas::MethodResponse> {
+) -> Result<schemas::EmptyResponse> {
 }
 
 /**
@@ -5392,7 +4587,7 @@ fn put_camera_startexposure(
         transaction,
         request: schemas::PutCameraStartexposureRequest { duration, light },
     }: ASCOMRequest<schemas::PutCameraStartexposureRequest>,
-) -> Result<schemas::MethodResponse> {
+) -> Result<schemas::EmptyResponse> {
 }
 
 /**
@@ -5405,9 +4600,9 @@ fn put_camera_stopexposure(
     schemas::PutCameraStopexposurePath { device_number }: schemas::PutCameraStopexposurePath,
     ASCOMRequest {
         transaction,
-        request: schemas::PutCameraAbortexposureRequest {},
-    }: ASCOMRequest<schemas::PutCameraAbortexposureRequest>,
-) -> Result<schemas::MethodResponse> {
+        request: schemas::EmptyForm {},
+    }: ASCOMRequest<schemas::EmptyForm>,
+) -> Result<schemas::EmptyResponse> {
 }
 
 /**
@@ -5420,8 +4615,8 @@ fn get_covercalibrator_brightness(
     schemas::GetCovercalibratorBrightnessPath { device_number }: schemas::GetCovercalibratorBrightnessPath,
     ASCOMRequest {
         transaction,
-        request: schemas::GetCovercalibratorBrightnessQuery {},
-    }: ASCOMRequest<schemas::GetCovercalibratorBrightnessQuery>,
+        request: schemas::EmptyQuery {},
+    }: ASCOMRequest<schemas::EmptyQuery>,
 ) -> Result<schemas::IntResponse> {
 }
 
@@ -5435,8 +4630,8 @@ fn get_covercalibrator_calibratorstate(
     schemas::GetCovercalibratorCalibratorstatePath { device_number }: schemas::GetCovercalibratorCalibratorstatePath,
     ASCOMRequest {
         transaction,
-        request: schemas::GetCovercalibratorCalibratorstateQuery {},
-    }: ASCOMRequest<schemas::GetCovercalibratorCalibratorstateQuery>,
+        request: schemas::EmptyQuery {},
+    }: ASCOMRequest<schemas::EmptyQuery>,
 ) -> Result<schemas::IntResponse> {
 }
 
@@ -5450,8 +4645,8 @@ fn get_covercalibrator_coverstate(
     schemas::GetCovercalibratorCoverstatePath { device_number }: schemas::GetCovercalibratorCoverstatePath,
     ASCOMRequest {
         transaction,
-        request: schemas::GetCovercalibratorCoverstateQuery {},
-    }: ASCOMRequest<schemas::GetCovercalibratorCoverstateQuery>,
+        request: schemas::EmptyQuery {},
+    }: ASCOMRequest<schemas::EmptyQuery>,
 ) -> Result<schemas::IntResponse> {
 }
 
@@ -5465,8 +4660,8 @@ fn get_covercalibrator_maxbrightness(
     schemas::GetCovercalibratorMaxbrightnessPath { device_number }: schemas::GetCovercalibratorMaxbrightnessPath,
     ASCOMRequest {
         transaction,
-        request: schemas::GetCovercalibratorMaxbrightnessQuery {},
-    }: ASCOMRequest<schemas::GetCovercalibratorMaxbrightnessQuery>,
+        request: schemas::EmptyQuery {},
+    }: ASCOMRequest<schemas::EmptyQuery>,
 ) -> Result<schemas::IntResponse> {
 }
 
@@ -5480,9 +4675,9 @@ fn put_covercalibrator_calibratoroff(
     schemas::PutCovercalibratorCalibratoroffPath { device_number }: schemas::PutCovercalibratorCalibratoroffPath,
     ASCOMRequest {
         transaction,
-        request: schemas::PutCameraAbortexposureRequest {},
-    }: ASCOMRequest<schemas::PutCameraAbortexposureRequest>,
-) -> Result<schemas::MethodResponse> {
+        request: schemas::EmptyForm {},
+    }: ASCOMRequest<schemas::EmptyForm>,
+) -> Result<schemas::EmptyResponse> {
 }
 
 /**
@@ -5497,7 +4692,7 @@ fn put_covercalibrator_calibratoron(
         transaction,
         request: schemas::PutCovercalibratorCalibratoronRequest { brightness },
     }: ASCOMRequest<schemas::PutCovercalibratorCalibratoronRequest>,
-) -> Result<schemas::MethodResponse> {
+) -> Result<schemas::EmptyResponse> {
 }
 
 /**
@@ -5510,9 +4705,9 @@ fn put_covercalibrator_closecover(
     schemas::PutCovercalibratorClosecoverPath { device_number }: schemas::PutCovercalibratorClosecoverPath,
     ASCOMRequest {
         transaction,
-        request: schemas::PutCameraAbortexposureRequest {},
-    }: ASCOMRequest<schemas::PutCameraAbortexposureRequest>,
-) -> Result<schemas::MethodResponse> {
+        request: schemas::EmptyForm {},
+    }: ASCOMRequest<schemas::EmptyForm>,
+) -> Result<schemas::EmptyResponse> {
 }
 
 /**
@@ -5525,9 +4720,9 @@ fn put_covercalibrator_haltcover(
     schemas::PutCovercalibratorHaltcoverPath { device_number }: schemas::PutCovercalibratorHaltcoverPath,
     ASCOMRequest {
         transaction,
-        request: schemas::PutCameraAbortexposureRequest {},
-    }: ASCOMRequest<schemas::PutCameraAbortexposureRequest>,
-) -> Result<schemas::MethodResponse> {
+        request: schemas::EmptyForm {},
+    }: ASCOMRequest<schemas::EmptyForm>,
+) -> Result<schemas::EmptyResponse> {
 }
 
 /**
@@ -5540,9 +4735,9 @@ fn put_covercalibrator_opencover(
     schemas::PutCovercalibratorOpencoverPath { device_number }: schemas::PutCovercalibratorOpencoverPath,
     ASCOMRequest {
         transaction,
-        request: schemas::PutCameraAbortexposureRequest {},
-    }: ASCOMRequest<schemas::PutCameraAbortexposureRequest>,
-) -> Result<schemas::MethodResponse> {
+        request: schemas::EmptyForm {},
+    }: ASCOMRequest<schemas::EmptyForm>,
+) -> Result<schemas::EmptyResponse> {
 }
 
 /**
@@ -5555,8 +4750,8 @@ fn get_dome_altitude(
     schemas::GetDomeAltitudePath { device_number }: schemas::GetDomeAltitudePath,
     ASCOMRequest {
         transaction,
-        request: schemas::GetDomeAltitudeQuery {},
-    }: ASCOMRequest<schemas::GetDomeAltitudeQuery>,
+        request: schemas::EmptyQuery {},
+    }: ASCOMRequest<schemas::EmptyQuery>,
 ) -> Result<schemas::DoubleResponse> {
 }
 
@@ -5570,8 +4765,8 @@ fn get_dome_athome(
     schemas::GetDomeAthomePath { device_number }: schemas::GetDomeAthomePath,
     ASCOMRequest {
         transaction,
-        request: schemas::GetDomeAthomeQuery {},
-    }: ASCOMRequest<schemas::GetDomeAthomeQuery>,
+        request: schemas::EmptyQuery {},
+    }: ASCOMRequest<schemas::EmptyQuery>,
 ) -> Result<schemas::BoolResponse> {
 }
 
@@ -5585,8 +4780,8 @@ fn get_dome_atpark(
     schemas::GetDomeAtparkPath { device_number }: schemas::GetDomeAtparkPath,
     ASCOMRequest {
         transaction,
-        request: schemas::GetDomeAtparkQuery {},
-    }: ASCOMRequest<schemas::GetDomeAtparkQuery>,
+        request: schemas::EmptyQuery {},
+    }: ASCOMRequest<schemas::EmptyQuery>,
 ) -> Result<schemas::BoolResponse> {
 }
 
@@ -5600,8 +4795,8 @@ fn get_dome_azimuth(
     schemas::GetDomeAzimuthPath { device_number }: schemas::GetDomeAzimuthPath,
     ASCOMRequest {
         transaction,
-        request: schemas::GetDomeAzimuthQuery {},
-    }: ASCOMRequest<schemas::GetDomeAzimuthQuery>,
+        request: schemas::EmptyQuery {},
+    }: ASCOMRequest<schemas::EmptyQuery>,
 ) -> Result<schemas::DoubleResponse> {
 }
 
@@ -5615,8 +4810,8 @@ fn get_dome_canfindhome(
     schemas::GetDomeCanfindhomePath { device_number }: schemas::GetDomeCanfindhomePath,
     ASCOMRequest {
         transaction,
-        request: schemas::GetDomeCanfindhomeQuery {},
-    }: ASCOMRequest<schemas::GetDomeCanfindhomeQuery>,
+        request: schemas::EmptyQuery {},
+    }: ASCOMRequest<schemas::EmptyQuery>,
 ) -> Result<schemas::BoolResponse> {
 }
 
@@ -5630,8 +4825,8 @@ fn get_dome_canpark(
     schemas::GetDomeCanparkPath { device_number }: schemas::GetDomeCanparkPath,
     ASCOMRequest {
         transaction,
-        request: schemas::GetDomeCanparkQuery {},
-    }: ASCOMRequest<schemas::GetDomeCanparkQuery>,
+        request: schemas::EmptyQuery {},
+    }: ASCOMRequest<schemas::EmptyQuery>,
 ) -> Result<schemas::BoolResponse> {
 }
 
@@ -5645,8 +4840,8 @@ fn get_dome_cansetaltitude(
     schemas::GetDomeCansetaltitudePath { device_number }: schemas::GetDomeCansetaltitudePath,
     ASCOMRequest {
         transaction,
-        request: schemas::GetDomeCansetaltitudeQuery {},
-    }: ASCOMRequest<schemas::GetDomeCansetaltitudeQuery>,
+        request: schemas::EmptyQuery {},
+    }: ASCOMRequest<schemas::EmptyQuery>,
 ) -> Result<schemas::BoolResponse> {
 }
 
@@ -5660,8 +4855,8 @@ fn get_dome_cansetazimuth(
     schemas::GetDomeCansetazimuthPath { device_number }: schemas::GetDomeCansetazimuthPath,
     ASCOMRequest {
         transaction,
-        request: schemas::GetDomeCansetazimuthQuery {},
-    }: ASCOMRequest<schemas::GetDomeCansetazimuthQuery>,
+        request: schemas::EmptyQuery {},
+    }: ASCOMRequest<schemas::EmptyQuery>,
 ) -> Result<schemas::BoolResponse> {
 }
 
@@ -5675,8 +4870,8 @@ fn get_dome_cansetpark(
     schemas::GetDomeCansetparkPath { device_number }: schemas::GetDomeCansetparkPath,
     ASCOMRequest {
         transaction,
-        request: schemas::GetDomeCansetparkQuery {},
-    }: ASCOMRequest<schemas::GetDomeCansetparkQuery>,
+        request: schemas::EmptyQuery {},
+    }: ASCOMRequest<schemas::EmptyQuery>,
 ) -> Result<schemas::BoolResponse> {
 }
 
@@ -5690,8 +4885,8 @@ fn get_dome_cansetshutter(
     schemas::GetDomeCansetshutterPath { device_number }: schemas::GetDomeCansetshutterPath,
     ASCOMRequest {
         transaction,
-        request: schemas::GetDomeCansetshutterQuery {},
-    }: ASCOMRequest<schemas::GetDomeCansetshutterQuery>,
+        request: schemas::EmptyQuery {},
+    }: ASCOMRequest<schemas::EmptyQuery>,
 ) -> Result<schemas::BoolResponse> {
 }
 
@@ -5705,8 +4900,8 @@ fn get_dome_canslave(
     schemas::GetDomeCanslavePath { device_number }: schemas::GetDomeCanslavePath,
     ASCOMRequest {
         transaction,
-        request: schemas::GetDomeCanslaveQuery {},
-    }: ASCOMRequest<schemas::GetDomeCanslaveQuery>,
+        request: schemas::EmptyQuery {},
+    }: ASCOMRequest<schemas::EmptyQuery>,
 ) -> Result<schemas::BoolResponse> {
 }
 
@@ -5720,8 +4915,8 @@ fn get_dome_cansyncazimuth(
     schemas::GetDomeCansyncazimuthPath { device_number }: schemas::GetDomeCansyncazimuthPath,
     ASCOMRequest {
         transaction,
-        request: schemas::GetDomeCansyncazimuthQuery {},
-    }: ASCOMRequest<schemas::GetDomeCansyncazimuthQuery>,
+        request: schemas::EmptyQuery {},
+    }: ASCOMRequest<schemas::EmptyQuery>,
 ) -> Result<schemas::BoolResponse> {
 }
 
@@ -5735,8 +4930,8 @@ fn get_dome_shutterstatus(
     schemas::GetDomeShutterstatusPath { device_number }: schemas::GetDomeShutterstatusPath,
     ASCOMRequest {
         transaction,
-        request: schemas::GetDomeShutterstatusQuery {},
-    }: ASCOMRequest<schemas::GetDomeShutterstatusQuery>,
+        request: schemas::EmptyQuery {},
+    }: ASCOMRequest<schemas::EmptyQuery>,
 ) -> Result<schemas::IntResponse> {
 }
 
@@ -5750,8 +4945,8 @@ fn get_dome_slaved(
     schemas::GetDomeSlavedPath { device_number }: schemas::GetDomeSlavedPath,
     ASCOMRequest {
         transaction,
-        request: schemas::GetDomeSlavedQuery {},
-    }: ASCOMRequest<schemas::GetDomeSlavedQuery>,
+        request: schemas::EmptyQuery {},
+    }: ASCOMRequest<schemas::EmptyQuery>,
 ) -> Result<schemas::BoolResponse> {
 }
 
@@ -5767,7 +4962,7 @@ fn put_dome_slaved(
         transaction,
         request: schemas::PutDomeSlavedRequest { slaved },
     }: ASCOMRequest<schemas::PutDomeSlavedRequest>,
-) -> Result<schemas::MethodResponse> {
+) -> Result<schemas::EmptyResponse> {
 }
 
 /**
@@ -5780,8 +4975,8 @@ fn get_dome_slewing(
     schemas::GetDomeSlewingPath { device_number }: schemas::GetDomeSlewingPath,
     ASCOMRequest {
         transaction,
-        request: schemas::GetDomeSlewingQuery {},
-    }: ASCOMRequest<schemas::GetDomeSlewingQuery>,
+        request: schemas::EmptyQuery {},
+    }: ASCOMRequest<schemas::EmptyQuery>,
 ) -> Result<schemas::BoolResponse> {
 }
 
@@ -5795,9 +4990,9 @@ fn put_dome_abortslew(
     schemas::PutDomeAbortslewPath { device_number }: schemas::PutDomeAbortslewPath,
     ASCOMRequest {
         transaction,
-        request: schemas::PutCameraAbortexposureRequest {},
-    }: ASCOMRequest<schemas::PutCameraAbortexposureRequest>,
-) -> Result<schemas::MethodResponse> {
+        request: schemas::EmptyForm {},
+    }: ASCOMRequest<schemas::EmptyForm>,
+) -> Result<schemas::EmptyResponse> {
 }
 
 /// Close the shutter or otherwise shield telescope from the sky.
@@ -5806,9 +5001,9 @@ fn put_dome_closeshutter(
     schemas::PutDomeCloseshutterPath { device_number }: schemas::PutDomeCloseshutterPath,
     ASCOMRequest {
         transaction,
-        request: schemas::PutCameraAbortexposureRequest {},
-    }: ASCOMRequest<schemas::PutCameraAbortexposureRequest>,
-) -> Result<schemas::MethodResponse> {
+        request: schemas::EmptyForm {},
+    }: ASCOMRequest<schemas::EmptyForm>,
+) -> Result<schemas::EmptyResponse> {
 }
 
 /**
@@ -5821,9 +5016,9 @@ fn put_dome_findhome(
     schemas::PutDomeFindhomePath { device_number }: schemas::PutDomeFindhomePath,
     ASCOMRequest {
         transaction,
-        request: schemas::PutCameraAbortexposureRequest {},
-    }: ASCOMRequest<schemas::PutCameraAbortexposureRequest>,
-) -> Result<schemas::MethodResponse> {
+        request: schemas::EmptyForm {},
+    }: ASCOMRequest<schemas::EmptyForm>,
+) -> Result<schemas::EmptyResponse> {
 }
 
 /// Open shutter or otherwise expose telescope to the sky.
@@ -5832,9 +5027,9 @@ fn put_dome_openshutter(
     schemas::PutDomeOpenshutterPath { device_number }: schemas::PutDomeOpenshutterPath,
     ASCOMRequest {
         transaction,
-        request: schemas::PutCameraAbortexposureRequest {},
-    }: ASCOMRequest<schemas::PutCameraAbortexposureRequest>,
-) -> Result<schemas::MethodResponse> {
+        request: schemas::EmptyForm {},
+    }: ASCOMRequest<schemas::EmptyForm>,
+) -> Result<schemas::EmptyResponse> {
 }
 
 /**
@@ -5847,9 +5042,9 @@ fn put_dome_park(
     schemas::PutDomeParkPath { device_number }: schemas::PutDomeParkPath,
     ASCOMRequest {
         transaction,
-        request: schemas::PutCameraAbortexposureRequest {},
-    }: ASCOMRequest<schemas::PutCameraAbortexposureRequest>,
-) -> Result<schemas::MethodResponse> {
+        request: schemas::EmptyForm {},
+    }: ASCOMRequest<schemas::EmptyForm>,
+) -> Result<schemas::EmptyResponse> {
 }
 
 /**
@@ -5862,9 +5057,9 @@ fn put_dome_setpark(
     schemas::PutDomeSetparkPath { device_number }: schemas::PutDomeSetparkPath,
     ASCOMRequest {
         transaction,
-        request: schemas::PutCameraAbortexposureRequest {},
-    }: ASCOMRequest<schemas::PutCameraAbortexposureRequest>,
-) -> Result<schemas::MethodResponse> {
+        request: schemas::EmptyForm {},
+    }: ASCOMRequest<schemas::EmptyForm>,
+) -> Result<schemas::EmptyResponse> {
 }
 
 /// Slew the dome to the given altitude position.
@@ -5875,7 +5070,7 @@ fn put_dome_slewtoaltitude(
         transaction,
         request: schemas::PutDomeSlewtoaltitudeRequest { altitude },
     }: ASCOMRequest<schemas::PutDomeSlewtoaltitudeRequest>,
-) -> Result<schemas::MethodResponse> {
+) -> Result<schemas::EmptyResponse> {
 }
 
 /// Slew the dome to the given azimuth position.
@@ -5886,7 +5081,7 @@ fn put_dome_slewtoazimuth(
         transaction,
         request: schemas::PutDomeSlewtoazimuthRequest { azimuth },
     }: ASCOMRequest<schemas::PutDomeSlewtoazimuthRequest>,
-) -> Result<schemas::MethodResponse> {
+) -> Result<schemas::EmptyResponse> {
 }
 
 /// Synchronize the current position of the dome to the given azimuth.
@@ -5897,7 +5092,7 @@ fn put_dome_synctoazimuth(
         transaction,
         request: schemas::PutDomeSlewtoazimuthRequest { azimuth },
     }: ASCOMRequest<schemas::PutDomeSlewtoazimuthRequest>,
-) -> Result<schemas::MethodResponse> {
+) -> Result<schemas::EmptyResponse> {
 }
 
 /**
@@ -5910,8 +5105,8 @@ fn get_filterwheel_focusoffsets(
     schemas::GetFilterwheelFocusoffsetsPath { device_number }: schemas::GetFilterwheelFocusoffsetsPath,
     ASCOMRequest {
         transaction,
-        request: schemas::GetFilterwheelFocusoffsetsQuery {},
-    }: ASCOMRequest<schemas::GetFilterwheelFocusoffsetsQuery>,
+        request: schemas::EmptyQuery {},
+    }: ASCOMRequest<schemas::EmptyQuery>,
 ) -> Result<schemas::IntArrayResponse> {
 }
 
@@ -5925,8 +5120,8 @@ fn get_filterwheel_names(
     schemas::GetFilterwheelNamesPath { device_number }: schemas::GetFilterwheelNamesPath,
     ASCOMRequest {
         transaction,
-        request: schemas::GetFilterwheelNamesQuery {},
-    }: ASCOMRequest<schemas::GetFilterwheelNamesQuery>,
+        request: schemas::EmptyQuery {},
+    }: ASCOMRequest<schemas::EmptyQuery>,
 ) -> Result<schemas::StringArrayResponse> {
 }
 
@@ -5936,8 +5131,8 @@ fn get_filterwheel_position(
     schemas::GetFilterwheelPositionPath { device_number }: schemas::GetFilterwheelPositionPath,
     ASCOMRequest {
         transaction,
-        request: schemas::GetFilterwheelPositionQuery {},
-    }: ASCOMRequest<schemas::GetFilterwheelPositionQuery>,
+        request: schemas::EmptyQuery {},
+    }: ASCOMRequest<schemas::EmptyQuery>,
 ) -> Result<schemas::IntResponse> {
 }
 
@@ -5949,7 +5144,7 @@ fn put_filterwheel_position(
         transaction,
         request: schemas::PutFilterwheelPositionRequest { position },
     }: ASCOMRequest<schemas::PutFilterwheelPositionRequest>,
-) -> Result<schemas::MethodResponse> {
+) -> Result<schemas::EmptyResponse> {
 }
 
 /**
@@ -5962,8 +5157,8 @@ fn get_focuser_absolute(
     schemas::GetFocuserAbsolutePath { device_number }: schemas::GetFocuserAbsolutePath,
     ASCOMRequest {
         transaction,
-        request: schemas::GetFocuserAbsoluteQuery {},
-    }: ASCOMRequest<schemas::GetFocuserAbsoluteQuery>,
+        request: schemas::EmptyQuery {},
+    }: ASCOMRequest<schemas::EmptyQuery>,
 ) -> Result<schemas::BoolResponse> {
 }
 
@@ -5977,8 +5172,8 @@ fn get_focuser_ismoving(
     schemas::GetFocuserIsmovingPath { device_number }: schemas::GetFocuserIsmovingPath,
     ASCOMRequest {
         transaction,
-        request: schemas::GetFocuserIsmovingQuery {},
-    }: ASCOMRequest<schemas::GetFocuserIsmovingQuery>,
+        request: schemas::EmptyQuery {},
+    }: ASCOMRequest<schemas::EmptyQuery>,
 ) -> Result<schemas::BoolResponse> {
 }
 
@@ -5992,8 +5187,8 @@ fn get_focuser_maxincrement(
     schemas::GetFocuserMaxincrementPath { device_number }: schemas::GetFocuserMaxincrementPath,
     ASCOMRequest {
         transaction,
-        request: schemas::GetFocuserMaxincrementQuery {},
-    }: ASCOMRequest<schemas::GetFocuserMaxincrementQuery>,
+        request: schemas::EmptyQuery {},
+    }: ASCOMRequest<schemas::EmptyQuery>,
 ) -> Result<schemas::IntResponse> {
 }
 
@@ -6007,8 +5202,8 @@ fn get_focuser_maxstep(
     schemas::GetFocuserMaxstepPath { device_number }: schemas::GetFocuserMaxstepPath,
     ASCOMRequest {
         transaction,
-        request: schemas::GetFocuserMaxstepQuery {},
-    }: ASCOMRequest<schemas::GetFocuserMaxstepQuery>,
+        request: schemas::EmptyQuery {},
+    }: ASCOMRequest<schemas::EmptyQuery>,
 ) -> Result<schemas::IntResponse> {
 }
 
@@ -6022,8 +5217,8 @@ fn get_focuser_position(
     schemas::GetFocuserPositionPath { device_number }: schemas::GetFocuserPositionPath,
     ASCOMRequest {
         transaction,
-        request: schemas::GetFocuserPositionQuery {},
-    }: ASCOMRequest<schemas::GetFocuserPositionQuery>,
+        request: schemas::EmptyQuery {},
+    }: ASCOMRequest<schemas::EmptyQuery>,
 ) -> Result<schemas::IntResponse> {
 }
 
@@ -6037,8 +5232,8 @@ fn get_focuser_stepsize(
     schemas::GetFocuserStepsizePath { device_number }: schemas::GetFocuserStepsizePath,
     ASCOMRequest {
         transaction,
-        request: schemas::GetFocuserStepsizeQuery {},
-    }: ASCOMRequest<schemas::GetFocuserStepsizeQuery>,
+        request: schemas::EmptyQuery {},
+    }: ASCOMRequest<schemas::EmptyQuery>,
 ) -> Result<schemas::DoubleResponse> {
 }
 
@@ -6052,8 +5247,8 @@ fn get_focuser_tempcomp(
     schemas::GetFocuserTempcompPath { device_number }: schemas::GetFocuserTempcompPath,
     ASCOMRequest {
         transaction,
-        request: schemas::GetFocuserTempcompQuery {},
-    }: ASCOMRequest<schemas::GetFocuserTempcompQuery>,
+        request: schemas::EmptyQuery {},
+    }: ASCOMRequest<schemas::EmptyQuery>,
 ) -> Result<schemas::BoolResponse> {
 }
 
@@ -6069,7 +5264,7 @@ fn put_focuser_tempcomp(
         transaction,
         request: schemas::PutFocuserTempcompRequest { temp_comp },
     }: ASCOMRequest<schemas::PutFocuserTempcompRequest>,
-) -> Result<schemas::MethodResponse> {
+) -> Result<schemas::EmptyResponse> {
 }
 
 /**
@@ -6082,8 +5277,8 @@ fn get_focuser_tempcompavailable(
     schemas::GetFocuserTempcompavailablePath { device_number }: schemas::GetFocuserTempcompavailablePath,
     ASCOMRequest {
         transaction,
-        request: schemas::GetFocuserTempcompavailableQuery {},
-    }: ASCOMRequest<schemas::GetFocuserTempcompavailableQuery>,
+        request: schemas::EmptyQuery {},
+    }: ASCOMRequest<schemas::EmptyQuery>,
 ) -> Result<schemas::BoolResponse> {
 }
 
@@ -6097,8 +5292,8 @@ fn get_focuser_temperature(
     schemas::GetFocuserTemperaturePath { device_number }: schemas::GetFocuserTemperaturePath,
     ASCOMRequest {
         transaction,
-        request: schemas::GetFocuserTemperatureQuery {},
-    }: ASCOMRequest<schemas::GetFocuserTemperatureQuery>,
+        request: schemas::EmptyQuery {},
+    }: ASCOMRequest<schemas::EmptyQuery>,
 ) -> Result<schemas::DoubleResponse> {
 }
 
@@ -6112,9 +5307,9 @@ fn put_focuser_halt(
     schemas::PutFocuserHaltPath { device_number }: schemas::PutFocuserHaltPath,
     ASCOMRequest {
         transaction,
-        request: schemas::PutCameraAbortexposureRequest {},
-    }: ASCOMRequest<schemas::PutCameraAbortexposureRequest>,
-) -> Result<schemas::MethodResponse> {
+        request: schemas::EmptyForm {},
+    }: ASCOMRequest<schemas::EmptyForm>,
+) -> Result<schemas::EmptyResponse> {
 }
 
 /**
@@ -6129,7 +5324,7 @@ fn put_focuser_move(
         transaction,
         request: schemas::PutFocuserMoveRequest { position },
     }: ASCOMRequest<schemas::PutFocuserMoveRequest>,
-) -> Result<schemas::MethodResponse> {
+) -> Result<schemas::EmptyResponse> {
 }
 
 /**
@@ -6142,8 +5337,8 @@ fn get_observingconditions_averageperiod(
     schemas::GetObservingconditionsAverageperiodPath { device_number }: schemas::GetObservingconditionsAverageperiodPath,
     ASCOMRequest {
         transaction,
-        request: schemas::GetObservingconditionsAverageperiodQuery {},
-    }: ASCOMRequest<schemas::GetObservingconditionsAverageperiodQuery>,
+        request: schemas::EmptyQuery {},
+    }: ASCOMRequest<schemas::EmptyQuery>,
 ) -> Result<schemas::DoubleResponse> {
 }
 
@@ -6155,7 +5350,7 @@ fn put_observingconditions_averageperiod(
         transaction,
         request: schemas::PutObservingconditionsAverageperiodRequest { average_period },
     }: ASCOMRequest<schemas::PutObservingconditionsAverageperiodRequest>,
-) -> Result<schemas::MethodResponse> {
+) -> Result<schemas::EmptyResponse> {
 }
 
 /**
@@ -6168,8 +5363,8 @@ fn get_observingconditions_cloudcover(
     schemas::GetObservingconditionsCloudcoverPath { device_number }: schemas::GetObservingconditionsCloudcoverPath,
     ASCOMRequest {
         transaction,
-        request: schemas::GetObservingconditionsCloudcoverQuery {},
-    }: ASCOMRequest<schemas::GetObservingconditionsCloudcoverQuery>,
+        request: schemas::EmptyQuery {},
+    }: ASCOMRequest<schemas::EmptyQuery>,
 ) -> Result<schemas::DoubleResponse> {
 }
 
@@ -6183,8 +5378,8 @@ fn get_observingconditions_dewpoint(
     schemas::GetObservingconditionsDewpointPath { device_number }: schemas::GetObservingconditionsDewpointPath,
     ASCOMRequest {
         transaction,
-        request: schemas::GetObservingconditionsDewpointQuery {},
-    }: ASCOMRequest<schemas::GetObservingconditionsDewpointQuery>,
+        request: schemas::EmptyQuery {},
+    }: ASCOMRequest<schemas::EmptyQuery>,
 ) -> Result<schemas::DoubleResponse> {
 }
 
@@ -6198,8 +5393,8 @@ fn get_observingconditions_humidity(
     schemas::GetObservingconditionsHumidityPath { device_number }: schemas::GetObservingconditionsHumidityPath,
     ASCOMRequest {
         transaction,
-        request: schemas::GetObservingconditionsHumidityQuery {},
-    }: ASCOMRequest<schemas::GetObservingconditionsHumidityQuery>,
+        request: schemas::EmptyQuery {},
+    }: ASCOMRequest<schemas::EmptyQuery>,
 ) -> Result<schemas::DoubleResponse> {
 }
 
@@ -6213,8 +5408,8 @@ fn get_observingconditions_pressure(
     schemas::GetObservingconditionsPressurePath { device_number }: schemas::GetObservingconditionsPressurePath,
     ASCOMRequest {
         transaction,
-        request: schemas::GetObservingconditionsPressureQuery {},
-    }: ASCOMRequest<schemas::GetObservingconditionsPressureQuery>,
+        request: schemas::EmptyQuery {},
+    }: ASCOMRequest<schemas::EmptyQuery>,
 ) -> Result<schemas::DoubleResponse> {
 }
 
@@ -6228,8 +5423,8 @@ fn get_observingconditions_rainrate(
     schemas::GetObservingconditionsRainratePath { device_number }: schemas::GetObservingconditionsRainratePath,
     ASCOMRequest {
         transaction,
-        request: schemas::GetObservingconditionsRainrateQuery {},
-    }: ASCOMRequest<schemas::GetObservingconditionsRainrateQuery>,
+        request: schemas::EmptyQuery {},
+    }: ASCOMRequest<schemas::EmptyQuery>,
 ) -> Result<schemas::DoubleResponse> {
 }
 
@@ -6243,8 +5438,8 @@ fn get_observingconditions_skybrightness(
     schemas::GetObservingconditionsSkybrightnessPath { device_number }: schemas::GetObservingconditionsSkybrightnessPath,
     ASCOMRequest {
         transaction,
-        request: schemas::GetObservingconditionsSkybrightnessQuery {},
-    }: ASCOMRequest<schemas::GetObservingconditionsSkybrightnessQuery>,
+        request: schemas::EmptyQuery {},
+    }: ASCOMRequest<schemas::EmptyQuery>,
 ) -> Result<schemas::DoubleResponse> {
 }
 
@@ -6258,8 +5453,8 @@ fn get_observingconditions_skyquality(
     schemas::GetObservingconditionsSkyqualityPath { device_number }: schemas::GetObservingconditionsSkyqualityPath,
     ASCOMRequest {
         transaction,
-        request: schemas::GetObservingconditionsSkyqualityQuery {},
-    }: ASCOMRequest<schemas::GetObservingconditionsSkyqualityQuery>,
+        request: schemas::EmptyQuery {},
+    }: ASCOMRequest<schemas::EmptyQuery>,
 ) -> Result<schemas::DoubleResponse> {
 }
 
@@ -6273,8 +5468,8 @@ fn get_observingconditions_skytemperature(
     schemas::GetObservingconditionsSkytemperaturePath { device_number }: schemas::GetObservingconditionsSkytemperaturePath,
     ASCOMRequest {
         transaction,
-        request: schemas::GetObservingconditionsSkytemperatureQuery {},
-    }: ASCOMRequest<schemas::GetObservingconditionsSkytemperatureQuery>,
+        request: schemas::EmptyQuery {},
+    }: ASCOMRequest<schemas::EmptyQuery>,
 ) -> Result<schemas::DoubleResponse> {
 }
 
@@ -6288,8 +5483,8 @@ fn get_observingconditions_starfwhm(
     schemas::GetObservingconditionsStarfwhmPath { device_number }: schemas::GetObservingconditionsStarfwhmPath,
     ASCOMRequest {
         transaction,
-        request: schemas::GetObservingconditionsStarfwhmQuery {},
-    }: ASCOMRequest<schemas::GetObservingconditionsStarfwhmQuery>,
+        request: schemas::EmptyQuery {},
+    }: ASCOMRequest<schemas::EmptyQuery>,
 ) -> Result<schemas::DoubleResponse> {
 }
 
@@ -6303,8 +5498,8 @@ fn get_observingconditions_temperature(
     schemas::GetObservingconditionsTemperaturePath { device_number }: schemas::GetObservingconditionsTemperaturePath,
     ASCOMRequest {
         transaction,
-        request: schemas::GetObservingconditionsTemperatureQuery {},
-    }: ASCOMRequest<schemas::GetObservingconditionsTemperatureQuery>,
+        request: schemas::EmptyQuery {},
+    }: ASCOMRequest<schemas::EmptyQuery>,
 ) -> Result<schemas::DoubleResponse> {
 }
 
@@ -6318,8 +5513,8 @@ fn get_observingconditions_winddirection(
     schemas::GetObservingconditionsWinddirectionPath { device_number }: schemas::GetObservingconditionsWinddirectionPath,
     ASCOMRequest {
         transaction,
-        request: schemas::GetObservingconditionsWinddirectionQuery {},
-    }: ASCOMRequest<schemas::GetObservingconditionsWinddirectionQuery>,
+        request: schemas::EmptyQuery {},
+    }: ASCOMRequest<schemas::EmptyQuery>,
 ) -> Result<schemas::DoubleResponse> {
 }
 
@@ -6333,8 +5528,8 @@ fn get_observingconditions_windgust(
     schemas::GetObservingconditionsWindgustPath { device_number }: schemas::GetObservingconditionsWindgustPath,
     ASCOMRequest {
         transaction,
-        request: schemas::GetObservingconditionsWindgustQuery {},
-    }: ASCOMRequest<schemas::GetObservingconditionsWindgustQuery>,
+        request: schemas::EmptyQuery {},
+    }: ASCOMRequest<schemas::EmptyQuery>,
 ) -> Result<schemas::DoubleResponse> {
 }
 
@@ -6348,8 +5543,8 @@ fn get_observingconditions_windspeed(
     schemas::GetObservingconditionsWindspeedPath { device_number }: schemas::GetObservingconditionsWindspeedPath,
     ASCOMRequest {
         transaction,
-        request: schemas::GetObservingconditionsWindspeedQuery {},
-    }: ASCOMRequest<schemas::GetObservingconditionsWindspeedQuery>,
+        request: schemas::EmptyQuery {},
+    }: ASCOMRequest<schemas::EmptyQuery>,
 ) -> Result<schemas::DoubleResponse> {
 }
 
@@ -6363,9 +5558,9 @@ fn put_observingconditions_refresh(
     schemas::PutObservingconditionsRefreshPath { device_number }: schemas::PutObservingconditionsRefreshPath,
     ASCOMRequest {
         transaction,
-        request: schemas::PutCameraAbortexposureRequest {},
-    }: ASCOMRequest<schemas::PutCameraAbortexposureRequest>,
-) -> Result<schemas::MethodResponse> {
+        request: schemas::EmptyForm {},
+    }: ASCOMRequest<schemas::EmptyForm>,
+) -> Result<schemas::EmptyResponse> {
 }
 
 /**
@@ -6408,8 +5603,8 @@ fn get_rotator_canreverse(
     schemas::GetRotatorCanreversePath { device_number }: schemas::GetRotatorCanreversePath,
     ASCOMRequest {
         transaction,
-        request: schemas::GetRotatorCanreverseQuery {},
-    }: ASCOMRequest<schemas::GetRotatorCanreverseQuery>,
+        request: schemas::EmptyQuery {},
+    }: ASCOMRequest<schemas::EmptyQuery>,
 ) -> Result<schemas::BoolResponse> {
 }
 
@@ -6423,8 +5618,8 @@ fn get_rotator_ismoving(
     schemas::GetRotatorIsmovingPath { device_number }: schemas::GetRotatorIsmovingPath,
     ASCOMRequest {
         transaction,
-        request: schemas::GetRotatorIsmovingQuery {},
-    }: ASCOMRequest<schemas::GetRotatorIsmovingQuery>,
+        request: schemas::EmptyQuery {},
+    }: ASCOMRequest<schemas::EmptyQuery>,
 ) -> Result<schemas::BoolResponse> {
 }
 
@@ -6438,8 +5633,8 @@ fn get_rotator_mechanicalposition(
     schemas::GetRotatorMechanicalpositionPath { device_number }: schemas::GetRotatorMechanicalpositionPath,
     ASCOMRequest {
         transaction,
-        request: schemas::GetRotatorMechanicalpositionQuery {},
-    }: ASCOMRequest<schemas::GetRotatorMechanicalpositionQuery>,
+        request: schemas::EmptyQuery {},
+    }: ASCOMRequest<schemas::EmptyQuery>,
 ) -> Result<schemas::DoubleResponse> {
 }
 
@@ -6453,8 +5648,8 @@ fn get_rotator_position(
     schemas::GetRotatorPositionPath { device_number }: schemas::GetRotatorPositionPath,
     ASCOMRequest {
         transaction,
-        request: schemas::GetRotatorPositionQuery {},
-    }: ASCOMRequest<schemas::GetRotatorPositionQuery>,
+        request: schemas::EmptyQuery {},
+    }: ASCOMRequest<schemas::EmptyQuery>,
 ) -> Result<schemas::DoubleResponse> {
 }
 
@@ -6464,8 +5659,8 @@ fn get_rotator_reverse(
     schemas::GetRotatorReversePath { device_number }: schemas::GetRotatorReversePath,
     ASCOMRequest {
         transaction,
-        request: schemas::GetRotatorReverseQuery {},
-    }: ASCOMRequest<schemas::GetRotatorReverseQuery>,
+        request: schemas::EmptyQuery {},
+    }: ASCOMRequest<schemas::EmptyQuery>,
 ) -> Result<schemas::BoolResponse> {
 }
 
@@ -6477,7 +5672,7 @@ fn put_rotator_reverse(
         transaction,
         request: schemas::PutRotatorReverseRequest { reverse },
     }: ASCOMRequest<schemas::PutRotatorReverseRequest>,
-) -> Result<schemas::MethodResponse> {
+) -> Result<schemas::EmptyResponse> {
 }
 
 /**
@@ -6490,8 +5685,8 @@ fn get_rotator_stepsize(
     schemas::GetRotatorStepsizePath { device_number }: schemas::GetRotatorStepsizePath,
     ASCOMRequest {
         transaction,
-        request: schemas::GetRotatorStepsizeQuery {},
-    }: ASCOMRequest<schemas::GetRotatorStepsizeQuery>,
+        request: schemas::EmptyQuery {},
+    }: ASCOMRequest<schemas::EmptyQuery>,
 ) -> Result<schemas::DoubleResponse> {
 }
 
@@ -6505,8 +5700,8 @@ fn get_rotator_targetposition(
     schemas::GetRotatorTargetpositionPath { device_number }: schemas::GetRotatorTargetpositionPath,
     ASCOMRequest {
         transaction,
-        request: schemas::GetRotatorTargetpositionQuery {},
-    }: ASCOMRequest<schemas::GetRotatorTargetpositionQuery>,
+        request: schemas::EmptyQuery {},
+    }: ASCOMRequest<schemas::EmptyQuery>,
 ) -> Result<schemas::DoubleResponse> {
 }
 
@@ -6520,9 +5715,9 @@ fn put_rotator_halt(
     schemas::PutRotatorHaltPath { device_number }: schemas::PutRotatorHaltPath,
     ASCOMRequest {
         transaction,
-        request: schemas::PutCameraAbortexposureRequest {},
-    }: ASCOMRequest<schemas::PutCameraAbortexposureRequest>,
-) -> Result<schemas::MethodResponse> {
+        request: schemas::EmptyForm {},
+    }: ASCOMRequest<schemas::EmptyForm>,
+) -> Result<schemas::EmptyResponse> {
 }
 
 /**
@@ -6537,7 +5732,7 @@ fn put_rotator_move(
         transaction,
         request: schemas::PutRotatorMoveRequest { position },
     }: ASCOMRequest<schemas::PutRotatorMoveRequest>,
-) -> Result<schemas::MethodResponse> {
+) -> Result<schemas::EmptyResponse> {
 }
 
 /**
@@ -6552,7 +5747,7 @@ fn put_rotator_moveabsolute(
         transaction,
         request: schemas::PutRotatorMoveabsoluteRequest { position },
     }: ASCOMRequest<schemas::PutRotatorMoveabsoluteRequest>,
-) -> Result<schemas::MethodResponse> {
+) -> Result<schemas::EmptyResponse> {
 }
 
 /**
@@ -6567,7 +5762,7 @@ fn put_rotator_movemechanical(
         transaction,
         request: schemas::PutRotatorMovemechanicalRequest { position },
     }: ASCOMRequest<schemas::PutRotatorMovemechanicalRequest>,
-) -> Result<schemas::MethodResponse> {
+) -> Result<schemas::EmptyResponse> {
 }
 
 /**
@@ -6582,7 +5777,7 @@ fn put_rotator_sync(
         transaction,
         request: schemas::PutRotatorSyncRequest { position },
     }: ASCOMRequest<schemas::PutRotatorSyncRequest>,
-) -> Result<schemas::MethodResponse> {
+) -> Result<schemas::EmptyResponse> {
 }
 
 /**
@@ -6595,8 +5790,8 @@ fn get_safetymonitor_issafe(
     schemas::GetSafetymonitorIssafePath { device_number }: schemas::GetSafetymonitorIssafePath,
     ASCOMRequest {
         transaction,
-        request: schemas::GetSafetymonitorIssafeQuery {},
-    }: ASCOMRequest<schemas::GetSafetymonitorIssafeQuery>,
+        request: schemas::EmptyQuery {},
+    }: ASCOMRequest<schemas::EmptyQuery>,
 ) -> Result<schemas::BoolResponse> {
 }
 
@@ -6610,8 +5805,8 @@ fn get_switch_maxswitch(
     schemas::GetSwitchMaxswitchPath { device_number }: schemas::GetSwitchMaxswitchPath,
     ASCOMRequest {
         transaction,
-        request: schemas::GetSwitchMaxswitchQuery {},
-    }: ASCOMRequest<schemas::GetSwitchMaxswitchQuery>,
+        request: schemas::EmptyQuery {},
+    }: ASCOMRequest<schemas::EmptyQuery>,
 ) -> Result<schemas::IntResponse> {
 }
 
@@ -6732,7 +5927,7 @@ fn put_switch_setswitch(
         transaction,
         request: schemas::PutSwitchSetswitchRequest { id, state },
     }: ASCOMRequest<schemas::PutSwitchSetswitchRequest>,
-) -> Result<schemas::MethodResponse> {
+) -> Result<schemas::EmptyResponse> {
 }
 
 /**
@@ -6747,7 +5942,7 @@ fn put_switch_setswitchname(
         transaction,
         request: schemas::PutSwitchSetswitchnameRequest { id, name },
     }: ASCOMRequest<schemas::PutSwitchSetswitchnameRequest>,
-) -> Result<schemas::MethodResponse> {
+) -> Result<schemas::EmptyResponse> {
 }
 
 /**
@@ -6762,7 +5957,7 @@ fn put_switch_setswitchvalue(
         transaction,
         request: schemas::PutSwitchSetswitchvalueRequest { id, value },
     }: ASCOMRequest<schemas::PutSwitchSetswitchvalueRequest>,
-) -> Result<schemas::MethodResponse> {
+) -> Result<schemas::EmptyResponse> {
 }
 
 /**
@@ -6790,8 +5985,8 @@ fn get_telescope_alignmentmode(
     schemas::GetTelescopeAlignmentmodePath { device_number }: schemas::GetTelescopeAlignmentmodePath,
     ASCOMRequest {
         transaction,
-        request: schemas::GetTelescopeAlignmentmodeQuery {},
-    }: ASCOMRequest<schemas::GetTelescopeAlignmentmodeQuery>,
+        request: schemas::EmptyQuery {},
+    }: ASCOMRequest<schemas::EmptyQuery>,
 ) -> Result<schemas::IntResponse> {
 }
 
@@ -6805,8 +6000,8 @@ fn get_telescope_altitude(
     schemas::GetTelescopeAltitudePath { device_number }: schemas::GetTelescopeAltitudePath,
     ASCOMRequest {
         transaction,
-        request: schemas::GetTelescopeAltitudeQuery {},
-    }: ASCOMRequest<schemas::GetTelescopeAltitudeQuery>,
+        request: schemas::EmptyQuery {},
+    }: ASCOMRequest<schemas::EmptyQuery>,
 ) -> Result<schemas::DoubleResponse> {
 }
 
@@ -6820,8 +6015,8 @@ fn get_telescope_aperturearea(
     schemas::GetTelescopeApertureareaPath { device_number }: schemas::GetTelescopeApertureareaPath,
     ASCOMRequest {
         transaction,
-        request: schemas::GetTelescopeApertureareaQuery {},
-    }: ASCOMRequest<schemas::GetTelescopeApertureareaQuery>,
+        request: schemas::EmptyQuery {},
+    }: ASCOMRequest<schemas::EmptyQuery>,
 ) -> Result<schemas::DoubleResponse> {
 }
 
@@ -6835,8 +6030,8 @@ fn get_telescope_aperturediameter(
     schemas::GetTelescopeAperturediameterPath { device_number }: schemas::GetTelescopeAperturediameterPath,
     ASCOMRequest {
         transaction,
-        request: schemas::GetTelescopeAperturediameterQuery {},
-    }: ASCOMRequest<schemas::GetTelescopeAperturediameterQuery>,
+        request: schemas::EmptyQuery {},
+    }: ASCOMRequest<schemas::EmptyQuery>,
 ) -> Result<schemas::DoubleResponse> {
 }
 
@@ -6850,8 +6045,8 @@ fn get_telescope_athome(
     schemas::GetTelescopeAthomePath { device_number }: schemas::GetTelescopeAthomePath,
     ASCOMRequest {
         transaction,
-        request: schemas::GetTelescopeAthomeQuery {},
-    }: ASCOMRequest<schemas::GetTelescopeAthomeQuery>,
+        request: schemas::EmptyQuery {},
+    }: ASCOMRequest<schemas::EmptyQuery>,
 ) -> Result<schemas::BoolResponse> {
 }
 
@@ -6865,8 +6060,8 @@ fn get_telescope_atpark(
     schemas::GetTelescopeAtparkPath { device_number }: schemas::GetTelescopeAtparkPath,
     ASCOMRequest {
         transaction,
-        request: schemas::GetTelescopeAtparkQuery {},
-    }: ASCOMRequest<schemas::GetTelescopeAtparkQuery>,
+        request: schemas::EmptyQuery {},
+    }: ASCOMRequest<schemas::EmptyQuery>,
 ) -> Result<schemas::BoolResponse> {
 }
 
@@ -6880,8 +6075,8 @@ fn get_telescope_azimuth(
     schemas::GetTelescopeAzimuthPath { device_number }: schemas::GetTelescopeAzimuthPath,
     ASCOMRequest {
         transaction,
-        request: schemas::GetTelescopeAzimuthQuery {},
-    }: ASCOMRequest<schemas::GetTelescopeAzimuthQuery>,
+        request: schemas::EmptyQuery {},
+    }: ASCOMRequest<schemas::EmptyQuery>,
 ) -> Result<schemas::DoubleResponse> {
 }
 
@@ -6895,8 +6090,8 @@ fn get_telescope_canfindhome(
     schemas::GetTelescopeCanfindhomePath { device_number }: schemas::GetTelescopeCanfindhomePath,
     ASCOMRequest {
         transaction,
-        request: schemas::GetTelescopeCanfindhomeQuery {},
-    }: ASCOMRequest<schemas::GetTelescopeCanfindhomeQuery>,
+        request: schemas::EmptyQuery {},
+    }: ASCOMRequest<schemas::EmptyQuery>,
 ) -> Result<schemas::BoolResponse> {
 }
 
@@ -6910,8 +6105,8 @@ fn get_telescope_canpark(
     schemas::GetTelescopeCanparkPath { device_number }: schemas::GetTelescopeCanparkPath,
     ASCOMRequest {
         transaction,
-        request: schemas::GetTelescopeCanparkQuery {},
-    }: ASCOMRequest<schemas::GetTelescopeCanparkQuery>,
+        request: schemas::EmptyQuery {},
+    }: ASCOMRequest<schemas::EmptyQuery>,
 ) -> Result<schemas::BoolResponse> {
 }
 
@@ -6925,8 +6120,8 @@ fn get_telescope_canpulseguide(
     schemas::GetTelescopeCanpulseguidePath { device_number }: schemas::GetTelescopeCanpulseguidePath,
     ASCOMRequest {
         transaction,
-        request: schemas::GetTelescopeCanpulseguideQuery {},
-    }: ASCOMRequest<schemas::GetTelescopeCanpulseguideQuery>,
+        request: schemas::EmptyQuery {},
+    }: ASCOMRequest<schemas::EmptyQuery>,
 ) -> Result<schemas::BoolResponse> {
 }
 
@@ -6940,8 +6135,8 @@ fn get_telescope_cansetdeclinationrate(
     schemas::GetTelescopeCansetdeclinationratePath { device_number }: schemas::GetTelescopeCansetdeclinationratePath,
     ASCOMRequest {
         transaction,
-        request: schemas::GetTelescopeCansetdeclinationrateQuery {},
-    }: ASCOMRequest<schemas::GetTelescopeCansetdeclinationrateQuery>,
+        request: schemas::EmptyQuery {},
+    }: ASCOMRequest<schemas::EmptyQuery>,
 ) -> Result<schemas::BoolResponse> {
 }
 
@@ -6955,8 +6150,8 @@ fn get_telescope_cansetguiderates(
     schemas::GetTelescopeCansetguideratesPath { device_number }: schemas::GetTelescopeCansetguideratesPath,
     ASCOMRequest {
         transaction,
-        request: schemas::GetTelescopeCansetguideratesQuery {},
-    }: ASCOMRequest<schemas::GetTelescopeCansetguideratesQuery>,
+        request: schemas::EmptyQuery {},
+    }: ASCOMRequest<schemas::EmptyQuery>,
 ) -> Result<schemas::BoolResponse> {
 }
 
@@ -6970,8 +6165,8 @@ fn get_telescope_cansetpark(
     schemas::GetTelescopeCansetparkPath { device_number }: schemas::GetTelescopeCansetparkPath,
     ASCOMRequest {
         transaction,
-        request: schemas::GetTelescopeCansetparkQuery {},
-    }: ASCOMRequest<schemas::GetTelescopeCansetparkQuery>,
+        request: schemas::EmptyQuery {},
+    }: ASCOMRequest<schemas::EmptyQuery>,
 ) -> Result<schemas::BoolResponse> {
 }
 
@@ -6985,8 +6180,8 @@ fn get_telescope_cansetpierside(
     schemas::GetTelescopeCansetpiersidePath { device_number }: schemas::GetTelescopeCansetpiersidePath,
     ASCOMRequest {
         transaction,
-        request: schemas::GetTelescopeCansetpiersideQuery {},
-    }: ASCOMRequest<schemas::GetTelescopeCansetpiersideQuery>,
+        request: schemas::EmptyQuery {},
+    }: ASCOMRequest<schemas::EmptyQuery>,
 ) -> Result<schemas::BoolResponse> {
 }
 
@@ -7000,8 +6195,8 @@ fn get_telescope_cansetrightascensionrate(
     schemas::GetTelescopeCansetrightascensionratePath { device_number }: schemas::GetTelescopeCansetrightascensionratePath,
     ASCOMRequest {
         transaction,
-        request: schemas::GetTelescopeCansetrightascensionrateQuery {},
-    }: ASCOMRequest<schemas::GetTelescopeCansetrightascensionrateQuery>,
+        request: schemas::EmptyQuery {},
+    }: ASCOMRequest<schemas::EmptyQuery>,
 ) -> Result<schemas::BoolResponse> {
 }
 
@@ -7015,8 +6210,8 @@ fn get_telescope_cansettracking(
     schemas::GetTelescopeCansettrackingPath { device_number }: schemas::GetTelescopeCansettrackingPath,
     ASCOMRequest {
         transaction,
-        request: schemas::GetTelescopeCansettrackingQuery {},
-    }: ASCOMRequest<schemas::GetTelescopeCansettrackingQuery>,
+        request: schemas::EmptyQuery {},
+    }: ASCOMRequest<schemas::EmptyQuery>,
 ) -> Result<schemas::BoolResponse> {
 }
 
@@ -7030,8 +6225,8 @@ fn get_telescope_canslew(
     schemas::GetTelescopeCanslewPath { device_number }: schemas::GetTelescopeCanslewPath,
     ASCOMRequest {
         transaction,
-        request: schemas::GetTelescopeCanslewQuery {},
-    }: ASCOMRequest<schemas::GetTelescopeCanslewQuery>,
+        request: schemas::EmptyQuery {},
+    }: ASCOMRequest<schemas::EmptyQuery>,
 ) -> Result<schemas::BoolResponse> {
 }
 
@@ -7045,8 +6240,8 @@ fn get_telescope_canslewaltaz(
     schemas::GetTelescopeCanslewaltazPath { device_number }: schemas::GetTelescopeCanslewaltazPath,
     ASCOMRequest {
         transaction,
-        request: schemas::GetTelescopeCanslewaltazQuery {},
-    }: ASCOMRequest<schemas::GetTelescopeCanslewaltazQuery>,
+        request: schemas::EmptyQuery {},
+    }: ASCOMRequest<schemas::EmptyQuery>,
 ) -> Result<schemas::BoolResponse> {
 }
 
@@ -7060,8 +6255,8 @@ fn get_telescope_canslewaltazasync(
     schemas::GetTelescopeCanslewaltazasyncPath { device_number }: schemas::GetTelescopeCanslewaltazasyncPath,
     ASCOMRequest {
         transaction,
-        request: schemas::GetTelescopeCanslewaltazasyncQuery {},
-    }: ASCOMRequest<schemas::GetTelescopeCanslewaltazasyncQuery>,
+        request: schemas::EmptyQuery {},
+    }: ASCOMRequest<schemas::EmptyQuery>,
 ) -> Result<schemas::BoolResponse> {
 }
 
@@ -7075,8 +6270,8 @@ fn get_telescope_canslewasync(
     schemas::GetTelescopeCanslewasyncPath { device_number }: schemas::GetTelescopeCanslewasyncPath,
     ASCOMRequest {
         transaction,
-        request: schemas::GetTelescopeCanslewasyncQuery {},
-    }: ASCOMRequest<schemas::GetTelescopeCanslewasyncQuery>,
+        request: schemas::EmptyQuery {},
+    }: ASCOMRequest<schemas::EmptyQuery>,
 ) -> Result<schemas::BoolResponse> {
 }
 
@@ -7090,8 +6285,8 @@ fn get_telescope_cansync(
     schemas::GetTelescopeCansyncPath { device_number }: schemas::GetTelescopeCansyncPath,
     ASCOMRequest {
         transaction,
-        request: schemas::GetTelescopeCansyncQuery {},
-    }: ASCOMRequest<schemas::GetTelescopeCansyncQuery>,
+        request: schemas::EmptyQuery {},
+    }: ASCOMRequest<schemas::EmptyQuery>,
 ) -> Result<schemas::BoolResponse> {
 }
 
@@ -7105,8 +6300,8 @@ fn get_telescope_cansyncaltaz(
     schemas::GetTelescopeCansyncaltazPath { device_number }: schemas::GetTelescopeCansyncaltazPath,
     ASCOMRequest {
         transaction,
-        request: schemas::GetTelescopeCansyncaltazQuery {},
-    }: ASCOMRequest<schemas::GetTelescopeCansyncaltazQuery>,
+        request: schemas::EmptyQuery {},
+    }: ASCOMRequest<schemas::EmptyQuery>,
 ) -> Result<schemas::BoolResponse> {
 }
 
@@ -7120,8 +6315,8 @@ fn get_telescope_canunpark(
     schemas::GetTelescopeCanunparkPath { device_number }: schemas::GetTelescopeCanunparkPath,
     ASCOMRequest {
         transaction,
-        request: schemas::GetTelescopeCanunparkQuery {},
-    }: ASCOMRequest<schemas::GetTelescopeCanunparkQuery>,
+        request: schemas::EmptyQuery {},
+    }: ASCOMRequest<schemas::EmptyQuery>,
 ) -> Result<schemas::BoolResponse> {
 }
 
@@ -7135,8 +6330,8 @@ fn get_telescope_declination(
     schemas::GetTelescopeDeclinationPath { device_number }: schemas::GetTelescopeDeclinationPath,
     ASCOMRequest {
         transaction,
-        request: schemas::GetTelescopeDeclinationQuery {},
-    }: ASCOMRequest<schemas::GetTelescopeDeclinationQuery>,
+        request: schemas::EmptyQuery {},
+    }: ASCOMRequest<schemas::EmptyQuery>,
 ) -> Result<schemas::DoubleResponse> {
 }
 
@@ -7150,8 +6345,8 @@ fn get_telescope_declinationrate(
     schemas::GetTelescopeDeclinationratePath { device_number }: schemas::GetTelescopeDeclinationratePath,
     ASCOMRequest {
         transaction,
-        request: schemas::GetTelescopeDeclinationrateQuery {},
-    }: ASCOMRequest<schemas::GetTelescopeDeclinationrateQuery>,
+        request: schemas::EmptyQuery {},
+    }: ASCOMRequest<schemas::EmptyQuery>,
 ) -> Result<schemas::DoubleResponse> {
 }
 
@@ -7167,7 +6362,7 @@ fn put_telescope_declinationrate(
         transaction,
         request: schemas::PutTelescopeDeclinationrateRequest { declination_rate },
     }: ASCOMRequest<schemas::PutTelescopeDeclinationrateRequest>,
-) -> Result<schemas::MethodResponse> {
+) -> Result<schemas::EmptyResponse> {
 }
 
 /**
@@ -7180,8 +6375,8 @@ fn get_telescope_doesrefraction(
     schemas::GetTelescopeDoesrefractionPath { device_number }: schemas::GetTelescopeDoesrefractionPath,
     ASCOMRequest {
         transaction,
-        request: schemas::GetTelescopeDoesrefractionQuery {},
-    }: ASCOMRequest<schemas::GetTelescopeDoesrefractionQuery>,
+        request: schemas::EmptyQuery {},
+    }: ASCOMRequest<schemas::EmptyQuery>,
 ) -> Result<schemas::BoolResponse> {
 }
 
@@ -7197,7 +6392,7 @@ fn put_telescope_doesrefraction(
         transaction,
         request: schemas::PutTelescopeDoesrefractionRequest { does_refraction },
     }: ASCOMRequest<schemas::PutTelescopeDoesrefractionRequest>,
-) -> Result<schemas::MethodResponse> {
+) -> Result<schemas::EmptyResponse> {
 }
 
 /**
@@ -7210,8 +6405,8 @@ fn get_telescope_equatorialsystem(
     schemas::GetTelescopeEquatorialsystemPath { device_number }: schemas::GetTelescopeEquatorialsystemPath,
     ASCOMRequest {
         transaction,
-        request: schemas::GetTelescopeEquatorialsystemQuery {},
-    }: ASCOMRequest<schemas::GetTelescopeEquatorialsystemQuery>,
+        request: schemas::EmptyQuery {},
+    }: ASCOMRequest<schemas::EmptyQuery>,
 ) -> Result<schemas::IntResponse> {
 }
 
@@ -7225,8 +6420,8 @@ fn get_telescope_focallength(
     schemas::GetTelescopeFocallengthPath { device_number }: schemas::GetTelescopeFocallengthPath,
     ASCOMRequest {
         transaction,
-        request: schemas::GetTelescopeFocallengthQuery {},
-    }: ASCOMRequest<schemas::GetTelescopeFocallengthQuery>,
+        request: schemas::EmptyQuery {},
+    }: ASCOMRequest<schemas::EmptyQuery>,
 ) -> Result<schemas::DoubleResponse> {
 }
 
@@ -7240,8 +6435,8 @@ fn get_telescope_guideratedeclination(
     schemas::GetTelescopeGuideratedeclinationPath { device_number }: schemas::GetTelescopeGuideratedeclinationPath,
     ASCOMRequest {
         transaction,
-        request: schemas::GetTelescopeGuideratedeclinationQuery {},
-    }: ASCOMRequest<schemas::GetTelescopeGuideratedeclinationQuery>,
+        request: schemas::EmptyQuery {},
+    }: ASCOMRequest<schemas::EmptyQuery>,
 ) -> Result<schemas::DoubleResponse> {
 }
 
@@ -7257,7 +6452,7 @@ fn put_telescope_guideratedeclination(
         transaction,
         request: schemas::PutTelescopeGuideratedeclinationRequest { guide_rate_declination },
     }: ASCOMRequest<schemas::PutTelescopeGuideratedeclinationRequest>,
-) -> Result<schemas::MethodResponse> {
+) -> Result<schemas::EmptyResponse> {
 }
 
 /**
@@ -7270,8 +6465,8 @@ fn get_telescope_guideraterightascension(
     schemas::GetTelescopeGuideraterightascensionPath { device_number }: schemas::GetTelescopeGuideraterightascensionPath,
     ASCOMRequest {
         transaction,
-        request: schemas::GetTelescopeGuideraterightascensionQuery {},
-    }: ASCOMRequest<schemas::GetTelescopeGuideraterightascensionQuery>,
+        request: schemas::EmptyQuery {},
+    }: ASCOMRequest<schemas::EmptyQuery>,
 ) -> Result<schemas::DoubleResponse> {
 }
 
@@ -7287,7 +6482,7 @@ fn put_telescope_guideraterightascension(
         transaction,
         request: schemas::PutTelescopeGuideraterightascensionRequest { guide_rate_right_ascension },
     }: ASCOMRequest<schemas::PutTelescopeGuideraterightascensionRequest>,
-) -> Result<schemas::MethodResponse> {
+) -> Result<schemas::EmptyResponse> {
 }
 
 /**
@@ -7300,8 +6495,8 @@ fn get_telescope_ispulseguiding(
     schemas::GetTelescopeIspulseguidingPath { device_number }: schemas::GetTelescopeIspulseguidingPath,
     ASCOMRequest {
         transaction,
-        request: schemas::GetTelescopeIspulseguidingQuery {},
-    }: ASCOMRequest<schemas::GetTelescopeIspulseguidingQuery>,
+        request: schemas::EmptyQuery {},
+    }: ASCOMRequest<schemas::EmptyQuery>,
 ) -> Result<schemas::BoolResponse> {
 }
 
@@ -7315,8 +6510,8 @@ fn get_telescope_rightascension(
     schemas::GetTelescopeRightascensionPath { device_number }: schemas::GetTelescopeRightascensionPath,
     ASCOMRequest {
         transaction,
-        request: schemas::GetTelescopeRightascensionQuery {},
-    }: ASCOMRequest<schemas::GetTelescopeRightascensionQuery>,
+        request: schemas::EmptyQuery {},
+    }: ASCOMRequest<schemas::EmptyQuery>,
 ) -> Result<schemas::DoubleResponse> {
 }
 
@@ -7330,8 +6525,8 @@ fn get_telescope_rightascensionrate(
     schemas::GetTelescopeRightascensionratePath { device_number }: schemas::GetTelescopeRightascensionratePath,
     ASCOMRequest {
         transaction,
-        request: schemas::GetTelescopeRightascensionrateQuery {},
-    }: ASCOMRequest<schemas::GetTelescopeRightascensionrateQuery>,
+        request: schemas::EmptyQuery {},
+    }: ASCOMRequest<schemas::EmptyQuery>,
 ) -> Result<schemas::DoubleResponse> {
 }
 
@@ -7347,7 +6542,7 @@ fn put_telescope_rightascensionrate(
         transaction,
         request: schemas::PutTelescopeRightascensionrateRequest { right_ascension_rate },
     }: ASCOMRequest<schemas::PutTelescopeRightascensionrateRequest>,
-) -> Result<schemas::MethodResponse> {
+) -> Result<schemas::EmptyResponse> {
 }
 
 /**
@@ -7360,8 +6555,8 @@ fn get_telescope_sideofpier(
     schemas::GetTelescopeSideofpierPath { device_number }: schemas::GetTelescopeSideofpierPath,
     ASCOMRequest {
         transaction,
-        request: schemas::GetTelescopeSideofpierQuery {},
-    }: ASCOMRequest<schemas::GetTelescopeSideofpierQuery>,
+        request: schemas::EmptyQuery {},
+    }: ASCOMRequest<schemas::EmptyQuery>,
 ) -> Result<schemas::IntResponse> {
 }
 
@@ -7377,7 +6572,7 @@ fn put_telescope_sideofpier(
         transaction,
         request: schemas::PutTelescopeSideofpierRequest { side_of_pier },
     }: ASCOMRequest<schemas::PutTelescopeSideofpierRequest>,
-) -> Result<schemas::MethodResponse> {
+) -> Result<schemas::EmptyResponse> {
 }
 
 /**
@@ -7390,8 +6585,8 @@ fn get_telescope_siderealtime(
     schemas::GetTelescopeSiderealtimePath { device_number }: schemas::GetTelescopeSiderealtimePath,
     ASCOMRequest {
         transaction,
-        request: schemas::GetTelescopeSiderealtimeQuery {},
-    }: ASCOMRequest<schemas::GetTelescopeSiderealtimeQuery>,
+        request: schemas::EmptyQuery {},
+    }: ASCOMRequest<schemas::EmptyQuery>,
 ) -> Result<schemas::DoubleResponse> {
 }
 
@@ -7405,8 +6600,8 @@ fn get_telescope_siteelevation(
     schemas::GetTelescopeSiteelevationPath { device_number }: schemas::GetTelescopeSiteelevationPath,
     ASCOMRequest {
         transaction,
-        request: schemas::GetTelescopeSiteelevationQuery {},
-    }: ASCOMRequest<schemas::GetTelescopeSiteelevationQuery>,
+        request: schemas::EmptyQuery {},
+    }: ASCOMRequest<schemas::EmptyQuery>,
 ) -> Result<schemas::DoubleResponse> {
 }
 
@@ -7422,7 +6617,7 @@ fn put_telescope_siteelevation(
         transaction,
         request: schemas::PutTelescopeSiteelevationRequest { site_elevation },
     }: ASCOMRequest<schemas::PutTelescopeSiteelevationRequest>,
-) -> Result<schemas::MethodResponse> {
+) -> Result<schemas::EmptyResponse> {
 }
 
 /**
@@ -7435,8 +6630,8 @@ fn get_telescope_sitelatitude(
     schemas::GetTelescopeSitelatitudePath { device_number }: schemas::GetTelescopeSitelatitudePath,
     ASCOMRequest {
         transaction,
-        request: schemas::GetTelescopeSitelatitudeQuery {},
-    }: ASCOMRequest<schemas::GetTelescopeSitelatitudeQuery>,
+        request: schemas::EmptyQuery {},
+    }: ASCOMRequest<schemas::EmptyQuery>,
 ) -> Result<schemas::DoubleResponse> {
 }
 
@@ -7452,7 +6647,7 @@ fn put_telescope_sitelatitude(
         transaction,
         request: schemas::PutTelescopeSitelatitudeRequest { site_latitude },
     }: ASCOMRequest<schemas::PutTelescopeSitelatitudeRequest>,
-) -> Result<schemas::MethodResponse> {
+) -> Result<schemas::EmptyResponse> {
 }
 
 /**
@@ -7465,8 +6660,8 @@ fn get_telescope_sitelongitude(
     schemas::GetTelescopeSitelongitudePath { device_number }: schemas::GetTelescopeSitelongitudePath,
     ASCOMRequest {
         transaction,
-        request: schemas::GetTelescopeSitelongitudeQuery {},
-    }: ASCOMRequest<schemas::GetTelescopeSitelongitudeQuery>,
+        request: schemas::EmptyQuery {},
+    }: ASCOMRequest<schemas::EmptyQuery>,
 ) -> Result<schemas::DoubleResponse> {
 }
 
@@ -7482,7 +6677,7 @@ fn put_telescope_sitelongitude(
         transaction,
         request: schemas::PutTelescopeSitelongitudeRequest { site_longitude },
     }: ASCOMRequest<schemas::PutTelescopeSitelongitudeRequest>,
-) -> Result<schemas::MethodResponse> {
+) -> Result<schemas::EmptyResponse> {
 }
 
 /**
@@ -7495,8 +6690,8 @@ fn get_telescope_slewing(
     schemas::GetTelescopeSlewingPath { device_number }: schemas::GetTelescopeSlewingPath,
     ASCOMRequest {
         transaction,
-        request: schemas::GetTelescopeSlewingQuery {},
-    }: ASCOMRequest<schemas::GetTelescopeSlewingQuery>,
+        request: schemas::EmptyQuery {},
+    }: ASCOMRequest<schemas::EmptyQuery>,
 ) -> Result<schemas::BoolResponse> {
 }
 
@@ -7510,8 +6705,8 @@ fn get_telescope_slewsettletime(
     schemas::GetTelescopeSlewsettletimePath { device_number }: schemas::GetTelescopeSlewsettletimePath,
     ASCOMRequest {
         transaction,
-        request: schemas::GetTelescopeSlewsettletimeQuery {},
-    }: ASCOMRequest<schemas::GetTelescopeSlewsettletimeQuery>,
+        request: schemas::EmptyQuery {},
+    }: ASCOMRequest<schemas::EmptyQuery>,
 ) -> Result<schemas::IntResponse> {
 }
 
@@ -7527,7 +6722,7 @@ fn put_telescope_slewsettletime(
         transaction,
         request: schemas::PutTelescopeSlewsettletimeRequest { slew_settle_time },
     }: ASCOMRequest<schemas::PutTelescopeSlewsettletimeRequest>,
-) -> Result<schemas::MethodResponse> {
+) -> Result<schemas::EmptyResponse> {
 }
 
 /**
@@ -7540,8 +6735,8 @@ fn get_telescope_targetdeclination(
     schemas::GetTelescopeTargetdeclinationPath { device_number }: schemas::GetTelescopeTargetdeclinationPath,
     ASCOMRequest {
         transaction,
-        request: schemas::GetTelescopeTargetdeclinationQuery {},
-    }: ASCOMRequest<schemas::GetTelescopeTargetdeclinationQuery>,
+        request: schemas::EmptyQuery {},
+    }: ASCOMRequest<schemas::EmptyQuery>,
 ) -> Result<schemas::DoubleResponse> {
 }
 
@@ -7557,7 +6752,7 @@ fn put_telescope_targetdeclination(
         transaction,
         request: schemas::PutTelescopeTargetdeclinationRequest { target_declination },
     }: ASCOMRequest<schemas::PutTelescopeTargetdeclinationRequest>,
-) -> Result<schemas::MethodResponse> {
+) -> Result<schemas::EmptyResponse> {
 }
 
 /**
@@ -7570,8 +6765,8 @@ fn get_telescope_targetrightascension(
     schemas::GetTelescopeTargetrightascensionPath { device_number }: schemas::GetTelescopeTargetrightascensionPath,
     ASCOMRequest {
         transaction,
-        request: schemas::GetTelescopeTargetrightascensionQuery {},
-    }: ASCOMRequest<schemas::GetTelescopeTargetrightascensionQuery>,
+        request: schemas::EmptyQuery {},
+    }: ASCOMRequest<schemas::EmptyQuery>,
 ) -> Result<schemas::DoubleResponse> {
 }
 
@@ -7587,7 +6782,7 @@ fn put_telescope_targetrightascension(
         transaction,
         request: schemas::PutTelescopeTargetrightascensionRequest { target_right_ascension },
     }: ASCOMRequest<schemas::PutTelescopeTargetrightascensionRequest>,
-) -> Result<schemas::MethodResponse> {
+) -> Result<schemas::EmptyResponse> {
 }
 
 /**
@@ -7600,8 +6795,8 @@ fn get_telescope_tracking(
     schemas::GetTelescopeTrackingPath { device_number }: schemas::GetTelescopeTrackingPath,
     ASCOMRequest {
         transaction,
-        request: schemas::GetTelescopeTrackingQuery {},
-    }: ASCOMRequest<schemas::GetTelescopeTrackingQuery>,
+        request: schemas::EmptyQuery {},
+    }: ASCOMRequest<schemas::EmptyQuery>,
 ) -> Result<schemas::BoolResponse> {
 }
 
@@ -7617,7 +6812,7 @@ fn put_telescope_tracking(
         transaction,
         request: schemas::PutTelescopeTrackingRequest { tracking },
     }: ASCOMRequest<schemas::PutTelescopeTrackingRequest>,
-) -> Result<schemas::MethodResponse> {
+) -> Result<schemas::EmptyResponse> {
 }
 
 /**
@@ -7630,8 +6825,8 @@ fn get_telescope_trackingrate(
     schemas::GetTelescopeTrackingratePath { device_number }: schemas::GetTelescopeTrackingratePath,
     ASCOMRequest {
         transaction,
-        request: schemas::GetTelescopeTrackingrateQuery {},
-    }: ASCOMRequest<schemas::GetTelescopeTrackingrateQuery>,
+        request: schemas::EmptyQuery {},
+    }: ASCOMRequest<schemas::EmptyQuery>,
 ) -> Result<schemas::IntResponse> {
 }
 
@@ -7647,7 +6842,7 @@ fn put_telescope_trackingrate(
         transaction,
         request: schemas::PutTelescopeTrackingrateRequest { tracking_rate },
     }: ASCOMRequest<schemas::PutTelescopeTrackingrateRequest>,
-) -> Result<schemas::MethodResponse> {
+) -> Result<schemas::EmptyResponse> {
 }
 
 /**
@@ -7660,8 +6855,8 @@ fn get_telescope_trackingrates(
     schemas::GetTelescopeTrackingratesPath { device_number }: schemas::GetTelescopeTrackingratesPath,
     ASCOMRequest {
         transaction,
-        request: schemas::GetTelescopeTrackingratesQuery {},
-    }: ASCOMRequest<schemas::GetTelescopeTrackingratesQuery>,
+        request: schemas::EmptyQuery {},
+    }: ASCOMRequest<schemas::EmptyQuery>,
 ) -> Result<schemas::DriveRatesResponse> {
 }
 
@@ -7675,8 +6870,8 @@ fn get_telescope_utcdate(
     schemas::GetTelescopeUtcdatePath { device_number }: schemas::GetTelescopeUtcdatePath,
     ASCOMRequest {
         transaction,
-        request: schemas::GetTelescopeUtcdateQuery {},
-    }: ASCOMRequest<schemas::GetTelescopeUtcdateQuery>,
+        request: schemas::EmptyQuery {},
+    }: ASCOMRequest<schemas::EmptyQuery>,
 ) -> Result<schemas::StringResponse> {
 }
 
@@ -7692,7 +6887,7 @@ fn put_telescope_utcdate(
         transaction,
         request: schemas::PutTelescopeUtcdateRequest { utcdate },
     }: ASCOMRequest<schemas::PutTelescopeUtcdateRequest>,
-) -> Result<schemas::MethodResponse> {
+) -> Result<schemas::EmptyResponse> {
 }
 
 /**
@@ -7705,9 +6900,9 @@ fn put_telescope_abortslew(
     schemas::PutTelescopeAbortslewPath { device_number }: schemas::PutTelescopeAbortslewPath,
     ASCOMRequest {
         transaction,
-        request: schemas::PutCameraAbortexposureRequest {},
-    }: ASCOMRequest<schemas::PutCameraAbortexposureRequest>,
-) -> Result<schemas::MethodResponse> {
+        request: schemas::EmptyForm {},
+    }: ASCOMRequest<schemas::EmptyForm>,
+) -> Result<schemas::EmptyResponse> {
 }
 
 /**
@@ -7765,9 +6960,9 @@ fn put_telescope_findhome(
     schemas::PutTelescopeFindhomePath { device_number }: schemas::PutTelescopeFindhomePath,
     ASCOMRequest {
         transaction,
-        request: schemas::PutCameraAbortexposureRequest {},
-    }: ASCOMRequest<schemas::PutCameraAbortexposureRequest>,
-) -> Result<schemas::MethodResponse> {
+        request: schemas::EmptyForm {},
+    }: ASCOMRequest<schemas::EmptyForm>,
+) -> Result<schemas::EmptyResponse> {
 }
 
 /**
@@ -7782,7 +6977,7 @@ fn put_telescope_moveaxis(
         transaction,
         request: schemas::PutTelescopeMoveaxisRequest { axis, rate },
     }: ASCOMRequest<schemas::PutTelescopeMoveaxisRequest>,
-) -> Result<schemas::MethodResponse> {
+) -> Result<schemas::EmptyResponse> {
 }
 
 /**
@@ -7795,9 +6990,9 @@ fn put_telescope_park(
     schemas::PutTelescopeParkPath { device_number }: schemas::PutTelescopeParkPath,
     ASCOMRequest {
         transaction,
-        request: schemas::PutCameraAbortexposureRequest {},
-    }: ASCOMRequest<schemas::PutCameraAbortexposureRequest>,
-) -> Result<schemas::MethodResponse> {
+        request: schemas::EmptyForm {},
+    }: ASCOMRequest<schemas::EmptyForm>,
+) -> Result<schemas::EmptyResponse> {
 }
 
 /**
@@ -7812,7 +7007,7 @@ fn put_telescope_pulseguide(
         transaction,
         request: schemas::PutTelescopePulseguideRequest { direction, duration },
     }: ASCOMRequest<schemas::PutTelescopePulseguideRequest>,
-) -> Result<schemas::MethodResponse> {
+) -> Result<schemas::EmptyResponse> {
 }
 
 /**
@@ -7825,9 +7020,9 @@ fn put_telescope_setpark(
     schemas::PutTelescopeSetparkPath { device_number }: schemas::PutTelescopeSetparkPath,
     ASCOMRequest {
         transaction,
-        request: schemas::PutCameraAbortexposureRequest {},
-    }: ASCOMRequest<schemas::PutCameraAbortexposureRequest>,
-) -> Result<schemas::MethodResponse> {
+        request: schemas::EmptyForm {},
+    }: ASCOMRequest<schemas::EmptyForm>,
+) -> Result<schemas::EmptyResponse> {
 }
 
 /**
@@ -7842,7 +7037,7 @@ fn put_telescope_slewtoaltaz(
         transaction,
         request: schemas::PutTelescopeSlewtoaltazRequest { azimuth, altitude },
     }: ASCOMRequest<schemas::PutTelescopeSlewtoaltazRequest>,
-) -> Result<schemas::MethodResponse> {
+) -> Result<schemas::EmptyResponse> {
 }
 
 /**
@@ -7857,7 +7052,7 @@ fn put_telescope_slewtoaltazasync(
         transaction,
         request: schemas::PutTelescopeSlewtoaltazRequest { azimuth, altitude },
     }: ASCOMRequest<schemas::PutTelescopeSlewtoaltazRequest>,
-) -> Result<schemas::MethodResponse> {
+) -> Result<schemas::EmptyResponse> {
 }
 
 /**
@@ -7872,7 +7067,7 @@ fn put_telescope_slewtocoordinates(
         transaction,
         request: schemas::PutTelescopeSlewtocoordinatesRequest { right_ascension, declination },
     }: ASCOMRequest<schemas::PutTelescopeSlewtocoordinatesRequest>,
-) -> Result<schemas::MethodResponse> {
+) -> Result<schemas::EmptyResponse> {
 }
 
 /**
@@ -7887,7 +7082,7 @@ fn put_telescope_slewtocoordinatesasync(
         transaction,
         request: schemas::PutTelescopeSlewtocoordinatesRequest { right_ascension, declination },
     }: ASCOMRequest<schemas::PutTelescopeSlewtocoordinatesRequest>,
-) -> Result<schemas::MethodResponse> {
+) -> Result<schemas::EmptyResponse> {
 }
 
 /**
@@ -7900,9 +7095,9 @@ fn put_telescope_slewtotarget(
     schemas::PutTelescopeSlewtotargetPath { device_number }: schemas::PutTelescopeSlewtotargetPath,
     ASCOMRequest {
         transaction,
-        request: schemas::PutCameraAbortexposureRequest {},
-    }: ASCOMRequest<schemas::PutCameraAbortexposureRequest>,
-) -> Result<schemas::MethodResponse> {
+        request: schemas::EmptyForm {},
+    }: ASCOMRequest<schemas::EmptyForm>,
+) -> Result<schemas::EmptyResponse> {
 }
 
 /**
@@ -7915,9 +7110,9 @@ fn put_telescope_slewtotargetasync(
     schemas::PutTelescopeSlewtotargetasyncPath { device_number }: schemas::PutTelescopeSlewtotargetasyncPath,
     ASCOMRequest {
         transaction,
-        request: schemas::PutCameraAbortexposureRequest {},
-    }: ASCOMRequest<schemas::PutCameraAbortexposureRequest>,
-) -> Result<schemas::MethodResponse> {
+        request: schemas::EmptyForm {},
+    }: ASCOMRequest<schemas::EmptyForm>,
+) -> Result<schemas::EmptyResponse> {
 }
 
 /**
@@ -7932,7 +7127,7 @@ fn put_telescope_synctoaltaz(
         transaction,
         request: schemas::PutTelescopeSlewtoaltazRequest { azimuth, altitude },
     }: ASCOMRequest<schemas::PutTelescopeSlewtoaltazRequest>,
-) -> Result<schemas::MethodResponse> {
+) -> Result<schemas::EmptyResponse> {
 }
 
 /**
@@ -7947,7 +7142,7 @@ fn put_telescope_synctocoordinates(
         transaction,
         request: schemas::PutTelescopeSlewtocoordinatesRequest { right_ascension, declination },
     }: ASCOMRequest<schemas::PutTelescopeSlewtocoordinatesRequest>,
-) -> Result<schemas::MethodResponse> {
+) -> Result<schemas::EmptyResponse> {
 }
 
 /**
@@ -7960,9 +7155,9 @@ fn put_telescope_synctotarget(
     schemas::PutTelescopeSynctotargetPath { device_number }: schemas::PutTelescopeSynctotargetPath,
     ASCOMRequest {
         transaction,
-        request: schemas::PutCameraAbortexposureRequest {},
-    }: ASCOMRequest<schemas::PutCameraAbortexposureRequest>,
-) -> Result<schemas::MethodResponse> {
+        request: schemas::EmptyForm {},
+    }: ASCOMRequest<schemas::EmptyForm>,
+) -> Result<schemas::EmptyResponse> {
 }
 
 /**
@@ -7975,9 +7170,9 @@ fn put_telescope_unpark(
     schemas::PutTelescopeUnparkPath { device_number }: schemas::PutTelescopeUnparkPath,
     ASCOMRequest {
         transaction,
-        request: schemas::PutCameraAbortexposureRequest {},
-    }: ASCOMRequest<schemas::PutCameraAbortexposureRequest>,
-) -> Result<schemas::MethodResponse> {
+        request: schemas::EmptyForm {},
+    }: ASCOMRequest<schemas::EmptyForm>,
+) -> Result<schemas::EmptyResponse> {
 }
 
 #[actix_web::main]

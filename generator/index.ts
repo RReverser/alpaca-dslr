@@ -185,12 +185,15 @@ for (let { method, path, id, operation } of ops()) {
   setXKind(schema, 'Response');
 }
 
+let refReplacements: Record<string, OpenAPIV3.ReferenceObject> = {};
 let groupCounts: Record<string, number> = {};
+let extraSchemas: Record<string, OpenAPIV3.NonArraySchemaObject> = {};
 
 for (let [schemaName, schema] of Object.entries(api.components!.schemas!)) {
   schema = resolveMaybeRef(schema);
+  let kind = (schema as any)['x-kind'];
 
-  switch ((schema as any)['x-kind']) {
+  switch (kind) {
     case 'Response': {
       let {
         ClientTransactionID,
@@ -255,10 +258,33 @@ for (let [schemaName, schema] of Object.entries(api.components!.schemas!)) {
     }
   }
 
+  if (
+    schema.type === 'object' &&
+    Object.keys(schema.properties!).length === 0
+  ) {
+    delete api.components!.schemas![schemaName];
+
+    let name = `Empty${kind || 'Object'}`;
+
+    extraSchemas[name] ??= {
+      type: 'object',
+      properties: {},
+      description: `Empty ${name}`,
+      // @ts-ignore
+      'x-kind': kind
+    };
+
+    refReplacements[`#/components/schemas/${schemaName}`] = {
+      $ref: `#/components/schemas/${name}`
+    };
+  }
+
   let key = jsonWithoutOptFields(schema);
   groupCounts[key] ??= 0;
   groupCounts[key]++;
 }
+
+Object.assign(api.components!.schemas!, extraSchemas);
 
 Object.entries(groupCounts)
   .filter(([_, count]) => count > 1)
@@ -275,6 +301,7 @@ let rendered = render(
   {
     api,
     refs,
+    refReplacements,
     ops,
     assert,
     dbg: (x: any) => inspect(x, { colors: true }),
