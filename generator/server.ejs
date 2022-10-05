@@ -166,14 +166,6 @@ function getTypeDescription(schema) {
   <% } %>
 <% } %>
 
-mod parameters {
-  <% for (let [schemaName, {description, schema}] of Object.entries(api.components.parameters)) { %>
-    <%= doc(description) %>
-    #[derive(Deserialize)]
-    <%= handleSchema(schemaName, schema) %>
-  <% } %>
-}
-
 mod schemas {
   <% for (let [schemaName, schema] of Object.entries(api.components.schemas)) { %>
     <% if (schema['x-kind'] === 'Response') { %>

@@ -105,49 +105,6 @@ impl IntoResponse for AlpacaError {
 
 pub type Result<T> = std::result::Result<ASCOMResponse<T>, AlpacaError>;
 
-mod parameters {
-
-    /// One of the recognised ASCOM device types e.g. telescope (must be lower case)
-    #[derive(Deserialize)]
-    #[repr(transparent)]
-    struct DeviceType(String);
-
-    /// Zero based device number as set on the server (0 to 4294967295)
-    #[derive(Deserialize)]
-    #[repr(transparent)]
-    struct DeviceNumber(u32);
-
-    /// Client's unique ID. (0 to 4294967295). The client should choose a value at start-up, e.g. a random value between 0 and 65535, and send this value on every transaction to help associate entries in device logs with this particular client.
-    #[derive(Deserialize)]
-    #[repr(transparent)]
-    struct ClientIdquery(u32);
-
-    /// Client's transaction ID. (0 to 4294967295). The client should start this count at 1 and increment by one on each successive transaction. This will aid associating entries in device logs with corresponding entries in client side logs.
-    #[derive(Deserialize)]
-    #[repr(transparent)]
-    struct ClientTransactionIdquery(u32);
-
-    /// Right Ascension coordinate (0.0 to 23.99999999 hours)
-    #[derive(Deserialize)]
-    #[repr(transparent)]
-    struct RightAscensionQuery(f64);
-
-    /// Declination coordinate (-90.0 to +90.0 degrees)
-    #[derive(Deserialize)]
-    #[repr(transparent)]
-    struct DeclinationQuery(f64);
-
-    /// The axis about which rate information is desired. 0 = axisPrimary, 1 = axisSecondary, 2 = axisTertiary.
-    #[derive(Deserialize)]
-    #[repr(transparent)]
-    struct AxisQuery(i32);
-
-    /// The device number (0 to MaxSwitch - 1)
-    #[derive(Deserialize)]
-    #[repr(transparent)]
-    struct SwitchNumberQuery(i32);
-}
-
 mod schemas {
 
     #[derive(Serialize)]
