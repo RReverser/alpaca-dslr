@@ -4891,8 +4891,6 @@ fn put_commandstring(
 
 /**
 Retrieves the connected state of the device
-
-Retrieves the connected state of the device
 */
 #[get("/<device_type>/<device_number>/connected")]
 fn get_connected(
@@ -4905,8 +4903,6 @@ fn get_connected(
 }
 
 /**
-Sets the connected state of the device
-
 Sets the connected state of the device
 */
 #[put("/<device_type>/<device_number>/connected")]
@@ -4996,8 +4992,6 @@ fn get_name(
 
 /**
 Returns the list of action names supported by this driver.
-
-Returns the list of action names supported by this driver.
 */
 #[get("/<device_type>/<device_number>/supportedactions")]
 fn get_supportedactions(
@@ -5041,8 +5035,6 @@ fn get_camera_bayeroffsety(
 
 /**
 Returns the binning factor for the X axis.
-
-Returns the binning factor for the X axis.
 */
 #[get("/camera/<device_number>/binx")]
 fn get_camera_binx(
@@ -5055,8 +5047,6 @@ fn get_camera_binx(
 }
 
 /**
-Sets the binning factor for the X axis.
-
 Sets the binning factor for the X axis.
 */
 #[put("/camera/<device_number>/binx")]
@@ -5071,8 +5061,6 @@ fn put_camera_binx(
 
 /**
 Returns the binning factor for the Y axis.
-
-Returns the binning factor for the Y axis.
 */
 #[get("/camera/<device_number>/biny")]
 fn get_camera_biny(
@@ -5085,8 +5073,6 @@ fn get_camera_biny(
 }
 
 /**
-Sets the binning factor for the Y axis.
-
 Sets the binning factor for the Y axis.
 */
 #[put("/camera/<device_number>/biny")]
@@ -5176,8 +5162,6 @@ fn get_camera_canasymmetricbin(
 
 /**
 Indicates whether the camera has a fast readout mode.
-
-Indicates whether the camera has a fast readout mode.
 */
 #[get("/camera/<device_number>/canfastreadout")]
 fn get_camera_canfastreadout(
@@ -5236,8 +5220,6 @@ fn get_camera_cansetccdtemperature(
 
 /**
 Returns a flag indicating whether this camera can stop an exposure that is in progress
-
-Returns a flag indicating whether this camera can stop an exposure that is in progress
 */
 #[get("/camera/<device_number>/canstopexposure")]
 fn get_camera_canstopexposure(
@@ -5265,8 +5247,6 @@ fn get_camera_ccdtemperature(
 }
 
 /**
-Returns the current cooler on/off state.
-
 Returns the current cooler on/off state.
 */
 #[get("/camera/<device_number>/cooleron")]
@@ -5326,8 +5306,6 @@ fn get_camera_electronsperadu(
 
 /**
 Returns the maximum exposure time supported by StartExposure.
-
-Returns the maximum exposure time supported by StartExposure.
 */
 #[get("/camera/<device_number>/exposuremax")]
 fn get_camera_exposuremax(
@@ -5356,8 +5334,6 @@ fn get_camera_exposuremin(
 
 /**
 Returns the smallest increment in exposure time supported by StartExposure.
-
-Returns the smallest increment in exposure time supported by StartExposure.
 */
 #[get("/camera/<device_number>/exposureresolution")]
 fn get_camera_exposureresolution(
@@ -5371,8 +5347,6 @@ fn get_camera_exposureresolution(
 
 /**
 Returns whenther Fast Readout Mode is enabled.
-
-Returns whenther Fast Readout Mode is enabled.
 */
 #[get("/camera/<device_number>/fastreadout")]
 fn get_camera_fastreadout(
@@ -5385,8 +5359,6 @@ fn get_camera_fastreadout(
 }
 
 /**
-Sets whether Fast Readout Mode is enabled.
-
 Sets whether Fast Readout Mode is enabled.
 */
 #[put("/camera/<device_number>/fastreadout")]
@@ -6030,8 +6002,6 @@ fn get_camera_sensortype(
 
 /**
 Returns the current camera cooler setpoint in degrees Celsius.
-
-Returns the current camera cooler setpoint in degrees Celsius.
 */
 #[get("/camera/<device_number>/setccdtemperature")]
 fn get_camera_setccdtemperature(
@@ -6600,8 +6570,6 @@ fn put_dome_abortslew(
 
 /**
 Close the shutter or otherwise shield telescope from the sky.
-
-Close the shutter or otherwise shield telescope from the sky.
 */
 #[put("/dome/<device_number>/closeshutter")]
 fn put_dome_closeshutter(
@@ -6629,8 +6597,6 @@ fn put_dome_findhome(
 }
 
 /**
-Open shutter or otherwise expose telescope to the sky.
-
 Open shutter or otherwise expose telescope to the sky.
 */
 #[put("/dome/<device_number>/openshutter")]
@@ -6675,8 +6641,6 @@ fn put_dome_setpark(
 
 /**
 Slew the dome to the given altitude position.
-
-Slew the dome to the given altitude position.
 */
 #[put("/dome/<device_number>/slewtoaltitude")]
 fn put_dome_slewtoaltitude(
@@ -6690,8 +6654,6 @@ fn put_dome_slewtoaltitude(
 
 /**
 Slew the dome to the given azimuth position.
-
-Slew the dome to the given azimuth position.
 */
 #[put("/dome/<device_number>/slewtoazimuth")]
 fn put_dome_slewtoazimuth(
@@ -6704,8 +6666,6 @@ fn put_dome_slewtoazimuth(
 }
 
 /**
-Synchronize the current position of the dome to the given azimuth.
-
 Synchronize the current position of the dome to the given azimuth.
 */
 #[put("/dome/<device_number>/synctoazimuth")]
@@ -6750,8 +6710,6 @@ fn get_filterwheel_names(
 
 /**
 Returns the current filter wheel position
-
-Returns the current filter wheel position
 */
 #[get("/filterwheel/<device_number>/position")]
 fn get_filterwheel_position(
@@ -6764,8 +6722,6 @@ fn get_filterwheel_position(
 }
 
 /**
-Sets the filter wheel position
-
 Sets the filter wheel position
 */
 #[put("/filterwheel/<device_number>/position")]
@@ -6974,8 +6930,6 @@ fn get_observingconditions_averageperiod(
 }
 
 /**
-Sets the time period over which observations will be averaged
-
 Sets the time period over which observations will be averaged
 */
 #[put("/observingconditions/<device_number>/averageperiod")]
@@ -7290,8 +7244,6 @@ fn get_rotator_position(
 
 /**
 Returns the rotator’s Reverse state.
-
-Returns the rotator’s Reverse state.
 */
 #[get("/rotator/<device_number>/reverse")]
 fn get_rotator_reverse(
@@ -7304,8 +7256,6 @@ fn get_rotator_reverse(
 }
 
 /**
-Sets the rotator’s Reverse state.
-
 Sets the rotator’s Reverse state.
 */
 #[put("/rotator/<device_number>/reverse")]
