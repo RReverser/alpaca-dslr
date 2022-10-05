@@ -204,19 +204,6 @@ mod schemas {
     struct DriveRate(f64);
 
     #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct PutActionPath {
-        /// One of the recognised ASCOM device types e.g. telescope (must be lower case)
-        #[serde(rename = "device_type")]
-        device_type: String,
-
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
     #[from_request(via(Form))]
 
     struct PutActionRequest {
@@ -227,19 +214,6 @@ mod schemas {
         /// List of required parameters or an Empty String if none are required
         #[serde(rename = "Parameters")]
         parameters: String,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct PutCommandblindPath {
-        /// One of the recognised ASCOM device types e.g. telescope (must be lower case)
-        #[serde(rename = "device_type")]
-        device_type: String,
-
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -256,178 +230,12 @@ mod schemas {
     }
 
     #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct PutCommandboolPath {
-        /// One of the recognised ASCOM device types e.g. telescope (must be lower case)
-        #[serde(rename = "device_type")]
-        device_type: String,
-
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct PutCommandstringPath {
-        /// One of the recognised ASCOM device types e.g. telescope (must be lower case)
-        #[serde(rename = "device_type")]
-        device_type: String,
-
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct GetConnectedPath {
-        /// One of the recognised ASCOM device types e.g. telescope (must be lower case)
-        #[serde(rename = "device_type")]
-        device_type: String,
-
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct PutConnectedPath {
-        /// One of the recognised ASCOM device types e.g. telescope (must be lower case)
-        #[serde(rename = "device_type")]
-        device_type: String,
-
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
     #[from_request(via(Form))]
 
     struct PutConnectedRequest {
         /// Set True to connect to the device hardware, set False to disconnect from the device hardware
         #[serde(rename = "Connected")]
         connected: bool,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct GetDescriptionPath {
-        /// One of the recognised ASCOM device types e.g. telescope (must be lower case)
-        #[serde(rename = "device_type")]
-        device_type: String,
-
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct GetDriverinfoPath {
-        /// One of the recognised ASCOM device types e.g. telescope (must be lower case)
-        #[serde(rename = "device_type")]
-        device_type: String,
-
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct GetDriverversionPath {
-        /// One of the recognised ASCOM device types e.g. telescope (must be lower case)
-        #[serde(rename = "device_type")]
-        device_type: String,
-
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct GetInterfaceversionPath {
-        /// One of the recognised ASCOM device types e.g. telescope (must be lower case)
-        #[serde(rename = "device_type")]
-        device_type: String,
-
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct GetNamePath {
-        /// One of the recognised ASCOM device types e.g. telescope (must be lower case)
-        #[serde(rename = "device_type")]
-        device_type: String,
-
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct GetSupportedactionsPath {
-        /// One of the recognised ASCOM device types e.g. telescope (must be lower case)
-        #[serde(rename = "device_type")]
-        device_type: String,
-
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct GetCameraBayeroffsetxPath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct GetCameraBayeroffsetyPath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct GetCameraBinxPath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct PutCameraBinxPath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -440,147 +248,12 @@ mod schemas {
     }
 
     #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct GetCameraBinyPath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct PutCameraBinyPath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
     #[from_request(via(Form))]
 
     struct PutCameraBinyRequest {
         /// The Y binning value
         #[serde(rename = "BinY")]
         bin_y: i32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct GetCameraCamerastatePath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct GetCameraCameraxsizePath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct GetCameraCameraysizePath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct GetCameraCanabortexposurePath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct GetCameraCanasymmetricbinPath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct GetCameraCanfastreadoutPath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct GetCameraCangetcoolerpowerPath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct GetCameraCanpulseguidePath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct GetCameraCansetccdtemperaturePath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct GetCameraCanstopexposurePath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct GetCameraCcdtemperaturePath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct GetCameraCooleronPath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct PutCameraCooleronPath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -593,102 +266,12 @@ mod schemas {
     }
 
     #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct GetCameraCoolerpowerPath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct GetCameraElectronsperaduPath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct GetCameraExposuremaxPath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct GetCameraExposureminPath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct GetCameraExposureresolutionPath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct GetCameraFastreadoutPath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct PutCameraFastreadoutPath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
     #[from_request(via(Form))]
 
     struct PutCameraFastreadoutRequest {
         /// True to enable fast readout mode
         #[serde(rename = "FastReadout")]
         fast_readout: bool,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct GetCameraFullwellcapacityPath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct GetCameraGainPath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct PutCameraGainPath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -701,174 +284,12 @@ mod schemas {
     }
 
     #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct GetCameraGainmaxPath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct GetCameraGainminPath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct GetCameraGainsPath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct GetCameraHasshutterPath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct GetCameraHeatsinktemperaturePath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct GetCameraImagearrayPath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct GetCameraImagearrayvariantPath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct GetCameraImagereadyPath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct GetCameraIspulseguidingPath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct GetCameraLastexposuredurationPath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct GetCameraLastexposurestarttimePath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct GetCameraMaxaduPath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct GetCameraMaxbinxPath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct GetCameraMaxbinyPath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct GetCameraNumxPath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct PutCameraNumxPath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
     #[from_request(via(Form))]
 
     struct PutCameraNumxRequest {
         /// Sets the subframe width, if binning is active, value is in binned pixels.
         #[serde(rename = "NumX")]
         num_x: i32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct GetCameraNumyPath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct PutCameraNumyPath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -881,102 +302,12 @@ mod schemas {
     }
 
     #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct GetCameraOffsetPath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct PutCameraOffsetPath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
     #[from_request(via(Form))]
 
     struct PutCameraOffsetRequest {
         /// Index of the current camera offset in the offsets string array.
         #[serde(rename = "offset")]
         offset: i32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct GetCameraOffsetmaxPath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct GetCameraOffsetminPath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct GetCameraOffsetsPath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct GetCameraPercentcompletedPath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct GetCameraPixelsizexPath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct GetCameraPixelsizeyPath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct GetCameraReadoutmodePath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct PutCameraReadoutmodePath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -989,75 +320,12 @@ mod schemas {
     }
 
     #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct GetCameraReadoutmodesPath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct GetCameraSensornamePath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct GetCameraSensortypePath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct GetCameraSetccdtemperaturePath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct PutCameraSetccdtemperaturePath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
     #[from_request(via(Form))]
 
     struct PutCameraSetccdtemperatureRequest {
         /// Temperature set point (degrees Celsius).
         #[serde(rename = "SetCCDTemperature")]
         set_ccdtemperature: f64,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct GetCameraStartxPath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct PutCameraStartxPath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -1070,24 +338,6 @@ mod schemas {
     }
 
     #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct GetCameraStartyPath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct PutCameraStartyPath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
     #[from_request(via(Form))]
 
     struct PutCameraStartyRequest {
@@ -1097,48 +347,12 @@ mod schemas {
     }
 
     #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct GetCameraSubexposuredurationPath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct PutCameraSubexposuredurationPath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
     #[from_request(via(Form))]
 
     struct PutCameraSubexposuredurationRequest {
         /// The request sub exposure duration in seconds
         #[serde(rename = "SubExposureDuration")]
         sub_exposure_duration: f64,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct PutCameraAbortexposurePath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct PutCameraPulseguidePath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -1155,15 +369,6 @@ mod schemas {
     }
 
     #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct PutCameraStartexposurePath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
     #[from_request(via(Form))]
 
     struct PutCameraStartexposureRequest {
@@ -1177,237 +382,12 @@ mod schemas {
     }
 
     #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct PutCameraStopexposurePath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct GetCovercalibratorBrightnessPath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct GetCovercalibratorCalibratorstatePath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct GetCovercalibratorCoverstatePath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct GetCovercalibratorMaxbrightnessPath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct PutCovercalibratorCalibratoroffPath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct PutCovercalibratorCalibratoronPath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
     #[from_request(via(Form))]
 
     struct PutCovercalibratorCalibratoronRequest {
         /// The required brightness in the range 0 to MaxBrightness
         #[serde(rename = "Brightness")]
         brightness: Option<i32>,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct PutCovercalibratorClosecoverPath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct PutCovercalibratorHaltcoverPath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct PutCovercalibratorOpencoverPath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct GetDomeAltitudePath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct GetDomeAthomePath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct GetDomeAtparkPath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct GetDomeAzimuthPath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct GetDomeCanfindhomePath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct GetDomeCanparkPath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct GetDomeCansetaltitudePath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct GetDomeCansetazimuthPath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct GetDomeCansetparkPath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct GetDomeCansetshutterPath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct GetDomeCanslavePath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct GetDomeCansyncazimuthPath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct GetDomeShutterstatusPath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct GetDomeSlavedPath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct PutDomeSlavedPath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -1420,93 +400,12 @@ mod schemas {
     }
 
     #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct GetDomeSlewingPath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct PutDomeAbortslewPath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct PutDomeCloseshutterPath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct PutDomeFindhomePath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct PutDomeOpenshutterPath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct PutDomeParkPath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct PutDomeSetparkPath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct PutDomeSlewtoaltitudePath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
     #[from_request(via(Form))]
 
     struct PutDomeSlewtoaltitudeRequest {
         /// Target dome altitude (degrees, horizon zero and increasing positive to 90 zenith)
         #[serde(rename = "Altitude")]
         altitude: f64,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct PutDomeSlewtoazimuthPath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -1519,120 +418,12 @@ mod schemas {
     }
 
     #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct PutDomeSynctoazimuthPath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct GetFilterwheelFocusoffsetsPath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct GetFilterwheelNamesPath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct GetFilterwheelPositionPath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct PutFilterwheelPositionPath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
     #[from_request(via(Form))]
 
     struct PutFilterwheelPositionRequest {
         /// The number of the filter wheel position to select
         #[serde(rename = "Position")]
         position: i32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct GetFocuserAbsolutePath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct GetFocuserIsmovingPath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct GetFocuserMaxincrementPath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct GetFocuserMaxstepPath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct GetFocuserPositionPath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct GetFocuserStepsizePath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct GetFocuserTempcompPath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -1654,66 +445,12 @@ mod schemas {
     }
 
     #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct GetFocuserTempcompavailablePath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct GetFocuserTemperaturePath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct PutFocuserHaltPath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct PutFocuserMovePath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
     #[from_request(via(Form))]
 
     struct PutFocuserMoveRequest {
         /// Step distance or absolute position, depending on the value of the Absolute property
         #[serde(rename = "Position")]
         position: i32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct GetObservingconditionsAverageperiodPath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct PutObservingconditionsAverageperiodPath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -1726,156 +463,12 @@ mod schemas {
     }
 
     #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct GetObservingconditionsCloudcoverPath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct GetObservingconditionsDewpointPath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct GetObservingconditionsHumidityPath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct GetObservingconditionsPressurePath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct GetObservingconditionsRainratePath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct GetObservingconditionsSkybrightnessPath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct GetObservingconditionsSkyqualityPath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct GetObservingconditionsSkytemperaturePath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct GetObservingconditionsStarfwhmPath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct GetObservingconditionsTemperaturePath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct GetObservingconditionsWinddirectionPath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct GetObservingconditionsWindgustPath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct GetObservingconditionsWindspeedPath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct PutObservingconditionsRefreshPath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct GetObservingconditionsSensordescriptionPath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
     #[from_request(via(Query))]
 
     struct GetObservingconditionsSensordescriptionQuery {
         /// Name of the sensor whose description is required
         #[serde(rename = "SensorName")]
         sensor_name: String,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct GetObservingconditionsTimesincelastupdatePath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -1888,102 +481,12 @@ mod schemas {
     }
 
     #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct GetRotatorCanreversePath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct GetRotatorIsmovingPath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct GetRotatorMechanicalpositionPath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct GetRotatorPositionPath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct GetRotatorReversePath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct PutRotatorReversePath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
     #[from_request(via(Form))]
 
     struct PutRotatorReverseRequest {
         /// True if the rotation and angular direction must be reversed to match the optical characteristcs
         #[serde(rename = "Reverse")]
         reverse: bool,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct GetRotatorStepsizePath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct GetRotatorTargetpositionPath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct PutRotatorHaltPath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct PutRotatorMovePath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -1996,30 +499,12 @@ mod schemas {
     }
 
     #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct PutRotatorMoveabsolutePath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
     #[from_request(via(Form))]
 
     struct PutRotatorMoveabsoluteRequest {
         /// Absolute position in degrees.
         #[serde(rename = "Position")]
         position: f64,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct PutRotatorMovemechanicalPath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -2032,48 +517,12 @@ mod schemas {
     }
 
     #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct PutRotatorSyncPath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
     #[from_request(via(Form))]
 
     struct PutRotatorSyncRequest {
         /// Absolute position in degrees.
         #[serde(rename = "Position")]
         position: f64,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct GetSafetymonitorIssafePath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct GetSwitchMaxswitchPath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct GetSwitchCanwritePath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -2086,30 +535,12 @@ mod schemas {
     }
 
     #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct GetSwitchGetswitchPath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
     #[from_request(via(Query))]
 
     struct GetSwitchGetswitchQuery {
         /// The device number (0 to MaxSwitch - 1)
         #[serde(rename = "Id")]
         id: i32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct GetSwitchGetswitchdescriptionPath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -2122,30 +553,12 @@ mod schemas {
     }
 
     #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct GetSwitchGetswitchnamePath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
     #[from_request(via(Query))]
 
     struct GetSwitchGetswitchnameQuery {
         /// The device number (0 to MaxSwitch - 1)
         #[serde(rename = "Id")]
         id: i32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct GetSwitchGetswitchvaluePath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -2158,15 +571,6 @@ mod schemas {
     }
 
     #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct GetSwitchMinswitchvaluePath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
     #[from_request(via(Query))]
 
     struct GetSwitchMinswitchvalueQuery {
@@ -2176,30 +580,12 @@ mod schemas {
     }
 
     #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct GetSwitchMaxswitchvaluePath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
     #[from_request(via(Query))]
 
     struct GetSwitchMaxswitchvalueQuery {
         /// The device number (0 to MaxSwitch - 1)
         #[serde(rename = "Id")]
         id: i32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct PutSwitchSetswitchPath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -2216,15 +602,6 @@ mod schemas {
     }
 
     #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct PutSwitchSetswitchnamePath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
     #[from_request(via(Form))]
 
     struct PutSwitchSetswitchnameRequest {
@@ -2235,15 +612,6 @@ mod schemas {
         /// The name of the device
         #[serde(rename = "Name")]
         name: String,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct PutSwitchSetswitchvaluePath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -2260,255 +628,12 @@ mod schemas {
     }
 
     #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct GetSwitchSwitchstepPath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
     #[from_request(via(Query))]
 
     struct GetSwitchSwitchstepQuery {
         /// The device number (0 to MaxSwitch - 1)
         #[serde(rename = "Id")]
         id: i32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct GetTelescopeAlignmentmodePath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct GetTelescopeAltitudePath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct GetTelescopeApertureareaPath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct GetTelescopeAperturediameterPath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct GetTelescopeAthomePath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct GetTelescopeAtparkPath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct GetTelescopeAzimuthPath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct GetTelescopeCanfindhomePath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct GetTelescopeCanparkPath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct GetTelescopeCanpulseguidePath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct GetTelescopeCansetdeclinationratePath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct GetTelescopeCansetguideratesPath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct GetTelescopeCansetparkPath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct GetTelescopeCansetpiersidePath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct GetTelescopeCansetrightascensionratePath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct GetTelescopeCansettrackingPath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct GetTelescopeCanslewPath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct GetTelescopeCanslewaltazPath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct GetTelescopeCanslewaltazasyncPath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct GetTelescopeCanslewasyncPath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct GetTelescopeCansyncPath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct GetTelescopeCansyncaltazPath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct GetTelescopeCanunparkPath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct GetTelescopeDeclinationPath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct GetTelescopeDeclinationratePath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct PutTelescopeDeclinationratePath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -2521,66 +646,12 @@ mod schemas {
     }
 
     #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct GetTelescopeDoesrefractionPath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct PutTelescopeDoesrefractionPath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
     #[from_request(via(Form))]
 
     struct PutTelescopeDoesrefractionRequest {
         /// Set True to make the telescope or driver applie atmospheric refraction to coordinates.
         #[serde(rename = "DoesRefraction")]
         does_refraction: bool,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct GetTelescopeEquatorialsystemPath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct GetTelescopeFocallengthPath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct GetTelescopeGuideratedeclinationPath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct PutTelescopeGuideratedeclinationPath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -2593,66 +664,12 @@ mod schemas {
     }
 
     #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct GetTelescopeGuideraterightascensionPath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct PutTelescopeGuideraterightascensionPath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
     #[from_request(via(Form))]
 
     struct PutTelescopeGuideraterightascensionRequest {
         /// RightAscension movement rate offset degrees/sec).
         #[serde(rename = "GuideRateRightAscension")]
         guide_rate_right_ascension: f64,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct GetTelescopeIspulseguidingPath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct GetTelescopeRightascensionPath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct GetTelescopeRightascensionratePath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct PutTelescopeRightascensionratePath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -2665,57 +682,12 @@ mod schemas {
     }
 
     #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct GetTelescopeSideofpierPath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct PutTelescopeSideofpierPath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
     #[from_request(via(Form))]
 
     struct PutTelescopeSideofpierRequest {
         /// New pointing state.
         #[serde(rename = "SideOfPier")]
         side_of_pier: i32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct GetTelescopeSiderealtimePath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct GetTelescopeSiteelevationPath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct PutTelescopeSiteelevationPath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -2728,48 +700,12 @@ mod schemas {
     }
 
     #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct GetTelescopeSitelatitudePath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct PutTelescopeSitelatitudePath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
     #[from_request(via(Form))]
 
     struct PutTelescopeSitelatitudeRequest {
         /// Site latitude (degrees)
         #[serde(rename = "SiteLatitude")]
         site_latitude: f64,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct GetTelescopeSitelongitudePath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct PutTelescopeSitelongitudePath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -2782,57 +718,12 @@ mod schemas {
     }
 
     #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct GetTelescopeSlewingPath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct GetTelescopeSlewsettletimePath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct PutTelescopeSlewsettletimePath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
     #[from_request(via(Form))]
 
     struct PutTelescopeSlewsettletimeRequest {
         /// Settling time (integer sec.).
         #[serde(rename = "SlewSettleTime")]
         slew_settle_time: i32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct GetTelescopeTargetdeclinationPath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct PutTelescopeTargetdeclinationPath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -2845,48 +736,12 @@ mod schemas {
     }
 
     #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct GetTelescopeTargetrightascensionPath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct PutTelescopeTargetrightascensionPath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
     #[from_request(via(Form))]
 
     struct PutTelescopeTargetrightascensionRequest {
         /// Target right ascension(hours)
         #[serde(rename = "TargetRightAscension")]
         target_right_ascension: f64,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct GetTelescopeTrackingPath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct PutTelescopeTrackingPath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -2899,57 +754,12 @@ mod schemas {
     }
 
     #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct GetTelescopeTrackingratePath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct PutTelescopeTrackingratePath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
     #[from_request(via(Form))]
 
     struct PutTelescopeTrackingrateRequest {
         /// New tracking rate
         #[serde(rename = "TrackingRate")]
         tracking_rate: i32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct GetTelescopeTrackingratesPath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct GetTelescopeUtcdatePath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct PutTelescopeUtcdatePath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -2962,24 +772,6 @@ mod schemas {
     }
 
     #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct PutTelescopeAbortslewPath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct GetTelescopeAxisratesPath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
     #[from_request(via(Query))]
 
     struct GetTelescopeAxisratesQuery {
@@ -2989,30 +781,12 @@ mod schemas {
     }
 
     #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct GetTelescopeCanmoveaxisPath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
     #[from_request(via(Query))]
 
     struct GetTelescopeCanmoveaxisQuery {
         /// The axis about which rate information is desired. 0 = axisPrimary, 1 = axisSecondary, 2 = axisTertiary.
         #[serde(rename = "Axis")]
         axis: i32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct GetTelescopeDestinationsideofpierPath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -3029,24 +803,6 @@ mod schemas {
     }
 
     #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct PutTelescopeFindhomePath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct PutTelescopeMoveaxisPath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
     #[from_request(via(Form))]
 
     struct PutTelescopeMoveaxisRequest {
@@ -3057,24 +813,6 @@ mod schemas {
         /// The rate of motion (deg/sec) about the specified axis
         #[serde(rename = "Rate")]
         rate: f64,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct PutTelescopeParkPath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct PutTelescopePulseguidePath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -3091,24 +829,6 @@ mod schemas {
     }
 
     #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct PutTelescopeSetparkPath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct PutTelescopeSlewtoaltazPath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
     #[from_request(via(Form))]
 
     struct PutTelescopeSlewtoaltazRequest {
@@ -3119,24 +839,6 @@ mod schemas {
         /// Altitude coordinate (degrees, positive up)
         #[serde(rename = "Altitude")]
         altitude: f64,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct PutTelescopeSlewtoaltazasyncPath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct PutTelescopeSlewtocoordinatesPath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
     }
 
     #[derive(Deserialize, FromRequest)]
@@ -3155,7 +857,7 @@ mod schemas {
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
 
-    struct PutTelescopeSlewtocoordinatesasyncPath {
+    struct DeviceNumberPath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: u32,
@@ -3164,7 +866,11 @@ mod schemas {
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
 
-    struct PutTelescopeSlewtotargetPath {
+    struct DeviceTypeAndNumberPath {
+        /// One of the recognised ASCOM device types e.g. telescope (must be lower case)
+        #[serde(rename = "device_type")]
+        device_type: String,
+
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         device_number: u32,
@@ -3173,51 +879,7 @@ mod schemas {
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Path))]
 
-    struct PutTelescopeSlewtotargetasyncPath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct PutTelescopeSynctoaltazPath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct PutTelescopeSynctocoordinatesPath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct PutTelescopeSynctotargetPath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Deserialize, FromRequest)]
-    #[from_request(via(Path))]
-
-    struct PutTelescopeUnparkPath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        device_number: u32,
-    }
-
-    #[derive(Serialize)]
-
-    struct EmptyResponse {}
+    struct EmptyPath {}
 
     #[derive(Deserialize, FromRequest)]
     #[from_request(via(Query))]
@@ -3228,6 +890,10 @@ mod schemas {
     #[from_request(via(Form))]
 
     struct EmptyForm {}
+
+    #[derive(Serialize)]
+
+    struct EmptyResponse {}
 }
 
 /**
@@ -3250,7 +916,7 @@ This method should return an error message and NotImplementedException error num
 */
 #[put("/<device_type>/<device_number>/action")]
 fn put_action(
-    schemas::PutActionPath { device_type, device_number }: schemas::PutActionPath,
+    schemas::DeviceTypeAndNumberPath { device_type, device_number }: schemas::DeviceTypeAndNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::PutActionRequest { action, parameters },
@@ -3265,7 +931,7 @@ Transmits an arbitrary string to the device and does not wait for a response. Op
 */
 #[put("/<device_type>/<device_number>/commandblind")]
 fn put_commandblind(
-    schemas::PutCommandblindPath { device_type, device_number }: schemas::PutCommandblindPath,
+    schemas::DeviceTypeAndNumberPath { device_type, device_number }: schemas::DeviceTypeAndNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::PutCommandblindRequest { command, raw },
@@ -3280,7 +946,7 @@ Transmits an arbitrary string to the device and waits for a boolean response. Op
 */
 #[put("/<device_type>/<device_number>/commandbool")]
 fn put_commandbool(
-    schemas::PutCommandboolPath { device_type, device_number }: schemas::PutCommandboolPath,
+    schemas::DeviceTypeAndNumberPath { device_type, device_number }: schemas::DeviceTypeAndNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::PutCommandblindRequest { command, raw },
@@ -3295,7 +961,7 @@ Transmits an arbitrary string to the device and waits for a string response. Opt
 */
 #[put("/<device_type>/<device_number>/commandstring")]
 fn put_commandstring(
-    schemas::PutCommandstringPath { device_type, device_number }: schemas::PutCommandstringPath,
+    schemas::DeviceTypeAndNumberPath { device_type, device_number }: schemas::DeviceTypeAndNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::PutCommandblindRequest { command, raw },
@@ -3306,7 +972,7 @@ fn put_commandstring(
 /// Retrieves the connected state of the device
 #[get("/<device_type>/<device_number>/connected")]
 fn get_connected(
-    schemas::GetConnectedPath { device_type, device_number }: schemas::GetConnectedPath,
+    schemas::DeviceTypeAndNumberPath { device_type, device_number }: schemas::DeviceTypeAndNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyQuery {},
@@ -3317,7 +983,7 @@ fn get_connected(
 /// Sets the connected state of the device
 #[put("/<device_type>/<device_number>/connected")]
 fn put_connected(
-    schemas::PutConnectedPath { device_type, device_number }: schemas::PutConnectedPath,
+    schemas::DeviceTypeAndNumberPath { device_type, device_number }: schemas::DeviceTypeAndNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::PutConnectedRequest { connected },
@@ -3332,7 +998,7 @@ The description of the device
 */
 #[get("/<device_type>/<device_number>/description")]
 fn get_description(
-    schemas::GetDescriptionPath { device_type, device_number }: schemas::GetDescriptionPath,
+    schemas::DeviceTypeAndNumberPath { device_type, device_number }: schemas::DeviceTypeAndNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyQuery {},
@@ -3347,7 +1013,7 @@ The description of the driver
 */
 #[get("/<device_type>/<device_number>/driverinfo")]
 fn get_driverinfo(
-    schemas::GetDriverinfoPath { device_type, device_number }: schemas::GetDriverinfoPath,
+    schemas::DeviceTypeAndNumberPath { device_type, device_number }: schemas::DeviceTypeAndNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyQuery {},
@@ -3362,7 +1028,7 @@ A string containing only the major and minor version of the driver.
 */
 #[get("/<device_type>/<device_number>/driverversion")]
 fn get_driverversion(
-    schemas::GetDriverversionPath { device_type, device_number }: schemas::GetDriverversionPath,
+    schemas::DeviceTypeAndNumberPath { device_type, device_number }: schemas::DeviceTypeAndNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyQuery {},
@@ -3377,7 +1043,7 @@ This method returns the version of the ASCOM device interface contract to which 
 */
 #[get("/<device_type>/<device_number>/interfaceversion")]
 fn get_interfaceversion(
-    schemas::GetInterfaceversionPath { device_type, device_number }: schemas::GetInterfaceversionPath,
+    schemas::DeviceTypeAndNumberPath { device_type, device_number }: schemas::DeviceTypeAndNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyQuery {},
@@ -3392,7 +1058,7 @@ The name of the device
 */
 #[get("/<device_type>/<device_number>/name")]
 fn get_name(
-    schemas::GetNamePath { device_type, device_number }: schemas::GetNamePath,
+    schemas::DeviceTypeAndNumberPath { device_type, device_number }: schemas::DeviceTypeAndNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyQuery {},
@@ -3403,7 +1069,7 @@ fn get_name(
 /// Returns the list of action names supported by this driver.
 #[get("/<device_type>/<device_number>/supportedactions")]
 fn get_supportedactions(
-    schemas::GetSupportedactionsPath { device_type, device_number }: schemas::GetSupportedactionsPath,
+    schemas::DeviceTypeAndNumberPath { device_type, device_number }: schemas::DeviceTypeAndNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyQuery {},
@@ -3418,7 +1084,7 @@ Returns the X offset of the Bayer matrix, as defined in SensorType.
 */
 #[get("/camera/<device_number>/bayeroffsetx")]
 fn get_camera_bayeroffsetx(
-    schemas::GetCameraBayeroffsetxPath { device_number }: schemas::GetCameraBayeroffsetxPath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyQuery {},
@@ -3433,7 +1099,7 @@ Returns the Y offset of the Bayer matrix, as defined in SensorType.
 */
 #[get("/camera/<device_number>/bayeroffsety")]
 fn get_camera_bayeroffsety(
-    schemas::GetCameraBayeroffsetyPath { device_number }: schemas::GetCameraBayeroffsetyPath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyQuery {},
@@ -3444,7 +1110,7 @@ fn get_camera_bayeroffsety(
 /// Returns the binning factor for the X axis.
 #[get("/camera/<device_number>/binx")]
 fn get_camera_binx(
-    schemas::GetCameraBinxPath { device_number }: schemas::GetCameraBinxPath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyQuery {},
@@ -3455,7 +1121,7 @@ fn get_camera_binx(
 /// Sets the binning factor for the X axis.
 #[put("/camera/<device_number>/binx")]
 fn put_camera_binx(
-    schemas::PutCameraBinxPath { device_number }: schemas::PutCameraBinxPath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::PutCameraBinxRequest { bin_x },
@@ -3466,7 +1132,7 @@ fn put_camera_binx(
 /// Returns the binning factor for the Y axis.
 #[get("/camera/<device_number>/biny")]
 fn get_camera_biny(
-    schemas::GetCameraBinyPath { device_number }: schemas::GetCameraBinyPath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyQuery {},
@@ -3477,7 +1143,7 @@ fn get_camera_biny(
 /// Sets the binning factor for the Y axis.
 #[put("/camera/<device_number>/biny")]
 fn put_camera_biny(
-    schemas::PutCameraBinyPath { device_number }: schemas::PutCameraBinyPath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::PutCameraBinyRequest { bin_y },
@@ -3492,7 +1158,7 @@ Returns the current camera operational state as an integer. 0 = CameraIdle , 1 =
 */
 #[get("/camera/<device_number>/camerastate")]
 fn get_camera_camerastate(
-    schemas::GetCameraCamerastatePath { device_number }: schemas::GetCameraCamerastatePath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyQuery {},
@@ -3507,7 +1173,7 @@ Returns the width of the CCD camera chip in unbinned pixels.
 */
 #[get("/camera/<device_number>/cameraxsize")]
 fn get_camera_cameraxsize(
-    schemas::GetCameraCameraxsizePath { device_number }: schemas::GetCameraCameraxsizePath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyQuery {},
@@ -3522,7 +1188,7 @@ Returns the height of the CCD camera chip in unbinned pixels.
 */
 #[get("/camera/<device_number>/cameraysize")]
 fn get_camera_cameraysize(
-    schemas::GetCameraCameraysizePath { device_number }: schemas::GetCameraCameraysizePath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyQuery {},
@@ -3537,7 +1203,7 @@ Returns true if the camera can abort exposures; false if not.
 */
 #[get("/camera/<device_number>/canabortexposure")]
 fn get_camera_canabortexposure(
-    schemas::GetCameraCanabortexposurePath { device_number }: schemas::GetCameraCanabortexposurePath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyQuery {},
@@ -3552,7 +1218,7 @@ Returns a flag showing whether this camera supports asymmetric binning
 */
 #[get("/camera/<device_number>/canasymmetricbin")]
 fn get_camera_canasymmetricbin(
-    schemas::GetCameraCanasymmetricbinPath { device_number }: schemas::GetCameraCanasymmetricbinPath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyQuery {},
@@ -3563,7 +1229,7 @@ fn get_camera_canasymmetricbin(
 /// Indicates whether the camera has a fast readout mode.
 #[get("/camera/<device_number>/canfastreadout")]
 fn get_camera_canfastreadout(
-    schemas::GetCameraCanfastreadoutPath { device_number }: schemas::GetCameraCanfastreadoutPath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyQuery {},
@@ -3578,7 +1244,7 @@ If true, the camera's cooler power setting can be read.
 */
 #[get("/camera/<device_number>/cangetcoolerpower")]
 fn get_camera_cangetcoolerpower(
-    schemas::GetCameraCangetcoolerpowerPath { device_number }: schemas::GetCameraCangetcoolerpowerPath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyQuery {},
@@ -3593,7 +1259,7 @@ Returns a flag indicating whether this camera supports pulse guiding.
 */
 #[get("/camera/<device_number>/canpulseguide")]
 fn get_camera_canpulseguide(
-    schemas::GetCameraCanpulseguidePath { device_number }: schemas::GetCameraCanpulseguidePath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyQuery {},
@@ -3608,7 +1274,7 @@ Returns a flag indicatig whether this camera supports setting the CCD temperatur
 */
 #[get("/camera/<device_number>/cansetccdtemperature")]
 fn get_camera_cansetccdtemperature(
-    schemas::GetCameraCansetccdtemperaturePath { device_number }: schemas::GetCameraCansetccdtemperaturePath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyQuery {},
@@ -3619,7 +1285,7 @@ fn get_camera_cansetccdtemperature(
 /// Returns a flag indicating whether this camera can stop an exposure that is in progress
 #[get("/camera/<device_number>/canstopexposure")]
 fn get_camera_canstopexposure(
-    schemas::GetCameraCanstopexposurePath { device_number }: schemas::GetCameraCanstopexposurePath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyQuery {},
@@ -3634,7 +1300,7 @@ Returns the current CCD temperature in degrees Celsius.
 */
 #[get("/camera/<device_number>/ccdtemperature")]
 fn get_camera_ccdtemperature(
-    schemas::GetCameraCcdtemperaturePath { device_number }: schemas::GetCameraCcdtemperaturePath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyQuery {},
@@ -3645,7 +1311,7 @@ fn get_camera_ccdtemperature(
 /// Returns the current cooler on/off state.
 #[get("/camera/<device_number>/cooleron")]
 fn get_camera_cooleron(
-    schemas::GetCameraCooleronPath { device_number }: schemas::GetCameraCooleronPath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyQuery {},
@@ -3660,7 +1326,7 @@ Turns on and off the camera cooler. True = cooler on, False = cooler off
 */
 #[put("/camera/<device_number>/cooleron")]
 fn put_camera_cooleron(
-    schemas::PutCameraCooleronPath { device_number }: schemas::PutCameraCooleronPath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::PutCameraCooleronRequest { cooler_on },
@@ -3675,7 +1341,7 @@ Returns the present cooler power level, in percent.
 */
 #[get("/camera/<device_number>/coolerpower")]
 fn get_camera_coolerpower(
-    schemas::GetCameraCoolerpowerPath { device_number }: schemas::GetCameraCoolerpowerPath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyQuery {},
@@ -3690,7 +1356,7 @@ Returns the gain of the camera in photoelectrons per A/D unit.
 */
 #[get("/camera/<device_number>/electronsperadu")]
 fn get_camera_electronsperadu(
-    schemas::GetCameraElectronsperaduPath { device_number }: schemas::GetCameraElectronsperaduPath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyQuery {},
@@ -3701,7 +1367,7 @@ fn get_camera_electronsperadu(
 /// Returns the maximum exposure time supported by StartExposure.
 #[get("/camera/<device_number>/exposuremax")]
 fn get_camera_exposuremax(
-    schemas::GetCameraExposuremaxPath { device_number }: schemas::GetCameraExposuremaxPath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyQuery {},
@@ -3716,7 +1382,7 @@ Returns the Minimium exposure time in seconds that the camera supports through S
 */
 #[get("/camera/<device_number>/exposuremin")]
 fn get_camera_exposuremin(
-    schemas::GetCameraExposureminPath { device_number }: schemas::GetCameraExposureminPath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyQuery {},
@@ -3727,7 +1393,7 @@ fn get_camera_exposuremin(
 /// Returns the smallest increment in exposure time supported by StartExposure.
 #[get("/camera/<device_number>/exposureresolution")]
 fn get_camera_exposureresolution(
-    schemas::GetCameraExposureresolutionPath { device_number }: schemas::GetCameraExposureresolutionPath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyQuery {},
@@ -3738,7 +1404,7 @@ fn get_camera_exposureresolution(
 /// Returns whenther Fast Readout Mode is enabled.
 #[get("/camera/<device_number>/fastreadout")]
 fn get_camera_fastreadout(
-    schemas::GetCameraFastreadoutPath { device_number }: schemas::GetCameraFastreadoutPath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyQuery {},
@@ -3749,7 +1415,7 @@ fn get_camera_fastreadout(
 /// Sets whether Fast Readout Mode is enabled.
 #[put("/camera/<device_number>/fastreadout")]
 fn put_camera_fastreadout(
-    schemas::PutCameraFastreadoutPath { device_number }: schemas::PutCameraFastreadoutPath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::PutCameraFastreadoutRequest { fast_readout },
@@ -3764,7 +1430,7 @@ Reports the full well capacity of the camera in electrons, at the current camera
 */
 #[get("/camera/<device_number>/fullwellcapacity")]
 fn get_camera_fullwellcapacity(
-    schemas::GetCameraFullwellcapacityPath { device_number }: schemas::GetCameraFullwellcapacityPath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyQuery {},
@@ -3779,7 +1445,7 @@ The camera's gain (GAIN VALUE MODE) OR the index of the selected camera gain des
 */
 #[get("/camera/<device_number>/gain")]
 fn get_camera_gain(
-    schemas::GetCameraGainPath { device_number }: schemas::GetCameraGainPath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyQuery {},
@@ -3794,7 +1460,7 @@ The camera's gain (GAIN VALUE MODE) OR the index of the selected camera gain des
 */
 #[put("/camera/<device_number>/gain")]
 fn put_camera_gain(
-    schemas::PutCameraGainPath { device_number }: schemas::PutCameraGainPath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::PutCameraGainRequest { gain },
@@ -3809,7 +1475,7 @@ Returns the maximum value of Gain.
 */
 #[get("/camera/<device_number>/gainmax")]
 fn get_camera_gainmax(
-    schemas::GetCameraGainmaxPath { device_number }: schemas::GetCameraGainmaxPath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyQuery {},
@@ -3824,7 +1490,7 @@ Returns the Minimum value of Gain.
 */
 #[get("/camera/<device_number>/gainmin")]
 fn get_camera_gainmin(
-    schemas::GetCameraGainminPath { device_number }: schemas::GetCameraGainminPath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyQuery {},
@@ -3839,7 +1505,7 @@ Returns the Gains supported by the camera.
 */
 #[get("/camera/<device_number>/gains")]
 fn get_camera_gains(
-    schemas::GetCameraGainsPath { device_number }: schemas::GetCameraGainsPath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyQuery {},
@@ -3854,7 +1520,7 @@ Returns a flag indicating whether this camera has a mechanical shutter.
 */
 #[get("/camera/<device_number>/hasshutter")]
 fn get_camera_hasshutter(
-    schemas::GetCameraHasshutterPath { device_number }: schemas::GetCameraHasshutterPath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyQuery {},
@@ -3869,7 +1535,7 @@ Returns the current heat sink temperature (called "ambient temperature" by some 
 */
 #[get("/camera/<device_number>/heatsinktemperature")]
 fn get_camera_heatsinktemperature(
-    schemas::GetCameraHeatsinktemperaturePath { device_number }: schemas::GetCameraHeatsinktemperaturePath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyQuery {},
@@ -3939,7 +1605,7 @@ Returning an image from an Alpaca device as a JSON array is very inefficient and
 */
 #[get("/camera/<device_number>/imagearray")]
 fn get_camera_imagearray(
-    schemas::GetCameraImagearrayPath { device_number }: schemas::GetCameraImagearrayPath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyQuery {},
@@ -4009,7 +1675,7 @@ Returning an image from an Alpaca device as a JSON array is very inefficient and
 */
 #[get("/camera/<device_number>/imagearrayvariant")]
 fn get_camera_imagearrayvariant(
-    schemas::GetCameraImagearrayvariantPath { device_number }: schemas::GetCameraImagearrayvariantPath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyQuery {},
@@ -4024,7 +1690,7 @@ Returns a flag indicating whether the image is ready to be downloaded from the c
 */
 #[get("/camera/<device_number>/imageready")]
 fn get_camera_imageready(
-    schemas::GetCameraImagereadyPath { device_number }: schemas::GetCameraImagereadyPath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyQuery {},
@@ -4039,7 +1705,7 @@ Returns a flag indicating whether the camera is currrently in a PulseGuide opera
 */
 #[get("/camera/<device_number>/ispulseguiding")]
 fn get_camera_ispulseguiding(
-    schemas::GetCameraIspulseguidingPath { device_number }: schemas::GetCameraIspulseguidingPath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyQuery {},
@@ -4054,7 +1720,7 @@ Reports the actual exposure duration in seconds (i.e. shutter open time).
 */
 #[get("/camera/<device_number>/lastexposureduration")]
 fn get_camera_lastexposureduration(
-    schemas::GetCameraLastexposuredurationPath { device_number }: schemas::GetCameraLastexposuredurationPath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyQuery {},
@@ -4069,7 +1735,7 @@ Reports the actual exposure start in the FITS-standard CCYY-MM-DDThh:mm:ss[.sss.
 */
 #[get("/camera/<device_number>/lastexposurestarttime")]
 fn get_camera_lastexposurestarttime(
-    schemas::GetCameraLastexposurestarttimePath { device_number }: schemas::GetCameraLastexposurestarttimePath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyQuery {},
@@ -4084,7 +1750,7 @@ Reports the maximum ADU value the camera can produce.
 */
 #[get("/camera/<device_number>/maxadu")]
 fn get_camera_maxadu(
-    schemas::GetCameraMaxaduPath { device_number }: schemas::GetCameraMaxaduPath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyQuery {},
@@ -4099,7 +1765,7 @@ Returns the maximum allowed binning for the X camera axis
 */
 #[get("/camera/<device_number>/maxbinx")]
 fn get_camera_maxbinx(
-    schemas::GetCameraMaxbinxPath { device_number }: schemas::GetCameraMaxbinxPath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyQuery {},
@@ -4114,7 +1780,7 @@ Returns the maximum allowed binning for the Y camera axis
 */
 #[get("/camera/<device_number>/maxbiny")]
 fn get_camera_maxbiny(
-    schemas::GetCameraMaxbinyPath { device_number }: schemas::GetCameraMaxbinyPath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyQuery {},
@@ -4129,7 +1795,7 @@ Returns the current subframe width, if binning is active, value is in binned pix
 */
 #[get("/camera/<device_number>/numx")]
 fn get_camera_numx(
-    schemas::GetCameraNumxPath { device_number }: schemas::GetCameraNumxPath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyQuery {},
@@ -4144,7 +1810,7 @@ Sets the current subframe width.
 */
 #[put("/camera/<device_number>/numx")]
 fn put_camera_numx(
-    schemas::PutCameraNumxPath { device_number }: schemas::PutCameraNumxPath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::PutCameraNumxRequest { num_x },
@@ -4159,7 +1825,7 @@ Returns the current subframe height, if binning is active, value is in binned pi
 */
 #[get("/camera/<device_number>/numy")]
 fn get_camera_numy(
-    schemas::GetCameraNumyPath { device_number }: schemas::GetCameraNumyPath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyQuery {},
@@ -4174,7 +1840,7 @@ Sets the current subframe height.
 */
 #[put("/camera/<device_number>/numy")]
 fn put_camera_numy(
-    schemas::PutCameraNumyPath { device_number }: schemas::PutCameraNumyPath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::PutCameraNumyRequest { num_y },
@@ -4189,7 +1855,7 @@ Returns the camera's offset (OFFSET VALUE MODE) OR the index of the selected cam
 */
 #[get("/camera/<device_number>/offset")]
 fn get_camera_offset(
-    schemas::GetCameraOffsetPath { device_number }: schemas::GetCameraOffsetPath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyQuery {},
@@ -4204,7 +1870,7 @@ Sets the camera's offset (OFFSET VALUE MODE) OR the index of the selected camera
 */
 #[put("/camera/<device_number>/offset")]
 fn put_camera_offset(
-    schemas::PutCameraOffsetPath { device_number }: schemas::PutCameraOffsetPath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::PutCameraOffsetRequest { offset },
@@ -4219,7 +1885,7 @@ Returns the maximum value of offset.
 */
 #[get("/camera/<device_number>/offsetmax")]
 fn get_camera_offsetmax(
-    schemas::GetCameraOffsetmaxPath { device_number }: schemas::GetCameraOffsetmaxPath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyQuery {},
@@ -4234,7 +1900,7 @@ Returns the Minimum value of offset.
 */
 #[get("/camera/<device_number>/offsetmin")]
 fn get_camera_offsetmin(
-    schemas::GetCameraOffsetminPath { device_number }: schemas::GetCameraOffsetminPath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyQuery {},
@@ -4249,7 +1915,7 @@ Returns the offsets supported by the camera.
 */
 #[get("/camera/<device_number>/offsets")]
 fn get_camera_offsets(
-    schemas::GetCameraOffsetsPath { device_number }: schemas::GetCameraOffsetsPath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyQuery {},
@@ -4264,7 +1930,7 @@ Returns the percentage of the current operation that is complete. If valid, retu
 */
 #[get("/camera/<device_number>/percentcompleted")]
 fn get_camera_percentcompleted(
-    schemas::GetCameraPercentcompletedPath { device_number }: schemas::GetCameraPercentcompletedPath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyQuery {},
@@ -4279,7 +1945,7 @@ Returns the width of the CCD chip pixels in microns.
 */
 #[get("/camera/<device_number>/pixelsizex")]
 fn get_camera_pixelsizex(
-    schemas::GetCameraPixelsizexPath { device_number }: schemas::GetCameraPixelsizexPath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyQuery {},
@@ -4294,7 +1960,7 @@ Returns the Height of the CCD chip pixels in microns.
 */
 #[get("/camera/<device_number>/pixelsizey")]
 fn get_camera_pixelsizey(
-    schemas::GetCameraPixelsizeyPath { device_number }: schemas::GetCameraPixelsizeyPath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyQuery {},
@@ -4309,7 +1975,7 @@ ReadoutMode is an index into the array ReadoutModes and returns the desired read
 */
 #[get("/camera/<device_number>/readoutmode")]
 fn get_camera_readoutmode(
-    schemas::GetCameraReadoutmodePath { device_number }: schemas::GetCameraReadoutmodePath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyQuery {},
@@ -4324,7 +1990,7 @@ Sets the ReadoutMode as an index into the array ReadoutModes.
 */
 #[put("/camera/<device_number>/readoutmode")]
 fn put_camera_readoutmode(
-    schemas::PutCameraReadoutmodePath { device_number }: schemas::PutCameraReadoutmodePath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::PutCameraReadoutmodeRequest { readout_mode },
@@ -4339,7 +2005,7 @@ This property provides an array of strings, each of which describes an available
 */
 #[get("/camera/<device_number>/readoutmodes")]
 fn get_camera_readoutmodes(
-    schemas::GetCameraReadoutmodesPath { device_number }: schemas::GetCameraReadoutmodesPath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyQuery {},
@@ -4354,7 +2020,7 @@ The name of the sensor used within the camera.
 */
 #[get("/camera/<device_number>/sensorname")]
 fn get_camera_sensorname(
-    schemas::GetCameraSensornamePath { device_number }: schemas::GetCameraSensornamePath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyQuery {},
@@ -4378,7 +2044,7 @@ Please see the ASCOM Help fie for more informaiton on the SensorType.
 */
 #[get("/camera/<device_number>/sensortype")]
 fn get_camera_sensortype(
-    schemas::GetCameraSensortypePath { device_number }: schemas::GetCameraSensortypePath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyQuery {},
@@ -4389,7 +2055,7 @@ fn get_camera_sensortype(
 /// Returns the current camera cooler setpoint in degrees Celsius.
 #[get("/camera/<device_number>/setccdtemperature")]
 fn get_camera_setccdtemperature(
-    schemas::GetCameraSetccdtemperaturePath { device_number }: schemas::GetCameraSetccdtemperaturePath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyQuery {},
@@ -4404,7 +2070,7 @@ Set's the camera's cooler setpoint in degrees Celsius.
 */
 #[put("/camera/<device_number>/setccdtemperature")]
 fn put_camera_setccdtemperature(
-    schemas::PutCameraSetccdtemperaturePath { device_number }: schemas::PutCameraSetccdtemperaturePath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::PutCameraSetccdtemperatureRequest { set_ccdtemperature },
@@ -4419,7 +2085,7 @@ Sets the subframe start position for the X axis (0 based) and returns the curren
 */
 #[get("/camera/<device_number>/startx")]
 fn get_camera_startx(
-    schemas::GetCameraStartxPath { device_number }: schemas::GetCameraStartxPath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyQuery {},
@@ -4434,7 +2100,7 @@ Sets the current subframe X axis start position in binned pixels.
 */
 #[put("/camera/<device_number>/startx")]
 fn put_camera_startx(
-    schemas::PutCameraStartxPath { device_number }: schemas::PutCameraStartxPath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::PutCameraStartxRequest { start_x },
@@ -4449,7 +2115,7 @@ Sets the subframe start position for the Y axis (0 based) and returns the curren
 */
 #[get("/camera/<device_number>/starty")]
 fn get_camera_starty(
-    schemas::GetCameraStartyPath { device_number }: schemas::GetCameraStartyPath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyQuery {},
@@ -4464,7 +2130,7 @@ Sets the current subframe Y axis start position in binned pixels.
 */
 #[put("/camera/<device_number>/starty")]
 fn put_camera_starty(
-    schemas::PutCameraStartyPath { device_number }: schemas::PutCameraStartyPath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::PutCameraStartyRequest { start_y },
@@ -4479,7 +2145,7 @@ The Camera's sub exposure duration in seconds. Only available in Camera Interfac
 */
 #[get("/camera/<device_number>/subexposureduration")]
 fn get_camera_subexposureduration(
-    schemas::GetCameraSubexposuredurationPath { device_number }: schemas::GetCameraSubexposuredurationPath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyQuery {},
@@ -4494,7 +2160,7 @@ Sets image sub exposure duration in seconds. Only available in Camera Interface 
 */
 #[put("/camera/<device_number>/subexposureduration")]
 fn put_camera_subexposureduration(
-    schemas::PutCameraSubexposuredurationPath { device_number }: schemas::PutCameraSubexposuredurationPath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::PutCameraSubexposuredurationRequest { sub_exposure_duration },
@@ -4509,7 +2175,7 @@ Aborts the current exposure, if any, and returns the camera to Idle state.
 */
 #[put("/camera/<device_number>/abortexposure")]
 fn put_camera_abortexposure(
-    schemas::PutCameraAbortexposurePath { device_number }: schemas::PutCameraAbortexposurePath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyForm {},
@@ -4524,7 +2190,7 @@ Activates the Camera's mount control sytem to instruct the mount to move in a pa
 */
 #[put("/camera/<device_number>/pulseguide")]
 fn put_camera_pulseguide(
-    schemas::PutCameraPulseguidePath { device_number }: schemas::PutCameraPulseguidePath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::PutCameraPulseguideRequest { direction, duration },
@@ -4539,7 +2205,7 @@ Starts an exposure. Use ImageReady to check when the exposure is complete.
 */
 #[put("/camera/<device_number>/startexposure")]
 fn put_camera_startexposure(
-    schemas::PutCameraStartexposurePath { device_number }: schemas::PutCameraStartexposurePath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::PutCameraStartexposureRequest { duration, light },
@@ -4554,7 +2220,7 @@ Stops the current exposure, if any. If an exposure is in progress, the readout p
 */
 #[put("/camera/<device_number>/stopexposure")]
 fn put_camera_stopexposure(
-    schemas::PutCameraStopexposurePath { device_number }: schemas::PutCameraStopexposurePath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyForm {},
@@ -4569,7 +2235,7 @@ Returns the current calibrator brightness in the range 0 (completely off) to Max
 */
 #[get("/covercalibrator/<device_number>/brightness")]
 fn get_covercalibrator_brightness(
-    schemas::GetCovercalibratorBrightnessPath { device_number }: schemas::GetCovercalibratorBrightnessPath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyQuery {},
@@ -4584,7 +2250,7 @@ Returns the state of the calibration device, if present, otherwise returns "NotP
 */
 #[get("/covercalibrator/<device_number>/calibratorstate")]
 fn get_covercalibrator_calibratorstate(
-    schemas::GetCovercalibratorCalibratorstatePath { device_number }: schemas::GetCovercalibratorCalibratorstatePath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyQuery {},
@@ -4599,7 +2265,7 @@ Returns the state of the device cover, if present, otherwise returns "NotPresent
 */
 #[get("/covercalibrator/<device_number>/coverstate")]
 fn get_covercalibrator_coverstate(
-    schemas::GetCovercalibratorCoverstatePath { device_number }: schemas::GetCovercalibratorCoverstatePath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyQuery {},
@@ -4614,7 +2280,7 @@ The Brightness value that makes the calibrator deliver its maximum illumination.
 */
 #[get("/covercalibrator/<device_number>/maxbrightness")]
 fn get_covercalibrator_maxbrightness(
-    schemas::GetCovercalibratorMaxbrightnessPath { device_number }: schemas::GetCovercalibratorMaxbrightnessPath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyQuery {},
@@ -4629,7 +2295,7 @@ Turns the calibrator off if the device has calibration capability.
 */
 #[put("/covercalibrator/<device_number>/calibratoroff")]
 fn put_covercalibrator_calibratoroff(
-    schemas::PutCovercalibratorCalibratoroffPath { device_number }: schemas::PutCovercalibratorCalibratoroffPath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyForm {},
@@ -4644,7 +2310,7 @@ Turns the calibrator on at the specified brightness if the device has calibratio
 */
 #[put("/covercalibrator/<device_number>/calibratoron")]
 fn put_covercalibrator_calibratoron(
-    schemas::PutCovercalibratorCalibratoronPath { device_number }: schemas::PutCovercalibratorCalibratoronPath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::PutCovercalibratorCalibratoronRequest { brightness },
@@ -4659,7 +2325,7 @@ Initiates cover closing if a cover is present.
 */
 #[put("/covercalibrator/<device_number>/closecover")]
 fn put_covercalibrator_closecover(
-    schemas::PutCovercalibratorClosecoverPath { device_number }: schemas::PutCovercalibratorClosecoverPath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyForm {},
@@ -4674,7 +2340,7 @@ Stops any cover movement that may be in progress if a cover is present and cover
 */
 #[put("/covercalibrator/<device_number>/haltcover")]
 fn put_covercalibrator_haltcover(
-    schemas::PutCovercalibratorHaltcoverPath { device_number }: schemas::PutCovercalibratorHaltcoverPath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyForm {},
@@ -4689,7 +2355,7 @@ Initiates cover opening if a cover is present.
 */
 #[put("/covercalibrator/<device_number>/opencover")]
 fn put_covercalibrator_opencover(
-    schemas::PutCovercalibratorOpencoverPath { device_number }: schemas::PutCovercalibratorOpencoverPath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyForm {},
@@ -4704,7 +2370,7 @@ The dome altitude (degrees, horizon zero and increasing positive to 90 zenith).
 */
 #[get("/dome/<device_number>/altitude")]
 fn get_dome_altitude(
-    schemas::GetDomeAltitudePath { device_number }: schemas::GetDomeAltitudePath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyQuery {},
@@ -4719,7 +2385,7 @@ Indicates whether the dome is in the home position. This is normally used follow
 */
 #[get("/dome/<device_number>/athome")]
 fn get_dome_athome(
-    schemas::GetDomeAthomePath { device_number }: schemas::GetDomeAthomePath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyQuery {},
@@ -4734,7 +2400,7 @@ True if the dome is in the programmed park position. Set only following a Park()
 */
 #[get("/dome/<device_number>/atpark")]
 fn get_dome_atpark(
-    schemas::GetDomeAtparkPath { device_number }: schemas::GetDomeAtparkPath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyQuery {},
@@ -4749,7 +2415,7 @@ Returns the dome azimuth (degrees, North zero and increasing clockwise, i.e., 90
 */
 #[get("/dome/<device_number>/azimuth")]
 fn get_dome_azimuth(
-    schemas::GetDomeAzimuthPath { device_number }: schemas::GetDomeAzimuthPath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyQuery {},
@@ -4764,7 +2430,7 @@ True if the dome can move to the home position.
 */
 #[get("/dome/<device_number>/canfindhome")]
 fn get_dome_canfindhome(
-    schemas::GetDomeCanfindhomePath { device_number }: schemas::GetDomeCanfindhomePath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyQuery {},
@@ -4779,7 +2445,7 @@ True if the dome is capable of programmed parking (Park() method)
 */
 #[get("/dome/<device_number>/canpark")]
 fn get_dome_canpark(
-    schemas::GetDomeCanparkPath { device_number }: schemas::GetDomeCanparkPath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyQuery {},
@@ -4794,7 +2460,7 @@ True if driver is capable of setting the dome altitude.
 */
 #[get("/dome/<device_number>/cansetaltitude")]
 fn get_dome_cansetaltitude(
-    schemas::GetDomeCansetaltitudePath { device_number }: schemas::GetDomeCansetaltitudePath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyQuery {},
@@ -4809,7 +2475,7 @@ True if driver is capable of setting the dome azimuth.
 */
 #[get("/dome/<device_number>/cansetazimuth")]
 fn get_dome_cansetazimuth(
-    schemas::GetDomeCansetazimuthPath { device_number }: schemas::GetDomeCansetazimuthPath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyQuery {},
@@ -4824,7 +2490,7 @@ True if driver is capable of setting the dome park position.
 */
 #[get("/dome/<device_number>/cansetpark")]
 fn get_dome_cansetpark(
-    schemas::GetDomeCansetparkPath { device_number }: schemas::GetDomeCansetparkPath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyQuery {},
@@ -4839,7 +2505,7 @@ True if driver is capable of automatically operating shutter
 */
 #[get("/dome/<device_number>/cansetshutter")]
 fn get_dome_cansetshutter(
-    schemas::GetDomeCansetshutterPath { device_number }: schemas::GetDomeCansetshutterPath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyQuery {},
@@ -4854,7 +2520,7 @@ True if driver is capable of slaving to a telescope.
 */
 #[get("/dome/<device_number>/canslave")]
 fn get_dome_canslave(
-    schemas::GetDomeCanslavePath { device_number }: schemas::GetDomeCanslavePath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyQuery {},
@@ -4869,7 +2535,7 @@ True if driver is capable of synchronizing the dome azimuth position using the S
 */
 #[get("/dome/<device_number>/cansyncazimuth")]
 fn get_dome_cansyncazimuth(
-    schemas::GetDomeCansyncazimuthPath { device_number }: schemas::GetDomeCansyncazimuthPath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyQuery {},
@@ -4884,7 +2550,7 @@ Returns the status of the dome shutter or roll-off roof. 0 = Open, 1 = Closed, 2
 */
 #[get("/dome/<device_number>/shutterstatus")]
 fn get_dome_shutterstatus(
-    schemas::GetDomeShutterstatusPath { device_number }: schemas::GetDomeShutterstatusPath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyQuery {},
@@ -4899,7 +2565,7 @@ True if the dome is slaved to the telescope in its hardware, else False.
 */
 #[get("/dome/<device_number>/slaved")]
 fn get_dome_slaved(
-    schemas::GetDomeSlavedPath { device_number }: schemas::GetDomeSlavedPath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyQuery {},
@@ -4914,7 +2580,7 @@ Sets the current subframe height.
 */
 #[put("/dome/<device_number>/slaved")]
 fn put_dome_slaved(
-    schemas::PutDomeSlavedPath { device_number }: schemas::PutDomeSlavedPath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::PutDomeSlavedRequest { slaved },
@@ -4929,7 +2595,7 @@ True if any part of the dome is currently moving, False if all dome components a
 */
 #[get("/dome/<device_number>/slewing")]
 fn get_dome_slewing(
-    schemas::GetDomeSlewingPath { device_number }: schemas::GetDomeSlewingPath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyQuery {},
@@ -4944,7 +2610,7 @@ Calling this method will immediately disable hardware slewing (Slaved will becom
 */
 #[put("/dome/<device_number>/abortslew")]
 fn put_dome_abortslew(
-    schemas::PutDomeAbortslewPath { device_number }: schemas::PutDomeAbortslewPath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyForm {},
@@ -4955,7 +2621,7 @@ fn put_dome_abortslew(
 /// Close the shutter or otherwise shield telescope from the sky.
 #[put("/dome/<device_number>/closeshutter")]
 fn put_dome_closeshutter(
-    schemas::PutDomeCloseshutterPath { device_number }: schemas::PutDomeCloseshutterPath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyForm {},
@@ -4970,7 +2636,7 @@ After Home position is established initializes Azimuth to the default value and 
 */
 #[put("/dome/<device_number>/findhome")]
 fn put_dome_findhome(
-    schemas::PutDomeFindhomePath { device_number }: schemas::PutDomeFindhomePath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyForm {},
@@ -4981,7 +2647,7 @@ fn put_dome_findhome(
 /// Open shutter or otherwise expose telescope to the sky.
 #[put("/dome/<device_number>/openshutter")]
 fn put_dome_openshutter(
-    schemas::PutDomeOpenshutterPath { device_number }: schemas::PutDomeOpenshutterPath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyForm {},
@@ -4996,7 +2662,7 @@ After assuming programmed park position, sets AtPark flag.
 */
 #[put("/dome/<device_number>/park")]
 fn put_dome_park(
-    schemas::PutDomeParkPath { device_number }: schemas::PutDomeParkPath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyForm {},
@@ -5011,7 +2677,7 @@ Set the current azimuth, altitude position of dome to be the park position.
 */
 #[put("/dome/<device_number>/setpark")]
 fn put_dome_setpark(
-    schemas::PutDomeSetparkPath { device_number }: schemas::PutDomeSetparkPath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyForm {},
@@ -5022,7 +2688,7 @@ fn put_dome_setpark(
 /// Slew the dome to the given altitude position.
 #[put("/dome/<device_number>/slewtoaltitude")]
 fn put_dome_slewtoaltitude(
-    schemas::PutDomeSlewtoaltitudePath { device_number }: schemas::PutDomeSlewtoaltitudePath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::PutDomeSlewtoaltitudeRequest { altitude },
@@ -5033,7 +2699,7 @@ fn put_dome_slewtoaltitude(
 /// Slew the dome to the given azimuth position.
 #[put("/dome/<device_number>/slewtoazimuth")]
 fn put_dome_slewtoazimuth(
-    schemas::PutDomeSlewtoazimuthPath { device_number }: schemas::PutDomeSlewtoazimuthPath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::PutDomeSlewtoazimuthRequest { azimuth },
@@ -5044,7 +2710,7 @@ fn put_dome_slewtoazimuth(
 /// Synchronize the current position of the dome to the given azimuth.
 #[put("/dome/<device_number>/synctoazimuth")]
 fn put_dome_synctoazimuth(
-    schemas::PutDomeSynctoazimuthPath { device_number }: schemas::PutDomeSynctoazimuthPath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::PutDomeSlewtoazimuthRequest { azimuth },
@@ -5059,7 +2725,7 @@ An integer array of filter focus offsets.
 */
 #[get("/filterwheel/<device_number>/focusoffsets")]
 fn get_filterwheel_focusoffsets(
-    schemas::GetFilterwheelFocusoffsetsPath { device_number }: schemas::GetFilterwheelFocusoffsetsPath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyQuery {},
@@ -5074,7 +2740,7 @@ The names of the filters
 */
 #[get("/filterwheel/<device_number>/names")]
 fn get_filterwheel_names(
-    schemas::GetFilterwheelNamesPath { device_number }: schemas::GetFilterwheelNamesPath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyQuery {},
@@ -5085,7 +2751,7 @@ fn get_filterwheel_names(
 /// Returns the current filter wheel position
 #[get("/filterwheel/<device_number>/position")]
 fn get_filterwheel_position(
-    schemas::GetFilterwheelPositionPath { device_number }: schemas::GetFilterwheelPositionPath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyQuery {},
@@ -5096,7 +2762,7 @@ fn get_filterwheel_position(
 /// Sets the filter wheel position
 #[put("/filterwheel/<device_number>/position")]
 fn put_filterwheel_position(
-    schemas::PutFilterwheelPositionPath { device_number }: schemas::PutFilterwheelPositionPath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::PutFilterwheelPositionRequest { position },
@@ -5111,7 +2777,7 @@ True if the focuser is capable of absolute position; that is, being commanded to
 */
 #[get("/focuser/<device_number>/absolute")]
 fn get_focuser_absolute(
-    schemas::GetFocuserAbsolutePath { device_number }: schemas::GetFocuserAbsolutePath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyQuery {},
@@ -5126,7 +2792,7 @@ True if the focuser is currently moving to a new position. False if the focuser 
 */
 #[get("/focuser/<device_number>/ismoving")]
 fn get_focuser_ismoving(
-    schemas::GetFocuserIsmovingPath { device_number }: schemas::GetFocuserIsmovingPath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyQuery {},
@@ -5141,7 +2807,7 @@ Maximum increment size allowed by the focuser; i.e. the maximum number of steps 
 */
 #[get("/focuser/<device_number>/maxincrement")]
 fn get_focuser_maxincrement(
-    schemas::GetFocuserMaxincrementPath { device_number }: schemas::GetFocuserMaxincrementPath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyQuery {},
@@ -5156,7 +2822,7 @@ Maximum step position permitted.
 */
 #[get("/focuser/<device_number>/maxstep")]
 fn get_focuser_maxstep(
-    schemas::GetFocuserMaxstepPath { device_number }: schemas::GetFocuserMaxstepPath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyQuery {},
@@ -5171,7 +2837,7 @@ Current focuser position, in steps.
 */
 #[get("/focuser/<device_number>/position")]
 fn get_focuser_position(
-    schemas::GetFocuserPositionPath { device_number }: schemas::GetFocuserPositionPath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyQuery {},
@@ -5186,7 +2852,7 @@ Step size (microns) for the focuser.
 */
 #[get("/focuser/<device_number>/stepsize")]
 fn get_focuser_stepsize(
-    schemas::GetFocuserStepsizePath { device_number }: schemas::GetFocuserStepsizePath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyQuery {},
@@ -5201,7 +2867,7 @@ Gets the state of temperature compensation mode (if available), else always Fals
 */
 #[get("/focuser/<device_number>/tempcomp")]
 fn get_focuser_tempcomp(
-    schemas::GetFocuserTempcompPath { device_number }: schemas::GetFocuserTempcompPath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyQuery {},
@@ -5231,7 +2897,7 @@ True if focuser has temperature compensation available.
 */
 #[get("/focuser/<device_number>/tempcompavailable")]
 fn get_focuser_tempcompavailable(
-    schemas::GetFocuserTempcompavailablePath { device_number }: schemas::GetFocuserTempcompavailablePath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyQuery {},
@@ -5246,7 +2912,7 @@ Current ambient temperature as measured by the focuser.
 */
 #[get("/focuser/<device_number>/temperature")]
 fn get_focuser_temperature(
-    schemas::GetFocuserTemperaturePath { device_number }: schemas::GetFocuserTemperaturePath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyQuery {},
@@ -5261,7 +2927,7 @@ Immediately stop any focuser motion due to a previous Move(Int32) method call.
 */
 #[put("/focuser/<device_number>/halt")]
 fn put_focuser_halt(
-    schemas::PutFocuserHaltPath { device_number }: schemas::PutFocuserHaltPath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyForm {},
@@ -5276,7 +2942,7 @@ Moves the focuser by the specified amount or to the specified position depending
 */
 #[put("/focuser/<device_number>/move")]
 fn put_focuser_move(
-    schemas::PutFocuserMovePath { device_number }: schemas::PutFocuserMovePath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::PutFocuserMoveRequest { position },
@@ -5291,7 +2957,7 @@ Gets the time period over which observations will be averaged
 */
 #[get("/observingconditions/<device_number>/averageperiod")]
 fn get_observingconditions_averageperiod(
-    schemas::GetObservingconditionsAverageperiodPath { device_number }: schemas::GetObservingconditionsAverageperiodPath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyQuery {},
@@ -5302,7 +2968,7 @@ fn get_observingconditions_averageperiod(
 /// Sets the time period over which observations will be averaged
 #[put("/observingconditions/<device_number>/averageperiod")]
 fn put_observingconditions_averageperiod(
-    schemas::PutObservingconditionsAverageperiodPath { device_number }: schemas::PutObservingconditionsAverageperiodPath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::PutObservingconditionsAverageperiodRequest { average_period },
@@ -5317,7 +2983,7 @@ Gets the percentage of the sky obscured by cloud
 */
 #[get("/observingconditions/<device_number>/cloudcover")]
 fn get_observingconditions_cloudcover(
-    schemas::GetObservingconditionsCloudcoverPath { device_number }: schemas::GetObservingconditionsCloudcoverPath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyQuery {},
@@ -5332,7 +2998,7 @@ Gets the atmospheric dew point at the observatory reported in °C.
 */
 #[get("/observingconditions/<device_number>/dewpoint")]
 fn get_observingconditions_dewpoint(
-    schemas::GetObservingconditionsDewpointPath { device_number }: schemas::GetObservingconditionsDewpointPath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyQuery {},
@@ -5347,7 +3013,7 @@ Gets the atmospheric  humidity (%) at the observatory
 */
 #[get("/observingconditions/<device_number>/humidity")]
 fn get_observingconditions_humidity(
-    schemas::GetObservingconditionsHumidityPath { device_number }: schemas::GetObservingconditionsHumidityPath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyQuery {},
@@ -5362,7 +3028,7 @@ Gets the atmospheric pressure in hectoPascals at the observatory's altitude - NO
 */
 #[get("/observingconditions/<device_number>/pressure")]
 fn get_observingconditions_pressure(
-    schemas::GetObservingconditionsPressurePath { device_number }: schemas::GetObservingconditionsPressurePath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyQuery {},
@@ -5377,7 +3043,7 @@ Gets the rain rate (mm/hour) at the observatory.
 */
 #[get("/observingconditions/<device_number>/rainrate")]
 fn get_observingconditions_rainrate(
-    schemas::GetObservingconditionsRainratePath { device_number }: schemas::GetObservingconditionsRainratePath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyQuery {},
@@ -5392,7 +3058,7 @@ Gets the sky brightness at the observatory (Lux)
 */
 #[get("/observingconditions/<device_number>/skybrightness")]
 fn get_observingconditions_skybrightness(
-    schemas::GetObservingconditionsSkybrightnessPath { device_number }: schemas::GetObservingconditionsSkybrightnessPath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyQuery {},
@@ -5407,7 +3073,7 @@ Gets the sky quality at the observatory (magnitudes per square arc second)
 */
 #[get("/observingconditions/<device_number>/skyquality")]
 fn get_observingconditions_skyquality(
-    schemas::GetObservingconditionsSkyqualityPath { device_number }: schemas::GetObservingconditionsSkyqualityPath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyQuery {},
@@ -5422,7 +3088,7 @@ Gets the sky temperature(°C) at the observatory.
 */
 #[get("/observingconditions/<device_number>/skytemperature")]
 fn get_observingconditions_skytemperature(
-    schemas::GetObservingconditionsSkytemperaturePath { device_number }: schemas::GetObservingconditionsSkytemperaturePath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyQuery {},
@@ -5437,7 +3103,7 @@ Gets the seeing at the observatory measured as star full width half maximum (FWH
 */
 #[get("/observingconditions/<device_number>/starfwhm")]
 fn get_observingconditions_starfwhm(
-    schemas::GetObservingconditionsStarfwhmPath { device_number }: schemas::GetObservingconditionsStarfwhmPath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyQuery {},
@@ -5452,7 +3118,7 @@ Gets the temperature(°C) at the observatory.
 */
 #[get("/observingconditions/<device_number>/temperature")]
 fn get_observingconditions_temperature(
-    schemas::GetObservingconditionsTemperaturePath { device_number }: schemas::GetObservingconditionsTemperaturePath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyQuery {},
@@ -5467,7 +3133,7 @@ Gets the wind direction. The returned value must be between 0.0 and 360.0, inter
 */
 #[get("/observingconditions/<device_number>/winddirection")]
 fn get_observingconditions_winddirection(
-    schemas::GetObservingconditionsWinddirectionPath { device_number }: schemas::GetObservingconditionsWinddirectionPath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyQuery {},
@@ -5482,7 +3148,7 @@ Gets the peak 3 second wind gust(m/s) at the observatory over the last 2 minutes
 */
 #[get("/observingconditions/<device_number>/windgust")]
 fn get_observingconditions_windgust(
-    schemas::GetObservingconditionsWindgustPath { device_number }: schemas::GetObservingconditionsWindgustPath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyQuery {},
@@ -5497,7 +3163,7 @@ Gets the wind speed(m/s) at the observatory.
 */
 #[get("/observingconditions/<device_number>/windspeed")]
 fn get_observingconditions_windspeed(
-    schemas::GetObservingconditionsWindspeedPath { device_number }: schemas::GetObservingconditionsWindspeedPath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyQuery {},
@@ -5512,7 +3178,7 @@ Forces the driver to immediately query its attached hardware to refresh sensor v
 */
 #[put("/observingconditions/<device_number>/refresh")]
 fn put_observingconditions_refresh(
-    schemas::PutObservingconditionsRefreshPath { device_number }: schemas::PutObservingconditionsRefreshPath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyForm {},
@@ -5527,7 +3193,7 @@ Gets a description of the sensor with the name specified in the SensorName param
 */
 #[get("/observingconditions/<device_number>/sensordescription")]
 fn get_observingconditions_sensordescription(
-    schemas::GetObservingconditionsSensordescriptionPath { device_number }: schemas::GetObservingconditionsSensordescriptionPath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::GetObservingconditionsSensordescriptionQuery { sensor_name },
@@ -5542,7 +3208,7 @@ Gets the time since the sensor specified in the SensorName parameter was last up
 */
 #[get("/observingconditions/<device_number>/timesincelastupdate")]
 fn get_observingconditions_timesincelastupdate(
-    schemas::GetObservingconditionsTimesincelastupdatePath { device_number }: schemas::GetObservingconditionsTimesincelastupdatePath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::GetObservingconditionsTimesincelastupdateQuery { sensor_name },
@@ -5557,7 +3223,7 @@ True if the Rotator supports the Reverse method.
 */
 #[get("/rotator/<device_number>/canreverse")]
 fn get_rotator_canreverse(
-    schemas::GetRotatorCanreversePath { device_number }: schemas::GetRotatorCanreversePath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyQuery {},
@@ -5572,7 +3238,7 @@ True if the rotator is currently moving to a new position. False if the focuser 
 */
 #[get("/rotator/<device_number>/ismoving")]
 fn get_rotator_ismoving(
-    schemas::GetRotatorIsmovingPath { device_number }: schemas::GetRotatorIsmovingPath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyQuery {},
@@ -5587,7 +3253,7 @@ Returns the raw mechanical position of the rotator in degrees.
 */
 #[get("/rotator/<device_number>/mechanicalposition")]
 fn get_rotator_mechanicalposition(
-    schemas::GetRotatorMechanicalpositionPath { device_number }: schemas::GetRotatorMechanicalpositionPath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyQuery {},
@@ -5602,7 +3268,7 @@ Current instantaneous Rotator position, in degrees.
 */
 #[get("/rotator/<device_number>/position")]
 fn get_rotator_position(
-    schemas::GetRotatorPositionPath { device_number }: schemas::GetRotatorPositionPath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyQuery {},
@@ -5613,7 +3279,7 @@ fn get_rotator_position(
 /// Returns the rotator’s Reverse state.
 #[get("/rotator/<device_number>/reverse")]
 fn get_rotator_reverse(
-    schemas::GetRotatorReversePath { device_number }: schemas::GetRotatorReversePath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyQuery {},
@@ -5624,7 +3290,7 @@ fn get_rotator_reverse(
 /// Sets the rotator’s Reverse state.
 #[put("/rotator/<device_number>/reverse")]
 fn put_rotator_reverse(
-    schemas::PutRotatorReversePath { device_number }: schemas::PutRotatorReversePath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::PutRotatorReverseRequest { reverse },
@@ -5639,7 +3305,7 @@ The minimum StepSize, in degrees.
 */
 #[get("/rotator/<device_number>/stepsize")]
 fn get_rotator_stepsize(
-    schemas::GetRotatorStepsizePath { device_number }: schemas::GetRotatorStepsizePath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyQuery {},
@@ -5654,7 +3320,7 @@ The destination position angle for Move() and MoveAbsolute().
 */
 #[get("/rotator/<device_number>/targetposition")]
 fn get_rotator_targetposition(
-    schemas::GetRotatorTargetpositionPath { device_number }: schemas::GetRotatorTargetpositionPath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyQuery {},
@@ -5669,7 +3335,7 @@ Immediately stop any Rotator motion due to a previous Move or MoveAbsolute metho
 */
 #[put("/rotator/<device_number>/halt")]
 fn put_rotator_halt(
-    schemas::PutRotatorHaltPath { device_number }: schemas::PutRotatorHaltPath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyForm {},
@@ -5684,7 +3350,7 @@ Causes the rotator to move Position degrees relative to the current Position val
 */
 #[put("/rotator/<device_number>/move")]
 fn put_rotator_move(
-    schemas::PutRotatorMovePath { device_number }: schemas::PutRotatorMovePath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::PutRotatorMoveRequest { position },
@@ -5699,7 +3365,7 @@ Causes the rotator to move the absolute position of Position degrees.
 */
 #[put("/rotator/<device_number>/moveabsolute")]
 fn put_rotator_moveabsolute(
-    schemas::PutRotatorMoveabsolutePath { device_number }: schemas::PutRotatorMoveabsolutePath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::PutRotatorMoveabsoluteRequest { position },
@@ -5714,7 +3380,7 @@ Causes the rotator to move the mechanical position of Position degrees.
 */
 #[put("/rotator/<device_number>/movemechanical")]
 fn put_rotator_movemechanical(
-    schemas::PutRotatorMovemechanicalPath { device_number }: schemas::PutRotatorMovemechanicalPath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::PutRotatorMovemechanicalRequest { position },
@@ -5729,7 +3395,7 @@ Causes the rotator to sync to the position of Position degrees.
 */
 #[put("/rotator/<device_number>/sync")]
 fn put_rotator_sync(
-    schemas::PutRotatorSyncPath { device_number }: schemas::PutRotatorSyncPath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::PutRotatorSyncRequest { position },
@@ -5744,7 +3410,7 @@ Indicates whether the monitored state is safe for use. True if the state is safe
 */
 #[get("/safetymonitor/<device_number>/issafe")]
 fn get_safetymonitor_issafe(
-    schemas::GetSafetymonitorIssafePath { device_number }: schemas::GetSafetymonitorIssafePath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyQuery {},
@@ -5759,7 +3425,7 @@ Returns the number of switch devices managed by this driver. Devices are numbere
 */
 #[get("/switch/<device_number>/maxswitch")]
 fn get_switch_maxswitch(
-    schemas::GetSwitchMaxswitchPath { device_number }: schemas::GetSwitchMaxswitchPath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyQuery {},
@@ -5774,7 +3440,7 @@ Reports if the specified switch device can be written to, default true. This is 
 */
 #[get("/switch/<device_number>/canwrite")]
 fn get_switch_canwrite(
-    schemas::GetSwitchCanwritePath { device_number }: schemas::GetSwitchCanwritePath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::GetSwitchCanwriteQuery { id },
@@ -5789,7 +3455,7 @@ Return the state of switch device id as a boolean.  Devices are numbered from 0 
 */
 #[get("/switch/<device_number>/getswitch")]
 fn get_switch_getswitch(
-    schemas::GetSwitchGetswitchPath { device_number }: schemas::GetSwitchGetswitchPath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::GetSwitchGetswitchQuery { id },
@@ -5804,7 +3470,7 @@ Gets the description of the specified switch device. This is to allow a fuller d
 */
 #[get("/switch/<device_number>/getswitchdescription")]
 fn get_switch_getswitchdescription(
-    schemas::GetSwitchGetswitchdescriptionPath { device_number }: schemas::GetSwitchGetswitchdescriptionPath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::GetSwitchGetswitchdescriptionQuery { id },
@@ -5819,7 +3485,7 @@ Gets the name of the specified switch device. Devices are numbered from 0 to Max
 */
 #[get("/switch/<device_number>/getswitchname")]
 fn get_switch_getswitchname(
-    schemas::GetSwitchGetswitchnamePath { device_number }: schemas::GetSwitchGetswitchnamePath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::GetSwitchGetswitchnameQuery { id },
@@ -5834,7 +3500,7 @@ Gets the value of the specified switch device as a double. Devices are numbered 
 */
 #[get("/switch/<device_number>/getswitchvalue")]
 fn get_switch_getswitchvalue(
-    schemas::GetSwitchGetswitchvaluePath { device_number }: schemas::GetSwitchGetswitchvaluePath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::GetSwitchGetswitchvalueQuery { id },
@@ -5849,7 +3515,7 @@ Gets the minimum value of the specified switch device as a double. Devices are n
 */
 #[get("/switch/<device_number>/minswitchvalue")]
 fn get_switch_minswitchvalue(
-    schemas::GetSwitchMinswitchvaluePath { device_number }: schemas::GetSwitchMinswitchvaluePath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::GetSwitchMinswitchvalueQuery { id },
@@ -5864,7 +3530,7 @@ Gets the maximum value of the specified switch device as a double. Devices are n
 */
 #[get("/switch/<device_number>/maxswitchvalue")]
 fn get_switch_maxswitchvalue(
-    schemas::GetSwitchMaxswitchvaluePath { device_number }: schemas::GetSwitchMaxswitchvaluePath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::GetSwitchMaxswitchvalueQuery { id },
@@ -5879,7 +3545,7 @@ Sets a switch controller device to the specified state, true or false.
 */
 #[put("/switch/<device_number>/setswitch")]
 fn put_switch_setswitch(
-    schemas::PutSwitchSetswitchPath { device_number }: schemas::PutSwitchSetswitchPath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::PutSwitchSetswitchRequest { id, state },
@@ -5894,7 +3560,7 @@ Sets a switch device name to the specified value.
 */
 #[put("/switch/<device_number>/setswitchname")]
 fn put_switch_setswitchname(
-    schemas::PutSwitchSetswitchnamePath { device_number }: schemas::PutSwitchSetswitchnamePath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::PutSwitchSetswitchnameRequest { id, name },
@@ -5909,7 +3575,7 @@ Sets a switch device value to the specified value.
 */
 #[put("/switch/<device_number>/setswitchvalue")]
 fn put_switch_setswitchvalue(
-    schemas::PutSwitchSetswitchvaluePath { device_number }: schemas::PutSwitchSetswitchvaluePath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::PutSwitchSetswitchvalueRequest { id, value },
@@ -5924,7 +3590,7 @@ Returns the step size that this device supports (the difference between successi
 */
 #[get("/switch/<device_number>/switchstep")]
 fn get_switch_switchstep(
-    schemas::GetSwitchSwitchstepPath { device_number }: schemas::GetSwitchSwitchstepPath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::GetSwitchSwitchstepQuery { id },
@@ -5939,7 +3605,7 @@ Returns the alignment mode of the mount (Alt/Az, Polar, German Polar).  The alig
 */
 #[get("/telescope/<device_number>/alignmentmode")]
 fn get_telescope_alignmentmode(
-    schemas::GetTelescopeAlignmentmodePath { device_number }: schemas::GetTelescopeAlignmentmodePath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyQuery {},
@@ -5954,7 +3620,7 @@ The altitude above the local horizon of the mount's current position (degrees, p
 */
 #[get("/telescope/<device_number>/altitude")]
 fn get_telescope_altitude(
-    schemas::GetTelescopeAltitudePath { device_number }: schemas::GetTelescopeAltitudePath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyQuery {},
@@ -5969,7 +3635,7 @@ The area of the telescope's aperture, taking into account any obstructions (squa
 */
 #[get("/telescope/<device_number>/aperturearea")]
 fn get_telescope_aperturearea(
-    schemas::GetTelescopeApertureareaPath { device_number }: schemas::GetTelescopeApertureareaPath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyQuery {},
@@ -5984,7 +3650,7 @@ The telescope's effective aperture diameter (meters)
 */
 #[get("/telescope/<device_number>/aperturediameter")]
 fn get_telescope_aperturediameter(
-    schemas::GetTelescopeAperturediameterPath { device_number }: schemas::GetTelescopeAperturediameterPath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyQuery {},
@@ -5999,7 +3665,7 @@ True if the mount is stopped in the Home position. Set only following a FindHome
 */
 #[get("/telescope/<device_number>/athome")]
 fn get_telescope_athome(
-    schemas::GetTelescopeAthomePath { device_number }: schemas::GetTelescopeAthomePath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyQuery {},
@@ -6014,7 +3680,7 @@ True if the telescope has been put into the parked state by the seee Park()  met
 */
 #[get("/telescope/<device_number>/atpark")]
 fn get_telescope_atpark(
-    schemas::GetTelescopeAtparkPath { device_number }: schemas::GetTelescopeAtparkPath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyQuery {},
@@ -6029,7 +3695,7 @@ The azimuth at the local horizon of the mount's current position (degrees, North
 */
 #[get("/telescope/<device_number>/azimuth")]
 fn get_telescope_azimuth(
-    schemas::GetTelescopeAzimuthPath { device_number }: schemas::GetTelescopeAzimuthPath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyQuery {},
@@ -6044,7 +3710,7 @@ True if this telescope is capable of programmed finding its home position (FindH
 */
 #[get("/telescope/<device_number>/canfindhome")]
 fn get_telescope_canfindhome(
-    schemas::GetTelescopeCanfindhomePath { device_number }: schemas::GetTelescopeCanfindhomePath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyQuery {},
@@ -6059,7 +3725,7 @@ True if this telescope is capable of programmed parking (Park() method)
 */
 #[get("/telescope/<device_number>/canpark")]
 fn get_telescope_canpark(
-    schemas::GetTelescopeCanparkPath { device_number }: schemas::GetTelescopeCanparkPath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyQuery {},
@@ -6074,7 +3740,7 @@ True if this telescope is capable of software-pulsed guiding (via the PulseGuide
 */
 #[get("/telescope/<device_number>/canpulseguide")]
 fn get_telescope_canpulseguide(
-    schemas::GetTelescopeCanpulseguidePath { device_number }: schemas::GetTelescopeCanpulseguidePath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyQuery {},
@@ -6089,7 +3755,7 @@ True if the DeclinationRate property can be changed to provide offset tracking i
 */
 #[get("/telescope/<device_number>/cansetdeclinationrate")]
 fn get_telescope_cansetdeclinationrate(
-    schemas::GetTelescopeCansetdeclinationratePath { device_number }: schemas::GetTelescopeCansetdeclinationratePath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyQuery {},
@@ -6104,7 +3770,7 @@ True if the guide rate properties used for PulseGuide(GuideDirections, Int32) ca
 */
 #[get("/telescope/<device_number>/cansetguiderates")]
 fn get_telescope_cansetguiderates(
-    schemas::GetTelescopeCansetguideratesPath { device_number }: schemas::GetTelescopeCansetguideratesPath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyQuery {},
@@ -6119,7 +3785,7 @@ True if this telescope is capable of programmed setting of its park position (Se
 */
 #[get("/telescope/<device_number>/cansetpark")]
 fn get_telescope_cansetpark(
-    schemas::GetTelescopeCansetparkPath { device_number }: schemas::GetTelescopeCansetparkPath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyQuery {},
@@ -6134,7 +3800,7 @@ True if the SideOfPier property can be set, meaning that the mount can be forced
 */
 #[get("/telescope/<device_number>/cansetpierside")]
 fn get_telescope_cansetpierside(
-    schemas::GetTelescopeCansetpiersidePath { device_number }: schemas::GetTelescopeCansetpiersidePath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyQuery {},
@@ -6149,7 +3815,7 @@ True if the RightAscensionRate property can be changed to provide offset trackin
 */
 #[get("/telescope/<device_number>/cansetrightascensionrate")]
 fn get_telescope_cansetrightascensionrate(
-    schemas::GetTelescopeCansetrightascensionratePath { device_number }: schemas::GetTelescopeCansetrightascensionratePath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyQuery {},
@@ -6164,7 +3830,7 @@ True if the Tracking property can be changed, turning telescope sidereal trackin
 */
 #[get("/telescope/<device_number>/cansettracking")]
 fn get_telescope_cansettracking(
-    schemas::GetTelescopeCansettrackingPath { device_number }: schemas::GetTelescopeCansettrackingPath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyQuery {},
@@ -6179,7 +3845,7 @@ True if this telescope is capable of programmed slewing (synchronous or asynchro
 */
 #[get("/telescope/<device_number>/canslew")]
 fn get_telescope_canslew(
-    schemas::GetTelescopeCanslewPath { device_number }: schemas::GetTelescopeCanslewPath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyQuery {},
@@ -6194,7 +3860,7 @@ True if this telescope is capable of programmed slewing (synchronous or asynchro
 */
 #[get("/telescope/<device_number>/canslewaltaz")]
 fn get_telescope_canslewaltaz(
-    schemas::GetTelescopeCanslewaltazPath { device_number }: schemas::GetTelescopeCanslewaltazPath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyQuery {},
@@ -6209,7 +3875,7 @@ True if this telescope is capable of programmed asynchronous slewing to local ho
 */
 #[get("/telescope/<device_number>/canslewaltazasync")]
 fn get_telescope_canslewaltazasync(
-    schemas::GetTelescopeCanslewaltazasyncPath { device_number }: schemas::GetTelescopeCanslewaltazasyncPath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyQuery {},
@@ -6224,7 +3890,7 @@ True if this telescope is capable of programmed asynchronous slewing to equatori
 */
 #[get("/telescope/<device_number>/canslewasync")]
 fn get_telescope_canslewasync(
-    schemas::GetTelescopeCanslewasyncPath { device_number }: schemas::GetTelescopeCanslewasyncPath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyQuery {},
@@ -6239,7 +3905,7 @@ True if this telescope is capable of programmed synching to equatorial coordinat
 */
 #[get("/telescope/<device_number>/cansync")]
 fn get_telescope_cansync(
-    schemas::GetTelescopeCansyncPath { device_number }: schemas::GetTelescopeCansyncPath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyQuery {},
@@ -6254,7 +3920,7 @@ True if this telescope is capable of programmed synching to local horizontal coo
 */
 #[get("/telescope/<device_number>/cansyncaltaz")]
 fn get_telescope_cansyncaltaz(
-    schemas::GetTelescopeCansyncaltazPath { device_number }: schemas::GetTelescopeCansyncaltazPath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyQuery {},
@@ -6269,7 +3935,7 @@ True if this telescope is capable of programmed unparking (UnPark() method)
 */
 #[get("/telescope/<device_number>/canunpark")]
 fn get_telescope_canunpark(
-    schemas::GetTelescopeCanunparkPath { device_number }: schemas::GetTelescopeCanunparkPath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyQuery {},
@@ -6284,7 +3950,7 @@ The declination (degrees) of the mount's current equatorial coordinates, in the 
 */
 #[get("/telescope/<device_number>/declination")]
 fn get_telescope_declination(
-    schemas::GetTelescopeDeclinationPath { device_number }: schemas::GetTelescopeDeclinationPath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyQuery {},
@@ -6299,7 +3965,7 @@ The declination tracking rate (arcseconds per second, default = 0.0)
 */
 #[get("/telescope/<device_number>/declinationrate")]
 fn get_telescope_declinationrate(
-    schemas::GetTelescopeDeclinationratePath { device_number }: schemas::GetTelescopeDeclinationratePath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyQuery {},
@@ -6314,7 +3980,7 @@ Sets the declination tracking rate (arcseconds per second)
 */
 #[put("/telescope/<device_number>/declinationrate")]
 fn put_telescope_declinationrate(
-    schemas::PutTelescopeDeclinationratePath { device_number }: schemas::PutTelescopeDeclinationratePath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::PutTelescopeDeclinationrateRequest { declination_rate },
@@ -6329,7 +3995,7 @@ True if the telescope or driver applies atmospheric refraction to coordinates.
 */
 #[get("/telescope/<device_number>/doesrefraction")]
 fn get_telescope_doesrefraction(
-    schemas::GetTelescopeDoesrefractionPath { device_number }: schemas::GetTelescopeDoesrefractionPath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyQuery {},
@@ -6344,7 +4010,7 @@ Causes the rotator to move Position degrees relative to the current Position val
 */
 #[put("/telescope/<device_number>/doesrefraction")]
 fn put_telescope_doesrefraction(
-    schemas::PutTelescopeDoesrefractionPath { device_number }: schemas::PutTelescopeDoesrefractionPath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::PutTelescopeDoesrefractionRequest { does_refraction },
@@ -6359,7 +4025,7 @@ Returns the current equatorial coordinate system used by this telescope (e.g. To
 */
 #[get("/telescope/<device_number>/equatorialsystem")]
 fn get_telescope_equatorialsystem(
-    schemas::GetTelescopeEquatorialsystemPath { device_number }: schemas::GetTelescopeEquatorialsystemPath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyQuery {},
@@ -6374,7 +4040,7 @@ The telescope's focal length in meters
 */
 #[get("/telescope/<device_number>/focallength")]
 fn get_telescope_focallength(
-    schemas::GetTelescopeFocallengthPath { device_number }: schemas::GetTelescopeFocallengthPath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyQuery {},
@@ -6389,7 +4055,7 @@ The current Declination movement rate offset for telescope guiding (degrees/sec)
 */
 #[get("/telescope/<device_number>/guideratedeclination")]
 fn get_telescope_guideratedeclination(
-    schemas::GetTelescopeGuideratedeclinationPath { device_number }: schemas::GetTelescopeGuideratedeclinationPath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyQuery {},
@@ -6404,7 +4070,7 @@ Sets the current Declination movement rate offset for telescope guiding (degrees
 */
 #[put("/telescope/<device_number>/guideratedeclination")]
 fn put_telescope_guideratedeclination(
-    schemas::PutTelescopeGuideratedeclinationPath { device_number }: schemas::PutTelescopeGuideratedeclinationPath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::PutTelescopeGuideratedeclinationRequest { guide_rate_declination },
@@ -6419,7 +4085,7 @@ The current RightAscension movement rate offset for telescope guiding (degrees/s
 */
 #[get("/telescope/<device_number>/guideraterightascension")]
 fn get_telescope_guideraterightascension(
-    schemas::GetTelescopeGuideraterightascensionPath { device_number }: schemas::GetTelescopeGuideraterightascensionPath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyQuery {},
@@ -6434,7 +4100,7 @@ Sets the current RightAscension movement rate offset for telescope guiding (degr
 */
 #[put("/telescope/<device_number>/guideraterightascension")]
 fn put_telescope_guideraterightascension(
-    schemas::PutTelescopeGuideraterightascensionPath { device_number }: schemas::PutTelescopeGuideraterightascensionPath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::PutTelescopeGuideraterightascensionRequest { guide_rate_right_ascension },
@@ -6449,7 +4115,7 @@ True if a PulseGuide(GuideDirections, Int32) command is in progress, False other
 */
 #[get("/telescope/<device_number>/ispulseguiding")]
 fn get_telescope_ispulseguiding(
-    schemas::GetTelescopeIspulseguidingPath { device_number }: schemas::GetTelescopeIspulseguidingPath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyQuery {},
@@ -6464,7 +4130,7 @@ The right ascension (hours) of the mount's current equatorial coordinates, in th
 */
 #[get("/telescope/<device_number>/rightascension")]
 fn get_telescope_rightascension(
-    schemas::GetTelescopeRightascensionPath { device_number }: schemas::GetTelescopeRightascensionPath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyQuery {},
@@ -6479,7 +4145,7 @@ The right ascension tracking rate (arcseconds per second, default = 0.0)
 */
 #[get("/telescope/<device_number>/rightascensionrate")]
 fn get_telescope_rightascensionrate(
-    schemas::GetTelescopeRightascensionratePath { device_number }: schemas::GetTelescopeRightascensionratePath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyQuery {},
@@ -6494,7 +4160,7 @@ Sets the right ascension tracking rate (arcseconds per second)
 */
 #[put("/telescope/<device_number>/rightascensionrate")]
 fn put_telescope_rightascensionrate(
-    schemas::PutTelescopeRightascensionratePath { device_number }: schemas::PutTelescopeRightascensionratePath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::PutTelescopeRightascensionrateRequest { right_ascension_rate },
@@ -6509,7 +4175,7 @@ Indicates the pointing state of the mount. 0 = pierEast, 1 = pierWest, -1= pierU
 */
 #[get("/telescope/<device_number>/sideofpier")]
 fn get_telescope_sideofpier(
-    schemas::GetTelescopeSideofpierPath { device_number }: schemas::GetTelescopeSideofpierPath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyQuery {},
@@ -6524,7 +4190,7 @@ Sets the pointing state of the mount. 0 = pierEast, 1 = pierWest
 */
 #[put("/telescope/<device_number>/sideofpier")]
 fn put_telescope_sideofpier(
-    schemas::PutTelescopeSideofpierPath { device_number }: schemas::PutTelescopeSideofpierPath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::PutTelescopeSideofpierRequest { side_of_pier },
@@ -6539,7 +4205,7 @@ The local apparent sidereal time from the telescope's internal clock (hours, sid
 */
 #[get("/telescope/<device_number>/siderealtime")]
 fn get_telescope_siderealtime(
-    schemas::GetTelescopeSiderealtimePath { device_number }: schemas::GetTelescopeSiderealtimePath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyQuery {},
@@ -6554,7 +4220,7 @@ The elevation above mean sea level (meters) of the site at which the telescope i
 */
 #[get("/telescope/<device_number>/siteelevation")]
 fn get_telescope_siteelevation(
-    schemas::GetTelescopeSiteelevationPath { device_number }: schemas::GetTelescopeSiteelevationPath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyQuery {},
@@ -6569,7 +4235,7 @@ Sets the elevation above mean sea level (metres) of the site at which the telesc
 */
 #[put("/telescope/<device_number>/siteelevation")]
 fn put_telescope_siteelevation(
-    schemas::PutTelescopeSiteelevationPath { device_number }: schemas::PutTelescopeSiteelevationPath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::PutTelescopeSiteelevationRequest { site_elevation },
@@ -6584,7 +4250,7 @@ The geodetic(map) latitude (degrees, positive North, WGS84) of the site at which
 */
 #[get("/telescope/<device_number>/sitelatitude")]
 fn get_telescope_sitelatitude(
-    schemas::GetTelescopeSitelatitudePath { device_number }: schemas::GetTelescopeSitelatitudePath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyQuery {},
@@ -6599,7 +4265,7 @@ Sets the observing site's latitude (degrees).
 */
 #[put("/telescope/<device_number>/sitelatitude")]
 fn put_telescope_sitelatitude(
-    schemas::PutTelescopeSitelatitudePath { device_number }: schemas::PutTelescopeSitelatitudePath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::PutTelescopeSitelatitudeRequest { site_latitude },
@@ -6614,7 +4280,7 @@ The longitude (degrees, positive East, WGS84) of the site at which the telescope
 */
 #[get("/telescope/<device_number>/sitelongitude")]
 fn get_telescope_sitelongitude(
-    schemas::GetTelescopeSitelongitudePath { device_number }: schemas::GetTelescopeSitelongitudePath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyQuery {},
@@ -6629,7 +4295,7 @@ Sets the observing site's longitude (degrees, positive East, WGS84).
 */
 #[put("/telescope/<device_number>/sitelongitude")]
 fn put_telescope_sitelongitude(
-    schemas::PutTelescopeSitelongitudePath { device_number }: schemas::PutTelescopeSitelongitudePath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::PutTelescopeSitelongitudeRequest { site_longitude },
@@ -6644,7 +4310,7 @@ True if telescope is currently moving in response to one of the Slew methods or 
 */
 #[get("/telescope/<device_number>/slewing")]
 fn get_telescope_slewing(
-    schemas::GetTelescopeSlewingPath { device_number }: schemas::GetTelescopeSlewingPath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyQuery {},
@@ -6659,7 +4325,7 @@ Returns the post-slew settling time (sec.).
 */
 #[get("/telescope/<device_number>/slewsettletime")]
 fn get_telescope_slewsettletime(
-    schemas::GetTelescopeSlewsettletimePath { device_number }: schemas::GetTelescopeSlewsettletimePath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyQuery {},
@@ -6674,7 +4340,7 @@ Sets the  post-slew settling time (integer sec.).
 */
 #[put("/telescope/<device_number>/slewsettletime")]
 fn put_telescope_slewsettletime(
-    schemas::PutTelescopeSlewsettletimePath { device_number }: schemas::PutTelescopeSlewsettletimePath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::PutTelescopeSlewsettletimeRequest { slew_settle_time },
@@ -6689,7 +4355,7 @@ The declination (degrees, positive North) for the target of an equatorial slew o
 */
 #[get("/telescope/<device_number>/targetdeclination")]
 fn get_telescope_targetdeclination(
-    schemas::GetTelescopeTargetdeclinationPath { device_number }: schemas::GetTelescopeTargetdeclinationPath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyQuery {},
@@ -6704,7 +4370,7 @@ Sets the declination (degrees, positive North) for the target of an equatorial s
 */
 #[put("/telescope/<device_number>/targetdeclination")]
 fn put_telescope_targetdeclination(
-    schemas::PutTelescopeTargetdeclinationPath { device_number }: schemas::PutTelescopeTargetdeclinationPath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::PutTelescopeTargetdeclinationRequest { target_declination },
@@ -6719,7 +4385,7 @@ The right ascension (hours) for the target of an equatorial slew or sync operati
 */
 #[get("/telescope/<device_number>/targetrightascension")]
 fn get_telescope_targetrightascension(
-    schemas::GetTelescopeTargetrightascensionPath { device_number }: schemas::GetTelescopeTargetrightascensionPath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyQuery {},
@@ -6734,7 +4400,7 @@ Sets the right ascension (hours) for the target of an equatorial slew or sync op
 */
 #[put("/telescope/<device_number>/targetrightascension")]
 fn put_telescope_targetrightascension(
-    schemas::PutTelescopeTargetrightascensionPath { device_number }: schemas::PutTelescopeTargetrightascensionPath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::PutTelescopeTargetrightascensionRequest { target_right_ascension },
@@ -6749,7 +4415,7 @@ Returns the state of the telescope's sidereal tracking drive.
 */
 #[get("/telescope/<device_number>/tracking")]
 fn get_telescope_tracking(
-    schemas::GetTelescopeTrackingPath { device_number }: schemas::GetTelescopeTrackingPath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyQuery {},
@@ -6764,7 +4430,7 @@ Sets the state of the telescope's sidereal tracking drive.
 */
 #[put("/telescope/<device_number>/tracking")]
 fn put_telescope_tracking(
-    schemas::PutTelescopeTrackingPath { device_number }: schemas::PutTelescopeTrackingPath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::PutTelescopeTrackingRequest { tracking },
@@ -6779,7 +4445,7 @@ The current tracking rate of the telescope's sidereal drive.
 */
 #[get("/telescope/<device_number>/trackingrate")]
 fn get_telescope_trackingrate(
-    schemas::GetTelescopeTrackingratePath { device_number }: schemas::GetTelescopeTrackingratePath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyQuery {},
@@ -6794,7 +4460,7 @@ Sets the tracking rate of the telescope's sidereal drive. 0 = driveSidereal, 1 =
 */
 #[put("/telescope/<device_number>/trackingrate")]
 fn put_telescope_trackingrate(
-    schemas::PutTelescopeTrackingratePath { device_number }: schemas::PutTelescopeTrackingratePath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::PutTelescopeTrackingrateRequest { tracking_rate },
@@ -6809,7 +4475,7 @@ Returns an array of supported DriveRates values that describe the permissible va
 */
 #[get("/telescope/<device_number>/trackingrates")]
 fn get_telescope_trackingrates(
-    schemas::GetTelescopeTrackingratesPath { device_number }: schemas::GetTelescopeTrackingratesPath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyQuery {},
@@ -6824,7 +4490,7 @@ The UTC date/time of the telescope's internal clock in ISO 8601 format including
 */
 #[get("/telescope/<device_number>/utcdate")]
 fn get_telescope_utcdate(
-    schemas::GetTelescopeUtcdatePath { device_number }: schemas::GetTelescopeUtcdatePath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyQuery {},
@@ -6839,7 +4505,7 @@ The UTC date/time of the telescope's internal clock in ISO 8601 format including
 */
 #[put("/telescope/<device_number>/utcdate")]
 fn put_telescope_utcdate(
-    schemas::PutTelescopeUtcdatePath { device_number }: schemas::PutTelescopeUtcdatePath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::PutTelescopeUtcdateRequest { utcdate },
@@ -6854,7 +4520,7 @@ Immediately Stops a slew in progress.
 */
 #[put("/telescope/<device_number>/abortslew")]
 fn put_telescope_abortslew(
-    schemas::PutTelescopeAbortslewPath { device_number }: schemas::PutTelescopeAbortslewPath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyForm {},
@@ -6869,7 +4535,7 @@ The rates at which the telescope may be moved about the specified axis by the Mo
 */
 #[get("/telescope/<device_number>/axisrates")]
 fn get_telescope_axisrates(
-    schemas::GetTelescopeAxisratesPath { device_number }: schemas::GetTelescopeAxisratesPath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::GetTelescopeAxisratesQuery { axis },
@@ -6884,7 +4550,7 @@ True if this telescope can move the requested axis.
 */
 #[get("/telescope/<device_number>/canmoveaxis")]
 fn get_telescope_canmoveaxis(
-    schemas::GetTelescopeCanmoveaxisPath { device_number }: schemas::GetTelescopeCanmoveaxisPath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::GetTelescopeCanmoveaxisQuery { axis },
@@ -6899,7 +4565,7 @@ Predicts the pointing state that a German equatorial mount will be in if it slew
 */
 #[get("/telescope/<device_number>/destinationsideofpier")]
 fn get_telescope_destinationsideofpier(
-    schemas::GetTelescopeDestinationsideofpierPath { device_number }: schemas::GetTelescopeDestinationsideofpierPath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::GetTelescopeDestinationsideofpierQuery { right_ascension, declination },
@@ -6914,7 +4580,7 @@ Locates the telescope's "home" position (synchronous)
 */
 #[put("/telescope/<device_number>/findhome")]
 fn put_telescope_findhome(
-    schemas::PutTelescopeFindhomePath { device_number }: schemas::PutTelescopeFindhomePath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyForm {},
@@ -6929,7 +4595,7 @@ Move the telescope in one axis at the given rate.
 */
 #[put("/telescope/<device_number>/moveaxis")]
 fn put_telescope_moveaxis(
-    schemas::PutTelescopeMoveaxisPath { device_number }: schemas::PutTelescopeMoveaxisPath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::PutTelescopeMoveaxisRequest { axis, rate },
@@ -6944,7 +4610,7 @@ Move the telescope to its park position, stop all motion (or restrict to a small
 */
 #[put("/telescope/<device_number>/park")]
 fn put_telescope_park(
-    schemas::PutTelescopeParkPath { device_number }: schemas::PutTelescopeParkPath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyForm {},
@@ -6959,7 +4625,7 @@ Moves the scope in the given direction for the given interval or time at the rat
 */
 #[put("/telescope/<device_number>/pulseguide")]
 fn put_telescope_pulseguide(
-    schemas::PutTelescopePulseguidePath { device_number }: schemas::PutTelescopePulseguidePath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::PutTelescopePulseguideRequest { direction, duration },
@@ -6974,7 +4640,7 @@ Sets the telescope's park position to be its current position.
 */
 #[put("/telescope/<device_number>/setpark")]
 fn put_telescope_setpark(
-    schemas::PutTelescopeSetparkPath { device_number }: schemas::PutTelescopeSetparkPath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyForm {},
@@ -6989,7 +4655,7 @@ Move the telescope to the given local horizontal coordinates, return when slew i
 */
 #[put("/telescope/<device_number>/slewtoaltaz")]
 fn put_telescope_slewtoaltaz(
-    schemas::PutTelescopeSlewtoaltazPath { device_number }: schemas::PutTelescopeSlewtoaltazPath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::PutTelescopeSlewtoaltazRequest { azimuth, altitude },
@@ -7004,7 +4670,7 @@ Move the telescope to the given local horizontal coordinates, return immediatley
 */
 #[put("/telescope/<device_number>/slewtoaltazasync")]
 fn put_telescope_slewtoaltazasync(
-    schemas::PutTelescopeSlewtoaltazasyncPath { device_number }: schemas::PutTelescopeSlewtoaltazasyncPath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::PutTelescopeSlewtoaltazRequest { azimuth, altitude },
@@ -7019,7 +4685,7 @@ Move the telescope to the given equatorial coordinates, return when slew is comp
 */
 #[put("/telescope/<device_number>/slewtocoordinates")]
 fn put_telescope_slewtocoordinates(
-    schemas::PutTelescopeSlewtocoordinatesPath { device_number }: schemas::PutTelescopeSlewtocoordinatesPath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::PutTelescopeSlewtocoordinatesRequest { right_ascension, declination },
@@ -7034,7 +4700,7 @@ Move the telescope to the given equatorial coordinates, return immediatley after
 */
 #[put("/telescope/<device_number>/slewtocoordinatesasync")]
 fn put_telescope_slewtocoordinatesasync(
-    schemas::PutTelescopeSlewtocoordinatesasyncPath { device_number }: schemas::PutTelescopeSlewtocoordinatesasyncPath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::PutTelescopeSlewtocoordinatesRequest { right_ascension, declination },
@@ -7049,7 +4715,7 @@ Move the telescope to the TargetRightAscension and TargetDeclination equatorial 
 */
 #[put("/telescope/<device_number>/slewtotarget")]
 fn put_telescope_slewtotarget(
-    schemas::PutTelescopeSlewtotargetPath { device_number }: schemas::PutTelescopeSlewtotargetPath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyForm {},
@@ -7064,7 +4730,7 @@ Move the telescope to the TargetRightAscension and TargetDeclination equatorial 
 */
 #[put("/telescope/<device_number>/slewtotargetasync")]
 fn put_telescope_slewtotargetasync(
-    schemas::PutTelescopeSlewtotargetasyncPath { device_number }: schemas::PutTelescopeSlewtotargetasyncPath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyForm {},
@@ -7079,7 +4745,7 @@ Matches the scope's local horizontal coordinates to the given local horizontal c
 */
 #[put("/telescope/<device_number>/synctoaltaz")]
 fn put_telescope_synctoaltaz(
-    schemas::PutTelescopeSynctoaltazPath { device_number }: schemas::PutTelescopeSynctoaltazPath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::PutTelescopeSlewtoaltazRequest { azimuth, altitude },
@@ -7094,7 +4760,7 @@ Matches the scope's equatorial coordinates to the given equatorial coordinates.
 */
 #[put("/telescope/<device_number>/synctocoordinates")]
 fn put_telescope_synctocoordinates(
-    schemas::PutTelescopeSynctocoordinatesPath { device_number }: schemas::PutTelescopeSynctocoordinatesPath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::PutTelescopeSlewtocoordinatesRequest { right_ascension, declination },
@@ -7109,7 +4775,7 @@ Matches the scope's equatorial coordinates to the TargetRightAscension and Targe
 */
 #[put("/telescope/<device_number>/synctotarget")]
 fn put_telescope_synctotarget(
-    schemas::PutTelescopeSynctotargetPath { device_number }: schemas::PutTelescopeSynctotargetPath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyForm {},
@@ -7124,7 +4790,7 @@ Takes telescope out of the Parked state. )
 */
 #[put("/telescope/<device_number>/unpark")]
 fn put_telescope_unpark(
-    schemas::PutTelescopeUnparkPath { device_number }: schemas::PutTelescopeUnparkPath,
+    schemas::DeviceNumberPath { device_number }: schemas::DeviceNumberPath,
     ASCOMRequest {
         transaction,
         request: schemas::EmptyForm {},

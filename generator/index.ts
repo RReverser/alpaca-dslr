@@ -5,7 +5,8 @@ import { execFileSync } from 'child_process';
 import { toSnakeCase, toPascalCase } from 'js-convert-case';
 import { OpenAPIV3 } from 'openapi-types';
 import * as assert from 'assert/strict';
-import { inspect } from 'util';
+import { inspect, isDeepStrictEqual } from 'util';
+import { extraSchemas } from './extra-schemas.js';
 
 interface MethodExtension {
   'x-path'?: OpenAPIV3.ReferenceObject;
@@ -191,7 +192,8 @@ for (let { method, path, id, operation } of ops()) {
 
 let refReplacements: Record<string, OpenAPIV3.ReferenceObject> = {};
 let groupCounts: Record<string, number> = {};
-let extraSchemas: Record<string, OpenAPIV3.NonArraySchemaObject> = {};
+
+let extraSchemasWithoutOptFields = withoutOptFields(extraSchemas);
 
 for (let [schemaName, schema] of Object.entries(api.components!.schemas!)) {
   schema = resolveMaybeRef(schema);
@@ -262,30 +264,27 @@ for (let [schemaName, schema] of Object.entries(api.components!.schemas!)) {
     }
   }
 
-  if (
-    schema.type === 'object' &&
-    Object.keys(schema.properties!).length === 0
-  ) {
+  let schemaWithoutOptFields = withoutOptFields(schema);
+
+  let replacementName = Object.keys(extraSchemasWithoutOptFields).find(
+    replacementName =>
+      isDeepStrictEqual(
+        schemaWithoutOptFields,
+        extraSchemasWithoutOptFields[replacementName]
+      )
+  );
+
+  if (replacementName) {
     delete api.components!.schemas![schemaName];
 
-    let name = `Empty${kind || 'Object'}`;
-
-    extraSchemas[name] ??= {
-      type: 'object',
-      properties: {},
-      description: `Empty ${name}`,
-      // @ts-ignore
-      'x-kind': kind
-    };
-
     refReplacements[`#/components/schemas/${schemaName}`] = {
-      $ref: `#/components/schemas/${name}`
+      $ref: `#/components/schemas/${replacementName}`
     };
+  } else {
+    let key = jsonWithoutOptFields(schema);
+    groupCounts[key] ??= 0;
+    groupCounts[key]++;
   }
-
-  let key = jsonWithoutOptFields(schema);
-  groupCounts[key] ??= 0;
-  groupCounts[key]++;
 }
 
 Object.assign(api.components!.schemas!, extraSchemas);
