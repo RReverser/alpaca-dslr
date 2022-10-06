@@ -68,18 +68,61 @@ function getContent(
   return { schema: schema, content: content[contentType] };
 }
 
-function jsonWithoutOptFields(obj: any): string {
-  return JSON.stringify(obj, (k, v) => {
-    switch (k) {
-      case 'description':
-      case 'minimum':
-      case 'maximum':
-      case 'default':
-        return;
-      default:
-        return v;
+function cleanupSchema(obj: OpenAPIV3.SchemaObject) {
+  switch (obj.type) {
+    case 'array': {
+      if (!isRef(obj.items)) {
+        cleanupSchema(obj.items);
+      }
+      return;
     }
-  });
+    case 'object': {
+      for (let v of Object.values(obj.properties!)) {
+        if (!isRef(v)) {
+          cleanupSchema(v);
+        }
+      }
+      return;
+    }
+    case 'string': {
+      if (obj.default === '') {
+        delete obj.default;
+      }
+      return;
+    }
+    case 'boolean': {
+      if (obj.default === false) {
+        delete obj.default;
+      }
+      return;
+    }
+    case 'integer': {
+      obj.format ??= 'int32';
+      let range = {
+        int32: { min: -2147483648, max: 2147483647 },
+        uint32: { min: 0, max: 4294967295 }
+      }[obj.format];
+      if (range) {
+        if (obj.minimum === range.min) {
+          delete obj.minimum;
+        }
+        if (obj.maximum === range.max) {
+          delete obj.maximum;
+        }
+      }
+      // fallthrough
+    }
+    case 'number': {
+      if (obj.default === 0) {
+        delete obj.default;
+      }
+      return;
+    }
+  }
+}
+
+function jsonWithoutOptFields(obj: any): string {
+  return JSON.stringify(obj, (k, v) => (k === 'description' ? undefined : v));
 }
 
 function withoutOptFields<T>(obj: T): T {
@@ -203,11 +246,13 @@ let refReplacements: Record<string, OpenAPIV3.ReferenceObject> = {};
 let groupCounts: Record<string, number> = {};
 
 let extraSchemasWithoutOptFields = withoutOptFields(extraSchemas);
+console.log(extraSchemasWithoutOptFields.DeviceTypeAndNumberPath);
 
 for (let [schemaName, schema] of Object.entries(api.components!.schemas!)) {
   schema = resolveMaybeRef(schema);
-  let kind = (schema as any)['x-kind'];
+  cleanupSchema(schema);
 
+  let kind = (schema as any)['x-kind'];
   switch (kind) {
     case 'Response': {
       let {
@@ -251,6 +296,11 @@ for (let [schemaName, schema] of Object.entries(api.components!.schemas!)) {
     case 'Request': {
       let { ClientID, ClientTransactionID, ...otherProperties } =
         schema.properties!;
+
+      // These defaults are missing in some definitions.
+      // Ignore them for comparison purposes.
+      delete (ClientID as OpenAPIV3.SchemaObject).default;
+      delete (ClientTransactionID as OpenAPIV3.SchemaObject).default;
 
       assert.deepEqual(
         withoutOptFields({ ClientID, ClientTransactionID }),

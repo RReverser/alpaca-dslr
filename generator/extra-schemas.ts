@@ -20,6 +20,7 @@ let extraSchemas: Record<string, OpenAPIV3.NonArraySchemaObject> = {
     properties: {
       device_type: {
         type: 'string',
+        default: 'telescope',
         pattern: '^[a-z]*$',
         description:
           'One of the recognised ASCOM device types e.g. telescope (must be lower case)'
