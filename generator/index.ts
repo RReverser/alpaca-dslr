@@ -373,8 +373,12 @@ let rendered = render(
 
 await writeFile('./AlpacaDeviceAPI_v1.rs', rendered);
 
-execFileSync('rustfmt', [
-  '+nightly',
-  '--edition=2021',
-  'AlpacaDeviceAPI_v1.rs'
-]);
+try {
+  execFileSync('rustfmt', [
+    '+nightly',
+    '--edition=2021',
+    'AlpacaDeviceAPI_v1.rs'
+  ]);
+} catch {
+  throw new Error('rustfmt failed');
+}
