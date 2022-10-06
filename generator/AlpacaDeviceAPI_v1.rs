@@ -84,27 +84,6 @@ impl<T: Serialize> IntoResponse for ASCOMResponse<T> {
     }
 }
 
-#[derive(Debug)]
-pub enum AlpacaError {
-    /// Method or parameter value error, check error message
-    ValueError(String),
-
-    // Server internal error, check error message
-    InternalError(String),
-}
-
-impl IntoResponse for AlpacaError {
-    fn into_response(self) -> Response {
-        match self {
-            Self::ValueError(message) => (StatusCode::BAD_REQUEST, message),
-            Self::InternalError(message) => (StatusCode::INTERNAL_SERVER_ERROR, message),
-        }
-        .into_response()
-    }
-}
-
-pub type Result<T> = std::result::Result<ASCOMResponse<T>, AlpacaError>;
-
 mod schemas {
 
     #[derive(Serialize)]
@@ -834,7 +813,7 @@ fn put_action(
         transaction,
         request: schemas::PutActionRequest { action, parameters },
     }): Form<ASCOMRequest<schemas::PutActionRequest>>,
-) -> Result<schemas::StringResponse> {
+) -> ASCOMResponse<schemas::StringResponse> {
 }
 
 /**
@@ -850,7 +829,7 @@ fn put_commandblind(
         transaction,
         request: schemas::PutCommandblindRequest { command, raw },
     }): Form<ASCOMRequest<schemas::PutCommandblindRequest>>,
-) -> Result<()> {
+) -> ASCOMResponse<()> {
 }
 
 /**
@@ -866,7 +845,7 @@ fn put_commandbool(
         transaction,
         request: schemas::PutCommandblindRequest { command, raw },
     }): Form<ASCOMRequest<schemas::PutCommandblindRequest>>,
-) -> Result<schemas::BoolResponse> {
+) -> ASCOMResponse<schemas::BoolResponse> {
 }
 
 /**
@@ -882,7 +861,7 @@ fn put_commandstring(
         transaction,
         request: schemas::PutCommandblindRequest { command, raw },
     }): Form<ASCOMRequest<schemas::PutCommandblindRequest>>,
-) -> Result<schemas::StringResponse> {
+) -> ASCOMResponse<schemas::StringResponse> {
 }
 
 /// Retrieves the connected state of the device
@@ -891,7 +870,7 @@ fn get_connected(
     Path(schemas::DeviceTypeAndNumberPath { device_type, device_number }): Path<schemas::DeviceTypeAndNumberPath>,
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
-) -> Result<schemas::BoolResponse> {
+) -> ASCOMResponse<schemas::BoolResponse> {
 }
 
 /// Sets the connected state of the device
@@ -903,7 +882,7 @@ fn put_connected(
         transaction,
         request: schemas::PutConnectedRequest { connected },
     }): Form<ASCOMRequest<schemas::PutConnectedRequest>>,
-) -> Result<()> {
+) -> ASCOMResponse<()> {
 }
 
 /**
@@ -916,7 +895,7 @@ fn get_description(
     Path(schemas::DeviceTypeAndNumberPath { device_type, device_number }): Path<schemas::DeviceTypeAndNumberPath>,
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
-) -> Result<schemas::StringResponse> {
+) -> ASCOMResponse<schemas::StringResponse> {
 }
 
 /**
@@ -929,7 +908,7 @@ fn get_driverinfo(
     Path(schemas::DeviceTypeAndNumberPath { device_type, device_number }): Path<schemas::DeviceTypeAndNumberPath>,
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
-) -> Result<schemas::StringResponse> {
+) -> ASCOMResponse<schemas::StringResponse> {
 }
 
 /**
@@ -942,7 +921,7 @@ fn get_driverversion(
     Path(schemas::DeviceTypeAndNumberPath { device_type, device_number }): Path<schemas::DeviceTypeAndNumberPath>,
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
-) -> Result<schemas::StringResponse> {
+) -> ASCOMResponse<schemas::StringResponse> {
 }
 
 /**
@@ -955,7 +934,7 @@ fn get_interfaceversion(
     Path(schemas::DeviceTypeAndNumberPath { device_type, device_number }): Path<schemas::DeviceTypeAndNumberPath>,
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
-) -> Result<schemas::IntResponse> {
+) -> ASCOMResponse<schemas::IntResponse> {
 }
 
 /**
@@ -968,7 +947,7 @@ fn get_name(
     Path(schemas::DeviceTypeAndNumberPath { device_type, device_number }): Path<schemas::DeviceTypeAndNumberPath>,
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
-) -> Result<schemas::StringResponse> {
+) -> ASCOMResponse<schemas::StringResponse> {
 }
 
 /// Returns the list of action names supported by this driver.
@@ -977,7 +956,7 @@ fn get_supportedactions(
     Path(schemas::DeviceTypeAndNumberPath { device_type, device_number }): Path<schemas::DeviceTypeAndNumberPath>,
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
-) -> Result<schemas::StringArrayResponse> {
+) -> ASCOMResponse<schemas::StringArrayResponse> {
 }
 
 /**
@@ -990,7 +969,7 @@ fn get_camera_bayeroffsetx(
     Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>,
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
-) -> Result<schemas::IntResponse> {
+) -> ASCOMResponse<schemas::IntResponse> {
 }
 
 /**
@@ -1003,7 +982,7 @@ fn get_camera_bayeroffsety(
     Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>,
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
-) -> Result<schemas::IntResponse> {
+) -> ASCOMResponse<schemas::IntResponse> {
 }
 
 /// Returns the binning factor for the X axis.
@@ -1012,7 +991,7 @@ fn get_camera_binx(
     Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>,
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
-) -> Result<schemas::IntResponse> {
+) -> ASCOMResponse<schemas::IntResponse> {
 }
 
 /// Sets the binning factor for the X axis.
@@ -1024,7 +1003,7 @@ fn put_camera_binx(
         transaction,
         request: schemas::PutCameraBinxRequest { bin_x },
     }): Form<ASCOMRequest<schemas::PutCameraBinxRequest>>,
-) -> Result<()> {
+) -> ASCOMResponse<()> {
 }
 
 /// Returns the binning factor for the Y axis.
@@ -1033,7 +1012,7 @@ fn get_camera_biny(
     Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>,
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
-) -> Result<schemas::IntResponse> {
+) -> ASCOMResponse<schemas::IntResponse> {
 }
 
 /// Sets the binning factor for the Y axis.
@@ -1045,7 +1024,7 @@ fn put_camera_biny(
         transaction,
         request: schemas::PutCameraBinyRequest { bin_y },
     }): Form<ASCOMRequest<schemas::PutCameraBinyRequest>>,
-) -> Result<()> {
+) -> ASCOMResponse<()> {
 }
 
 /**
@@ -1058,7 +1037,7 @@ fn get_camera_camerastate(
     Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>,
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
-) -> Result<schemas::IntResponse> {
+) -> ASCOMResponse<schemas::IntResponse> {
 }
 
 /**
@@ -1071,7 +1050,7 @@ fn get_camera_cameraxsize(
     Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>,
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
-) -> Result<schemas::IntResponse> {
+) -> ASCOMResponse<schemas::IntResponse> {
 }
 
 /**
@@ -1084,7 +1063,7 @@ fn get_camera_cameraysize(
     Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>,
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
-) -> Result<schemas::IntResponse> {
+) -> ASCOMResponse<schemas::IntResponse> {
 }
 
 /**
@@ -1097,7 +1076,7 @@ fn get_camera_canabortexposure(
     Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>,
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
-) -> Result<schemas::BoolResponse> {
+) -> ASCOMResponse<schemas::BoolResponse> {
 }
 
 /**
@@ -1110,7 +1089,7 @@ fn get_camera_canasymmetricbin(
     Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>,
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
-) -> Result<schemas::BoolResponse> {
+) -> ASCOMResponse<schemas::BoolResponse> {
 }
 
 /// Indicates whether the camera has a fast readout mode.
@@ -1119,7 +1098,7 @@ fn get_camera_canfastreadout(
     Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>,
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
-) -> Result<schemas::BoolResponse> {
+) -> ASCOMResponse<schemas::BoolResponse> {
 }
 
 /**
@@ -1132,7 +1111,7 @@ fn get_camera_cangetcoolerpower(
     Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>,
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
-) -> Result<schemas::BoolResponse> {
+) -> ASCOMResponse<schemas::BoolResponse> {
 }
 
 /**
@@ -1145,7 +1124,7 @@ fn get_camera_canpulseguide(
     Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>,
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
-) -> Result<schemas::BoolResponse> {
+) -> ASCOMResponse<schemas::BoolResponse> {
 }
 
 /**
@@ -1158,7 +1137,7 @@ fn get_camera_cansetccdtemperature(
     Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>,
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
-) -> Result<schemas::BoolResponse> {
+) -> ASCOMResponse<schemas::BoolResponse> {
 }
 
 /// Returns a flag indicating whether this camera can stop an exposure that is in progress
@@ -1167,7 +1146,7 @@ fn get_camera_canstopexposure(
     Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>,
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
-) -> Result<schemas::BoolResponse> {
+) -> ASCOMResponse<schemas::BoolResponse> {
 }
 
 /**
@@ -1180,7 +1159,7 @@ fn get_camera_ccdtemperature(
     Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>,
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
-) -> Result<schemas::DoubleResponse> {
+) -> ASCOMResponse<schemas::DoubleResponse> {
 }
 
 /// Returns the current cooler on/off state.
@@ -1189,7 +1168,7 @@ fn get_camera_cooleron(
     Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>,
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
-) -> Result<schemas::BoolResponse> {
+) -> ASCOMResponse<schemas::BoolResponse> {
 }
 
 /**
@@ -1205,7 +1184,7 @@ fn put_camera_cooleron(
         transaction,
         request: schemas::PutCameraCooleronRequest { cooler_on },
     }): Form<ASCOMRequest<schemas::PutCameraCooleronRequest>>,
-) -> Result<()> {
+) -> ASCOMResponse<()> {
 }
 
 /**
@@ -1218,7 +1197,7 @@ fn get_camera_coolerpower(
     Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>,
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
-) -> Result<schemas::DoubleResponse> {
+) -> ASCOMResponse<schemas::DoubleResponse> {
 }
 
 /**
@@ -1231,7 +1210,7 @@ fn get_camera_electronsperadu(
     Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>,
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
-) -> Result<schemas::DoubleResponse> {
+) -> ASCOMResponse<schemas::DoubleResponse> {
 }
 
 /// Returns the maximum exposure time supported by StartExposure.
@@ -1240,7 +1219,7 @@ fn get_camera_exposuremax(
     Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>,
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
-) -> Result<schemas::DoubleResponse> {
+) -> ASCOMResponse<schemas::DoubleResponse> {
 }
 
 /**
@@ -1253,7 +1232,7 @@ fn get_camera_exposuremin(
     Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>,
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
-) -> Result<schemas::DoubleResponse> {
+) -> ASCOMResponse<schemas::DoubleResponse> {
 }
 
 /// Returns the smallest increment in exposure time supported by StartExposure.
@@ -1262,7 +1241,7 @@ fn get_camera_exposureresolution(
     Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>,
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
-) -> Result<schemas::DoubleResponse> {
+) -> ASCOMResponse<schemas::DoubleResponse> {
 }
 
 /// Returns whenther Fast Readout Mode is enabled.
@@ -1271,7 +1250,7 @@ fn get_camera_fastreadout(
     Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>,
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
-) -> Result<schemas::BoolResponse> {
+) -> ASCOMResponse<schemas::BoolResponse> {
 }
 
 /// Sets whether Fast Readout Mode is enabled.
@@ -1283,7 +1262,7 @@ fn put_camera_fastreadout(
         transaction,
         request: schemas::PutCameraFastreadoutRequest { fast_readout },
     }): Form<ASCOMRequest<schemas::PutCameraFastreadoutRequest>>,
-) -> Result<()> {
+) -> ASCOMResponse<()> {
 }
 
 /**
@@ -1296,7 +1275,7 @@ fn get_camera_fullwellcapacity(
     Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>,
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
-) -> Result<schemas::DoubleResponse> {
+) -> ASCOMResponse<schemas::DoubleResponse> {
 }
 
 /**
@@ -1309,7 +1288,7 @@ fn get_camera_gain(
     Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>,
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
-) -> Result<schemas::IntResponse> {
+) -> ASCOMResponse<schemas::IntResponse> {
 }
 
 /**
@@ -1325,7 +1304,7 @@ fn put_camera_gain(
         transaction,
         request: schemas::PutCameraGainRequest { gain },
     }): Form<ASCOMRequest<schemas::PutCameraGainRequest>>,
-) -> Result<()> {
+) -> ASCOMResponse<()> {
 }
 
 /**
@@ -1338,7 +1317,7 @@ fn get_camera_gainmax(
     Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>,
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
-) -> Result<schemas::IntResponse> {
+) -> ASCOMResponse<schemas::IntResponse> {
 }
 
 /**
@@ -1351,7 +1330,7 @@ fn get_camera_gainmin(
     Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>,
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
-) -> Result<schemas::IntResponse> {
+) -> ASCOMResponse<schemas::IntResponse> {
 }
 
 /**
@@ -1364,7 +1343,7 @@ fn get_camera_gains(
     Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>,
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
-) -> Result<schemas::StringArrayResponse> {
+) -> ASCOMResponse<schemas::StringArrayResponse> {
 }
 
 /**
@@ -1377,7 +1356,7 @@ fn get_camera_hasshutter(
     Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>,
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
-) -> Result<schemas::BoolResponse> {
+) -> ASCOMResponse<schemas::BoolResponse> {
 }
 
 /**
@@ -1390,7 +1369,7 @@ fn get_camera_heatsinktemperature(
     Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>,
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
-) -> Result<schemas::DoubleResponse> {
+) -> ASCOMResponse<schemas::DoubleResponse> {
 }
 
 /**
@@ -1458,7 +1437,7 @@ fn get_camera_imagearray(
     Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>,
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
-) -> Result<schemas::ImageArrayResponse> {
+) -> ASCOMResponse<schemas::ImageArrayResponse> {
 }
 
 /**
@@ -1526,7 +1505,7 @@ fn get_camera_imagearrayvariant(
     Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>,
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
-) -> Result<schemas::ImageArrayResponse> {
+) -> ASCOMResponse<schemas::ImageArrayResponse> {
 }
 
 /**
@@ -1539,7 +1518,7 @@ fn get_camera_imageready(
     Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>,
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
-) -> Result<schemas::BoolResponse> {
+) -> ASCOMResponse<schemas::BoolResponse> {
 }
 
 /**
@@ -1552,7 +1531,7 @@ fn get_camera_ispulseguiding(
     Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>,
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
-) -> Result<schemas::BoolResponse> {
+) -> ASCOMResponse<schemas::BoolResponse> {
 }
 
 /**
@@ -1565,7 +1544,7 @@ fn get_camera_lastexposureduration(
     Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>,
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
-) -> Result<schemas::DoubleResponse> {
+) -> ASCOMResponse<schemas::DoubleResponse> {
 }
 
 /**
@@ -1578,7 +1557,7 @@ fn get_camera_lastexposurestarttime(
     Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>,
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
-) -> Result<schemas::StringResponse> {
+) -> ASCOMResponse<schemas::StringResponse> {
 }
 
 /**
@@ -1591,7 +1570,7 @@ fn get_camera_maxadu(
     Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>,
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
-) -> Result<schemas::IntResponse> {
+) -> ASCOMResponse<schemas::IntResponse> {
 }
 
 /**
@@ -1604,7 +1583,7 @@ fn get_camera_maxbinx(
     Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>,
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
-) -> Result<schemas::IntResponse> {
+) -> ASCOMResponse<schemas::IntResponse> {
 }
 
 /**
@@ -1617,7 +1596,7 @@ fn get_camera_maxbiny(
     Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>,
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
-) -> Result<schemas::IntResponse> {
+) -> ASCOMResponse<schemas::IntResponse> {
 }
 
 /**
@@ -1630,7 +1609,7 @@ fn get_camera_numx(
     Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>,
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
-) -> Result<schemas::IntResponse> {
+) -> ASCOMResponse<schemas::IntResponse> {
 }
 
 /**
@@ -1646,7 +1625,7 @@ fn put_camera_numx(
         transaction,
         request: schemas::PutCameraNumxRequest { num_x },
     }): Form<ASCOMRequest<schemas::PutCameraNumxRequest>>,
-) -> Result<()> {
+) -> ASCOMResponse<()> {
 }
 
 /**
@@ -1659,7 +1638,7 @@ fn get_camera_numy(
     Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>,
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
-) -> Result<schemas::IntResponse> {
+) -> ASCOMResponse<schemas::IntResponse> {
 }
 
 /**
@@ -1675,7 +1654,7 @@ fn put_camera_numy(
         transaction,
         request: schemas::PutCameraNumyRequest { num_y },
     }): Form<ASCOMRequest<schemas::PutCameraNumyRequest>>,
-) -> Result<()> {
+) -> ASCOMResponse<()> {
 }
 
 /**
@@ -1688,7 +1667,7 @@ fn get_camera_offset(
     Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>,
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
-) -> Result<schemas::IntResponse> {
+) -> ASCOMResponse<schemas::IntResponse> {
 }
 
 /**
@@ -1704,7 +1683,7 @@ fn put_camera_offset(
         transaction,
         request: schemas::PutCameraOffsetRequest { offset },
     }): Form<ASCOMRequest<schemas::PutCameraOffsetRequest>>,
-) -> Result<()> {
+) -> ASCOMResponse<()> {
 }
 
 /**
@@ -1717,7 +1696,7 @@ fn get_camera_offsetmax(
     Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>,
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
-) -> Result<schemas::IntResponse> {
+) -> ASCOMResponse<schemas::IntResponse> {
 }
 
 /**
@@ -1730,7 +1709,7 @@ fn get_camera_offsetmin(
     Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>,
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
-) -> Result<schemas::IntResponse> {
+) -> ASCOMResponse<schemas::IntResponse> {
 }
 
 /**
@@ -1743,7 +1722,7 @@ fn get_camera_offsets(
     Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>,
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
-) -> Result<schemas::StringArrayResponse> {
+) -> ASCOMResponse<schemas::StringArrayResponse> {
 }
 
 /**
@@ -1756,7 +1735,7 @@ fn get_camera_percentcompleted(
     Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>,
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
-) -> Result<schemas::IntResponse> {
+) -> ASCOMResponse<schemas::IntResponse> {
 }
 
 /**
@@ -1769,7 +1748,7 @@ fn get_camera_pixelsizex(
     Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>,
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
-) -> Result<schemas::DoubleResponse> {
+) -> ASCOMResponse<schemas::DoubleResponse> {
 }
 
 /**
@@ -1782,7 +1761,7 @@ fn get_camera_pixelsizey(
     Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>,
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
-) -> Result<schemas::DoubleResponse> {
+) -> ASCOMResponse<schemas::DoubleResponse> {
 }
 
 /**
@@ -1795,7 +1774,7 @@ fn get_camera_readoutmode(
     Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>,
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
-) -> Result<schemas::IntResponse> {
+) -> ASCOMResponse<schemas::IntResponse> {
 }
 
 /**
@@ -1811,7 +1790,7 @@ fn put_camera_readoutmode(
         transaction,
         request: schemas::PutCameraReadoutmodeRequest { readout_mode },
     }): Form<ASCOMRequest<schemas::PutCameraReadoutmodeRequest>>,
-) -> Result<()> {
+) -> ASCOMResponse<()> {
 }
 
 /**
@@ -1824,7 +1803,7 @@ fn get_camera_readoutmodes(
     Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>,
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
-) -> Result<schemas::StringArrayResponse> {
+) -> ASCOMResponse<schemas::StringArrayResponse> {
 }
 
 /**
@@ -1837,7 +1816,7 @@ fn get_camera_sensorname(
     Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>,
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
-) -> Result<schemas::StringResponse> {
+) -> ASCOMResponse<schemas::StringResponse> {
 }
 
 /**
@@ -1859,7 +1838,7 @@ fn get_camera_sensortype(
     Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>,
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
-) -> Result<schemas::IntResponse> {
+) -> ASCOMResponse<schemas::IntResponse> {
 }
 
 /// Returns the current camera cooler setpoint in degrees Celsius.
@@ -1868,7 +1847,7 @@ fn get_camera_setccdtemperature(
     Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>,
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
-) -> Result<schemas::DoubleResponse> {
+) -> ASCOMResponse<schemas::DoubleResponse> {
 }
 
 /**
@@ -1884,7 +1863,7 @@ fn put_camera_setccdtemperature(
         transaction,
         request: schemas::PutCameraSetccdtemperatureRequest { set_ccdtemperature },
     }): Form<ASCOMRequest<schemas::PutCameraSetccdtemperatureRequest>>,
-) -> Result<()> {
+) -> ASCOMResponse<()> {
 }
 
 /**
@@ -1897,7 +1876,7 @@ fn get_camera_startx(
     Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>,
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
-) -> Result<schemas::IntResponse> {
+) -> ASCOMResponse<schemas::IntResponse> {
 }
 
 /**
@@ -1913,7 +1892,7 @@ fn put_camera_startx(
         transaction,
         request: schemas::PutCameraStartxRequest { start_x },
     }): Form<ASCOMRequest<schemas::PutCameraStartxRequest>>,
-) -> Result<()> {
+) -> ASCOMResponse<()> {
 }
 
 /**
@@ -1926,7 +1905,7 @@ fn get_camera_starty(
     Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>,
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
-) -> Result<schemas::IntResponse> {
+) -> ASCOMResponse<schemas::IntResponse> {
 }
 
 /**
@@ -1942,7 +1921,7 @@ fn put_camera_starty(
         transaction,
         request: schemas::PutCameraStartyRequest { start_y },
     }): Form<ASCOMRequest<schemas::PutCameraStartyRequest>>,
-) -> Result<()> {
+) -> ASCOMResponse<()> {
 }
 
 /**
@@ -1955,7 +1934,7 @@ fn get_camera_subexposureduration(
     Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>,
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
-) -> Result<schemas::DoubleResponse> {
+) -> ASCOMResponse<schemas::DoubleResponse> {
 }
 
 /**
@@ -1971,7 +1950,7 @@ fn put_camera_subexposureduration(
         transaction,
         request: schemas::PutCameraSubexposuredurationRequest { sub_exposure_duration },
     }): Form<ASCOMRequest<schemas::PutCameraSubexposuredurationRequest>>,
-) -> Result<()> {
+) -> ASCOMResponse<()> {
 }
 
 /**
@@ -1980,7 +1959,11 @@ Aborts the current exposure
 Aborts the current exposure, if any, and returns the camera to Idle state.
 */
 #[put("/camera/<device_number>/abortexposure")]
-fn put_camera_abortexposure(Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>, Form(ASCOMRequest { transaction, request: () }): Form<ASCOMRequest<()>>) -> Result<()> {
+fn put_camera_abortexposure(
+    Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>,
+
+    Form(ASCOMRequest { transaction, request: () }): Form<ASCOMRequest<()>>,
+) -> ASCOMResponse<()> {
 }
 
 /**
@@ -1996,7 +1979,7 @@ fn put_camera_pulseguide(
         transaction,
         request: schemas::PutCameraPulseguideRequest { direction, duration },
     }): Form<ASCOMRequest<schemas::PutCameraPulseguideRequest>>,
-) -> Result<()> {
+) -> ASCOMResponse<()> {
 }
 
 /**
@@ -2012,7 +1995,7 @@ fn put_camera_startexposure(
         transaction,
         request: schemas::PutCameraStartexposureRequest { duration, light },
     }): Form<ASCOMRequest<schemas::PutCameraStartexposureRequest>>,
-) -> Result<()> {
+) -> ASCOMResponse<()> {
 }
 
 /**
@@ -2021,7 +2004,12 @@ Stops the current exposure
 Stops the current exposure, if any. If an exposure is in progress, the readout process is initiated. Ignored if readout is already in process.
 */
 #[put("/camera/<device_number>/stopexposure")]
-fn put_camera_stopexposure(Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>, Form(ASCOMRequest { transaction, request: () }): Form<ASCOMRequest<()>>) -> Result<()> {}
+fn put_camera_stopexposure(
+    Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>,
+
+    Form(ASCOMRequest { transaction, request: () }): Form<ASCOMRequest<()>>,
+) -> ASCOMResponse<()> {
+}
 
 /**
 Returns the current calibrator brightness
@@ -2033,7 +2021,7 @@ fn get_covercalibrator_brightness(
     Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>,
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
-) -> Result<schemas::IntResponse> {
+) -> ASCOMResponse<schemas::IntResponse> {
 }
 
 /**
@@ -2046,7 +2034,7 @@ fn get_covercalibrator_calibratorstate(
     Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>,
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
-) -> Result<schemas::IntResponse> {
+) -> ASCOMResponse<schemas::IntResponse> {
 }
 
 /**
@@ -2059,7 +2047,7 @@ fn get_covercalibrator_coverstate(
     Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>,
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
-) -> Result<schemas::IntResponse> {
+) -> ASCOMResponse<schemas::IntResponse> {
 }
 
 /**
@@ -2072,7 +2060,7 @@ fn get_covercalibrator_maxbrightness(
     Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>,
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
-) -> Result<schemas::IntResponse> {
+) -> ASCOMResponse<schemas::IntResponse> {
 }
 
 /**
@@ -2085,7 +2073,7 @@ fn put_covercalibrator_calibratoroff(
     Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>,
 
     Form(ASCOMRequest { transaction, request: () }): Form<ASCOMRequest<()>>,
-) -> Result<()> {
+) -> ASCOMResponse<()> {
 }
 
 /**
@@ -2101,7 +2089,7 @@ fn put_covercalibrator_calibratoron(
         transaction,
         request: schemas::PutCovercalibratorCalibratoronRequest { brightness },
     }): Form<ASCOMRequest<schemas::PutCovercalibratorCalibratoronRequest>>,
-) -> Result<()> {
+) -> ASCOMResponse<()> {
 }
 
 /**
@@ -2114,7 +2102,7 @@ fn put_covercalibrator_closecover(
     Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>,
 
     Form(ASCOMRequest { transaction, request: () }): Form<ASCOMRequest<()>>,
-) -> Result<()> {
+) -> ASCOMResponse<()> {
 }
 
 /**
@@ -2127,7 +2115,7 @@ fn put_covercalibrator_haltcover(
     Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>,
 
     Form(ASCOMRequest { transaction, request: () }): Form<ASCOMRequest<()>>,
-) -> Result<()> {
+) -> ASCOMResponse<()> {
 }
 
 /**
@@ -2140,7 +2128,7 @@ fn put_covercalibrator_opencover(
     Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>,
 
     Form(ASCOMRequest { transaction, request: () }): Form<ASCOMRequest<()>>,
-) -> Result<()> {
+) -> ASCOMResponse<()> {
 }
 
 /**
@@ -2153,7 +2141,7 @@ fn get_dome_altitude(
     Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>,
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
-) -> Result<schemas::DoubleResponse> {
+) -> ASCOMResponse<schemas::DoubleResponse> {
 }
 
 /**
@@ -2166,7 +2154,7 @@ fn get_dome_athome(
     Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>,
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
-) -> Result<schemas::BoolResponse> {
+) -> ASCOMResponse<schemas::BoolResponse> {
 }
 
 /**
@@ -2179,7 +2167,7 @@ fn get_dome_atpark(
     Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>,
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
-) -> Result<schemas::BoolResponse> {
+) -> ASCOMResponse<schemas::BoolResponse> {
 }
 
 /**
@@ -2192,7 +2180,7 @@ fn get_dome_azimuth(
     Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>,
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
-) -> Result<schemas::DoubleResponse> {
+) -> ASCOMResponse<schemas::DoubleResponse> {
 }
 
 /**
@@ -2205,7 +2193,7 @@ fn get_dome_canfindhome(
     Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>,
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
-) -> Result<schemas::BoolResponse> {
+) -> ASCOMResponse<schemas::BoolResponse> {
 }
 
 /**
@@ -2218,7 +2206,7 @@ fn get_dome_canpark(
     Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>,
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
-) -> Result<schemas::BoolResponse> {
+) -> ASCOMResponse<schemas::BoolResponse> {
 }
 
 /**
@@ -2231,7 +2219,7 @@ fn get_dome_cansetaltitude(
     Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>,
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
-) -> Result<schemas::BoolResponse> {
+) -> ASCOMResponse<schemas::BoolResponse> {
 }
 
 /**
@@ -2244,7 +2232,7 @@ fn get_dome_cansetazimuth(
     Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>,
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
-) -> Result<schemas::BoolResponse> {
+) -> ASCOMResponse<schemas::BoolResponse> {
 }
 
 /**
@@ -2257,7 +2245,7 @@ fn get_dome_cansetpark(
     Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>,
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
-) -> Result<schemas::BoolResponse> {
+) -> ASCOMResponse<schemas::BoolResponse> {
 }
 
 /**
@@ -2270,7 +2258,7 @@ fn get_dome_cansetshutter(
     Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>,
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
-) -> Result<schemas::BoolResponse> {
+) -> ASCOMResponse<schemas::BoolResponse> {
 }
 
 /**
@@ -2283,7 +2271,7 @@ fn get_dome_canslave(
     Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>,
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
-) -> Result<schemas::BoolResponse> {
+) -> ASCOMResponse<schemas::BoolResponse> {
 }
 
 /**
@@ -2296,7 +2284,7 @@ fn get_dome_cansyncazimuth(
     Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>,
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
-) -> Result<schemas::BoolResponse> {
+) -> ASCOMResponse<schemas::BoolResponse> {
 }
 
 /**
@@ -2309,7 +2297,7 @@ fn get_dome_shutterstatus(
     Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>,
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
-) -> Result<schemas::IntResponse> {
+) -> ASCOMResponse<schemas::IntResponse> {
 }
 
 /**
@@ -2322,7 +2310,7 @@ fn get_dome_slaved(
     Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>,
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
-) -> Result<schemas::BoolResponse> {
+) -> ASCOMResponse<schemas::BoolResponse> {
 }
 
 /**
@@ -2338,7 +2326,7 @@ fn put_dome_slaved(
         transaction,
         request: schemas::PutDomeSlavedRequest { slaved },
     }): Form<ASCOMRequest<schemas::PutDomeSlavedRequest>>,
-) -> Result<()> {
+) -> ASCOMResponse<()> {
 }
 
 /**
@@ -2351,7 +2339,7 @@ fn get_dome_slewing(
     Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>,
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
-) -> Result<schemas::BoolResponse> {
+) -> ASCOMResponse<schemas::BoolResponse> {
 }
 
 /**
@@ -2360,11 +2348,21 @@ Immediately cancel current dome operation.
 Calling this method will immediately disable hardware slewing (Slaved will become False).
 */
 #[put("/dome/<device_number>/abortslew")]
-fn put_dome_abortslew(Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>, Form(ASCOMRequest { transaction, request: () }): Form<ASCOMRequest<()>>) -> Result<()> {}
+fn put_dome_abortslew(
+    Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>,
+
+    Form(ASCOMRequest { transaction, request: () }): Form<ASCOMRequest<()>>,
+) -> ASCOMResponse<()> {
+}
 
 /// Close the shutter or otherwise shield telescope from the sky.
 #[put("/dome/<device_number>/closeshutter")]
-fn put_dome_closeshutter(Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>, Form(ASCOMRequest { transaction, request: () }): Form<ASCOMRequest<()>>) -> Result<()> {}
+fn put_dome_closeshutter(
+    Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>,
+
+    Form(ASCOMRequest { transaction, request: () }): Form<ASCOMRequest<()>>,
+) -> ASCOMResponse<()> {
+}
 
 /**
 Start operation to search for the dome home position.
@@ -2372,11 +2370,17 @@ Start operation to search for the dome home position.
 After Home position is established initializes Azimuth to the default value and sets the AtHome flag.
 */
 #[put("/dome/<device_number>/findhome")]
-fn put_dome_findhome(Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>, Form(ASCOMRequest { transaction, request: () }): Form<ASCOMRequest<()>>) -> Result<()> {}
+fn put_dome_findhome(Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>, Form(ASCOMRequest { transaction, request: () }): Form<ASCOMRequest<()>>) -> ASCOMResponse<()> {
+}
 
 /// Open shutter or otherwise expose telescope to the sky.
 #[put("/dome/<device_number>/openshutter")]
-fn put_dome_openshutter(Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>, Form(ASCOMRequest { transaction, request: () }): Form<ASCOMRequest<()>>) -> Result<()> {}
+fn put_dome_openshutter(
+    Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>,
+
+    Form(ASCOMRequest { transaction, request: () }): Form<ASCOMRequest<()>>,
+) -> ASCOMResponse<()> {
+}
 
 /**
 Rotate dome in azimuth to park position.
@@ -2384,7 +2388,7 @@ Rotate dome in azimuth to park position.
 After assuming programmed park position, sets AtPark flag.
 */
 #[put("/dome/<device_number>/park")]
-fn put_dome_park(Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>, Form(ASCOMRequest { transaction, request: () }): Form<ASCOMRequest<()>>) -> Result<()> {}
+fn put_dome_park(Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>, Form(ASCOMRequest { transaction, request: () }): Form<ASCOMRequest<()>>) -> ASCOMResponse<()> {}
 
 /**
 Set the current azimuth, altitude position of dome to be the park position
@@ -2392,7 +2396,7 @@ Set the current azimuth, altitude position of dome to be the park position
 Set the current azimuth, altitude position of dome to be the park position.
 */
 #[put("/dome/<device_number>/setpark")]
-fn put_dome_setpark(Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>, Form(ASCOMRequest { transaction, request: () }): Form<ASCOMRequest<()>>) -> Result<()> {}
+fn put_dome_setpark(Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>, Form(ASCOMRequest { transaction, request: () }): Form<ASCOMRequest<()>>) -> ASCOMResponse<()> {}
 
 /// Slew the dome to the given altitude position.
 #[put("/dome/<device_number>/slewtoaltitude")]
@@ -2403,7 +2407,7 @@ fn put_dome_slewtoaltitude(
         transaction,
         request: schemas::PutDomeSlewtoaltitudeRequest { altitude },
     }): Form<ASCOMRequest<schemas::PutDomeSlewtoaltitudeRequest>>,
-) -> Result<()> {
+) -> ASCOMResponse<()> {
 }
 
 /// Slew the dome to the given azimuth position.
@@ -2415,7 +2419,7 @@ fn put_dome_slewtoazimuth(
         transaction,
         request: schemas::PutDomeSlewtoazimuthRequest { azimuth },
     }): Form<ASCOMRequest<schemas::PutDomeSlewtoazimuthRequest>>,
-) -> Result<()> {
+) -> ASCOMResponse<()> {
 }
 
 /// Synchronize the current position of the dome to the given azimuth.
@@ -2427,7 +2431,7 @@ fn put_dome_synctoazimuth(
         transaction,
         request: schemas::PutDomeSlewtoazimuthRequest { azimuth },
     }): Form<ASCOMRequest<schemas::PutDomeSlewtoazimuthRequest>>,
-) -> Result<()> {
+) -> ASCOMResponse<()> {
 }
 
 /**
@@ -2440,7 +2444,7 @@ fn get_filterwheel_focusoffsets(
     Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>,
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
-) -> Result<schemas::IntArrayResponse> {
+) -> ASCOMResponse<schemas::IntArrayResponse> {
 }
 
 /**
@@ -2453,7 +2457,7 @@ fn get_filterwheel_names(
     Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>,
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
-) -> Result<schemas::StringArrayResponse> {
+) -> ASCOMResponse<schemas::StringArrayResponse> {
 }
 
 /// Returns the current filter wheel position
@@ -2462,7 +2466,7 @@ fn get_filterwheel_position(
     Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>,
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
-) -> Result<schemas::IntResponse> {
+) -> ASCOMResponse<schemas::IntResponse> {
 }
 
 /// Sets the filter wheel position
@@ -2474,7 +2478,7 @@ fn put_filterwheel_position(
         transaction,
         request: schemas::PutFilterwheelPositionRequest { position },
     }): Form<ASCOMRequest<schemas::PutFilterwheelPositionRequest>>,
-) -> Result<()> {
+) -> ASCOMResponse<()> {
 }
 
 /**
@@ -2487,7 +2491,7 @@ fn get_focuser_absolute(
     Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>,
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
-) -> Result<schemas::BoolResponse> {
+) -> ASCOMResponse<schemas::BoolResponse> {
 }
 
 /**
@@ -2500,7 +2504,7 @@ fn get_focuser_ismoving(
     Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>,
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
-) -> Result<schemas::BoolResponse> {
+) -> ASCOMResponse<schemas::BoolResponse> {
 }
 
 /**
@@ -2513,7 +2517,7 @@ fn get_focuser_maxincrement(
     Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>,
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
-) -> Result<schemas::IntResponse> {
+) -> ASCOMResponse<schemas::IntResponse> {
 }
 
 /**
@@ -2526,7 +2530,7 @@ fn get_focuser_maxstep(
     Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>,
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
-) -> Result<schemas::IntResponse> {
+) -> ASCOMResponse<schemas::IntResponse> {
 }
 
 /**
@@ -2539,7 +2543,7 @@ fn get_focuser_position(
     Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>,
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
-) -> Result<schemas::IntResponse> {
+) -> ASCOMResponse<schemas::IntResponse> {
 }
 
 /**
@@ -2552,7 +2556,7 @@ fn get_focuser_stepsize(
     Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>,
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
-) -> Result<schemas::DoubleResponse> {
+) -> ASCOMResponse<schemas::DoubleResponse> {
 }
 
 /**
@@ -2565,7 +2569,7 @@ fn get_focuser_tempcomp(
     Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>,
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
-) -> Result<schemas::BoolResponse> {
+) -> ASCOMResponse<schemas::BoolResponse> {
 }
 
 /**
@@ -2581,7 +2585,7 @@ fn put_focuser_tempcomp(
         transaction,
         request: schemas::PutFocuserTempcompRequest { temp_comp },
     }): Form<ASCOMRequest<schemas::PutFocuserTempcompRequest>>,
-) -> Result<()> {
+) -> ASCOMResponse<()> {
 }
 
 /**
@@ -2594,7 +2598,7 @@ fn get_focuser_tempcompavailable(
     Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>,
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
-) -> Result<schemas::BoolResponse> {
+) -> ASCOMResponse<schemas::BoolResponse> {
 }
 
 /**
@@ -2607,7 +2611,7 @@ fn get_focuser_temperature(
     Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>,
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
-) -> Result<schemas::DoubleResponse> {
+) -> ASCOMResponse<schemas::DoubleResponse> {
 }
 
 /**
@@ -2616,7 +2620,7 @@ Immediatley stops focuser motion.
 Immediately stop any focuser motion due to a previous Move(Int32) method call.
 */
 #[put("/focuser/<device_number>/halt")]
-fn put_focuser_halt(Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>, Form(ASCOMRequest { transaction, request: () }): Form<ASCOMRequest<()>>) -> Result<()> {}
+fn put_focuser_halt(Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>, Form(ASCOMRequest { transaction, request: () }): Form<ASCOMRequest<()>>) -> ASCOMResponse<()> {}
 
 /**
 Moves the focuser to a new position.
@@ -2631,7 +2635,7 @@ fn put_focuser_move(
         transaction,
         request: schemas::PutFocuserMoveRequest { position },
     }): Form<ASCOMRequest<schemas::PutFocuserMoveRequest>>,
-) -> Result<()> {
+) -> ASCOMResponse<()> {
 }
 
 /**
@@ -2644,7 +2648,7 @@ fn get_observingconditions_averageperiod(
     Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>,
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
-) -> Result<schemas::DoubleResponse> {
+) -> ASCOMResponse<schemas::DoubleResponse> {
 }
 
 /// Sets the time period over which observations will be averaged
@@ -2656,7 +2660,7 @@ fn put_observingconditions_averageperiod(
         transaction,
         request: schemas::PutObservingconditionsAverageperiodRequest { average_period },
     }): Form<ASCOMRequest<schemas::PutObservingconditionsAverageperiodRequest>>,
-) -> Result<()> {
+) -> ASCOMResponse<()> {
 }
 
 /**
@@ -2669,7 +2673,7 @@ fn get_observingconditions_cloudcover(
     Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>,
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
-) -> Result<schemas::DoubleResponse> {
+) -> ASCOMResponse<schemas::DoubleResponse> {
 }
 
 /**
@@ -2682,7 +2686,7 @@ fn get_observingconditions_dewpoint(
     Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>,
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
-) -> Result<schemas::DoubleResponse> {
+) -> ASCOMResponse<schemas::DoubleResponse> {
 }
 
 /**
@@ -2695,7 +2699,7 @@ fn get_observingconditions_humidity(
     Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>,
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
-) -> Result<schemas::DoubleResponse> {
+) -> ASCOMResponse<schemas::DoubleResponse> {
 }
 
 /**
@@ -2708,7 +2712,7 @@ fn get_observingconditions_pressure(
     Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>,
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
-) -> Result<schemas::DoubleResponse> {
+) -> ASCOMResponse<schemas::DoubleResponse> {
 }
 
 /**
@@ -2721,7 +2725,7 @@ fn get_observingconditions_rainrate(
     Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>,
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
-) -> Result<schemas::DoubleResponse> {
+) -> ASCOMResponse<schemas::DoubleResponse> {
 }
 
 /**
@@ -2734,7 +2738,7 @@ fn get_observingconditions_skybrightness(
     Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>,
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
-) -> Result<schemas::DoubleResponse> {
+) -> ASCOMResponse<schemas::DoubleResponse> {
 }
 
 /**
@@ -2747,7 +2751,7 @@ fn get_observingconditions_skyquality(
     Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>,
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
-) -> Result<schemas::DoubleResponse> {
+) -> ASCOMResponse<schemas::DoubleResponse> {
 }
 
 /**
@@ -2760,7 +2764,7 @@ fn get_observingconditions_skytemperature(
     Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>,
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
-) -> Result<schemas::DoubleResponse> {
+) -> ASCOMResponse<schemas::DoubleResponse> {
 }
 
 /**
@@ -2773,7 +2777,7 @@ fn get_observingconditions_starfwhm(
     Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>,
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
-) -> Result<schemas::DoubleResponse> {
+) -> ASCOMResponse<schemas::DoubleResponse> {
 }
 
 /**
@@ -2786,7 +2790,7 @@ fn get_observingconditions_temperature(
     Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>,
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
-) -> Result<schemas::DoubleResponse> {
+) -> ASCOMResponse<schemas::DoubleResponse> {
 }
 
 /**
@@ -2799,7 +2803,7 @@ fn get_observingconditions_winddirection(
     Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>,
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
-) -> Result<schemas::DoubleResponse> {
+) -> ASCOMResponse<schemas::DoubleResponse> {
 }
 
 /**
@@ -2812,7 +2816,7 @@ fn get_observingconditions_windgust(
     Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>,
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
-) -> Result<schemas::DoubleResponse> {
+) -> ASCOMResponse<schemas::DoubleResponse> {
 }
 
 /**
@@ -2825,7 +2829,7 @@ fn get_observingconditions_windspeed(
     Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>,
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
-) -> Result<schemas::DoubleResponse> {
+) -> ASCOMResponse<schemas::DoubleResponse> {
 }
 
 /**
@@ -2838,7 +2842,7 @@ fn put_observingconditions_refresh(
     Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>,
 
     Form(ASCOMRequest { transaction, request: () }): Form<ASCOMRequest<()>>,
-) -> Result<()> {
+) -> ASCOMResponse<()> {
 }
 
 /**
@@ -2854,7 +2858,7 @@ fn get_observingconditions_sensordescription(
         transaction,
         request: schemas::GetObservingconditionsSensordescriptionRequest { sensor_name },
     }): Query<ASCOMRequest<schemas::GetObservingconditionsSensordescriptionRequest>>,
-) -> Result<schemas::StringResponse> {
+) -> ASCOMResponse<schemas::StringResponse> {
 }
 
 /**
@@ -2870,7 +2874,7 @@ fn get_observingconditions_timesincelastupdate(
         transaction,
         request: schemas::GetObservingconditionsTimesincelastupdateRequest { sensor_name },
     }): Query<ASCOMRequest<schemas::GetObservingconditionsTimesincelastupdateRequest>>,
-) -> Result<schemas::DoubleResponse> {
+) -> ASCOMResponse<schemas::DoubleResponse> {
 }
 
 /**
@@ -2883,7 +2887,7 @@ fn get_rotator_canreverse(
     Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>,
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
-) -> Result<schemas::BoolResponse> {
+) -> ASCOMResponse<schemas::BoolResponse> {
 }
 
 /**
@@ -2896,7 +2900,7 @@ fn get_rotator_ismoving(
     Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>,
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
-) -> Result<schemas::BoolResponse> {
+) -> ASCOMResponse<schemas::BoolResponse> {
 }
 
 /**
@@ -2909,7 +2913,7 @@ fn get_rotator_mechanicalposition(
     Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>,
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
-) -> Result<schemas::DoubleResponse> {
+) -> ASCOMResponse<schemas::DoubleResponse> {
 }
 
 /**
@@ -2922,7 +2926,7 @@ fn get_rotator_position(
     Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>,
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
-) -> Result<schemas::DoubleResponse> {
+) -> ASCOMResponse<schemas::DoubleResponse> {
 }
 
 /// Returns the rotator’s Reverse state.
@@ -2931,7 +2935,7 @@ fn get_rotator_reverse(
     Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>,
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
-) -> Result<schemas::BoolResponse> {
+) -> ASCOMResponse<schemas::BoolResponse> {
 }
 
 /// Sets the rotator’s Reverse state.
@@ -2943,7 +2947,7 @@ fn put_rotator_reverse(
         transaction,
         request: schemas::PutRotatorReverseRequest { reverse },
     }): Form<ASCOMRequest<schemas::PutRotatorReverseRequest>>,
-) -> Result<()> {
+) -> ASCOMResponse<()> {
 }
 
 /**
@@ -2956,7 +2960,7 @@ fn get_rotator_stepsize(
     Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>,
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
-) -> Result<schemas::DoubleResponse> {
+) -> ASCOMResponse<schemas::DoubleResponse> {
 }
 
 /**
@@ -2969,7 +2973,7 @@ fn get_rotator_targetposition(
     Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>,
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
-) -> Result<schemas::DoubleResponse> {
+) -> ASCOMResponse<schemas::DoubleResponse> {
 }
 
 /**
@@ -2978,7 +2982,7 @@ Immediatley stops rotator motion.
 Immediately stop any Rotator motion due to a previous Move or MoveAbsolute method call.
 */
 #[put("/rotator/<device_number>/halt")]
-fn put_rotator_halt(Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>, Form(ASCOMRequest { transaction, request: () }): Form<ASCOMRequest<()>>) -> Result<()> {}
+fn put_rotator_halt(Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>, Form(ASCOMRequest { transaction, request: () }): Form<ASCOMRequest<()>>) -> ASCOMResponse<()> {}
 
 /**
 Moves the rotator to a new relative position.
@@ -2993,7 +2997,7 @@ fn put_rotator_move(
         transaction,
         request: schemas::PutRotatorMoveRequest { position },
     }): Form<ASCOMRequest<schemas::PutRotatorMoveRequest>>,
-) -> Result<()> {
+) -> ASCOMResponse<()> {
 }
 
 /**
@@ -3009,7 +3013,7 @@ fn put_rotator_moveabsolute(
         transaction,
         request: schemas::PutRotatorMoveabsoluteRequest { position },
     }): Form<ASCOMRequest<schemas::PutRotatorMoveabsoluteRequest>>,
-) -> Result<()> {
+) -> ASCOMResponse<()> {
 }
 
 /**
@@ -3025,7 +3029,7 @@ fn put_rotator_movemechanical(
         transaction,
         request: schemas::PutRotatorMovemechanicalRequest { position },
     }): Form<ASCOMRequest<schemas::PutRotatorMovemechanicalRequest>>,
-) -> Result<()> {
+) -> ASCOMResponse<()> {
 }
 
 /**
@@ -3041,7 +3045,7 @@ fn put_rotator_sync(
         transaction,
         request: schemas::PutRotatorSyncRequest { position },
     }): Form<ASCOMRequest<schemas::PutRotatorSyncRequest>>,
-) -> Result<()> {
+) -> ASCOMResponse<()> {
 }
 
 /**
@@ -3054,7 +3058,7 @@ fn get_safetymonitor_issafe(
     Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>,
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
-) -> Result<schemas::BoolResponse> {
+) -> ASCOMResponse<schemas::BoolResponse> {
 }
 
 /**
@@ -3067,7 +3071,7 @@ fn get_switch_maxswitch(
     Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>,
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
-) -> Result<schemas::IntResponse> {
+) -> ASCOMResponse<schemas::IntResponse> {
 }
 
 /**
@@ -3083,7 +3087,7 @@ fn get_switch_canwrite(
         transaction,
         request: schemas::GetSwitchCanwriteRequest { id },
     }): Query<ASCOMRequest<schemas::GetSwitchCanwriteRequest>>,
-) -> Result<schemas::BoolResponse> {
+) -> ASCOMResponse<schemas::BoolResponse> {
 }
 
 /**
@@ -3099,7 +3103,7 @@ fn get_switch_getswitch(
         transaction,
         request: schemas::GetSwitchGetswitchRequest { id },
     }): Query<ASCOMRequest<schemas::GetSwitchGetswitchRequest>>,
-) -> Result<schemas::BoolResponse> {
+) -> ASCOMResponse<schemas::BoolResponse> {
 }
 
 /**
@@ -3115,7 +3119,7 @@ fn get_switch_getswitchdescription(
         transaction,
         request: schemas::GetSwitchGetswitchdescriptionRequest { id },
     }): Query<ASCOMRequest<schemas::GetSwitchGetswitchdescriptionRequest>>,
-) -> Result<schemas::StringResponse> {
+) -> ASCOMResponse<schemas::StringResponse> {
 }
 
 /**
@@ -3131,7 +3135,7 @@ fn get_switch_getswitchname(
         transaction,
         request: schemas::GetSwitchGetswitchnameRequest { id },
     }): Query<ASCOMRequest<schemas::GetSwitchGetswitchnameRequest>>,
-) -> Result<schemas::StringResponse> {
+) -> ASCOMResponse<schemas::StringResponse> {
 }
 
 /**
@@ -3147,7 +3151,7 @@ fn get_switch_getswitchvalue(
         transaction,
         request: schemas::GetSwitchGetswitchvalueRequest { id },
     }): Query<ASCOMRequest<schemas::GetSwitchGetswitchvalueRequest>>,
-) -> Result<schemas::DoubleResponse> {
+) -> ASCOMResponse<schemas::DoubleResponse> {
 }
 
 /**
@@ -3163,7 +3167,7 @@ fn get_switch_minswitchvalue(
         transaction,
         request: schemas::GetSwitchMinswitchvalueRequest { id },
     }): Query<ASCOMRequest<schemas::GetSwitchMinswitchvalueRequest>>,
-) -> Result<schemas::DoubleResponse> {
+) -> ASCOMResponse<schemas::DoubleResponse> {
 }
 
 /**
@@ -3179,7 +3183,7 @@ fn get_switch_maxswitchvalue(
         transaction,
         request: schemas::GetSwitchMaxswitchvalueRequest { id },
     }): Query<ASCOMRequest<schemas::GetSwitchMaxswitchvalueRequest>>,
-) -> Result<schemas::DoubleResponse> {
+) -> ASCOMResponse<schemas::DoubleResponse> {
 }
 
 /**
@@ -3195,7 +3199,7 @@ fn put_switch_setswitch(
         transaction,
         request: schemas::PutSwitchSetswitchRequest { id, state },
     }): Form<ASCOMRequest<schemas::PutSwitchSetswitchRequest>>,
-) -> Result<()> {
+) -> ASCOMResponse<()> {
 }
 
 /**
@@ -3211,7 +3215,7 @@ fn put_switch_setswitchname(
         transaction,
         request: schemas::PutSwitchSetswitchnameRequest { id, name },
     }): Form<ASCOMRequest<schemas::PutSwitchSetswitchnameRequest>>,
-) -> Result<()> {
+) -> ASCOMResponse<()> {
 }
 
 /**
@@ -3227,7 +3231,7 @@ fn put_switch_setswitchvalue(
         transaction,
         request: schemas::PutSwitchSetswitchvalueRequest { id, value },
     }): Form<ASCOMRequest<schemas::PutSwitchSetswitchvalueRequest>>,
-) -> Result<()> {
+) -> ASCOMResponse<()> {
 }
 
 /**
@@ -3243,7 +3247,7 @@ fn get_switch_switchstep(
         transaction,
         request: schemas::GetSwitchSwitchstepRequest { id },
     }): Query<ASCOMRequest<schemas::GetSwitchSwitchstepRequest>>,
-) -> Result<schemas::DoubleResponse> {
+) -> ASCOMResponse<schemas::DoubleResponse> {
 }
 
 /**
@@ -3256,7 +3260,7 @@ fn get_telescope_alignmentmode(
     Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>,
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
-) -> Result<schemas::IntResponse> {
+) -> ASCOMResponse<schemas::IntResponse> {
 }
 
 /**
@@ -3269,7 +3273,7 @@ fn get_telescope_altitude(
     Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>,
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
-) -> Result<schemas::DoubleResponse> {
+) -> ASCOMResponse<schemas::DoubleResponse> {
 }
 
 /**
@@ -3282,7 +3286,7 @@ fn get_telescope_aperturearea(
     Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>,
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
-) -> Result<schemas::DoubleResponse> {
+) -> ASCOMResponse<schemas::DoubleResponse> {
 }
 
 /**
@@ -3295,7 +3299,7 @@ fn get_telescope_aperturediameter(
     Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>,
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
-) -> Result<schemas::DoubleResponse> {
+) -> ASCOMResponse<schemas::DoubleResponse> {
 }
 
 /**
@@ -3308,7 +3312,7 @@ fn get_telescope_athome(
     Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>,
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
-) -> Result<schemas::BoolResponse> {
+) -> ASCOMResponse<schemas::BoolResponse> {
 }
 
 /**
@@ -3321,7 +3325,7 @@ fn get_telescope_atpark(
     Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>,
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
-) -> Result<schemas::BoolResponse> {
+) -> ASCOMResponse<schemas::BoolResponse> {
 }
 
 /**
@@ -3334,7 +3338,7 @@ fn get_telescope_azimuth(
     Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>,
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
-) -> Result<schemas::DoubleResponse> {
+) -> ASCOMResponse<schemas::DoubleResponse> {
 }
 
 /**
@@ -3347,7 +3351,7 @@ fn get_telescope_canfindhome(
     Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>,
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
-) -> Result<schemas::BoolResponse> {
+) -> ASCOMResponse<schemas::BoolResponse> {
 }
 
 /**
@@ -3360,7 +3364,7 @@ fn get_telescope_canpark(
     Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>,
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
-) -> Result<schemas::BoolResponse> {
+) -> ASCOMResponse<schemas::BoolResponse> {
 }
 
 /**
@@ -3373,7 +3377,7 @@ fn get_telescope_canpulseguide(
     Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>,
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
-) -> Result<schemas::BoolResponse> {
+) -> ASCOMResponse<schemas::BoolResponse> {
 }
 
 /**
@@ -3386,7 +3390,7 @@ fn get_telescope_cansetdeclinationrate(
     Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>,
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
-) -> Result<schemas::BoolResponse> {
+) -> ASCOMResponse<schemas::BoolResponse> {
 }
 
 /**
@@ -3399,7 +3403,7 @@ fn get_telescope_cansetguiderates(
     Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>,
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
-) -> Result<schemas::BoolResponse> {
+) -> ASCOMResponse<schemas::BoolResponse> {
 }
 
 /**
@@ -3412,7 +3416,7 @@ fn get_telescope_cansetpark(
     Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>,
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
-) -> Result<schemas::BoolResponse> {
+) -> ASCOMResponse<schemas::BoolResponse> {
 }
 
 /**
@@ -3425,7 +3429,7 @@ fn get_telescope_cansetpierside(
     Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>,
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
-) -> Result<schemas::BoolResponse> {
+) -> ASCOMResponse<schemas::BoolResponse> {
 }
 
 /**
@@ -3438,7 +3442,7 @@ fn get_telescope_cansetrightascensionrate(
     Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>,
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
-) -> Result<schemas::BoolResponse> {
+) -> ASCOMResponse<schemas::BoolResponse> {
 }
 
 /**
@@ -3451,7 +3455,7 @@ fn get_telescope_cansettracking(
     Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>,
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
-) -> Result<schemas::BoolResponse> {
+) -> ASCOMResponse<schemas::BoolResponse> {
 }
 
 /**
@@ -3464,7 +3468,7 @@ fn get_telescope_canslew(
     Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>,
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
-) -> Result<schemas::BoolResponse> {
+) -> ASCOMResponse<schemas::BoolResponse> {
 }
 
 /**
@@ -3477,7 +3481,7 @@ fn get_telescope_canslewaltaz(
     Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>,
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
-) -> Result<schemas::BoolResponse> {
+) -> ASCOMResponse<schemas::BoolResponse> {
 }
 
 /**
@@ -3490,7 +3494,7 @@ fn get_telescope_canslewaltazasync(
     Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>,
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
-) -> Result<schemas::BoolResponse> {
+) -> ASCOMResponse<schemas::BoolResponse> {
 }
 
 /**
@@ -3503,7 +3507,7 @@ fn get_telescope_canslewasync(
     Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>,
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
-) -> Result<schemas::BoolResponse> {
+) -> ASCOMResponse<schemas::BoolResponse> {
 }
 
 /**
@@ -3516,7 +3520,7 @@ fn get_telescope_cansync(
     Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>,
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
-) -> Result<schemas::BoolResponse> {
+) -> ASCOMResponse<schemas::BoolResponse> {
 }
 
 /**
@@ -3529,7 +3533,7 @@ fn get_telescope_cansyncaltaz(
     Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>,
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
-) -> Result<schemas::BoolResponse> {
+) -> ASCOMResponse<schemas::BoolResponse> {
 }
 
 /**
@@ -3542,7 +3546,7 @@ fn get_telescope_canunpark(
     Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>,
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
-) -> Result<schemas::BoolResponse> {
+) -> ASCOMResponse<schemas::BoolResponse> {
 }
 
 /**
@@ -3555,7 +3559,7 @@ fn get_telescope_declination(
     Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>,
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
-) -> Result<schemas::DoubleResponse> {
+) -> ASCOMResponse<schemas::DoubleResponse> {
 }
 
 /**
@@ -3568,7 +3572,7 @@ fn get_telescope_declinationrate(
     Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>,
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
-) -> Result<schemas::DoubleResponse> {
+) -> ASCOMResponse<schemas::DoubleResponse> {
 }
 
 /**
@@ -3584,7 +3588,7 @@ fn put_telescope_declinationrate(
         transaction,
         request: schemas::PutTelescopeDeclinationrateRequest { declination_rate },
     }): Form<ASCOMRequest<schemas::PutTelescopeDeclinationrateRequest>>,
-) -> Result<()> {
+) -> ASCOMResponse<()> {
 }
 
 /**
@@ -3597,7 +3601,7 @@ fn get_telescope_doesrefraction(
     Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>,
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
-) -> Result<schemas::BoolResponse> {
+) -> ASCOMResponse<schemas::BoolResponse> {
 }
 
 /**
@@ -3613,7 +3617,7 @@ fn put_telescope_doesrefraction(
         transaction,
         request: schemas::PutTelescopeDoesrefractionRequest { does_refraction },
     }): Form<ASCOMRequest<schemas::PutTelescopeDoesrefractionRequest>>,
-) -> Result<()> {
+) -> ASCOMResponse<()> {
 }
 
 /**
@@ -3626,7 +3630,7 @@ fn get_telescope_equatorialsystem(
     Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>,
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
-) -> Result<schemas::IntResponse> {
+) -> ASCOMResponse<schemas::IntResponse> {
 }
 
 /**
@@ -3639,7 +3643,7 @@ fn get_telescope_focallength(
     Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>,
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
-) -> Result<schemas::DoubleResponse> {
+) -> ASCOMResponse<schemas::DoubleResponse> {
 }
 
 /**
@@ -3652,7 +3656,7 @@ fn get_telescope_guideratedeclination(
     Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>,
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
-) -> Result<schemas::DoubleResponse> {
+) -> ASCOMResponse<schemas::DoubleResponse> {
 }
 
 /**
@@ -3668,7 +3672,7 @@ fn put_telescope_guideratedeclination(
         transaction,
         request: schemas::PutTelescopeGuideratedeclinationRequest { guide_rate_declination },
     }): Form<ASCOMRequest<schemas::PutTelescopeGuideratedeclinationRequest>>,
-) -> Result<()> {
+) -> ASCOMResponse<()> {
 }
 
 /**
@@ -3681,7 +3685,7 @@ fn get_telescope_guideraterightascension(
     Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>,
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
-) -> Result<schemas::DoubleResponse> {
+) -> ASCOMResponse<schemas::DoubleResponse> {
 }
 
 /**
@@ -3697,7 +3701,7 @@ fn put_telescope_guideraterightascension(
         transaction,
         request: schemas::PutTelescopeGuideraterightascensionRequest { guide_rate_right_ascension },
     }): Form<ASCOMRequest<schemas::PutTelescopeGuideraterightascensionRequest>>,
-) -> Result<()> {
+) -> ASCOMResponse<()> {
 }
 
 /**
@@ -3710,7 +3714,7 @@ fn get_telescope_ispulseguiding(
     Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>,
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
-) -> Result<schemas::BoolResponse> {
+) -> ASCOMResponse<schemas::BoolResponse> {
 }
 
 /**
@@ -3723,7 +3727,7 @@ fn get_telescope_rightascension(
     Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>,
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
-) -> Result<schemas::DoubleResponse> {
+) -> ASCOMResponse<schemas::DoubleResponse> {
 }
 
 /**
@@ -3736,7 +3740,7 @@ fn get_telescope_rightascensionrate(
     Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>,
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
-) -> Result<schemas::DoubleResponse> {
+) -> ASCOMResponse<schemas::DoubleResponse> {
 }
 
 /**
@@ -3752,7 +3756,7 @@ fn put_telescope_rightascensionrate(
         transaction,
         request: schemas::PutTelescopeRightascensionrateRequest { right_ascension_rate },
     }): Form<ASCOMRequest<schemas::PutTelescopeRightascensionrateRequest>>,
-) -> Result<()> {
+) -> ASCOMResponse<()> {
 }
 
 /**
@@ -3765,7 +3769,7 @@ fn get_telescope_sideofpier(
     Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>,
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
-) -> Result<schemas::IntResponse> {
+) -> ASCOMResponse<schemas::IntResponse> {
 }
 
 /**
@@ -3781,7 +3785,7 @@ fn put_telescope_sideofpier(
         transaction,
         request: schemas::PutTelescopeSideofpierRequest { side_of_pier },
     }): Form<ASCOMRequest<schemas::PutTelescopeSideofpierRequest>>,
-) -> Result<()> {
+) -> ASCOMResponse<()> {
 }
 
 /**
@@ -3794,7 +3798,7 @@ fn get_telescope_siderealtime(
     Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>,
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
-) -> Result<schemas::DoubleResponse> {
+) -> ASCOMResponse<schemas::DoubleResponse> {
 }
 
 /**
@@ -3807,7 +3811,7 @@ fn get_telescope_siteelevation(
     Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>,
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
-) -> Result<schemas::DoubleResponse> {
+) -> ASCOMResponse<schemas::DoubleResponse> {
 }
 
 /**
@@ -3823,7 +3827,7 @@ fn put_telescope_siteelevation(
         transaction,
         request: schemas::PutTelescopeSiteelevationRequest { site_elevation },
     }): Form<ASCOMRequest<schemas::PutTelescopeSiteelevationRequest>>,
-) -> Result<()> {
+) -> ASCOMResponse<()> {
 }
 
 /**
@@ -3836,7 +3840,7 @@ fn get_telescope_sitelatitude(
     Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>,
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
-) -> Result<schemas::DoubleResponse> {
+) -> ASCOMResponse<schemas::DoubleResponse> {
 }
 
 /**
@@ -3852,7 +3856,7 @@ fn put_telescope_sitelatitude(
         transaction,
         request: schemas::PutTelescopeSitelatitudeRequest { site_latitude },
     }): Form<ASCOMRequest<schemas::PutTelescopeSitelatitudeRequest>>,
-) -> Result<()> {
+) -> ASCOMResponse<()> {
 }
 
 /**
@@ -3865,7 +3869,7 @@ fn get_telescope_sitelongitude(
     Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>,
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
-) -> Result<schemas::DoubleResponse> {
+) -> ASCOMResponse<schemas::DoubleResponse> {
 }
 
 /**
@@ -3881,7 +3885,7 @@ fn put_telescope_sitelongitude(
         transaction,
         request: schemas::PutTelescopeSitelongitudeRequest { site_longitude },
     }): Form<ASCOMRequest<schemas::PutTelescopeSitelongitudeRequest>>,
-) -> Result<()> {
+) -> ASCOMResponse<()> {
 }
 
 /**
@@ -3894,7 +3898,7 @@ fn get_telescope_slewing(
     Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>,
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
-) -> Result<schemas::BoolResponse> {
+) -> ASCOMResponse<schemas::BoolResponse> {
 }
 
 /**
@@ -3907,7 +3911,7 @@ fn get_telescope_slewsettletime(
     Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>,
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
-) -> Result<schemas::IntResponse> {
+) -> ASCOMResponse<schemas::IntResponse> {
 }
 
 /**
@@ -3923,7 +3927,7 @@ fn put_telescope_slewsettletime(
         transaction,
         request: schemas::PutTelescopeSlewsettletimeRequest { slew_settle_time },
     }): Form<ASCOMRequest<schemas::PutTelescopeSlewsettletimeRequest>>,
-) -> Result<()> {
+) -> ASCOMResponse<()> {
 }
 
 /**
@@ -3936,7 +3940,7 @@ fn get_telescope_targetdeclination(
     Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>,
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
-) -> Result<schemas::DoubleResponse> {
+) -> ASCOMResponse<schemas::DoubleResponse> {
 }
 
 /**
@@ -3952,7 +3956,7 @@ fn put_telescope_targetdeclination(
         transaction,
         request: schemas::PutTelescopeTargetdeclinationRequest { target_declination },
     }): Form<ASCOMRequest<schemas::PutTelescopeTargetdeclinationRequest>>,
-) -> Result<()> {
+) -> ASCOMResponse<()> {
 }
 
 /**
@@ -3965,7 +3969,7 @@ fn get_telescope_targetrightascension(
     Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>,
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
-) -> Result<schemas::DoubleResponse> {
+) -> ASCOMResponse<schemas::DoubleResponse> {
 }
 
 /**
@@ -3981,7 +3985,7 @@ fn put_telescope_targetrightascension(
         transaction,
         request: schemas::PutTelescopeTargetrightascensionRequest { target_right_ascension },
     }): Form<ASCOMRequest<schemas::PutTelescopeTargetrightascensionRequest>>,
-) -> Result<()> {
+) -> ASCOMResponse<()> {
 }
 
 /**
@@ -3994,7 +3998,7 @@ fn get_telescope_tracking(
     Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>,
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
-) -> Result<schemas::BoolResponse> {
+) -> ASCOMResponse<schemas::BoolResponse> {
 }
 
 /**
@@ -4010,7 +4014,7 @@ fn put_telescope_tracking(
         transaction,
         request: schemas::PutTelescopeTrackingRequest { tracking },
     }): Form<ASCOMRequest<schemas::PutTelescopeTrackingRequest>>,
-) -> Result<()> {
+) -> ASCOMResponse<()> {
 }
 
 /**
@@ -4023,7 +4027,7 @@ fn get_telescope_trackingrate(
     Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>,
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
-) -> Result<schemas::IntResponse> {
+) -> ASCOMResponse<schemas::IntResponse> {
 }
 
 /**
@@ -4039,7 +4043,7 @@ fn put_telescope_trackingrate(
         transaction,
         request: schemas::PutTelescopeTrackingrateRequest { tracking_rate },
     }): Form<ASCOMRequest<schemas::PutTelescopeTrackingrateRequest>>,
-) -> Result<()> {
+) -> ASCOMResponse<()> {
 }
 
 /**
@@ -4052,7 +4056,7 @@ fn get_telescope_trackingrates(
     Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>,
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
-) -> Result<schemas::DriveRatesResponse> {
+) -> ASCOMResponse<schemas::DriveRatesResponse> {
 }
 
 /**
@@ -4065,7 +4069,7 @@ fn get_telescope_utcdate(
     Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>,
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
-) -> Result<schemas::StringResponse> {
+) -> ASCOMResponse<schemas::StringResponse> {
 }
 
 /**
@@ -4081,7 +4085,7 @@ fn put_telescope_utcdate(
         transaction,
         request: schemas::PutTelescopeUtcdateRequest { utcdate },
     }): Form<ASCOMRequest<schemas::PutTelescopeUtcdateRequest>>,
-) -> Result<()> {
+) -> ASCOMResponse<()> {
 }
 
 /**
@@ -4090,7 +4094,12 @@ Immediatley stops a slew in progress.
 Immediately Stops a slew in progress.
 */
 #[put("/telescope/<device_number>/abortslew")]
-fn put_telescope_abortslew(Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>, Form(ASCOMRequest { transaction, request: () }): Form<ASCOMRequest<()>>) -> Result<()> {}
+fn put_telescope_abortslew(
+    Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>,
+
+    Form(ASCOMRequest { transaction, request: () }): Form<ASCOMRequest<()>>,
+) -> ASCOMResponse<()> {
+}
 
 /**
 Returns the rates at which the telescope may be moved about the specified axis.
@@ -4105,7 +4114,7 @@ fn get_telescope_axisrates(
         transaction,
         request: schemas::GetTelescopeAxisratesRequest { axis },
     }): Query<ASCOMRequest<schemas::GetTelescopeAxisratesRequest>>,
-) -> Result<schemas::AxisRatesResponse> {
+) -> ASCOMResponse<schemas::AxisRatesResponse> {
 }
 
 /**
@@ -4121,7 +4130,7 @@ fn get_telescope_canmoveaxis(
         transaction,
         request: schemas::GetTelescopeCanmoveaxisRequest { axis },
     }): Query<ASCOMRequest<schemas::GetTelescopeCanmoveaxisRequest>>,
-) -> Result<schemas::BoolResponse> {
+) -> ASCOMResponse<schemas::BoolResponse> {
 }
 
 /**
@@ -4137,7 +4146,7 @@ fn get_telescope_destinationsideofpier(
         transaction,
         request: schemas::GetTelescopeDestinationsideofpierRequest { right_ascension, declination },
     }): Query<ASCOMRequest<schemas::GetTelescopeDestinationsideofpierRequest>>,
-) -> Result<schemas::IntResponse> {
+) -> ASCOMResponse<schemas::IntResponse> {
 }
 
 /**
@@ -4146,7 +4155,12 @@ Moves the mount to the "home" position.
 Locates the telescope's "home" position (synchronous)
 */
 #[put("/telescope/<device_number>/findhome")]
-fn put_telescope_findhome(Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>, Form(ASCOMRequest { transaction, request: () }): Form<ASCOMRequest<()>>) -> Result<()> {}
+fn put_telescope_findhome(
+    Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>,
+
+    Form(ASCOMRequest { transaction, request: () }): Form<ASCOMRequest<()>>,
+) -> ASCOMResponse<()> {
+}
 
 /**
 Moves a telescope axis at the given rate.
@@ -4161,7 +4175,7 @@ fn put_telescope_moveaxis(
         transaction,
         request: schemas::PutTelescopeMoveaxisRequest { axis, rate },
     }): Form<ASCOMRequest<schemas::PutTelescopeMoveaxisRequest>>,
-) -> Result<()> {
+) -> ASCOMResponse<()> {
 }
 
 /**
@@ -4170,7 +4184,12 @@ Park the mount
 Move the telescope to its park position, stop all motion (or restrict to a small safe range), and set AtPark to True. )
 */
 #[put("/telescope/<device_number>/park")]
-fn put_telescope_park(Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>, Form(ASCOMRequest { transaction, request: () }): Form<ASCOMRequest<()>>) -> Result<()> {}
+fn put_telescope_park(
+    Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>,
+
+    Form(ASCOMRequest { transaction, request: () }): Form<ASCOMRequest<()>>,
+) -> ASCOMResponse<()> {
+}
 
 /**
 Moves the scope in the given direction for the given time.
@@ -4185,7 +4204,7 @@ fn put_telescope_pulseguide(
         transaction,
         request: schemas::PutTelescopePulseguideRequest { direction, duration },
     }): Form<ASCOMRequest<schemas::PutTelescopePulseguideRequest>>,
-) -> Result<()> {
+) -> ASCOMResponse<()> {
 }
 
 /**
@@ -4194,7 +4213,12 @@ Sets the telescope's park position
 Sets the telescope's park position to be its current position.
 */
 #[put("/telescope/<device_number>/setpark")]
-fn put_telescope_setpark(Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>, Form(ASCOMRequest { transaction, request: () }): Form<ASCOMRequest<()>>) -> Result<()> {}
+fn put_telescope_setpark(
+    Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>,
+
+    Form(ASCOMRequest { transaction, request: () }): Form<ASCOMRequest<()>>,
+) -> ASCOMResponse<()> {
+}
 
 /**
 Synchronously slew to the given local horizontal coordinates.
@@ -4209,7 +4233,7 @@ fn put_telescope_slewtoaltaz(
         transaction,
         request: schemas::PutTelescopeSlewtoaltazRequest { azimuth, altitude },
     }): Form<ASCOMRequest<schemas::PutTelescopeSlewtoaltazRequest>>,
-) -> Result<()> {
+) -> ASCOMResponse<()> {
 }
 
 /**
@@ -4225,7 +4249,7 @@ fn put_telescope_slewtoaltazasync(
         transaction,
         request: schemas::PutTelescopeSlewtoaltazRequest { azimuth, altitude },
     }): Form<ASCOMRequest<schemas::PutTelescopeSlewtoaltazRequest>>,
-) -> Result<()> {
+) -> ASCOMResponse<()> {
 }
 
 /**
@@ -4241,7 +4265,7 @@ fn put_telescope_slewtocoordinates(
         transaction,
         request: schemas::PutTelescopeSlewtocoordinatesRequest { right_ascension, declination },
     }): Form<ASCOMRequest<schemas::PutTelescopeSlewtocoordinatesRequest>>,
-) -> Result<()> {
+) -> ASCOMResponse<()> {
 }
 
 /**
@@ -4257,7 +4281,7 @@ fn put_telescope_slewtocoordinatesasync(
         transaction,
         request: schemas::PutTelescopeSlewtocoordinatesRequest { right_ascension, declination },
     }): Form<ASCOMRequest<schemas::PutTelescopeSlewtocoordinatesRequest>>,
-) -> Result<()> {
+) -> ASCOMResponse<()> {
 }
 
 /**
@@ -4270,7 +4294,7 @@ fn put_telescope_slewtotarget(
     Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>,
 
     Form(ASCOMRequest { transaction, request: () }): Form<ASCOMRequest<()>>,
-) -> Result<()> {
+) -> ASCOMResponse<()> {
 }
 
 /**
@@ -4283,7 +4307,7 @@ fn put_telescope_slewtotargetasync(
     Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>,
 
     Form(ASCOMRequest { transaction, request: () }): Form<ASCOMRequest<()>>,
-) -> Result<()> {
+) -> ASCOMResponse<()> {
 }
 
 /**
@@ -4299,7 +4323,7 @@ fn put_telescope_synctoaltaz(
         transaction,
         request: schemas::PutTelescopeSlewtoaltazRequest { azimuth, altitude },
     }): Form<ASCOMRequest<schemas::PutTelescopeSlewtoaltazRequest>>,
-) -> Result<()> {
+) -> ASCOMResponse<()> {
 }
 
 /**
@@ -4315,7 +4339,7 @@ fn put_telescope_synctocoordinates(
         transaction,
         request: schemas::PutTelescopeSlewtocoordinatesRequest { right_ascension, declination },
     }): Form<ASCOMRequest<schemas::PutTelescopeSlewtocoordinatesRequest>>,
-) -> Result<()> {
+) -> ASCOMResponse<()> {
 }
 
 /**
@@ -4328,7 +4352,7 @@ fn put_telescope_synctotarget(
     Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>,
 
     Form(ASCOMRequest { transaction, request: () }): Form<ASCOMRequest<()>>,
-) -> Result<()> {
+) -> ASCOMResponse<()> {
 }
 
 /**
@@ -4337,7 +4361,12 @@ Unparks the mount.
 Takes telescope out of the Parked state. )
 */
 #[put("/telescope/<device_number>/unpark")]
-fn put_telescope_unpark(Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>, Form(ASCOMRequest { transaction, request: () }): Form<ASCOMRequest<()>>) -> Result<()> {}
+fn put_telescope_unpark(
+    Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>,
+
+    Form(ASCOMRequest { transaction, request: () }): Form<ASCOMRequest<()>>,
+) -> ASCOMResponse<()> {
+}
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {

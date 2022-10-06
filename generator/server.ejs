@@ -50,26 +50,6 @@ impl<T: Serialize> IntoResponse for ASCOMResponse<T> {
   }
 }
 
-#[derive(Debug)]
-pub enum AlpacaError {
-  /// Method or parameter value error, check error message
-  ValueError(String),
-
-  // Server internal error, check error message
-  InternalError(String),
-}
-
-impl IntoResponse for AlpacaError {
-  fn into_response(self) -> Response {
-    match self {
-      Self::ValueError(message) => (StatusCode::BAD_REQUEST, message),
-      Self::InternalError(message) => (StatusCode::INTERNAL_SERVER_ERROR, message),
-    }.into_response()
-  }
-}
-
-pub type Result<T> = std::result::Result<ASCOMResponse<T>, AlpacaError>;
-
 <%
 const toTypeName = toPascalCase;
 
@@ -204,7 +184,7 @@ mod schemas {
         }
       <% } %>,
     }): <%= requestKind %><ASCOMRequest<<%= requestRefName %>>>
-  ) -> Result<<%= refToName(method.responses[200].content['application/json'].schema) %>> {
+  ) -> ASCOMResponse<<%= refToName(method.responses[200].content['application/json'].schema) %>> {
 
   }
 
