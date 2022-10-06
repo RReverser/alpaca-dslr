@@ -245,8 +245,11 @@ for (let { method, path, id, operation } of ops()) {
 let refReplacements: Record<string, OpenAPIV3.ReferenceObject> = {};
 let groupCounts: Record<string, number> = {};
 
-let extraSchemasWithoutOptFields = withoutOptFields(extraSchemas);
-console.log(extraSchemasWithoutOptFields.DeviceTypeAndNumberPath);
+let extraSchemasWithoutOptFields = Object.fromEntries(
+  Object.entries(extraSchemas).map(([name, schema]) => {
+    return [jsonWithoutOptFields(schema), name];
+  })
+);
 
 for (let [schemaName, schema] of Object.entries(api.components!.schemas!)) {
   schema = resolveMaybeRef(schema);
@@ -322,15 +325,8 @@ for (let [schemaName, schema] of Object.entries(api.components!.schemas!)) {
     }
   }
 
-  let schemaWithoutOptFields = withoutOptFields(schema);
-
-  let replacementName = Object.keys(extraSchemasWithoutOptFields).find(
-    replacementName =>
-      isDeepStrictEqual(
-        schemaWithoutOptFields,
-        extraSchemasWithoutOptFields[replacementName]
-      )
-  );
+  let replacementName =
+    extraSchemasWithoutOptFields[jsonWithoutOptFields(schema)];
 
   if (replacementName) {
     delete api.components!.schemas![schemaName];
