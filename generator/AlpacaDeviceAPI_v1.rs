@@ -43,15 +43,15 @@ use axum::{
 #[derive(Deserialize)]
 pub struct TransactionRequest {
     #[serde(rename = "ClientID")]
-    client_id: u32,
+    client_id: Option<u32>,
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: u32,
+    client_transaction_id: Option<u32>,
 }
 
 #[derive(Serialize)]
 pub struct TransactionResponse {
     #[serde(rename = "ClientTransactionID")]
-    client_transaction_id: u32,
+    client_transaction_id: Option<u32>,
     #[serde(rename = "ServerTransactionID")]
     server_transaction_id: u32,
 }
