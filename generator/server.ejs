@@ -4,7 +4,13 @@
 <%= api.info.description %>
 */
 
-use axum::{Router, routing::{get, post}};
+use axum::{
+    extract::{Path, Query},
+    response::{IntoResponse, Response},
+    routing::{get, put},
+    Form, Json,
+};
+use serde::{Deserialize, Serialize};
 
 #[derive(Deserialize)]
 pub struct TransactionRequest {
@@ -132,7 +138,7 @@ function getTypeDescription(schema) {
 <% function handleSchema(schemaName, schema) { %>
   <% schemaName = toTypeName(schemaName); %>
   <% if (schema.type === 'object') { %>
-    struct <%= schemaName %> {
+    pub struct <%= schemaName %> {
       <% for (let [propName, prop] of Object.entries(schema.properties)) { %>
         <%= doc(getTypeDescription(prop)) %>
         #[serde(rename = "<%= propName %>")]
@@ -141,17 +147,19 @@ function getTypeDescription(schema) {
     }
   <% } else { %>
     #[repr(transparent)]
-    struct <%= schemaName %>(<%= handleType(schema, schemaName, true) %>);
+    pub struct <%= schemaName %>(<%= handleType(schema, schemaName, true) %>);
   <% } %>
 <% } %>
 
 mod schemas {
+  use super::*;
+
   <% for (let [schemaName, schema] of Object.entries(api.components.schemas)) { %>
     <% if (schemaName.startsWith('Empty')) continue; %>
-    <% if (schema['x-kind'] === 'Response') { %>
-      #[derive(Serialize)]
-    <% } else { %>
+    <% if (schema['x-kind'] === 'Path' || schema['x-kind'] === 'Request') { %>
       #[derive(Deserialize)]
+    <% } else { %>
+      #[derive(Serialize)]
     <% } %>
     <%= handleSchema(schemaName, schema) %>
   <% } %>
@@ -185,7 +193,7 @@ mod schemas {
       <% } %>,
     }): <%= requestKind %><ASCOMRequest<<%= requestRefName %>>>
   ) -> ASCOMResponse<<%= refToName(method.responses[200].content['application/json'].schema) %>> {
-
+    unimplemented!()
   }
 
 <% } %>

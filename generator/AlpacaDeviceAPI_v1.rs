@@ -36,9 +36,12 @@ The SetupDialog method has been omitted from the Alpaca Device API because it pr
 */
 
 use axum::{
-    routing::{get, post},
-    Router,
+    extract::{Path, Query},
+    response::{IntoResponse, Response},
+    routing::{get, put},
+    Form, Json,
 };
+use serde::{Deserialize, Serialize};
 
 #[derive(Deserialize)]
 pub struct TransactionRequest {
@@ -85,10 +88,11 @@ impl<T: Serialize> IntoResponse for ASCOMResponse<T> {
 }
 
 mod schemas {
+    use super::*;
 
     #[derive(Serialize)]
 
-    struct ImageArrayResponse {
+    pub struct ImageArrayResponse {
         /// 0 = Unknown, 1 = Short(int16), 2 = Integer (int32), 3 = Double (Double precision real number).
         #[serde(rename = "Type")]
         pub type_: Option<i32>,
@@ -104,7 +108,7 @@ mod schemas {
 
     #[derive(Serialize)]
 
-    struct BoolResponse {
+    pub struct BoolResponse {
         /// True or False value
         #[serde(rename = "Value")]
         pub value: Option<bool>,
@@ -112,7 +116,7 @@ mod schemas {
 
     #[derive(Serialize)]
 
-    struct DoubleResponse {
+    pub struct DoubleResponse {
         /// Returned double value
         #[serde(rename = "Value")]
         pub value: Option<f64>,
@@ -120,7 +124,7 @@ mod schemas {
 
     #[derive(Serialize)]
 
-    struct IntResponse {
+    pub struct IntResponse {
         /// Returned integer value
         #[serde(rename = "Value")]
         pub value: Option<i32>,
@@ -128,7 +132,7 @@ mod schemas {
 
     #[derive(Serialize)]
 
-    struct IntArrayResponse {
+    pub struct IntArrayResponse {
         /// Array of integer values.
         #[serde(rename = "Value")]
         pub value: Option<Vec<i32>>,
@@ -136,7 +140,7 @@ mod schemas {
 
     #[derive(Serialize)]
 
-    struct StringResponse {
+    pub struct StringResponse {
         /// String response from the device.
         #[serde(rename = "Value")]
         pub value: Option<String>,
@@ -144,7 +148,7 @@ mod schemas {
 
     #[derive(Serialize)]
 
-    struct StringArrayResponse {
+    pub struct StringArrayResponse {
         /// Array of string values.
         #[serde(rename = "Value")]
         pub value: Option<Vec<String>>,
@@ -152,15 +156,15 @@ mod schemas {
 
     #[derive(Serialize)]
 
-    struct AxisRatesResponse {
+    pub struct AxisRatesResponse {
         /// Array of AxisRate objects
         #[serde(rename = "Value")]
         pub value: Option<Vec<schemas::AxisRate>>,
     }
 
-    #[derive(Deserialize)]
+    #[derive(Serialize)]
 
-    struct AxisRate {
+    pub struct AxisRate {
         /// The maximum rate (degrees per second) This must always be a positive number. It indicates the maximum rate in either direction about the axis.
         #[serde(rename = "Maximum")]
         pub maximum: f64,
@@ -172,19 +176,19 @@ mod schemas {
 
     #[derive(Serialize)]
 
-    struct DriveRatesResponse {
+    pub struct DriveRatesResponse {
         /// Array of DriveRate values
         #[serde(rename = "Value")]
         pub value: Option<Vec<schemas::DriveRate>>,
     }
 
-    #[derive(Deserialize)]
+    #[derive(Serialize)]
     #[repr(transparent)]
-    struct DriveRate(f64);
+    pub struct DriveRate(f64);
 
     #[derive(Deserialize)]
 
-    struct PutActionRequest {
+    pub struct PutActionRequest {
         /// A well known name that represents the action to be carried out.
         #[serde(rename = "Action")]
         pub action: String,
@@ -196,7 +200,7 @@ mod schemas {
 
     #[derive(Deserialize)]
 
-    struct PutCommandblindRequest {
+    pub struct PutCommandblindRequest {
         /// The literal command string to be transmitted.
         #[serde(rename = "Command")]
         pub command: String,
@@ -208,7 +212,7 @@ mod schemas {
 
     #[derive(Deserialize)]
 
-    struct PutConnectedRequest {
+    pub struct PutConnectedRequest {
         /// Set True to connect to the device hardware, set False to disconnect from the device hardware
         #[serde(rename = "Connected")]
         pub connected: bool,
@@ -216,7 +220,7 @@ mod schemas {
 
     #[derive(Deserialize)]
 
-    struct PutCameraBinxRequest {
+    pub struct PutCameraBinxRequest {
         /// The X binning value
         #[serde(rename = "BinX")]
         pub bin_x: i32,
@@ -224,7 +228,7 @@ mod schemas {
 
     #[derive(Deserialize)]
 
-    struct PutCameraBinyRequest {
+    pub struct PutCameraBinyRequest {
         /// The Y binning value
         #[serde(rename = "BinY")]
         pub bin_y: i32,
@@ -232,7 +236,7 @@ mod schemas {
 
     #[derive(Deserialize)]
 
-    struct PutCameraCooleronRequest {
+    pub struct PutCameraCooleronRequest {
         /// Cooler state
         #[serde(rename = "CoolerOn")]
         pub cooler_on: bool,
@@ -240,7 +244,7 @@ mod schemas {
 
     #[derive(Deserialize)]
 
-    struct PutCameraFastreadoutRequest {
+    pub struct PutCameraFastreadoutRequest {
         /// True to enable fast readout mode
         #[serde(rename = "FastReadout")]
         pub fast_readout: bool,
@@ -248,7 +252,7 @@ mod schemas {
 
     #[derive(Deserialize)]
 
-    struct PutCameraGainRequest {
+    pub struct PutCameraGainRequest {
         /// Index of the current camera gain in the Gains string array.
         #[serde(rename = "Gain")]
         pub gain: i32,
@@ -256,7 +260,7 @@ mod schemas {
 
     #[derive(Deserialize)]
 
-    struct PutCameraNumxRequest {
+    pub struct PutCameraNumxRequest {
         /// Sets the subframe width, if binning is active, value is in binned pixels.
         #[serde(rename = "NumX")]
         pub num_x: i32,
@@ -264,7 +268,7 @@ mod schemas {
 
     #[derive(Deserialize)]
 
-    struct PutCameraNumyRequest {
+    pub struct PutCameraNumyRequest {
         /// Sets the subframe height, if binning is active, value is in binned pixels.
         #[serde(rename = "NumY")]
         pub num_y: i32,
@@ -272,7 +276,7 @@ mod schemas {
 
     #[derive(Deserialize)]
 
-    struct PutCameraOffsetRequest {
+    pub struct PutCameraOffsetRequest {
         /// Index of the current camera offset in the offsets string array.
         #[serde(rename = "offset")]
         pub offset: i32,
@@ -280,7 +284,7 @@ mod schemas {
 
     #[derive(Deserialize)]
 
-    struct PutCameraReadoutmodeRequest {
+    pub struct PutCameraReadoutmodeRequest {
         /// Index into the ReadoutModes array of string readout mode names indicating the camera's current readout mode.
         #[serde(rename = "ReadoutMode")]
         pub readout_mode: i32,
@@ -288,7 +292,7 @@ mod schemas {
 
     #[derive(Deserialize)]
 
-    struct PutCameraSetccdtemperatureRequest {
+    pub struct PutCameraSetccdtemperatureRequest {
         /// Temperature set point (degrees Celsius).
         #[serde(rename = "SetCCDTemperature")]
         pub set_ccdtemperature: f64,
@@ -296,7 +300,7 @@ mod schemas {
 
     #[derive(Deserialize)]
 
-    struct PutCameraStartxRequest {
+    pub struct PutCameraStartxRequest {
         /// The subframe X axis start position in binned pixels.
         #[serde(rename = "StartX")]
         pub start_x: i32,
@@ -304,7 +308,7 @@ mod schemas {
 
     #[derive(Deserialize)]
 
-    struct PutCameraStartyRequest {
+    pub struct PutCameraStartyRequest {
         /// The subframe Y axis start position in binned pixels.
         #[serde(rename = "StartY")]
         pub start_y: i32,
@@ -312,7 +316,7 @@ mod schemas {
 
     #[derive(Deserialize)]
 
-    struct PutCameraSubexposuredurationRequest {
+    pub struct PutCameraSubexposuredurationRequest {
         /// The request sub exposure duration in seconds
         #[serde(rename = "SubExposureDuration")]
         pub sub_exposure_duration: f64,
@@ -320,7 +324,7 @@ mod schemas {
 
     #[derive(Deserialize)]
 
-    struct PutCameraPulseguideRequest {
+    pub struct PutCameraPulseguideRequest {
         /// Direction of movement (0 = North, 1 = South, 2 = East, 3 = West)
         #[serde(rename = "Direction")]
         pub direction: i32,
@@ -332,7 +336,7 @@ mod schemas {
 
     #[derive(Deserialize)]
 
-    struct PutCameraStartexposureRequest {
+    pub struct PutCameraStartexposureRequest {
         /// Duration of exposure in seconds
         #[serde(rename = "Duration")]
         pub duration: f64,
@@ -344,7 +348,7 @@ mod schemas {
 
     #[derive(Deserialize)]
 
-    struct PutCovercalibratorCalibratoronRequest {
+    pub struct PutCovercalibratorCalibratoronRequest {
         /// The required brightness in the range 0 to MaxBrightness
         #[serde(rename = "Brightness")]
         pub brightness: Option<i32>,
@@ -352,7 +356,7 @@ mod schemas {
 
     #[derive(Deserialize)]
 
-    struct PutDomeSlavedRequest {
+    pub struct PutDomeSlavedRequest {
         /// True if telescope is slaved to dome, otherwise false
         #[serde(rename = "Slaved")]
         pub slaved: bool,
@@ -360,7 +364,7 @@ mod schemas {
 
     #[derive(Deserialize)]
 
-    struct PutDomeSlewtoaltitudeRequest {
+    pub struct PutDomeSlewtoaltitudeRequest {
         /// Target dome altitude (degrees, horizon zero and increasing positive to 90 zenith)
         #[serde(rename = "Altitude")]
         pub altitude: f64,
@@ -368,7 +372,7 @@ mod schemas {
 
     #[derive(Deserialize)]
 
-    struct PutDomeSlewtoazimuthRequest {
+    pub struct PutDomeSlewtoazimuthRequest {
         /// Target dome azimuth (degrees, North zero and increasing clockwise. i.e., 90 East, 180 South, 270 West)
         #[serde(rename = "Azimuth")]
         pub azimuth: f64,
@@ -376,7 +380,7 @@ mod schemas {
 
     #[derive(Deserialize)]
 
-    struct PutFilterwheelPositionRequest {
+    pub struct PutFilterwheelPositionRequest {
         /// The number of the filter wheel position to select
         #[serde(rename = "Position")]
         pub position: i32,
@@ -384,7 +388,7 @@ mod schemas {
 
     #[derive(Deserialize)]
 
-    struct PutFocuserTempcompPath {
+    pub struct PutFocuserTempcompPath {
         /// Zero based device number as set on the server
         #[serde(rename = "device_number")]
         pub device_number: i32,
@@ -392,7 +396,7 @@ mod schemas {
 
     #[derive(Deserialize)]
 
-    struct PutFocuserTempcompRequest {
+    pub struct PutFocuserTempcompRequest {
         /// Set true to enable the focuser's temperature compensation mode, otherwise false for normal operation.
         #[serde(rename = "TempComp")]
         pub temp_comp: bool,
@@ -400,7 +404,7 @@ mod schemas {
 
     #[derive(Deserialize)]
 
-    struct PutFocuserMoveRequest {
+    pub struct PutFocuserMoveRequest {
         /// Step distance or absolute position, depending on the value of the Absolute property
         #[serde(rename = "Position")]
         pub position: i32,
@@ -408,7 +412,7 @@ mod schemas {
 
     #[derive(Deserialize)]
 
-    struct PutObservingconditionsAverageperiodRequest {
+    pub struct PutObservingconditionsAverageperiodRequest {
         /// Time period (hours) over which to average sensor readings
         #[serde(rename = "AveragePeriod")]
         pub average_period: f64,
@@ -416,7 +420,7 @@ mod schemas {
 
     #[derive(Deserialize)]
 
-    struct GetObservingconditionsSensordescriptionRequest {
+    pub struct GetObservingconditionsSensordescriptionRequest {
         /// Name of the sensor whose description is required
         #[serde(rename = "SensorName")]
         pub sensor_name: String,
@@ -424,7 +428,7 @@ mod schemas {
 
     #[derive(Deserialize)]
 
-    struct GetObservingconditionsTimesincelastupdateRequest {
+    pub struct GetObservingconditionsTimesincelastupdateRequest {
         /// Name of the sensor whose last update time is required
         #[serde(rename = "SensorName")]
         pub sensor_name: String,
@@ -432,7 +436,7 @@ mod schemas {
 
     #[derive(Deserialize)]
 
-    struct PutRotatorReverseRequest {
+    pub struct PutRotatorReverseRequest {
         /// True if the rotation and angular direction must be reversed to match the optical characteristcs
         #[serde(rename = "Reverse")]
         pub reverse: bool,
@@ -440,7 +444,7 @@ mod schemas {
 
     #[derive(Deserialize)]
 
-    struct PutRotatorMoveRequest {
+    pub struct PutRotatorMoveRequest {
         /// Relative position to move in degrees from current Position.
         #[serde(rename = "Position")]
         pub position: f64,
@@ -448,7 +452,7 @@ mod schemas {
 
     #[derive(Deserialize)]
 
-    struct PutRotatorMoveabsoluteRequest {
+    pub struct PutRotatorMoveabsoluteRequest {
         /// Absolute position in degrees.
         #[serde(rename = "Position")]
         pub position: f64,
@@ -456,7 +460,7 @@ mod schemas {
 
     #[derive(Deserialize)]
 
-    struct PutRotatorMovemechanicalRequest {
+    pub struct PutRotatorMovemechanicalRequest {
         /// Absolute position in degrees.
         #[serde(rename = "Position")]
         pub position: f64,
@@ -464,7 +468,7 @@ mod schemas {
 
     #[derive(Deserialize)]
 
-    struct PutRotatorSyncRequest {
+    pub struct PutRotatorSyncRequest {
         /// Absolute position in degrees.
         #[serde(rename = "Position")]
         pub position: f64,
@@ -472,7 +476,7 @@ mod schemas {
 
     #[derive(Deserialize)]
 
-    struct GetSwitchCanwriteRequest {
+    pub struct GetSwitchCanwriteRequest {
         /// The device number (0 to MaxSwitch - 1)
         #[serde(rename = "Id")]
         pub id: i32,
@@ -480,7 +484,7 @@ mod schemas {
 
     #[derive(Deserialize)]
 
-    struct GetSwitchGetswitchRequest {
+    pub struct GetSwitchGetswitchRequest {
         /// The device number (0 to MaxSwitch - 1)
         #[serde(rename = "Id")]
         pub id: i32,
@@ -488,7 +492,7 @@ mod schemas {
 
     #[derive(Deserialize)]
 
-    struct GetSwitchGetswitchdescriptionRequest {
+    pub struct GetSwitchGetswitchdescriptionRequest {
         /// The device number (0 to MaxSwitch - 1)
         #[serde(rename = "Id")]
         pub id: i32,
@@ -496,7 +500,7 @@ mod schemas {
 
     #[derive(Deserialize)]
 
-    struct GetSwitchGetswitchnameRequest {
+    pub struct GetSwitchGetswitchnameRequest {
         /// The device number (0 to MaxSwitch - 1)
         #[serde(rename = "Id")]
         pub id: i32,
@@ -504,7 +508,7 @@ mod schemas {
 
     #[derive(Deserialize)]
 
-    struct GetSwitchGetswitchvalueRequest {
+    pub struct GetSwitchGetswitchvalueRequest {
         /// The device number (0 to MaxSwitch - 1)
         #[serde(rename = "Id")]
         pub id: i32,
@@ -512,7 +516,7 @@ mod schemas {
 
     #[derive(Deserialize)]
 
-    struct GetSwitchMinswitchvalueRequest {
+    pub struct GetSwitchMinswitchvalueRequest {
         /// The device number (0 to MaxSwitch - 1)
         #[serde(rename = "Id")]
         pub id: i32,
@@ -520,7 +524,7 @@ mod schemas {
 
     #[derive(Deserialize)]
 
-    struct GetSwitchMaxswitchvalueRequest {
+    pub struct GetSwitchMaxswitchvalueRequest {
         /// The device number (0 to MaxSwitch - 1)
         #[serde(rename = "Id")]
         pub id: i32,
@@ -528,7 +532,7 @@ mod schemas {
 
     #[derive(Deserialize)]
 
-    struct PutSwitchSetswitchRequest {
+    pub struct PutSwitchSetswitchRequest {
         /// The device number (0 to MaxSwitch - 1)
         #[serde(rename = "Id")]
         pub id: i32,
@@ -540,7 +544,7 @@ mod schemas {
 
     #[derive(Deserialize)]
 
-    struct PutSwitchSetswitchnameRequest {
+    pub struct PutSwitchSetswitchnameRequest {
         /// The device number (0 to MaxSwitch - 1)
         #[serde(rename = "Id")]
         pub id: i32,
@@ -552,7 +556,7 @@ mod schemas {
 
     #[derive(Deserialize)]
 
-    struct PutSwitchSetswitchvalueRequest {
+    pub struct PutSwitchSetswitchvalueRequest {
         /// The device number (0 to MaxSwitch - 1)
         #[serde(rename = "Id")]
         pub id: i32,
@@ -564,7 +568,7 @@ mod schemas {
 
     #[derive(Deserialize)]
 
-    struct GetSwitchSwitchstepRequest {
+    pub struct GetSwitchSwitchstepRequest {
         /// The device number (0 to MaxSwitch - 1)
         #[serde(rename = "Id")]
         pub id: i32,
@@ -572,7 +576,7 @@ mod schemas {
 
     #[derive(Deserialize)]
 
-    struct PutTelescopeDeclinationrateRequest {
+    pub struct PutTelescopeDeclinationrateRequest {
         /// Declination tracking rate (arcseconds per second)
         #[serde(rename = "DeclinationRate")]
         pub declination_rate: f64,
@@ -580,7 +584,7 @@ mod schemas {
 
     #[derive(Deserialize)]
 
-    struct PutTelescopeDoesrefractionRequest {
+    pub struct PutTelescopeDoesrefractionRequest {
         /// Set True to make the telescope or driver applie atmospheric refraction to coordinates.
         #[serde(rename = "DoesRefraction")]
         pub does_refraction: bool,
@@ -588,7 +592,7 @@ mod schemas {
 
     #[derive(Deserialize)]
 
-    struct PutTelescopeGuideratedeclinationRequest {
+    pub struct PutTelescopeGuideratedeclinationRequest {
         /// Declination movement rate offset degrees/sec).
         #[serde(rename = "GuideRateDeclination")]
         pub guide_rate_declination: f64,
@@ -596,7 +600,7 @@ mod schemas {
 
     #[derive(Deserialize)]
 
-    struct PutTelescopeGuideraterightascensionRequest {
+    pub struct PutTelescopeGuideraterightascensionRequest {
         /// RightAscension movement rate offset degrees/sec).
         #[serde(rename = "GuideRateRightAscension")]
         pub guide_rate_right_ascension: f64,
@@ -604,7 +608,7 @@ mod schemas {
 
     #[derive(Deserialize)]
 
-    struct PutTelescopeRightascensionrateRequest {
+    pub struct PutTelescopeRightascensionrateRequest {
         /// Right ascension tracking rate (arcseconds per second)
         #[serde(rename = "RightAscensionRate")]
         pub right_ascension_rate: f64,
@@ -612,7 +616,7 @@ mod schemas {
 
     #[derive(Deserialize)]
 
-    struct PutTelescopeSideofpierRequest {
+    pub struct PutTelescopeSideofpierRequest {
         /// New pointing state.
         #[serde(rename = "SideOfPier")]
         pub side_of_pier: i32,
@@ -620,7 +624,7 @@ mod schemas {
 
     #[derive(Deserialize)]
 
-    struct PutTelescopeSiteelevationRequest {
+    pub struct PutTelescopeSiteelevationRequest {
         /// Elevation above mean sea level (metres).
         #[serde(rename = "SiteElevation")]
         pub site_elevation: f64,
@@ -628,7 +632,7 @@ mod schemas {
 
     #[derive(Deserialize)]
 
-    struct PutTelescopeSitelatitudeRequest {
+    pub struct PutTelescopeSitelatitudeRequest {
         /// Site latitude (degrees)
         #[serde(rename = "SiteLatitude")]
         pub site_latitude: f64,
@@ -636,7 +640,7 @@ mod schemas {
 
     #[derive(Deserialize)]
 
-    struct PutTelescopeSitelongitudeRequest {
+    pub struct PutTelescopeSitelongitudeRequest {
         /// Site longitude (degrees, positive East, WGS84)
         #[serde(rename = "SiteLongitude")]
         pub site_longitude: f64,
@@ -644,7 +648,7 @@ mod schemas {
 
     #[derive(Deserialize)]
 
-    struct PutTelescopeSlewsettletimeRequest {
+    pub struct PutTelescopeSlewsettletimeRequest {
         /// Settling time (integer sec.).
         #[serde(rename = "SlewSettleTime")]
         pub slew_settle_time: i32,
@@ -652,7 +656,7 @@ mod schemas {
 
     #[derive(Deserialize)]
 
-    struct PutTelescopeTargetdeclinationRequest {
+    pub struct PutTelescopeTargetdeclinationRequest {
         /// Target declination(degrees)
         #[serde(rename = "TargetDeclination")]
         pub target_declination: f64,
@@ -660,7 +664,7 @@ mod schemas {
 
     #[derive(Deserialize)]
 
-    struct PutTelescopeTargetrightascensionRequest {
+    pub struct PutTelescopeTargetrightascensionRequest {
         /// Target right ascension(hours)
         #[serde(rename = "TargetRightAscension")]
         pub target_right_ascension: f64,
@@ -668,7 +672,7 @@ mod schemas {
 
     #[derive(Deserialize)]
 
-    struct PutTelescopeTrackingRequest {
+    pub struct PutTelescopeTrackingRequest {
         /// Tracking enabled / disabled
         #[serde(rename = "Tracking")]
         pub tracking: bool,
@@ -676,7 +680,7 @@ mod schemas {
 
     #[derive(Deserialize)]
 
-    struct PutTelescopeTrackingrateRequest {
+    pub struct PutTelescopeTrackingrateRequest {
         /// New tracking rate
         #[serde(rename = "TrackingRate")]
         pub tracking_rate: i32,
@@ -684,7 +688,7 @@ mod schemas {
 
     #[derive(Deserialize)]
 
-    struct PutTelescopeUtcdateRequest {
+    pub struct PutTelescopeUtcdateRequest {
         /// UTC date/time in ISO 8601 format.
         #[serde(rename = "UTCDate")]
         pub utcdate: String,
@@ -692,7 +696,7 @@ mod schemas {
 
     #[derive(Deserialize)]
 
-    struct GetTelescopeAxisratesRequest {
+    pub struct GetTelescopeAxisratesRequest {
         /// The axis about which rate information is desired. 0 = axisPrimary, 1 = axisSecondary, 2 = axisTertiary.
         #[serde(rename = "Axis")]
         pub axis: i32,
@@ -700,7 +704,7 @@ mod schemas {
 
     #[derive(Deserialize)]
 
-    struct GetTelescopeCanmoveaxisRequest {
+    pub struct GetTelescopeCanmoveaxisRequest {
         /// The axis about which rate information is desired. 0 = axisPrimary, 1 = axisSecondary, 2 = axisTertiary.
         #[serde(rename = "Axis")]
         pub axis: i32,
@@ -708,7 +712,7 @@ mod schemas {
 
     #[derive(Deserialize)]
 
-    struct GetTelescopeDestinationsideofpierRequest {
+    pub struct GetTelescopeDestinationsideofpierRequest {
         /// Right Ascension coordinate (0.0 to 23.99999999 hours)
         #[serde(rename = "RightAscension")]
         pub right_ascension: f64,
@@ -720,7 +724,7 @@ mod schemas {
 
     #[derive(Deserialize)]
 
-    struct PutTelescopeMoveaxisRequest {
+    pub struct PutTelescopeMoveaxisRequest {
         /// The axis about which rate information is desired. 0 = axisPrimary, 1 = axisSecondary, 2 = axisTertiary.
         #[serde(rename = "Axis")]
         pub axis: i32,
@@ -732,7 +736,7 @@ mod schemas {
 
     #[derive(Deserialize)]
 
-    struct PutTelescopePulseguideRequest {
+    pub struct PutTelescopePulseguideRequest {
         /// The direction in which the guide-rate motion is to be made. 0 = guideNorth, 1 = guideSouth, 2 = guideEast, 3 = guideWest
         #[serde(rename = "Direction")]
         pub direction: i32,
@@ -744,7 +748,7 @@ mod schemas {
 
     #[derive(Deserialize)]
 
-    struct PutTelescopeSlewtoaltazRequest {
+    pub struct PutTelescopeSlewtoaltazRequest {
         /// Azimuth coordinate (degrees, North-referenced, positive East/clockwise)
         #[serde(rename = "Azimuth")]
         pub azimuth: f64,
@@ -756,7 +760,7 @@ mod schemas {
 
     #[derive(Deserialize)]
 
-    struct PutTelescopeSlewtocoordinatesRequest {
+    pub struct PutTelescopeSlewtocoordinatesRequest {
         /// Right Ascension coordinate (hours)
         #[serde(rename = "RightAscension")]
         pub right_ascension: f64,
@@ -768,7 +772,7 @@ mod schemas {
 
     #[derive(Deserialize)]
 
-    struct DeviceNumberPath {
+    pub struct DeviceNumberPath {
         /// Zero based device number as set on the server (0 to 4294967295)
         #[serde(rename = "device_number")]
         pub device_number: u32,
@@ -776,7 +780,7 @@ mod schemas {
 
     #[derive(Deserialize)]
 
-    struct DeviceTypeAndNumberPath {
+    pub struct DeviceTypeAndNumberPath {
         /// One of the recognised ASCOM device types e.g. telescope (must be lower case)
         #[serde(rename = "device_type")]
         pub device_type: String,
@@ -814,6 +818,7 @@ fn put_action(
         request: schemas::PutActionRequest { action, parameters },
     }): Form<ASCOMRequest<schemas::PutActionRequest>>,
 ) -> ASCOMResponse<schemas::StringResponse> {
+    unimplemented!()
 }
 
 /**
@@ -830,6 +835,7 @@ fn put_commandblind(
         request: schemas::PutCommandblindRequest { command, raw },
     }): Form<ASCOMRequest<schemas::PutCommandblindRequest>>,
 ) -> ASCOMResponse<()> {
+    unimplemented!()
 }
 
 /**
@@ -846,6 +852,7 @@ fn put_commandbool(
         request: schemas::PutCommandblindRequest { command, raw },
     }): Form<ASCOMRequest<schemas::PutCommandblindRequest>>,
 ) -> ASCOMResponse<schemas::BoolResponse> {
+    unimplemented!()
 }
 
 /**
@@ -862,6 +869,7 @@ fn put_commandstring(
         request: schemas::PutCommandblindRequest { command, raw },
     }): Form<ASCOMRequest<schemas::PutCommandblindRequest>>,
 ) -> ASCOMResponse<schemas::StringResponse> {
+    unimplemented!()
 }
 
 /// Retrieves the connected state of the device
@@ -871,6 +879,7 @@ fn get_connected(
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
 ) -> ASCOMResponse<schemas::BoolResponse> {
+    unimplemented!()
 }
 
 /// Sets the connected state of the device
@@ -883,6 +892,7 @@ fn put_connected(
         request: schemas::PutConnectedRequest { connected },
     }): Form<ASCOMRequest<schemas::PutConnectedRequest>>,
 ) -> ASCOMResponse<()> {
+    unimplemented!()
 }
 
 /**
@@ -896,6 +906,7 @@ fn get_description(
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
 ) -> ASCOMResponse<schemas::StringResponse> {
+    unimplemented!()
 }
 
 /**
@@ -909,6 +920,7 @@ fn get_driverinfo(
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
 ) -> ASCOMResponse<schemas::StringResponse> {
+    unimplemented!()
 }
 
 /**
@@ -922,6 +934,7 @@ fn get_driverversion(
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
 ) -> ASCOMResponse<schemas::StringResponse> {
+    unimplemented!()
 }
 
 /**
@@ -935,6 +948,7 @@ fn get_interfaceversion(
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
 ) -> ASCOMResponse<schemas::IntResponse> {
+    unimplemented!()
 }
 
 /**
@@ -948,6 +962,7 @@ fn get_name(
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
 ) -> ASCOMResponse<schemas::StringResponse> {
+    unimplemented!()
 }
 
 /// Returns the list of action names supported by this driver.
@@ -957,6 +972,7 @@ fn get_supportedactions(
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
 ) -> ASCOMResponse<schemas::StringArrayResponse> {
+    unimplemented!()
 }
 
 /**
@@ -970,6 +986,7 @@ fn get_camera_bayeroffsetx(
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
 ) -> ASCOMResponse<schemas::IntResponse> {
+    unimplemented!()
 }
 
 /**
@@ -983,6 +1000,7 @@ fn get_camera_bayeroffsety(
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
 ) -> ASCOMResponse<schemas::IntResponse> {
+    unimplemented!()
 }
 
 /// Returns the binning factor for the X axis.
@@ -992,6 +1010,7 @@ fn get_camera_binx(
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
 ) -> ASCOMResponse<schemas::IntResponse> {
+    unimplemented!()
 }
 
 /// Sets the binning factor for the X axis.
@@ -1004,6 +1023,7 @@ fn put_camera_binx(
         request: schemas::PutCameraBinxRequest { bin_x },
     }): Form<ASCOMRequest<schemas::PutCameraBinxRequest>>,
 ) -> ASCOMResponse<()> {
+    unimplemented!()
 }
 
 /// Returns the binning factor for the Y axis.
@@ -1013,6 +1033,7 @@ fn get_camera_biny(
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
 ) -> ASCOMResponse<schemas::IntResponse> {
+    unimplemented!()
 }
 
 /// Sets the binning factor for the Y axis.
@@ -1025,6 +1046,7 @@ fn put_camera_biny(
         request: schemas::PutCameraBinyRequest { bin_y },
     }): Form<ASCOMRequest<schemas::PutCameraBinyRequest>>,
 ) -> ASCOMResponse<()> {
+    unimplemented!()
 }
 
 /**
@@ -1038,6 +1060,7 @@ fn get_camera_camerastate(
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
 ) -> ASCOMResponse<schemas::IntResponse> {
+    unimplemented!()
 }
 
 /**
@@ -1051,6 +1074,7 @@ fn get_camera_cameraxsize(
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
 ) -> ASCOMResponse<schemas::IntResponse> {
+    unimplemented!()
 }
 
 /**
@@ -1064,6 +1088,7 @@ fn get_camera_cameraysize(
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
 ) -> ASCOMResponse<schemas::IntResponse> {
+    unimplemented!()
 }
 
 /**
@@ -1077,6 +1102,7 @@ fn get_camera_canabortexposure(
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
 ) -> ASCOMResponse<schemas::BoolResponse> {
+    unimplemented!()
 }
 
 /**
@@ -1090,6 +1116,7 @@ fn get_camera_canasymmetricbin(
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
 ) -> ASCOMResponse<schemas::BoolResponse> {
+    unimplemented!()
 }
 
 /// Indicates whether the camera has a fast readout mode.
@@ -1099,6 +1126,7 @@ fn get_camera_canfastreadout(
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
 ) -> ASCOMResponse<schemas::BoolResponse> {
+    unimplemented!()
 }
 
 /**
@@ -1112,6 +1140,7 @@ fn get_camera_cangetcoolerpower(
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
 ) -> ASCOMResponse<schemas::BoolResponse> {
+    unimplemented!()
 }
 
 /**
@@ -1125,6 +1154,7 @@ fn get_camera_canpulseguide(
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
 ) -> ASCOMResponse<schemas::BoolResponse> {
+    unimplemented!()
 }
 
 /**
@@ -1138,6 +1168,7 @@ fn get_camera_cansetccdtemperature(
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
 ) -> ASCOMResponse<schemas::BoolResponse> {
+    unimplemented!()
 }
 
 /// Returns a flag indicating whether this camera can stop an exposure that is in progress
@@ -1147,6 +1178,7 @@ fn get_camera_canstopexposure(
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
 ) -> ASCOMResponse<schemas::BoolResponse> {
+    unimplemented!()
 }
 
 /**
@@ -1160,6 +1192,7 @@ fn get_camera_ccdtemperature(
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
 ) -> ASCOMResponse<schemas::DoubleResponse> {
+    unimplemented!()
 }
 
 /// Returns the current cooler on/off state.
@@ -1169,6 +1202,7 @@ fn get_camera_cooleron(
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
 ) -> ASCOMResponse<schemas::BoolResponse> {
+    unimplemented!()
 }
 
 /**
@@ -1185,6 +1219,7 @@ fn put_camera_cooleron(
         request: schemas::PutCameraCooleronRequest { cooler_on },
     }): Form<ASCOMRequest<schemas::PutCameraCooleronRequest>>,
 ) -> ASCOMResponse<()> {
+    unimplemented!()
 }
 
 /**
@@ -1198,6 +1233,7 @@ fn get_camera_coolerpower(
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
 ) -> ASCOMResponse<schemas::DoubleResponse> {
+    unimplemented!()
 }
 
 /**
@@ -1211,6 +1247,7 @@ fn get_camera_electronsperadu(
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
 ) -> ASCOMResponse<schemas::DoubleResponse> {
+    unimplemented!()
 }
 
 /// Returns the maximum exposure time supported by StartExposure.
@@ -1220,6 +1257,7 @@ fn get_camera_exposuremax(
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
 ) -> ASCOMResponse<schemas::DoubleResponse> {
+    unimplemented!()
 }
 
 /**
@@ -1233,6 +1271,7 @@ fn get_camera_exposuremin(
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
 ) -> ASCOMResponse<schemas::DoubleResponse> {
+    unimplemented!()
 }
 
 /// Returns the smallest increment in exposure time supported by StartExposure.
@@ -1242,6 +1281,7 @@ fn get_camera_exposureresolution(
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
 ) -> ASCOMResponse<schemas::DoubleResponse> {
+    unimplemented!()
 }
 
 /// Returns whenther Fast Readout Mode is enabled.
@@ -1251,6 +1291,7 @@ fn get_camera_fastreadout(
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
 ) -> ASCOMResponse<schemas::BoolResponse> {
+    unimplemented!()
 }
 
 /// Sets whether Fast Readout Mode is enabled.
@@ -1263,6 +1304,7 @@ fn put_camera_fastreadout(
         request: schemas::PutCameraFastreadoutRequest { fast_readout },
     }): Form<ASCOMRequest<schemas::PutCameraFastreadoutRequest>>,
 ) -> ASCOMResponse<()> {
+    unimplemented!()
 }
 
 /**
@@ -1276,6 +1318,7 @@ fn get_camera_fullwellcapacity(
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
 ) -> ASCOMResponse<schemas::DoubleResponse> {
+    unimplemented!()
 }
 
 /**
@@ -1289,6 +1332,7 @@ fn get_camera_gain(
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
 ) -> ASCOMResponse<schemas::IntResponse> {
+    unimplemented!()
 }
 
 /**
@@ -1305,6 +1349,7 @@ fn put_camera_gain(
         request: schemas::PutCameraGainRequest { gain },
     }): Form<ASCOMRequest<schemas::PutCameraGainRequest>>,
 ) -> ASCOMResponse<()> {
+    unimplemented!()
 }
 
 /**
@@ -1318,6 +1363,7 @@ fn get_camera_gainmax(
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
 ) -> ASCOMResponse<schemas::IntResponse> {
+    unimplemented!()
 }
 
 /**
@@ -1331,6 +1377,7 @@ fn get_camera_gainmin(
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
 ) -> ASCOMResponse<schemas::IntResponse> {
+    unimplemented!()
 }
 
 /**
@@ -1344,6 +1391,7 @@ fn get_camera_gains(
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
 ) -> ASCOMResponse<schemas::StringArrayResponse> {
+    unimplemented!()
 }
 
 /**
@@ -1357,6 +1405,7 @@ fn get_camera_hasshutter(
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
 ) -> ASCOMResponse<schemas::BoolResponse> {
+    unimplemented!()
 }
 
 /**
@@ -1370,6 +1419,7 @@ fn get_camera_heatsinktemperature(
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
 ) -> ASCOMResponse<schemas::DoubleResponse> {
+    unimplemented!()
 }
 
 /**
@@ -1438,6 +1488,7 @@ fn get_camera_imagearray(
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
 ) -> ASCOMResponse<schemas::ImageArrayResponse> {
+    unimplemented!()
 }
 
 /**
@@ -1506,6 +1557,7 @@ fn get_camera_imagearrayvariant(
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
 ) -> ASCOMResponse<schemas::ImageArrayResponse> {
+    unimplemented!()
 }
 
 /**
@@ -1519,6 +1571,7 @@ fn get_camera_imageready(
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
 ) -> ASCOMResponse<schemas::BoolResponse> {
+    unimplemented!()
 }
 
 /**
@@ -1532,6 +1585,7 @@ fn get_camera_ispulseguiding(
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
 ) -> ASCOMResponse<schemas::BoolResponse> {
+    unimplemented!()
 }
 
 /**
@@ -1545,6 +1599,7 @@ fn get_camera_lastexposureduration(
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
 ) -> ASCOMResponse<schemas::DoubleResponse> {
+    unimplemented!()
 }
 
 /**
@@ -1558,6 +1613,7 @@ fn get_camera_lastexposurestarttime(
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
 ) -> ASCOMResponse<schemas::StringResponse> {
+    unimplemented!()
 }
 
 /**
@@ -1571,6 +1627,7 @@ fn get_camera_maxadu(
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
 ) -> ASCOMResponse<schemas::IntResponse> {
+    unimplemented!()
 }
 
 /**
@@ -1584,6 +1641,7 @@ fn get_camera_maxbinx(
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
 ) -> ASCOMResponse<schemas::IntResponse> {
+    unimplemented!()
 }
 
 /**
@@ -1597,6 +1655,7 @@ fn get_camera_maxbiny(
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
 ) -> ASCOMResponse<schemas::IntResponse> {
+    unimplemented!()
 }
 
 /**
@@ -1610,6 +1669,7 @@ fn get_camera_numx(
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
 ) -> ASCOMResponse<schemas::IntResponse> {
+    unimplemented!()
 }
 
 /**
@@ -1626,6 +1686,7 @@ fn put_camera_numx(
         request: schemas::PutCameraNumxRequest { num_x },
     }): Form<ASCOMRequest<schemas::PutCameraNumxRequest>>,
 ) -> ASCOMResponse<()> {
+    unimplemented!()
 }
 
 /**
@@ -1639,6 +1700,7 @@ fn get_camera_numy(
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
 ) -> ASCOMResponse<schemas::IntResponse> {
+    unimplemented!()
 }
 
 /**
@@ -1655,6 +1717,7 @@ fn put_camera_numy(
         request: schemas::PutCameraNumyRequest { num_y },
     }): Form<ASCOMRequest<schemas::PutCameraNumyRequest>>,
 ) -> ASCOMResponse<()> {
+    unimplemented!()
 }
 
 /**
@@ -1668,6 +1731,7 @@ fn get_camera_offset(
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
 ) -> ASCOMResponse<schemas::IntResponse> {
+    unimplemented!()
 }
 
 /**
@@ -1684,6 +1748,7 @@ fn put_camera_offset(
         request: schemas::PutCameraOffsetRequest { offset },
     }): Form<ASCOMRequest<schemas::PutCameraOffsetRequest>>,
 ) -> ASCOMResponse<()> {
+    unimplemented!()
 }
 
 /**
@@ -1697,6 +1762,7 @@ fn get_camera_offsetmax(
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
 ) -> ASCOMResponse<schemas::IntResponse> {
+    unimplemented!()
 }
 
 /**
@@ -1710,6 +1776,7 @@ fn get_camera_offsetmin(
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
 ) -> ASCOMResponse<schemas::IntResponse> {
+    unimplemented!()
 }
 
 /**
@@ -1723,6 +1790,7 @@ fn get_camera_offsets(
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
 ) -> ASCOMResponse<schemas::StringArrayResponse> {
+    unimplemented!()
 }
 
 /**
@@ -1736,6 +1804,7 @@ fn get_camera_percentcompleted(
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
 ) -> ASCOMResponse<schemas::IntResponse> {
+    unimplemented!()
 }
 
 /**
@@ -1749,6 +1818,7 @@ fn get_camera_pixelsizex(
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
 ) -> ASCOMResponse<schemas::DoubleResponse> {
+    unimplemented!()
 }
 
 /**
@@ -1762,6 +1832,7 @@ fn get_camera_pixelsizey(
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
 ) -> ASCOMResponse<schemas::DoubleResponse> {
+    unimplemented!()
 }
 
 /**
@@ -1775,6 +1846,7 @@ fn get_camera_readoutmode(
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
 ) -> ASCOMResponse<schemas::IntResponse> {
+    unimplemented!()
 }
 
 /**
@@ -1791,6 +1863,7 @@ fn put_camera_readoutmode(
         request: schemas::PutCameraReadoutmodeRequest { readout_mode },
     }): Form<ASCOMRequest<schemas::PutCameraReadoutmodeRequest>>,
 ) -> ASCOMResponse<()> {
+    unimplemented!()
 }
 
 /**
@@ -1804,6 +1877,7 @@ fn get_camera_readoutmodes(
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
 ) -> ASCOMResponse<schemas::StringArrayResponse> {
+    unimplemented!()
 }
 
 /**
@@ -1817,6 +1891,7 @@ fn get_camera_sensorname(
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
 ) -> ASCOMResponse<schemas::StringResponse> {
+    unimplemented!()
 }
 
 /**
@@ -1839,6 +1914,7 @@ fn get_camera_sensortype(
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
 ) -> ASCOMResponse<schemas::IntResponse> {
+    unimplemented!()
 }
 
 /// Returns the current camera cooler setpoint in degrees Celsius.
@@ -1848,6 +1924,7 @@ fn get_camera_setccdtemperature(
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
 ) -> ASCOMResponse<schemas::DoubleResponse> {
+    unimplemented!()
 }
 
 /**
@@ -1864,6 +1941,7 @@ fn put_camera_setccdtemperature(
         request: schemas::PutCameraSetccdtemperatureRequest { set_ccdtemperature },
     }): Form<ASCOMRequest<schemas::PutCameraSetccdtemperatureRequest>>,
 ) -> ASCOMResponse<()> {
+    unimplemented!()
 }
 
 /**
@@ -1877,6 +1955,7 @@ fn get_camera_startx(
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
 ) -> ASCOMResponse<schemas::IntResponse> {
+    unimplemented!()
 }
 
 /**
@@ -1893,6 +1972,7 @@ fn put_camera_startx(
         request: schemas::PutCameraStartxRequest { start_x },
     }): Form<ASCOMRequest<schemas::PutCameraStartxRequest>>,
 ) -> ASCOMResponse<()> {
+    unimplemented!()
 }
 
 /**
@@ -1906,6 +1986,7 @@ fn get_camera_starty(
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
 ) -> ASCOMResponse<schemas::IntResponse> {
+    unimplemented!()
 }
 
 /**
@@ -1922,6 +2003,7 @@ fn put_camera_starty(
         request: schemas::PutCameraStartyRequest { start_y },
     }): Form<ASCOMRequest<schemas::PutCameraStartyRequest>>,
 ) -> ASCOMResponse<()> {
+    unimplemented!()
 }
 
 /**
@@ -1935,6 +2017,7 @@ fn get_camera_subexposureduration(
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
 ) -> ASCOMResponse<schemas::DoubleResponse> {
+    unimplemented!()
 }
 
 /**
@@ -1951,6 +2034,7 @@ fn put_camera_subexposureduration(
         request: schemas::PutCameraSubexposuredurationRequest { sub_exposure_duration },
     }): Form<ASCOMRequest<schemas::PutCameraSubexposuredurationRequest>>,
 ) -> ASCOMResponse<()> {
+    unimplemented!()
 }
 
 /**
@@ -1964,6 +2048,7 @@ fn put_camera_abortexposure(
 
     Form(ASCOMRequest { transaction, request: () }): Form<ASCOMRequest<()>>,
 ) -> ASCOMResponse<()> {
+    unimplemented!()
 }
 
 /**
@@ -1980,6 +2065,7 @@ fn put_camera_pulseguide(
         request: schemas::PutCameraPulseguideRequest { direction, duration },
     }): Form<ASCOMRequest<schemas::PutCameraPulseguideRequest>>,
 ) -> ASCOMResponse<()> {
+    unimplemented!()
 }
 
 /**
@@ -1996,6 +2082,7 @@ fn put_camera_startexposure(
         request: schemas::PutCameraStartexposureRequest { duration, light },
     }): Form<ASCOMRequest<schemas::PutCameraStartexposureRequest>>,
 ) -> ASCOMResponse<()> {
+    unimplemented!()
 }
 
 /**
@@ -2009,6 +2096,7 @@ fn put_camera_stopexposure(
 
     Form(ASCOMRequest { transaction, request: () }): Form<ASCOMRequest<()>>,
 ) -> ASCOMResponse<()> {
+    unimplemented!()
 }
 
 /**
@@ -2022,6 +2110,7 @@ fn get_covercalibrator_brightness(
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
 ) -> ASCOMResponse<schemas::IntResponse> {
+    unimplemented!()
 }
 
 /**
@@ -2035,6 +2124,7 @@ fn get_covercalibrator_calibratorstate(
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
 ) -> ASCOMResponse<schemas::IntResponse> {
+    unimplemented!()
 }
 
 /**
@@ -2048,6 +2138,7 @@ fn get_covercalibrator_coverstate(
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
 ) -> ASCOMResponse<schemas::IntResponse> {
+    unimplemented!()
 }
 
 /**
@@ -2061,6 +2152,7 @@ fn get_covercalibrator_maxbrightness(
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
 ) -> ASCOMResponse<schemas::IntResponse> {
+    unimplemented!()
 }
 
 /**
@@ -2074,6 +2166,7 @@ fn put_covercalibrator_calibratoroff(
 
     Form(ASCOMRequest { transaction, request: () }): Form<ASCOMRequest<()>>,
 ) -> ASCOMResponse<()> {
+    unimplemented!()
 }
 
 /**
@@ -2090,6 +2183,7 @@ fn put_covercalibrator_calibratoron(
         request: schemas::PutCovercalibratorCalibratoronRequest { brightness },
     }): Form<ASCOMRequest<schemas::PutCovercalibratorCalibratoronRequest>>,
 ) -> ASCOMResponse<()> {
+    unimplemented!()
 }
 
 /**
@@ -2103,6 +2197,7 @@ fn put_covercalibrator_closecover(
 
     Form(ASCOMRequest { transaction, request: () }): Form<ASCOMRequest<()>>,
 ) -> ASCOMResponse<()> {
+    unimplemented!()
 }
 
 /**
@@ -2116,6 +2211,7 @@ fn put_covercalibrator_haltcover(
 
     Form(ASCOMRequest { transaction, request: () }): Form<ASCOMRequest<()>>,
 ) -> ASCOMResponse<()> {
+    unimplemented!()
 }
 
 /**
@@ -2129,6 +2225,7 @@ fn put_covercalibrator_opencover(
 
     Form(ASCOMRequest { transaction, request: () }): Form<ASCOMRequest<()>>,
 ) -> ASCOMResponse<()> {
+    unimplemented!()
 }
 
 /**
@@ -2142,6 +2239,7 @@ fn get_dome_altitude(
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
 ) -> ASCOMResponse<schemas::DoubleResponse> {
+    unimplemented!()
 }
 
 /**
@@ -2155,6 +2253,7 @@ fn get_dome_athome(
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
 ) -> ASCOMResponse<schemas::BoolResponse> {
+    unimplemented!()
 }
 
 /**
@@ -2168,6 +2267,7 @@ fn get_dome_atpark(
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
 ) -> ASCOMResponse<schemas::BoolResponse> {
+    unimplemented!()
 }
 
 /**
@@ -2181,6 +2281,7 @@ fn get_dome_azimuth(
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
 ) -> ASCOMResponse<schemas::DoubleResponse> {
+    unimplemented!()
 }
 
 /**
@@ -2194,6 +2295,7 @@ fn get_dome_canfindhome(
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
 ) -> ASCOMResponse<schemas::BoolResponse> {
+    unimplemented!()
 }
 
 /**
@@ -2207,6 +2309,7 @@ fn get_dome_canpark(
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
 ) -> ASCOMResponse<schemas::BoolResponse> {
+    unimplemented!()
 }
 
 /**
@@ -2220,6 +2323,7 @@ fn get_dome_cansetaltitude(
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
 ) -> ASCOMResponse<schemas::BoolResponse> {
+    unimplemented!()
 }
 
 /**
@@ -2233,6 +2337,7 @@ fn get_dome_cansetazimuth(
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
 ) -> ASCOMResponse<schemas::BoolResponse> {
+    unimplemented!()
 }
 
 /**
@@ -2246,6 +2351,7 @@ fn get_dome_cansetpark(
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
 ) -> ASCOMResponse<schemas::BoolResponse> {
+    unimplemented!()
 }
 
 /**
@@ -2259,6 +2365,7 @@ fn get_dome_cansetshutter(
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
 ) -> ASCOMResponse<schemas::BoolResponse> {
+    unimplemented!()
 }
 
 /**
@@ -2272,6 +2379,7 @@ fn get_dome_canslave(
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
 ) -> ASCOMResponse<schemas::BoolResponse> {
+    unimplemented!()
 }
 
 /**
@@ -2285,6 +2393,7 @@ fn get_dome_cansyncazimuth(
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
 ) -> ASCOMResponse<schemas::BoolResponse> {
+    unimplemented!()
 }
 
 /**
@@ -2298,6 +2407,7 @@ fn get_dome_shutterstatus(
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
 ) -> ASCOMResponse<schemas::IntResponse> {
+    unimplemented!()
 }
 
 /**
@@ -2311,6 +2421,7 @@ fn get_dome_slaved(
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
 ) -> ASCOMResponse<schemas::BoolResponse> {
+    unimplemented!()
 }
 
 /**
@@ -2327,6 +2438,7 @@ fn put_dome_slaved(
         request: schemas::PutDomeSlavedRequest { slaved },
     }): Form<ASCOMRequest<schemas::PutDomeSlavedRequest>>,
 ) -> ASCOMResponse<()> {
+    unimplemented!()
 }
 
 /**
@@ -2340,6 +2452,7 @@ fn get_dome_slewing(
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
 ) -> ASCOMResponse<schemas::BoolResponse> {
+    unimplemented!()
 }
 
 /**
@@ -2353,6 +2466,7 @@ fn put_dome_abortslew(
 
     Form(ASCOMRequest { transaction, request: () }): Form<ASCOMRequest<()>>,
 ) -> ASCOMResponse<()> {
+    unimplemented!()
 }
 
 /// Close the shutter or otherwise shield telescope from the sky.
@@ -2362,6 +2476,7 @@ fn put_dome_closeshutter(
 
     Form(ASCOMRequest { transaction, request: () }): Form<ASCOMRequest<()>>,
 ) -> ASCOMResponse<()> {
+    unimplemented!()
 }
 
 /**
@@ -2371,6 +2486,7 @@ After Home position is established initializes Azimuth to the default value and 
 */
 #[put("/dome/<device_number>/findhome")]
 fn put_dome_findhome(Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>, Form(ASCOMRequest { transaction, request: () }): Form<ASCOMRequest<()>>) -> ASCOMResponse<()> {
+    unimplemented!()
 }
 
 /// Open shutter or otherwise expose telescope to the sky.
@@ -2380,6 +2496,7 @@ fn put_dome_openshutter(
 
     Form(ASCOMRequest { transaction, request: () }): Form<ASCOMRequest<()>>,
 ) -> ASCOMResponse<()> {
+    unimplemented!()
 }
 
 /**
@@ -2388,7 +2505,9 @@ Rotate dome in azimuth to park position.
 After assuming programmed park position, sets AtPark flag.
 */
 #[put("/dome/<device_number>/park")]
-fn put_dome_park(Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>, Form(ASCOMRequest { transaction, request: () }): Form<ASCOMRequest<()>>) -> ASCOMResponse<()> {}
+fn put_dome_park(Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>, Form(ASCOMRequest { transaction, request: () }): Form<ASCOMRequest<()>>) -> ASCOMResponse<()> {
+    unimplemented!()
+}
 
 /**
 Set the current azimuth, altitude position of dome to be the park position
@@ -2396,7 +2515,9 @@ Set the current azimuth, altitude position of dome to be the park position
 Set the current azimuth, altitude position of dome to be the park position.
 */
 #[put("/dome/<device_number>/setpark")]
-fn put_dome_setpark(Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>, Form(ASCOMRequest { transaction, request: () }): Form<ASCOMRequest<()>>) -> ASCOMResponse<()> {}
+fn put_dome_setpark(Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>, Form(ASCOMRequest { transaction, request: () }): Form<ASCOMRequest<()>>) -> ASCOMResponse<()> {
+    unimplemented!()
+}
 
 /// Slew the dome to the given altitude position.
 #[put("/dome/<device_number>/slewtoaltitude")]
@@ -2408,6 +2529,7 @@ fn put_dome_slewtoaltitude(
         request: schemas::PutDomeSlewtoaltitudeRequest { altitude },
     }): Form<ASCOMRequest<schemas::PutDomeSlewtoaltitudeRequest>>,
 ) -> ASCOMResponse<()> {
+    unimplemented!()
 }
 
 /// Slew the dome to the given azimuth position.
@@ -2420,6 +2542,7 @@ fn put_dome_slewtoazimuth(
         request: schemas::PutDomeSlewtoazimuthRequest { azimuth },
     }): Form<ASCOMRequest<schemas::PutDomeSlewtoazimuthRequest>>,
 ) -> ASCOMResponse<()> {
+    unimplemented!()
 }
 
 /// Synchronize the current position of the dome to the given azimuth.
@@ -2432,6 +2555,7 @@ fn put_dome_synctoazimuth(
         request: schemas::PutDomeSlewtoazimuthRequest { azimuth },
     }): Form<ASCOMRequest<schemas::PutDomeSlewtoazimuthRequest>>,
 ) -> ASCOMResponse<()> {
+    unimplemented!()
 }
 
 /**
@@ -2445,6 +2569,7 @@ fn get_filterwheel_focusoffsets(
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
 ) -> ASCOMResponse<schemas::IntArrayResponse> {
+    unimplemented!()
 }
 
 /**
@@ -2458,6 +2583,7 @@ fn get_filterwheel_names(
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
 ) -> ASCOMResponse<schemas::StringArrayResponse> {
+    unimplemented!()
 }
 
 /// Returns the current filter wheel position
@@ -2467,6 +2593,7 @@ fn get_filterwheel_position(
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
 ) -> ASCOMResponse<schemas::IntResponse> {
+    unimplemented!()
 }
 
 /// Sets the filter wheel position
@@ -2479,6 +2606,7 @@ fn put_filterwheel_position(
         request: schemas::PutFilterwheelPositionRequest { position },
     }): Form<ASCOMRequest<schemas::PutFilterwheelPositionRequest>>,
 ) -> ASCOMResponse<()> {
+    unimplemented!()
 }
 
 /**
@@ -2492,6 +2620,7 @@ fn get_focuser_absolute(
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
 ) -> ASCOMResponse<schemas::BoolResponse> {
+    unimplemented!()
 }
 
 /**
@@ -2505,6 +2634,7 @@ fn get_focuser_ismoving(
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
 ) -> ASCOMResponse<schemas::BoolResponse> {
+    unimplemented!()
 }
 
 /**
@@ -2518,6 +2648,7 @@ fn get_focuser_maxincrement(
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
 ) -> ASCOMResponse<schemas::IntResponse> {
+    unimplemented!()
 }
 
 /**
@@ -2531,6 +2662,7 @@ fn get_focuser_maxstep(
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
 ) -> ASCOMResponse<schemas::IntResponse> {
+    unimplemented!()
 }
 
 /**
@@ -2544,6 +2676,7 @@ fn get_focuser_position(
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
 ) -> ASCOMResponse<schemas::IntResponse> {
+    unimplemented!()
 }
 
 /**
@@ -2557,6 +2690,7 @@ fn get_focuser_stepsize(
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
 ) -> ASCOMResponse<schemas::DoubleResponse> {
+    unimplemented!()
 }
 
 /**
@@ -2570,6 +2704,7 @@ fn get_focuser_tempcomp(
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
 ) -> ASCOMResponse<schemas::BoolResponse> {
+    unimplemented!()
 }
 
 /**
@@ -2586,6 +2721,7 @@ fn put_focuser_tempcomp(
         request: schemas::PutFocuserTempcompRequest { temp_comp },
     }): Form<ASCOMRequest<schemas::PutFocuserTempcompRequest>>,
 ) -> ASCOMResponse<()> {
+    unimplemented!()
 }
 
 /**
@@ -2599,6 +2735,7 @@ fn get_focuser_tempcompavailable(
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
 ) -> ASCOMResponse<schemas::BoolResponse> {
+    unimplemented!()
 }
 
 /**
@@ -2612,6 +2749,7 @@ fn get_focuser_temperature(
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
 ) -> ASCOMResponse<schemas::DoubleResponse> {
+    unimplemented!()
 }
 
 /**
@@ -2620,7 +2758,9 @@ Immediatley stops focuser motion.
 Immediately stop any focuser motion due to a previous Move(Int32) method call.
 */
 #[put("/focuser/<device_number>/halt")]
-fn put_focuser_halt(Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>, Form(ASCOMRequest { transaction, request: () }): Form<ASCOMRequest<()>>) -> ASCOMResponse<()> {}
+fn put_focuser_halt(Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>, Form(ASCOMRequest { transaction, request: () }): Form<ASCOMRequest<()>>) -> ASCOMResponse<()> {
+    unimplemented!()
+}
 
 /**
 Moves the focuser to a new position.
@@ -2636,6 +2776,7 @@ fn put_focuser_move(
         request: schemas::PutFocuserMoveRequest { position },
     }): Form<ASCOMRequest<schemas::PutFocuserMoveRequest>>,
 ) -> ASCOMResponse<()> {
+    unimplemented!()
 }
 
 /**
@@ -2649,6 +2790,7 @@ fn get_observingconditions_averageperiod(
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
 ) -> ASCOMResponse<schemas::DoubleResponse> {
+    unimplemented!()
 }
 
 /// Sets the time period over which observations will be averaged
@@ -2661,6 +2803,7 @@ fn put_observingconditions_averageperiod(
         request: schemas::PutObservingconditionsAverageperiodRequest { average_period },
     }): Form<ASCOMRequest<schemas::PutObservingconditionsAverageperiodRequest>>,
 ) -> ASCOMResponse<()> {
+    unimplemented!()
 }
 
 /**
@@ -2674,6 +2817,7 @@ fn get_observingconditions_cloudcover(
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
 ) -> ASCOMResponse<schemas::DoubleResponse> {
+    unimplemented!()
 }
 
 /**
@@ -2687,6 +2831,7 @@ fn get_observingconditions_dewpoint(
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
 ) -> ASCOMResponse<schemas::DoubleResponse> {
+    unimplemented!()
 }
 
 /**
@@ -2700,6 +2845,7 @@ fn get_observingconditions_humidity(
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
 ) -> ASCOMResponse<schemas::DoubleResponse> {
+    unimplemented!()
 }
 
 /**
@@ -2713,6 +2859,7 @@ fn get_observingconditions_pressure(
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
 ) -> ASCOMResponse<schemas::DoubleResponse> {
+    unimplemented!()
 }
 
 /**
@@ -2726,6 +2873,7 @@ fn get_observingconditions_rainrate(
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
 ) -> ASCOMResponse<schemas::DoubleResponse> {
+    unimplemented!()
 }
 
 /**
@@ -2739,6 +2887,7 @@ fn get_observingconditions_skybrightness(
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
 ) -> ASCOMResponse<schemas::DoubleResponse> {
+    unimplemented!()
 }
 
 /**
@@ -2752,6 +2901,7 @@ fn get_observingconditions_skyquality(
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
 ) -> ASCOMResponse<schemas::DoubleResponse> {
+    unimplemented!()
 }
 
 /**
@@ -2765,6 +2915,7 @@ fn get_observingconditions_skytemperature(
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
 ) -> ASCOMResponse<schemas::DoubleResponse> {
+    unimplemented!()
 }
 
 /**
@@ -2778,6 +2929,7 @@ fn get_observingconditions_starfwhm(
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
 ) -> ASCOMResponse<schemas::DoubleResponse> {
+    unimplemented!()
 }
 
 /**
@@ -2791,6 +2943,7 @@ fn get_observingconditions_temperature(
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
 ) -> ASCOMResponse<schemas::DoubleResponse> {
+    unimplemented!()
 }
 
 /**
@@ -2804,6 +2957,7 @@ fn get_observingconditions_winddirection(
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
 ) -> ASCOMResponse<schemas::DoubleResponse> {
+    unimplemented!()
 }
 
 /**
@@ -2817,6 +2971,7 @@ fn get_observingconditions_windgust(
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
 ) -> ASCOMResponse<schemas::DoubleResponse> {
+    unimplemented!()
 }
 
 /**
@@ -2830,6 +2985,7 @@ fn get_observingconditions_windspeed(
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
 ) -> ASCOMResponse<schemas::DoubleResponse> {
+    unimplemented!()
 }
 
 /**
@@ -2843,6 +2999,7 @@ fn put_observingconditions_refresh(
 
     Form(ASCOMRequest { transaction, request: () }): Form<ASCOMRequest<()>>,
 ) -> ASCOMResponse<()> {
+    unimplemented!()
 }
 
 /**
@@ -2859,6 +3016,7 @@ fn get_observingconditions_sensordescription(
         request: schemas::GetObservingconditionsSensordescriptionRequest { sensor_name },
     }): Query<ASCOMRequest<schemas::GetObservingconditionsSensordescriptionRequest>>,
 ) -> ASCOMResponse<schemas::StringResponse> {
+    unimplemented!()
 }
 
 /**
@@ -2875,6 +3033,7 @@ fn get_observingconditions_timesincelastupdate(
         request: schemas::GetObservingconditionsTimesincelastupdateRequest { sensor_name },
     }): Query<ASCOMRequest<schemas::GetObservingconditionsTimesincelastupdateRequest>>,
 ) -> ASCOMResponse<schemas::DoubleResponse> {
+    unimplemented!()
 }
 
 /**
@@ -2888,6 +3047,7 @@ fn get_rotator_canreverse(
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
 ) -> ASCOMResponse<schemas::BoolResponse> {
+    unimplemented!()
 }
 
 /**
@@ -2901,6 +3061,7 @@ fn get_rotator_ismoving(
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
 ) -> ASCOMResponse<schemas::BoolResponse> {
+    unimplemented!()
 }
 
 /**
@@ -2914,6 +3075,7 @@ fn get_rotator_mechanicalposition(
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
 ) -> ASCOMResponse<schemas::DoubleResponse> {
+    unimplemented!()
 }
 
 /**
@@ -2927,6 +3089,7 @@ fn get_rotator_position(
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
 ) -> ASCOMResponse<schemas::DoubleResponse> {
+    unimplemented!()
 }
 
 /// Returns the rotator’s Reverse state.
@@ -2936,6 +3099,7 @@ fn get_rotator_reverse(
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
 ) -> ASCOMResponse<schemas::BoolResponse> {
+    unimplemented!()
 }
 
 /// Sets the rotator’s Reverse state.
@@ -2948,6 +3112,7 @@ fn put_rotator_reverse(
         request: schemas::PutRotatorReverseRequest { reverse },
     }): Form<ASCOMRequest<schemas::PutRotatorReverseRequest>>,
 ) -> ASCOMResponse<()> {
+    unimplemented!()
 }
 
 /**
@@ -2961,6 +3126,7 @@ fn get_rotator_stepsize(
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
 ) -> ASCOMResponse<schemas::DoubleResponse> {
+    unimplemented!()
 }
 
 /**
@@ -2974,6 +3140,7 @@ fn get_rotator_targetposition(
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
 ) -> ASCOMResponse<schemas::DoubleResponse> {
+    unimplemented!()
 }
 
 /**
@@ -2982,7 +3149,9 @@ Immediatley stops rotator motion.
 Immediately stop any Rotator motion due to a previous Move or MoveAbsolute method call.
 */
 #[put("/rotator/<device_number>/halt")]
-fn put_rotator_halt(Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>, Form(ASCOMRequest { transaction, request: () }): Form<ASCOMRequest<()>>) -> ASCOMResponse<()> {}
+fn put_rotator_halt(Path(schemas::DeviceNumberPath { device_number }): Path<schemas::DeviceNumberPath>, Form(ASCOMRequest { transaction, request: () }): Form<ASCOMRequest<()>>) -> ASCOMResponse<()> {
+    unimplemented!()
+}
 
 /**
 Moves the rotator to a new relative position.
@@ -2998,6 +3167,7 @@ fn put_rotator_move(
         request: schemas::PutRotatorMoveRequest { position },
     }): Form<ASCOMRequest<schemas::PutRotatorMoveRequest>>,
 ) -> ASCOMResponse<()> {
+    unimplemented!()
 }
 
 /**
@@ -3014,6 +3184,7 @@ fn put_rotator_moveabsolute(
         request: schemas::PutRotatorMoveabsoluteRequest { position },
     }): Form<ASCOMRequest<schemas::PutRotatorMoveabsoluteRequest>>,
 ) -> ASCOMResponse<()> {
+    unimplemented!()
 }
 
 /**
@@ -3030,6 +3201,7 @@ fn put_rotator_movemechanical(
         request: schemas::PutRotatorMovemechanicalRequest { position },
     }): Form<ASCOMRequest<schemas::PutRotatorMovemechanicalRequest>>,
 ) -> ASCOMResponse<()> {
+    unimplemented!()
 }
 
 /**
@@ -3046,6 +3218,7 @@ fn put_rotator_sync(
         request: schemas::PutRotatorSyncRequest { position },
     }): Form<ASCOMRequest<schemas::PutRotatorSyncRequest>>,
 ) -> ASCOMResponse<()> {
+    unimplemented!()
 }
 
 /**
@@ -3059,6 +3232,7 @@ fn get_safetymonitor_issafe(
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
 ) -> ASCOMResponse<schemas::BoolResponse> {
+    unimplemented!()
 }
 
 /**
@@ -3072,6 +3246,7 @@ fn get_switch_maxswitch(
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
 ) -> ASCOMResponse<schemas::IntResponse> {
+    unimplemented!()
 }
 
 /**
@@ -3088,6 +3263,7 @@ fn get_switch_canwrite(
         request: schemas::GetSwitchCanwriteRequest { id },
     }): Query<ASCOMRequest<schemas::GetSwitchCanwriteRequest>>,
 ) -> ASCOMResponse<schemas::BoolResponse> {
+    unimplemented!()
 }
 
 /**
@@ -3104,6 +3280,7 @@ fn get_switch_getswitch(
         request: schemas::GetSwitchGetswitchRequest { id },
     }): Query<ASCOMRequest<schemas::GetSwitchGetswitchRequest>>,
 ) -> ASCOMResponse<schemas::BoolResponse> {
+    unimplemented!()
 }
 
 /**
@@ -3120,6 +3297,7 @@ fn get_switch_getswitchdescription(
         request: schemas::GetSwitchGetswitchdescriptionRequest { id },
     }): Query<ASCOMRequest<schemas::GetSwitchGetswitchdescriptionRequest>>,
 ) -> ASCOMResponse<schemas::StringResponse> {
+    unimplemented!()
 }
 
 /**
@@ -3136,6 +3314,7 @@ fn get_switch_getswitchname(
         request: schemas::GetSwitchGetswitchnameRequest { id },
     }): Query<ASCOMRequest<schemas::GetSwitchGetswitchnameRequest>>,
 ) -> ASCOMResponse<schemas::StringResponse> {
+    unimplemented!()
 }
 
 /**
@@ -3152,6 +3331,7 @@ fn get_switch_getswitchvalue(
         request: schemas::GetSwitchGetswitchvalueRequest { id },
     }): Query<ASCOMRequest<schemas::GetSwitchGetswitchvalueRequest>>,
 ) -> ASCOMResponse<schemas::DoubleResponse> {
+    unimplemented!()
 }
 
 /**
@@ -3168,6 +3348,7 @@ fn get_switch_minswitchvalue(
         request: schemas::GetSwitchMinswitchvalueRequest { id },
     }): Query<ASCOMRequest<schemas::GetSwitchMinswitchvalueRequest>>,
 ) -> ASCOMResponse<schemas::DoubleResponse> {
+    unimplemented!()
 }
 
 /**
@@ -3184,6 +3365,7 @@ fn get_switch_maxswitchvalue(
         request: schemas::GetSwitchMaxswitchvalueRequest { id },
     }): Query<ASCOMRequest<schemas::GetSwitchMaxswitchvalueRequest>>,
 ) -> ASCOMResponse<schemas::DoubleResponse> {
+    unimplemented!()
 }
 
 /**
@@ -3200,6 +3382,7 @@ fn put_switch_setswitch(
         request: schemas::PutSwitchSetswitchRequest { id, state },
     }): Form<ASCOMRequest<schemas::PutSwitchSetswitchRequest>>,
 ) -> ASCOMResponse<()> {
+    unimplemented!()
 }
 
 /**
@@ -3216,6 +3399,7 @@ fn put_switch_setswitchname(
         request: schemas::PutSwitchSetswitchnameRequest { id, name },
     }): Form<ASCOMRequest<schemas::PutSwitchSetswitchnameRequest>>,
 ) -> ASCOMResponse<()> {
+    unimplemented!()
 }
 
 /**
@@ -3232,6 +3416,7 @@ fn put_switch_setswitchvalue(
         request: schemas::PutSwitchSetswitchvalueRequest { id, value },
     }): Form<ASCOMRequest<schemas::PutSwitchSetswitchvalueRequest>>,
 ) -> ASCOMResponse<()> {
+    unimplemented!()
 }
 
 /**
@@ -3248,6 +3433,7 @@ fn get_switch_switchstep(
         request: schemas::GetSwitchSwitchstepRequest { id },
     }): Query<ASCOMRequest<schemas::GetSwitchSwitchstepRequest>>,
 ) -> ASCOMResponse<schemas::DoubleResponse> {
+    unimplemented!()
 }
 
 /**
@@ -3261,6 +3447,7 @@ fn get_telescope_alignmentmode(
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
 ) -> ASCOMResponse<schemas::IntResponse> {
+    unimplemented!()
 }
 
 /**
@@ -3274,6 +3461,7 @@ fn get_telescope_altitude(
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
 ) -> ASCOMResponse<schemas::DoubleResponse> {
+    unimplemented!()
 }
 
 /**
@@ -3287,6 +3475,7 @@ fn get_telescope_aperturearea(
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
 ) -> ASCOMResponse<schemas::DoubleResponse> {
+    unimplemented!()
 }
 
 /**
@@ -3300,6 +3489,7 @@ fn get_telescope_aperturediameter(
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
 ) -> ASCOMResponse<schemas::DoubleResponse> {
+    unimplemented!()
 }
 
 /**
@@ -3313,6 +3503,7 @@ fn get_telescope_athome(
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
 ) -> ASCOMResponse<schemas::BoolResponse> {
+    unimplemented!()
 }
 
 /**
@@ -3326,6 +3517,7 @@ fn get_telescope_atpark(
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
 ) -> ASCOMResponse<schemas::BoolResponse> {
+    unimplemented!()
 }
 
 /**
@@ -3339,6 +3531,7 @@ fn get_telescope_azimuth(
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
 ) -> ASCOMResponse<schemas::DoubleResponse> {
+    unimplemented!()
 }
 
 /**
@@ -3352,6 +3545,7 @@ fn get_telescope_canfindhome(
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
 ) -> ASCOMResponse<schemas::BoolResponse> {
+    unimplemented!()
 }
 
 /**
@@ -3365,6 +3559,7 @@ fn get_telescope_canpark(
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
 ) -> ASCOMResponse<schemas::BoolResponse> {
+    unimplemented!()
 }
 
 /**
@@ -3378,6 +3573,7 @@ fn get_telescope_canpulseguide(
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
 ) -> ASCOMResponse<schemas::BoolResponse> {
+    unimplemented!()
 }
 
 /**
@@ -3391,6 +3587,7 @@ fn get_telescope_cansetdeclinationrate(
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
 ) -> ASCOMResponse<schemas::BoolResponse> {
+    unimplemented!()
 }
 
 /**
@@ -3404,6 +3601,7 @@ fn get_telescope_cansetguiderates(
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
 ) -> ASCOMResponse<schemas::BoolResponse> {
+    unimplemented!()
 }
 
 /**
@@ -3417,6 +3615,7 @@ fn get_telescope_cansetpark(
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
 ) -> ASCOMResponse<schemas::BoolResponse> {
+    unimplemented!()
 }
 
 /**
@@ -3430,6 +3629,7 @@ fn get_telescope_cansetpierside(
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
 ) -> ASCOMResponse<schemas::BoolResponse> {
+    unimplemented!()
 }
 
 /**
@@ -3443,6 +3643,7 @@ fn get_telescope_cansetrightascensionrate(
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
 ) -> ASCOMResponse<schemas::BoolResponse> {
+    unimplemented!()
 }
 
 /**
@@ -3456,6 +3657,7 @@ fn get_telescope_cansettracking(
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
 ) -> ASCOMResponse<schemas::BoolResponse> {
+    unimplemented!()
 }
 
 /**
@@ -3469,6 +3671,7 @@ fn get_telescope_canslew(
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
 ) -> ASCOMResponse<schemas::BoolResponse> {
+    unimplemented!()
 }
 
 /**
@@ -3482,6 +3685,7 @@ fn get_telescope_canslewaltaz(
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
 ) -> ASCOMResponse<schemas::BoolResponse> {
+    unimplemented!()
 }
 
 /**
@@ -3495,6 +3699,7 @@ fn get_telescope_canslewaltazasync(
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
 ) -> ASCOMResponse<schemas::BoolResponse> {
+    unimplemented!()
 }
 
 /**
@@ -3508,6 +3713,7 @@ fn get_telescope_canslewasync(
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
 ) -> ASCOMResponse<schemas::BoolResponse> {
+    unimplemented!()
 }
 
 /**
@@ -3521,6 +3727,7 @@ fn get_telescope_cansync(
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
 ) -> ASCOMResponse<schemas::BoolResponse> {
+    unimplemented!()
 }
 
 /**
@@ -3534,6 +3741,7 @@ fn get_telescope_cansyncaltaz(
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
 ) -> ASCOMResponse<schemas::BoolResponse> {
+    unimplemented!()
 }
 
 /**
@@ -3547,6 +3755,7 @@ fn get_telescope_canunpark(
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
 ) -> ASCOMResponse<schemas::BoolResponse> {
+    unimplemented!()
 }
 
 /**
@@ -3560,6 +3769,7 @@ fn get_telescope_declination(
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
 ) -> ASCOMResponse<schemas::DoubleResponse> {
+    unimplemented!()
 }
 
 /**
@@ -3573,6 +3783,7 @@ fn get_telescope_declinationrate(
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
 ) -> ASCOMResponse<schemas::DoubleResponse> {
+    unimplemented!()
 }
 
 /**
@@ -3589,6 +3800,7 @@ fn put_telescope_declinationrate(
         request: schemas::PutTelescopeDeclinationrateRequest { declination_rate },
     }): Form<ASCOMRequest<schemas::PutTelescopeDeclinationrateRequest>>,
 ) -> ASCOMResponse<()> {
+    unimplemented!()
 }
 
 /**
@@ -3602,6 +3814,7 @@ fn get_telescope_doesrefraction(
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
 ) -> ASCOMResponse<schemas::BoolResponse> {
+    unimplemented!()
 }
 
 /**
@@ -3618,6 +3831,7 @@ fn put_telescope_doesrefraction(
         request: schemas::PutTelescopeDoesrefractionRequest { does_refraction },
     }): Form<ASCOMRequest<schemas::PutTelescopeDoesrefractionRequest>>,
 ) -> ASCOMResponse<()> {
+    unimplemented!()
 }
 
 /**
@@ -3631,6 +3845,7 @@ fn get_telescope_equatorialsystem(
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
 ) -> ASCOMResponse<schemas::IntResponse> {
+    unimplemented!()
 }
 
 /**
@@ -3644,6 +3859,7 @@ fn get_telescope_focallength(
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
 ) -> ASCOMResponse<schemas::DoubleResponse> {
+    unimplemented!()
 }
 
 /**
@@ -3657,6 +3873,7 @@ fn get_telescope_guideratedeclination(
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
 ) -> ASCOMResponse<schemas::DoubleResponse> {
+    unimplemented!()
 }
 
 /**
@@ -3673,6 +3890,7 @@ fn put_telescope_guideratedeclination(
         request: schemas::PutTelescopeGuideratedeclinationRequest { guide_rate_declination },
     }): Form<ASCOMRequest<schemas::PutTelescopeGuideratedeclinationRequest>>,
 ) -> ASCOMResponse<()> {
+    unimplemented!()
 }
 
 /**
@@ -3686,6 +3904,7 @@ fn get_telescope_guideraterightascension(
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
 ) -> ASCOMResponse<schemas::DoubleResponse> {
+    unimplemented!()
 }
 
 /**
@@ -3702,6 +3921,7 @@ fn put_telescope_guideraterightascension(
         request: schemas::PutTelescopeGuideraterightascensionRequest { guide_rate_right_ascension },
     }): Form<ASCOMRequest<schemas::PutTelescopeGuideraterightascensionRequest>>,
 ) -> ASCOMResponse<()> {
+    unimplemented!()
 }
 
 /**
@@ -3715,6 +3935,7 @@ fn get_telescope_ispulseguiding(
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
 ) -> ASCOMResponse<schemas::BoolResponse> {
+    unimplemented!()
 }
 
 /**
@@ -3728,6 +3949,7 @@ fn get_telescope_rightascension(
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
 ) -> ASCOMResponse<schemas::DoubleResponse> {
+    unimplemented!()
 }
 
 /**
@@ -3741,6 +3963,7 @@ fn get_telescope_rightascensionrate(
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
 ) -> ASCOMResponse<schemas::DoubleResponse> {
+    unimplemented!()
 }
 
 /**
@@ -3757,6 +3980,7 @@ fn put_telescope_rightascensionrate(
         request: schemas::PutTelescopeRightascensionrateRequest { right_ascension_rate },
     }): Form<ASCOMRequest<schemas::PutTelescopeRightascensionrateRequest>>,
 ) -> ASCOMResponse<()> {
+    unimplemented!()
 }
 
 /**
@@ -3770,6 +3994,7 @@ fn get_telescope_sideofpier(
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
 ) -> ASCOMResponse<schemas::IntResponse> {
+    unimplemented!()
 }
 
 /**
@@ -3786,6 +4011,7 @@ fn put_telescope_sideofpier(
         request: schemas::PutTelescopeSideofpierRequest { side_of_pier },
     }): Form<ASCOMRequest<schemas::PutTelescopeSideofpierRequest>>,
 ) -> ASCOMResponse<()> {
+    unimplemented!()
 }
 
 /**
@@ -3799,6 +4025,7 @@ fn get_telescope_siderealtime(
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
 ) -> ASCOMResponse<schemas::DoubleResponse> {
+    unimplemented!()
 }
 
 /**
@@ -3812,6 +4039,7 @@ fn get_telescope_siteelevation(
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
 ) -> ASCOMResponse<schemas::DoubleResponse> {
+    unimplemented!()
 }
 
 /**
@@ -3828,6 +4056,7 @@ fn put_telescope_siteelevation(
         request: schemas::PutTelescopeSiteelevationRequest { site_elevation },
     }): Form<ASCOMRequest<schemas::PutTelescopeSiteelevationRequest>>,
 ) -> ASCOMResponse<()> {
+    unimplemented!()
 }
 
 /**
@@ -3841,6 +4070,7 @@ fn get_telescope_sitelatitude(
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
 ) -> ASCOMResponse<schemas::DoubleResponse> {
+    unimplemented!()
 }
 
 /**
@@ -3857,6 +4087,7 @@ fn put_telescope_sitelatitude(
         request: schemas::PutTelescopeSitelatitudeRequest { site_latitude },
     }): Form<ASCOMRequest<schemas::PutTelescopeSitelatitudeRequest>>,
 ) -> ASCOMResponse<()> {
+    unimplemented!()
 }
 
 /**
@@ -3870,6 +4101,7 @@ fn get_telescope_sitelongitude(
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
 ) -> ASCOMResponse<schemas::DoubleResponse> {
+    unimplemented!()
 }
 
 /**
@@ -3886,6 +4118,7 @@ fn put_telescope_sitelongitude(
         request: schemas::PutTelescopeSitelongitudeRequest { site_longitude },
     }): Form<ASCOMRequest<schemas::PutTelescopeSitelongitudeRequest>>,
 ) -> ASCOMResponse<()> {
+    unimplemented!()
 }
 
 /**
@@ -3899,6 +4132,7 @@ fn get_telescope_slewing(
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
 ) -> ASCOMResponse<schemas::BoolResponse> {
+    unimplemented!()
 }
 
 /**
@@ -3912,6 +4146,7 @@ fn get_telescope_slewsettletime(
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
 ) -> ASCOMResponse<schemas::IntResponse> {
+    unimplemented!()
 }
 
 /**
@@ -3928,6 +4163,7 @@ fn put_telescope_slewsettletime(
         request: schemas::PutTelescopeSlewsettletimeRequest { slew_settle_time },
     }): Form<ASCOMRequest<schemas::PutTelescopeSlewsettletimeRequest>>,
 ) -> ASCOMResponse<()> {
+    unimplemented!()
 }
 
 /**
@@ -3941,6 +4177,7 @@ fn get_telescope_targetdeclination(
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
 ) -> ASCOMResponse<schemas::DoubleResponse> {
+    unimplemented!()
 }
 
 /**
@@ -3957,6 +4194,7 @@ fn put_telescope_targetdeclination(
         request: schemas::PutTelescopeTargetdeclinationRequest { target_declination },
     }): Form<ASCOMRequest<schemas::PutTelescopeTargetdeclinationRequest>>,
 ) -> ASCOMResponse<()> {
+    unimplemented!()
 }
 
 /**
@@ -3970,6 +4208,7 @@ fn get_telescope_targetrightascension(
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
 ) -> ASCOMResponse<schemas::DoubleResponse> {
+    unimplemented!()
 }
 
 /**
@@ -3986,6 +4225,7 @@ fn put_telescope_targetrightascension(
         request: schemas::PutTelescopeTargetrightascensionRequest { target_right_ascension },
     }): Form<ASCOMRequest<schemas::PutTelescopeTargetrightascensionRequest>>,
 ) -> ASCOMResponse<()> {
+    unimplemented!()
 }
 
 /**
@@ -3999,6 +4239,7 @@ fn get_telescope_tracking(
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
 ) -> ASCOMResponse<schemas::BoolResponse> {
+    unimplemented!()
 }
 
 /**
@@ -4015,6 +4256,7 @@ fn put_telescope_tracking(
         request: schemas::PutTelescopeTrackingRequest { tracking },
     }): Form<ASCOMRequest<schemas::PutTelescopeTrackingRequest>>,
 ) -> ASCOMResponse<()> {
+    unimplemented!()
 }
 
 /**
@@ -4028,6 +4270,7 @@ fn get_telescope_trackingrate(
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
 ) -> ASCOMResponse<schemas::IntResponse> {
+    unimplemented!()
 }
 
 /**
@@ -4044,6 +4287,7 @@ fn put_telescope_trackingrate(
         request: schemas::PutTelescopeTrackingrateRequest { tracking_rate },
     }): Form<ASCOMRequest<schemas::PutTelescopeTrackingrateRequest>>,
 ) -> ASCOMResponse<()> {
+    unimplemented!()
 }
 
 /**
@@ -4057,6 +4301,7 @@ fn get_telescope_trackingrates(
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
 ) -> ASCOMResponse<schemas::DriveRatesResponse> {
+    unimplemented!()
 }
 
 /**
@@ -4070,6 +4315,7 @@ fn get_telescope_utcdate(
 
     Query(ASCOMRequest { transaction, request: () }): Query<ASCOMRequest<()>>,
 ) -> ASCOMResponse<schemas::StringResponse> {
+    unimplemented!()
 }
 
 /**
@@ -4086,6 +4332,7 @@ fn put_telescope_utcdate(
         request: schemas::PutTelescopeUtcdateRequest { utcdate },
     }): Form<ASCOMRequest<schemas::PutTelescopeUtcdateRequest>>,
 ) -> ASCOMResponse<()> {
+    unimplemented!()
 }
 
 /**
@@ -4099,6 +4346,7 @@ fn put_telescope_abortslew(
 
     Form(ASCOMRequest { transaction, request: () }): Form<ASCOMRequest<()>>,
 ) -> ASCOMResponse<()> {
+    unimplemented!()
 }
 
 /**
@@ -4115,6 +4363,7 @@ fn get_telescope_axisrates(
         request: schemas::GetTelescopeAxisratesRequest { axis },
     }): Query<ASCOMRequest<schemas::GetTelescopeAxisratesRequest>>,
 ) -> ASCOMResponse<schemas::AxisRatesResponse> {
+    unimplemented!()
 }
 
 /**
@@ -4131,6 +4380,7 @@ fn get_telescope_canmoveaxis(
         request: schemas::GetTelescopeCanmoveaxisRequest { axis },
     }): Query<ASCOMRequest<schemas::GetTelescopeCanmoveaxisRequest>>,
 ) -> ASCOMResponse<schemas::BoolResponse> {
+    unimplemented!()
 }
 
 /**
@@ -4147,6 +4397,7 @@ fn get_telescope_destinationsideofpier(
         request: schemas::GetTelescopeDestinationsideofpierRequest { right_ascension, declination },
     }): Query<ASCOMRequest<schemas::GetTelescopeDestinationsideofpierRequest>>,
 ) -> ASCOMResponse<schemas::IntResponse> {
+    unimplemented!()
 }
 
 /**
@@ -4160,6 +4411,7 @@ fn put_telescope_findhome(
 
     Form(ASCOMRequest { transaction, request: () }): Form<ASCOMRequest<()>>,
 ) -> ASCOMResponse<()> {
+    unimplemented!()
 }
 
 /**
@@ -4176,6 +4428,7 @@ fn put_telescope_moveaxis(
         request: schemas::PutTelescopeMoveaxisRequest { axis, rate },
     }): Form<ASCOMRequest<schemas::PutTelescopeMoveaxisRequest>>,
 ) -> ASCOMResponse<()> {
+    unimplemented!()
 }
 
 /**
@@ -4189,6 +4442,7 @@ fn put_telescope_park(
 
     Form(ASCOMRequest { transaction, request: () }): Form<ASCOMRequest<()>>,
 ) -> ASCOMResponse<()> {
+    unimplemented!()
 }
 
 /**
@@ -4205,6 +4459,7 @@ fn put_telescope_pulseguide(
         request: schemas::PutTelescopePulseguideRequest { direction, duration },
     }): Form<ASCOMRequest<schemas::PutTelescopePulseguideRequest>>,
 ) -> ASCOMResponse<()> {
+    unimplemented!()
 }
 
 /**
@@ -4218,6 +4473,7 @@ fn put_telescope_setpark(
 
     Form(ASCOMRequest { transaction, request: () }): Form<ASCOMRequest<()>>,
 ) -> ASCOMResponse<()> {
+    unimplemented!()
 }
 
 /**
@@ -4234,6 +4490,7 @@ fn put_telescope_slewtoaltaz(
         request: schemas::PutTelescopeSlewtoaltazRequest { azimuth, altitude },
     }): Form<ASCOMRequest<schemas::PutTelescopeSlewtoaltazRequest>>,
 ) -> ASCOMResponse<()> {
+    unimplemented!()
 }
 
 /**
@@ -4250,6 +4507,7 @@ fn put_telescope_slewtoaltazasync(
         request: schemas::PutTelescopeSlewtoaltazRequest { azimuth, altitude },
     }): Form<ASCOMRequest<schemas::PutTelescopeSlewtoaltazRequest>>,
 ) -> ASCOMResponse<()> {
+    unimplemented!()
 }
 
 /**
@@ -4266,6 +4524,7 @@ fn put_telescope_slewtocoordinates(
         request: schemas::PutTelescopeSlewtocoordinatesRequest { right_ascension, declination },
     }): Form<ASCOMRequest<schemas::PutTelescopeSlewtocoordinatesRequest>>,
 ) -> ASCOMResponse<()> {
+    unimplemented!()
 }
 
 /**
@@ -4282,6 +4541,7 @@ fn put_telescope_slewtocoordinatesasync(
         request: schemas::PutTelescopeSlewtocoordinatesRequest { right_ascension, declination },
     }): Form<ASCOMRequest<schemas::PutTelescopeSlewtocoordinatesRequest>>,
 ) -> ASCOMResponse<()> {
+    unimplemented!()
 }
 
 /**
@@ -4295,6 +4555,7 @@ fn put_telescope_slewtotarget(
 
     Form(ASCOMRequest { transaction, request: () }): Form<ASCOMRequest<()>>,
 ) -> ASCOMResponse<()> {
+    unimplemented!()
 }
 
 /**
@@ -4308,6 +4569,7 @@ fn put_telescope_slewtotargetasync(
 
     Form(ASCOMRequest { transaction, request: () }): Form<ASCOMRequest<()>>,
 ) -> ASCOMResponse<()> {
+    unimplemented!()
 }
 
 /**
@@ -4324,6 +4586,7 @@ fn put_telescope_synctoaltaz(
         request: schemas::PutTelescopeSlewtoaltazRequest { azimuth, altitude },
     }): Form<ASCOMRequest<schemas::PutTelescopeSlewtoaltazRequest>>,
 ) -> ASCOMResponse<()> {
+    unimplemented!()
 }
 
 /**
@@ -4340,6 +4603,7 @@ fn put_telescope_synctocoordinates(
         request: schemas::PutTelescopeSlewtocoordinatesRequest { right_ascension, declination },
     }): Form<ASCOMRequest<schemas::PutTelescopeSlewtocoordinatesRequest>>,
 ) -> ASCOMResponse<()> {
+    unimplemented!()
 }
 
 /**
@@ -4353,6 +4617,7 @@ fn put_telescope_synctotarget(
 
     Form(ASCOMRequest { transaction, request: () }): Form<ASCOMRequest<()>>,
 ) -> ASCOMResponse<()> {
+    unimplemented!()
 }
 
 /**
@@ -4366,6 +4631,7 @@ fn put_telescope_unpark(
 
     Form(ASCOMRequest { transaction, request: () }): Form<ASCOMRequest<()>>,
 ) -> ASCOMResponse<()> {
+    unimplemented!()
 }
 
 #[actix_web::main]
