@@ -4,121 +4,17 @@
 <%= api.info.description %>
 */
 
-use axum::{
-    extract::{Path, Query},
-    response::{IntoResponse, Response},
-    routing::{get, put},
-    Form, Json,
+#![allow(unused_variables)]
+
+use actix_web::{
+    get, put,
+    web::{Form, Path, Query},
+    App, HttpServer,
 };
 use serde::{Deserialize, Serialize};
-use std::borrow::Cow;
 
-#[derive(Deserialize)]
-pub struct TransactionRequest {
-  #[serde(rename = "ClientID")]
-  pub client_id: Option<u32>,
-  #[serde(rename = "ClientTransactionID")]
-  pub client_transaction_id: Option<u32>,
-}
-
-#[derive(Serialize)]
-pub struct TransactionResponse {
-  #[serde(rename = "ClientTransactionID")]
-  pub client_transaction_id: Option<u32>,
-  #[serde(rename = "ServerTransactionID")]
-  pub server_transaction_id: u32,
-}
-
-#[derive(Deserialize)]
-pub struct ASCOMRequest<T> {
-  #[serde(flatten)]
-  pub transaction: TransactionRequest,
-  #[serde(flatten)]
-  pub request: T,
-}
-
-#[derive(Serialize)]
-pub struct ASCOMErrorCode(u16);
-
-impl ASCOMErrorCode {
-  /// The starting value for driver-specific error numbers.
-  const DriverBase: u16 = 0x500;
-  /// The maximum value for driver-specific error numbers.
-  const DriverMax: u16 = 0xFFF;
-
-  /// Generate a driver-specific error code.
-  pub const fn new_for_driver(driver_error: u16) -> Self {
-    let code = Self::DriverBase + driver_error;
-    assert!(code <= Self::DriverMax, "Driver error code is too large");
-    Self(code)
-  }
-}
-
-#[derive(Serialize)]
-pub struct ASCOMError {
-  pub code: ASCOMErrorCode,
-  pub message: Cow<'static, str>,
-}
-
-macro_rules! ascom_error_codes {
-  ($(#[doc = $doc:literal] $name:ident = $value:literal,)*) => {
-    impl ASCOMErrorCode {
-      $(
-        #[doc = $doc]
-        pub const $name: Self = Self($value);
-      )*
-    }
-
-    impl ASCOMError {
-      $(
-        #[doc = $doc]
-        pub const $name: Self = Self {
-          code: ASCOMErrorCode::$name,
-          message: Cow::Borrowed(stringify!($name)),
-        };
-      )*
-    }
-  };
-}
-
-ascom_error_codes! {
-  #[doc = "The requested action is not implemented in this driver."]
-  ACTION_NOT_IMPLEMENTED = 0x40C,
-  #[doc = "The requested operation can not be undertaken at this time."]
-  INVALID_OPERATION = 0x40B,
-  #[doc = "Invalid value."]
-  INVALID_VALUE = 0x401,
-  #[doc = "The attempted operation is invalid because the mount is currently in a Parked state."]
-  INVALID_WHILE_PARKED = 0x408,
-  #[doc = "The attempted operation is invalid because the mount is currently in a Slaved state."]
-  INVALID_WHILE_SLAVED = 0x409,
-  #[doc = "The communications channel is not connected."]
-  NOT_CONNECTED = 0x407,
-  #[doc = "Property or method not implemented."]
-  NOT_IMPLEMENTED = 0x400,
-  #[doc = "The requested item is not present in the ASCOM cache."]
-  NOT_IN_CACHE = 0x40D,
-  #[doc = "Settings error."]
-  SETTINGS = 0x40A,
-  #[doc = "'catch-all' error code used when nothing else was specified."]
-  UNSPECIFIED = 0x4FF,
-  #[doc = "A value has not been set."]
-  VALUE_NOT_SET = 0x402,
-}
-
-#[derive(Serialize)]
-pub struct ASCOMResponse<T> {
-  #[serde(flatten)]
-  transaction: TransactionResponse,
-  #[serde(flatten)]
-  result: std::result::Result<T, ASCOMError>,
-}
-
-impl<T: Serialize> IntoResponse for ASCOMResponse<T> {
-  fn into_response(self) -> Response {
-    Json(self).into_response()
-  }
-}
+mod common;
+pub use common::*;
 
 <%
 const toTypeName = toPascalCase;
@@ -231,39 +127,39 @@ mod schemas {
 
 <% for (let { path: pathUrl, method: methodName, id, operation: method } of ops()) { %>
   <%= doc(`${method.summary}${method.description && method.description !== method.summary ? `\n\n${method.description}` : ''}`) %>
-  #[<%= methodName %>("<%= pathUrl.replaceAll(/\{(.*?)\}/g, '<$1>') %>")]
-  fn <%= id %>(
+  #[<%= methodName %>("<%= pathUrl %>")]
+  async fn <%= id %>(
     <%
       let { 'x-path': pathRef, 'x-request': requestRef, 'x-requestKind': requestKind } = method;
       let pathRefName = refToName(pathRef);
       let requestRefName = refToName(requestRef);
     %>
     <% if (pathRefName !== '()') { %>
-      Path(<%= refToName(pathRef) %> {
+      path: Path<<%= refToName(pathRef) %>>,
+    <% } %>
+    request: <%= requestKind %><ASCOMRequest<<%= requestRefName %>>>
+  ) -> ASCOMResponse<<%= refToName(method.responses[200].content['application/json'].schema) %>> {
+    <% if (pathRefName !== '()') { %>
+      let <%= refToName(pathRef) %> {
         <% for (let param in resolveRef(pathRef).properties) { %>
           <%= toPropName(param) %>,
         <% } %>
-      }): Path<<%= refToName(pathRef) %>>,
+      } = path.into_inner();
     <% } %>
-    <%= requestKind %>(ASCOMRequest {
-      transaction,
-      request: <%= requestRefName %>
-      <% if (requestRefName !== '()') { %>
-        {
-          <% for (let param in resolveRef(requestRef).properties) { %>
-            <%= toPropName(param) %>,
-          <% } %>
-        }
-      <% } %>,
-    }): <%= requestKind %><ASCOMRequest<<%= requestRefName %>>>
-  ) -> ASCOMResponse<<%= refToName(method.responses[200].content['application/json'].schema) %>> {
-    unimplemented!()
+
+    request.into_inner().respond_with(move |<%= requestRefName %><% if (requestRefName !== '()') { %> {
+      <% for (let param in resolveRef(requestRef).properties) { %>
+        <%= toPropName(param) %>,
+      <% } %>
+    }<% } %>| {
+      Err(ASCOMError::ACTION_NOT_IMPLEMENTED)
+    })
   }
 
 <% } %>
 
 #[actix_web::main]
-async fn main() -> std::io::Result<()> {
+pub async fn main() -> std::io::Result<()> {
   HttpServer::new(|| {
     App::new()
     <% for (let { id } of ops()) { %>
