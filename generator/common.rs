@@ -1,6 +1,15 @@
-use actix_web::{web::Json, HttpRequest, HttpResponse, Responder};
-use serde::{Deserialize, Serialize};
+use actix_web::{
+    dev::Payload,
+    error::ErrorBadRequest,
+    http::Method,
+    web::{Bytes, Json, Query},
+    FromRequest, HttpMessage, HttpRequest, HttpResponse, Responder,
+};
+use pin_project::pin_project;
+use serde::{de::DeserializeOwned, Deserialize, Serialize};
 use std::borrow::Cow;
+use std::future::Future;
+use std::pin::Pin;
 use std::sync::atomic::AtomicU32;
 
 #[derive(Deserialize)]
@@ -31,12 +40,86 @@ impl TransactionRequest {
     }
 }
 
-#[derive(Deserialize)]
+// #[derive(Deserialize)]
 pub struct ASCOMRequest<T> {
-    #[serde(flatten)]
+    // #[serde(flatten)]
     transaction: TransactionRequest,
-    #[serde(flatten)]
+    // #[serde(flatten)]
     pub request: T,
+}
+
+impl<T: DeserializeOwned> ASCOMRequest<T> {
+    /// This awkward machinery is to accomodate for the fact that the serde(flatten)
+    /// breaks all deserialization because it collects data into an internal representation
+    /// first and then can't recover other types from string values stored from the query string.
+    ///
+    /// See https://github.com/nox/serde_urlencoded/issues/33.
+    fn from_encoded_params(encoded_params: &[u8]) -> Result<Self, actix_web::Error> {
+        let mut transaction_params = form_urlencoded::Serializer::new(String::new());
+        let mut request_params = form_urlencoded::Serializer::new(String::new());
+
+        for (key, value) in form_urlencoded::parse(encoded_params) {
+            match key.as_ref() {
+                "ClientID" | "ClientTransactionID" => {
+                    transaction_params.append_pair(&key, &value);
+                }
+                _ => {
+                    request_params.append_pair(&key, &value);
+                }
+            }
+        }
+
+        Ok(ASCOMRequest {
+            transaction: Query::<TransactionRequest>::from_query(&transaction_params.finish())?.into_inner(),
+            request: Query::<T>::from_query(&request_params.finish())?.into_inner(),
+        })
+    }
+}
+
+#[pin_project]
+pub struct BodyParamsFuture<T> {
+    #[pin]
+    inner: <Bytes as FromRequest>::Future,
+    _phantom: std::marker::PhantomData<fn() -> ASCOMRequest<T>>,
+}
+
+impl<T> BodyParamsFuture<T> {
+    fn new(fut: <Bytes as FromRequest>::Future) -> Self {
+        BodyParamsFuture {
+            inner: fut,
+            _phantom: std::marker::PhantomData,
+        }
+    }
+}
+
+impl<T: DeserializeOwned> Future for BodyParamsFuture<T> {
+    type Output = Result<ASCOMRequest<T>, actix_web::Error>;
+
+    fn poll(self: Pin<&mut Self>, cx: &mut std::task::Context<'_>) -> std::task::Poll<Self::Output> {
+        self.project().inner.poll(cx).map(|encoded_params| ASCOMRequest::from_encoded_params(encoded_params?.as_ref()))
+    }
+}
+
+impl<T: 'static + DeserializeOwned> FromRequest for ASCOMRequest<T> {
+    type Error = actix_web::Error;
+    type Future = actix_utils::future::Either<actix_utils::future::Ready<Result<Self, actix_web::Error>>, BodyParamsFuture<T>>;
+
+    fn from_request(req: &HttpRequest, payload: &mut Payload) -> Self::Future {
+        if req.method() == Method::GET {
+            actix_utils::future::Either::left(actix_utils::future::ready(ASCOMRequest::from_encoded_params(req.query_string().as_bytes())))
+        } else {
+            if let Err(err) = req.mime_type().map_err(actix_web::Error::from).and_then(|mime| {
+                if mime != Some(mime::APPLICATION_WWW_FORM_URLENCODED) {
+                    Err(ErrorBadRequest("Invalid content type"))
+                } else {
+                    Ok(())
+                }
+            }) {
+                return actix_utils::future::Either::left(actix_utils::future::err(err));
+            }
+            actix_utils::future::Either::right(BodyParamsFuture::new(Bytes::from_request(req, payload)))
+        }
+    }
 }
 
 impl<T> ASCOMRequest<T> {
