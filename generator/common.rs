@@ -36,6 +36,14 @@ impl TransactionRequest {
         static SERVER_TRANSACTION_ID: AtomicU32 = AtomicU32::new(0);
         let server_transaction_id = SERVER_TRANSACTION_ID.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
 
+        if let Some(client_id) = self.client_id {
+            root_span.record("client_id", client_id);
+        }
+
+        if let Some(client_transaction_id) = self.client_transaction_id {
+            root_span.record("client_transaction_id", client_transaction_id);
+        }
+
         root_span.record("server_transaction_id", server_transaction_id);
 
         TransactionResponse {
@@ -233,7 +241,9 @@ pub struct DomainRootSpanBuilder;
 
 impl tracing_actix_web::RootSpanBuilder for DomainRootSpanBuilder {
     fn on_request_start(request: &ServiceRequest) -> Span {
-        tracing_actix_web::root_span!(request, server_transaction_id = tracing::field::Empty)
+        use tracing::field::Empty;
+
+        tracing_actix_web::root_span!(request, client_id = Empty, client_transaction_id = Empty, server_transaction_id = Empty)
     }
 
     fn on_request_end<B>(span: Span, outcome: &Result<ServiceResponse<B>, actix_web::Error>) {
