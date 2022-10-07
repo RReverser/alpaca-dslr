@@ -5,7 +5,7 @@ import { execFileSync } from 'child_process';
 import { toSnakeCase, toPascalCase } from 'js-convert-case';
 import { OpenAPIV3 } from 'openapi-types';
 import * as assert from 'assert/strict';
-import { inspect, isDeepStrictEqual } from 'util';
+import { inspect } from 'util';
 import { extraSchemas } from './extra-schemas.js';
 
 interface MethodExtension {
