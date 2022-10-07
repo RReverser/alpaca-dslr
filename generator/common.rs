@@ -1,6 +1,6 @@
 use actix_web::{
-    dev::Payload,
-    error::ErrorBadRequest,
+    dev::{Payload, ServiceRequest, ServiceResponse},
+    error::{BlockingError, ErrorBadRequest},
     http::Method,
     web::{Bytes, Json, Query},
     FromRequest, HttpMessage, HttpRequest, HttpResponse, Responder,
@@ -11,6 +11,8 @@ use std::borrow::Cow;
 use std::future::Future;
 use std::pin::Pin;
 use std::sync::atomic::AtomicU32;
+use tracing::Span;
+use tracing_actix_web::RootSpan;
 
 #[derive(Deserialize)]
 struct TransactionRequest {
@@ -30,12 +32,15 @@ struct TransactionResponse {
 }
 
 impl TransactionRequest {
-    pub fn respond(&self) -> TransactionResponse {
+    pub fn respond(&self, root_span: RootSpan) -> TransactionResponse {
         static SERVER_TRANSACTION_ID: AtomicU32 = AtomicU32::new(0);
+        let server_transaction_id = SERVER_TRANSACTION_ID.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
+
+        root_span.record("server_transaction_id", server_transaction_id);
 
         TransactionResponse {
             client_transaction_id: self.client_transaction_id,
-            server_transaction_id: SERVER_TRANSACTION_ID.fetch_add(1, std::sync::atomic::Ordering::Relaxed),
+            server_transaction_id,
         }
     }
 }
@@ -122,12 +127,12 @@ impl<T: 'static + DeserializeOwned> FromRequest for ASCOMRequest<T> {
     }
 }
 
-impl<T> ASCOMRequest<T> {
-    pub fn respond_with<U>(self, f: impl FnOnce(T) -> Result<U, ASCOMError>) -> ASCOMResponse<U> {
-        ASCOMResponse {
-            transaction: self.transaction.respond(),
+impl<T: 'static + Send> ASCOMRequest<T> {
+    pub fn respond_with<U: Send + 'static>(self, root_span: RootSpan, f: impl FnOnce(T) -> Result<U, ASCOMError> + Send + 'static) -> impl Future<Output = Result<ASCOMResponse<U>, BlockingError>> {
+        actix_web::web::block(move || ASCOMResponse {
+            transaction: self.transaction.respond(root_span),
             result: f(self.request),
-        }
+        })
     }
 }
 
@@ -221,5 +226,17 @@ impl<T: Serialize> Responder for ASCOMResponse<T> {
 
     fn respond_to(self, req: &HttpRequest) -> HttpResponse<Self::Body> {
         Json(self).respond_to(req)
+    }
+}
+
+pub struct DomainRootSpanBuilder;
+
+impl tracing_actix_web::RootSpanBuilder for DomainRootSpanBuilder {
+    fn on_request_start(request: &ServiceRequest) -> Span {
+        tracing_actix_web::root_span!(request, server_transaction_id = tracing::field::Empty)
+    }
+
+    fn on_request_end<B>(span: Span, outcome: &Result<ServiceResponse<B>, actix_web::Error>) {
+        tracing_actix_web::DefaultRootSpanBuilder::on_request_end(span, outcome);
     }
 }

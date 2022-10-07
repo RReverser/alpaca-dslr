@@ -6,8 +6,10 @@
 
 #![allow(unused_variables)]
 
-use actix_web::{get, put, web::Path, App, HttpServer};
+use actix_web::{error::BlockingError, get, put, web::Path, App, HttpServer};
 use serde::{Deserialize, Serialize};
+use std::future::Future;
+use tracing_actix_web::RootSpan;
 
 mod common;
 pub use common::*;
@@ -124,26 +126,27 @@ mod schemas {
 <% for (let { path: pathUrl, method: methodName, id, operation: method } of ops()) { %>
   <%= doc(`${method.summary}${method.description && method.description !== method.summary ? `\n\n${method.description}` : ''}`) %>
   #[<%= methodName %>("<%= pathUrl %>")]
-  async fn <%= id %>(
-    <%
-      let { 'x-path': pathRef, 'x-request': requestRef } = method;
-      let pathRefName = refToName(pathRef);
-      let requestRefName = refToName(requestRef);
-    %>
+  fn <%= id %>(
+    root_span: RootSpan,
+    <% let pathRef = method['x-path'], pathRefName = refToName(pathRef); %>
     <% if (pathRefName !== '()') { %>
-      path: Path<<%= refToName(pathRef) %>>,
+      path: Path<<%= pathRefName %>>,
     <% } %>
+    <% let requestRef = method['x-request'], requestRefName = refToName(requestRef); %>
     request: ASCOMRequest<<%= requestRefName %>>
-  ) -> ASCOMResponse<<%= refToName(method.responses[200].content['application/json'].schema) %>> {
+  ) -> impl Future<Output = Result<
+    ASCOMResponse<<%= refToName(method.responses[200].content['application/json'].schema) %>>,
+    BlockingError
+  >> {
     <% if (pathRefName !== '()') { %>
-      let <%= refToName(pathRef) %> {
+      let <%= pathRefName %> {
         <% for (let param in resolveRef(pathRef).properties) { %>
           <%= toPropName(param) %>,
         <% } %>
       } = path.into_inner();
     <% } %>
 
-    request.respond_with(move |<%= requestRefName %><% if (requestRefName !== '()') { %> {
+    request.respond_with(root_span, move |<%= requestRefName %><% if (requestRefName !== '()') { %> {
       <% for (let param in resolveRef(requestRef).properties) { %>
         <%= toPropName(param) %>,
       <% } %>
@@ -158,6 +161,7 @@ mod schemas {
 pub async fn main() -> std::io::Result<()> {
   HttpServer::new(|| {
     App::new()
+    .wrap(tracing_actix_web::TracingLogger::<DomainRootSpanBuilder>::new())
     <% for (let { id } of ops()) { %>
       .service(<%= id %>)
     <% } %>
