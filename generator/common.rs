@@ -251,7 +251,7 @@ impl tracing_actix_web::RootSpanBuilder for DomainRootSpanBuilder {
 }
 
 pub struct RpcDevices<T: ?Sized> {
-    devices: DashMap<usize, Box<T>>,
+    devices: DashMap<u32, Box<T>>,
     counter: AtomicU32,
 }
 
@@ -265,21 +265,21 @@ impl<T: ?Sized> Default for RpcDevices<T> {
 }
 
 impl<T: ?Sized> RpcDevices<T> {
-    pub fn register_dyn(&self, device: Box<T>) -> usize {
+    pub fn register_dyn(&self, device: Box<T>) -> u32 {
         let id = self.counter.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
         self.devices.insert(id, device);
         id
     }
 
-    pub fn unregister(&self, id: usize) {
+    pub fn unregister(&self, id: u32) {
         self.devices.remove(&id);
     }
 
-    pub fn get(&self, id: usize) -> Option<impl '_ + Deref<Target = impl Deref<Target = T>>> {
+    pub fn get(&self, id: u32) -> Option<impl '_ + Deref<Target = impl Deref<Target = T>>> {
         self.devices.get(&id)
     }
 
-    pub fn get_mut(&self, id: usize) -> Option<impl '_ + DerefMut<Target = impl DerefMut<Target = T>>> {
+    pub fn get_mut(&self, id: u32) -> Option<impl '_ + DerefMut<Target = impl DerefMut<Target = T>>> {
         self.devices.get_mut(&id)
     }
 }
