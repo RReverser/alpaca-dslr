@@ -17,28 +17,22 @@ use std::sync::atomic::AtomicU32;
 use tracing::Span;
 use tracing_actix_web::RootSpan;
 
-#[derive(Deserialize)]
-struct TransactionRequest {
+#[derive(Serialize, Deserialize)]
+struct TransactionIds {
     #[serde(rename = "ClientID")]
+    #[serde(skip_serializing)]
     #[allow(dead_code)]
     pub client_id: Option<u32>,
     #[serde(rename = "ClientTransactionID")]
     pub client_transaction_id: Option<u32>,
-}
-
-#[derive(Serialize)]
-struct TransactionResponse {
-    #[serde(rename = "ClientTransactionID")]
-    pub client_transaction_id: Option<u32>,
     #[serde(rename = "ServerTransactionID")]
+    #[serde(skip_deserializing)]
+    #[serde(default = "generate_server_transaction_id")]
     pub server_transaction_id: u32,
 }
 
-impl TransactionRequest {
-    pub fn respond(&self, root_span: RootSpan) -> TransactionResponse {
-        static SERVER_TRANSACTION_ID: AtomicU32 = AtomicU32::new(0);
-        let server_transaction_id = SERVER_TRANSACTION_ID.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
-
+impl TransactionIds {
+    pub fn record(&self, root_span: RootSpan) {
         if let Some(client_id) = self.client_id {
             root_span.record("client_id", client_id);
         }
@@ -47,19 +41,19 @@ impl TransactionRequest {
             root_span.record("client_transaction_id", client_transaction_id);
         }
 
-        root_span.record("server_transaction_id", server_transaction_id);
-
-        TransactionResponse {
-            client_transaction_id: self.client_transaction_id,
-            server_transaction_id,
-        }
+        root_span.record("server_transaction_id", self.server_transaction_id);
     }
+}
+
+fn generate_server_transaction_id() -> u32 {
+    static SERVER_TRANSACTION_ID: AtomicU32 = AtomicU32::new(0);
+    SERVER_TRANSACTION_ID.fetch_add(1, std::sync::atomic::Ordering::Relaxed)
 }
 
 // #[derive(Deserialize)]
 pub struct ASCOMRequest<T> {
     // #[serde(flatten)]
-    transaction: TransactionRequest,
+    transaction: TransactionIds,
     // #[serde(flatten)]
     pub request: T,
 }
@@ -86,7 +80,7 @@ impl<T: DeserializeOwned> ASCOMRequest<T> {
         }
 
         Ok(ASCOMRequest {
-            transaction: Query::<TransactionRequest>::from_query(&transaction_params.finish())?.into_inner(),
+            transaction: Query::<TransactionIds>::from_query(&transaction_params.finish())?.into_inner(),
             request: Query::<T>::from_query(&request_params.finish())?.into_inner(),
         })
     }
@@ -140,8 +134,10 @@ impl<T: 'static + DeserializeOwned> FromRequest for ASCOMRequest<T> {
 
 impl<T: 'static + Send> ASCOMRequest<T> {
     pub fn respond_with<U: Send + 'static>(self, root_span: RootSpan, f: impl FnOnce(T) -> Result<U, ASCOMError> + Send + 'static) -> impl Future<Output = Result<ASCOMResponse<U>, BlockingError>> {
+        self.transaction.record(root_span);
+
         actix_web::web::block(move || ASCOMResponse {
-            transaction: self.transaction.respond(root_span),
+            transaction: self.transaction,
             result: f(self.request),
         })
     }
@@ -220,7 +216,7 @@ ascom_error_codes! {
 #[derive(Serialize)]
 pub struct ASCOMResponse<T> {
     #[serde(flatten)]
-    transaction: TransactionResponse,
+    transaction: TransactionIds,
     #[serde(flatten, serialize_with = "serialize_result", bound = "T: Serialize")]
     pub result: Result<T, ASCOMError>,
 }
