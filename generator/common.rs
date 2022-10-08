@@ -5,16 +5,15 @@ use actix_web::{
     web::{Bytes, Json, Query},
     FromRequest, HttpMessage, HttpRequest, HttpResponse, Responder,
 };
+use dashmap::DashMap;
 use pin_project::pin_project;
 use serde::{de::DeserializeOwned, Deserialize, Serialize};
-use std::{
-    borrow::Cow,
-    marker::PhantomData,
-    ops::{Deref, DerefMut},
-};
-use std::{future::Future, sync::RwLock};
-use std::{ops::Index, sync::atomic::AtomicU32};
-use std::{pin::Pin, sync::atomic::AtomicUsize};
+use std::borrow::Cow;
+use std::future::Future;
+use std::marker::PhantomData;
+use std::ops::{Deref, DerefMut};
+use std::pin::Pin;
+use std::sync::atomic::AtomicU32;
 use tracing::Span;
 use tracing_actix_web::RootSpan;
 
@@ -257,14 +256,14 @@ impl tracing_actix_web::RootSpanBuilder for DomainRootSpanBuilder {
 
 pub struct RpcDevices<T: ?Sized> {
     devices: DashMap<usize, Box<T>>,
-    counter: AtomicUsize,
+    counter: AtomicU32,
 }
 
 impl<T: ?Sized> Default for RpcDevices<T> {
     fn default() -> Self {
         Self {
             devices: DashMap::new(),
-            counter: AtomicUsize::new(0),
+            counter: AtomicU32::new(0),
         }
     }
 }
@@ -297,6 +296,7 @@ impl<T: ?Sized> Default for RpcService<T> {
     }
 }
 
+#[allow(unused_macros)]
 macro_rules! rpc {
     (@dashmap_get $dashmap:expr, $index:expr, mut self) => {
         $dashmap.get_mut($index)
@@ -396,6 +396,3 @@ macro_rules! rpc {
         )*
     };
 }
-
-use dashmap::DashMap;
-pub(crate) use rpc;

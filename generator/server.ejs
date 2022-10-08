@@ -6,7 +6,7 @@
 
 #![allow(unused_variables)]
 
-use actix_web::{error::BlockingError, get, put, web::Path, App, HttpServer};
+use actix_web::{error::BlockingError, get, put, web::Path};
 use serde::{Deserialize, Serialize};
 use std::future::Future;
 use tracing_actix_web::RootSpan;
@@ -157,16 +157,9 @@ mod schemas {
 
 <% } %>
 
-#[actix_web::main]
-pub async fn main() -> std::io::Result<()> {
-  HttpServer::new(|| {
-    App::new()
-    .wrap(tracing_actix_web::TracingLogger::<DomainRootSpanBuilder>::new())
+pub fn service() -> actix_web::Scope {
+  actix_web::web::scope("/api/v1")
     <% for (let { id } of ops()) { %>
       .service(<%= id %>)
     <% } %>
-  })
-  .bind(("127.0.0.1", 8080))?
-  .run()
-  .await
 }
