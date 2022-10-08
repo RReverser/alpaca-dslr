@@ -7,10 +7,14 @@ use actix_web::{
 };
 use pin_project::pin_project;
 use serde::{de::DeserializeOwned, Deserialize, Serialize};
-use std::borrow::Cow;
-use std::future::Future;
-use std::pin::Pin;
-use std::sync::atomic::AtomicU32;
+use std::{
+    borrow::Cow,
+    marker::PhantomData,
+    ops::{Deref, DerefMut},
+};
+use std::{future::Future, sync::RwLock};
+use std::{ops::Index, sync::atomic::AtomicU32};
+use std::{pin::Pin, sync::atomic::AtomicUsize};
 use tracing::Span;
 use tracing_actix_web::RootSpan;
 
@@ -250,3 +254,148 @@ impl tracing_actix_web::RootSpanBuilder for DomainRootSpanBuilder {
         tracing_actix_web::DefaultRootSpanBuilder::on_request_end(span, outcome);
     }
 }
+
+pub struct RpcDevices<T: ?Sized> {
+    devices: DashMap<usize, Box<T>>,
+    counter: AtomicUsize,
+}
+
+impl<T: ?Sized> Default for RpcDevices<T> {
+    fn default() -> Self {
+        Self {
+            devices: DashMap::new(),
+            counter: AtomicUsize::new(0),
+        }
+    }
+}
+
+impl<T: ?Sized> RpcDevices<T> {
+    pub fn register_dyn(&self, device: Box<T>) -> usize {
+        let id = self.counter.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
+        self.devices.insert(id, device);
+        id
+    }
+
+    pub fn unregister(&self, id: usize) {
+        self.devices.remove(&id);
+    }
+
+    pub fn get(&self, id: usize) -> Option<impl '_ + Deref<Target = impl Deref<Target = T>>> {
+        self.devices.get(&id)
+    }
+
+    pub fn get_mut(&self, id: usize) -> Option<impl '_ + DerefMut<Target = impl DerefMut<Target = T>>> {
+        self.devices.get_mut(&id)
+    }
+}
+
+pub struct RpcService<T: ?Sized>(PhantomData<T>);
+
+impl<T: ?Sized> Default for RpcService<T> {
+    fn default() -> Self {
+        Self(PhantomData)
+    }
+}
+
+macro_rules! rpc {
+    (@dashmap_get $dashmap:expr, $index:expr, mut self) => {
+        $dashmap.get_mut($index)
+    };
+
+    (@dashmap_get $dashmap:expr, $index:expr, self) => {
+        $dashmap.get($index)
+    };
+
+    (@type_or_void $name:ident = $ty:ty) => {
+        type $name = $ty;
+    };
+
+    (@type_or_void $name:ident) => {
+        type $name = ();
+    };
+
+    (@http_method mut self) => {
+        actix_web::web::put
+    };
+
+    (@http_method self) => {
+        actix_web::web::get
+    };
+
+    ($(
+        $(#[doc = $doc:literal])*
+        #[http($path:literal)]
+        pub trait $trait_name:ident {
+            $(
+                $(#[doc = $method_doc:literal])*
+                #[http($method_path:literal)]
+                fn $method_name:ident(& $($mut_self:ident)* $(, $params:ident: $params_ty:ty)?) -> $return_type:ty;
+            )*
+        }
+    )*) => {
+        $(
+            $(#[doc = $doc])*
+            pub trait $trait_name: Send + Sync {
+                $(
+                    $(#[doc = $method_doc])*
+                    fn $method_name(& $($mut_self)* $(, $params: $params_ty)?) -> $return_type;
+                )*
+            }
+
+            impl crate::api::common::RpcDevices<dyn $trait_name> {
+                pub fn register<T: 'static + $trait_name>(&self, device: T) -> usize {
+                    self.register_dyn(Box::new(device))
+                }
+            }
+
+            impl actix_web::dev::HttpServiceFactory for crate::api::common::RpcService<dyn $trait_name> {
+                fn register(self, config: &mut actix_web::dev::AppService) {
+                    fn missing_device_err(device_number: usize) -> ASCOMError {
+                        ASCOMError {
+                            code: crate::api::common::ASCOMErrorCode::NOT_CONNECTED,
+                            message: format!("{} #{} not found", stringify!($trait_name), device_number).into(),
+                        }
+                    }
+
+                    let scope =
+                        actix_web::web::scope(concat!("/", $path, "/{device_number}"))
+                        .app_data(actix_web::web::Data::new(crate::api::common::RpcDevices::<dyn $trait_name>::default()))
+                        $(.route(concat!("/", $method_path), {
+                            rpc!(@type_or_void Params $( = $params_ty)?);
+
+                            fn $method_name(
+                                devices: actix_web::web::Data<crate::api::common::RpcDevices<dyn $trait_name>>,
+                                root_span: tracing_actix_web::RootSpan,
+                                device_number: actix_web::web::Path<usize>,
+                                ascom: crate::api::common::ASCOMRequest<Params>
+                            ) -> impl std::future::Future<Output = Result<
+                                crate::api::common::ASCOMResponse<impl serde::Serialize>,
+                                actix_web::error::BlockingError>
+                            > {
+                                ascom.respond_with(root_span, move |params| {
+                                    let device_number = device_number.into_inner();
+
+                                    rpc!(@dashmap_get devices, device_number, $($mut_self)*)
+                                    .ok_or_else(move || {
+                                        missing_device_err(device_number)
+                                    })?
+                                    .$method_name($({
+                                        let $params = params;
+                                        $params
+                                    })?)
+                                })
+                            }
+
+                            rpc!(@http_method $($mut_self)*)().to($method_name)
+                        }))*
+                        ;
+
+                    actix_web::dev::HttpServiceFactory::register(scope, config);
+                }
+            }
+        )*
+    };
+}
+
+use dashmap::DashMap;
+pub(crate) use rpc;
