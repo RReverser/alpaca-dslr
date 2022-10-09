@@ -1,7 +1,7 @@
 import openapi from '@readme/openapi-parser';
 import { readFile, writeFile } from 'fs/promises';
 import { render } from 'ejs';
-import { execFileSync } from 'child_process';
+import { spawnSync } from 'child_process';
 import { toSnakeCase, toPascalCase } from 'js-convert-case';
 import { OpenAPIV3 } from 'openapi-types';
 import * as assert from 'assert/strict';
@@ -409,16 +409,22 @@ let rendered = render(
   }
 );
 
-await writeFile('./AlpacaDeviceAPI_v1.rs', rendered);
+// Help rustfmt format contents of the `rpc!` macro.
+rendered = rendered.replace('rpc!', 'mod __rpc__');
 
-try {
-  execFileSync('rustup', [
-    'run',
-    'nightly',
-    'rustfmt',
-    '--edition=2021',
-    'AlpacaDeviceAPI_v1.rs'
-  ]);
-} catch {
-  throw new Error('rustfmt failed');
+let rustfmt = spawnSync('rustfmt', ['--edition=2021'], {
+  encoding: 'utf-8',
+  input: rendered
+});
+if (rustfmt.error) {
+  throw rustfmt.error;
 }
+if (rustfmt.status !== 0) {
+  throw new Error(rustfmt.stderr);
+}
+rendered = rustfmt.stdout;
+
+// Revert the helper changes.
+rendered = rendered.replace('mod __rpc__', 'rpc!');
+
+await writeFile('./AlpacaDeviceAPI_v1.rs', rendered);

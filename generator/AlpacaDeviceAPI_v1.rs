@@ -35,7 +35,7 @@ The SetupDialog method has been omitted from the Alpaca Device API because it pr
 
 */
 
-#![allow(unused_variables)]
+#![allow(unused_variables, rustdoc::broken_intra_doc_links)]
 
 use serde::{Deserialize, Serialize};
 
@@ -716,26 +716,6 @@ mod schemas {
         #[serde(rename = "Declination")]
         pub declination: f64,
     }
-
-    #[derive(Deserialize)]
-
-    pub struct DeviceNumberPath {
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        pub device_number: u32,
-    }
-
-    #[derive(Deserialize)]
-
-    pub struct DeviceTypeAndNumberPath {
-        /// One of the recognised ASCOM device types e.g. telescope (must be lower case)
-        #[serde(rename = "device_type")]
-        pub device_type: String,
-
-        /// Zero based device number as set on the server (0 to 4294967295)
-        #[serde(rename = "device_number")]
-        pub device_number: u32,
-    }
 }
 
 rpc! {
@@ -743,2088 +723,1218 @@ rpc! {
     /// ASCOM Methods Common To All Devices
     #[http("{device_type}")]
     pub trait DeviceType {
-
-
         /**
-Actions and SupportedActions are a standardised means for drivers to extend functionality beyond the built-in capabilities of the ASCOM device interfaces.
+        Actions and SupportedActions are a standardised means for drivers to extend functionality beyond the built-in capabilities of the ASCOM device interfaces.
 
-The key advantage of using Actions is that drivers can expose any device specific functionality required. The downside is that, in order to use these unique features, every application author would need to create bespoke code to present or exploit them.
+        The key advantage of using Actions is that drivers can expose any device specific functionality required. The downside is that, in order to use these unique features, every application author would need to create bespoke code to present or exploit them.
 
-The Action parameter and return strings are deceptively simple, but can support transmission of arbitrarily complex data structures, for example through JSON encoding.
+        The Action parameter and return strings are deceptively simple, but can support transmission of arbitrarily complex data structures, for example through JSON encoding.
 
-This capability will be of primary value to
- * <span style="font-size:14px;">bespoke software and hardware configurations where a single entity controls both the consuming application software and the hardware / driver environment</span>
- * <span style="font-size:14px;">a group of application and device authors to quickly formulate and try out new interface capabilities without requiring an immediate change to the ASCOM device interface, which will take a lot longer than just agreeing a name, input parameters and a standard response for an Action command.</span>
+        This capability will be of primary value to
+         * <span style="font-size:14px;">bespoke software and hardware configurations where a single entity controls both the consuming application software and the hardware / driver environment</span>
+         * <span style="font-size:14px;">a group of application and device authors to quickly formulate and try out new interface capabilities without requiring an immediate change to the ASCOM device interface, which will take a lot longer than just agreeing a name, input parameters and a standard response for an Action command.</span>
 
 
-The list of Action commands supported by a driver can be discovered through the SupportedActions property.
+        The list of Action commands supported by a driver can be discovered through the SupportedActions property.
 
-This method should return an error message and NotImplementedException error number (0x400) if the driver just implements the standard ASCOM device methods and has no bespoke, unique, functionality.
-*/
+        This method should return an error message and NotImplementedException error number (0x400) if the driver just implements the standard ASCOM device methods and has no bespoke, unique, functionality.
+        */
         #[http("action")]
-        fn set_action(
-          &mut self,
-          request: schemas::PutActionRequest
-        ) -> ASCOMResult<schemas::StringResponse>;
-
+        fn set_action(&mut self, request: schemas::PutActionRequest) -> ASCOMResult<schemas::StringResponse>;
 
         /// Transmits an arbitrary string to the device and does not wait for a response. Optionally, protocol framing characters may be added to the string before transmission.
         #[http("commandblind")]
-        fn set_commandblind(
-          &mut self,
-          request: schemas::PutCommandblindRequest
-        ) -> ASCOMResult<()>;
-
+        fn set_commandblind(&mut self, request: schemas::PutCommandblindRequest) -> ASCOMResult<()>;
 
         /// Transmits an arbitrary string to the device and waits for a boolean response. Optionally, protocol framing characters may be added to the string before transmission.
         #[http("commandbool")]
-        fn set_commandbool(
-          &mut self,
-          request: schemas::PutCommandblindRequest
-        ) -> ASCOMResult<schemas::BoolResponse>;
-
+        fn set_commandbool(&mut self, request: schemas::PutCommandblindRequest) -> ASCOMResult<schemas::BoolResponse>;
 
         /// Transmits an arbitrary string to the device and waits for a string response. Optionally, protocol framing characters may be added to the string before transmission.
         #[http("commandstring")]
-        fn set_commandstring(
-          &mut self,
-          request: schemas::PutCommandblindRequest
-        ) -> ASCOMResult<schemas::StringResponse>;
-
+        fn set_commandstring(&mut self, request: schemas::PutCommandblindRequest) -> ASCOMResult<schemas::StringResponse>;
 
         /// Retrieves the connected state of the device
         #[http("connected")]
-        fn get_connected(
-          &self
-        ) -> ASCOMResult<schemas::BoolResponse>;
-
+        fn get_connected(&self) -> ASCOMResult<schemas::BoolResponse>;
 
         /// Sets the connected state of the device
         #[http("connected")]
-        fn set_connected(
-          &mut self,
-          request: schemas::PutConnectedRequest
-        ) -> ASCOMResult<()>;
-
+        fn set_connected(&mut self, request: schemas::PutConnectedRequest) -> ASCOMResult<()>;
 
         /// The description of the device
         #[http("description")]
-        fn get_description(
-          &self
-        ) -> ASCOMResult<schemas::StringResponse>;
-
+        fn get_description(&self) -> ASCOMResult<schemas::StringResponse>;
 
         /// The description of the driver
         #[http("driverinfo")]
-        fn get_driverinfo(
-          &self
-        ) -> ASCOMResult<schemas::StringResponse>;
-
+        fn get_driverinfo(&self) -> ASCOMResult<schemas::StringResponse>;
 
         /// A string containing only the major and minor version of the driver.
         #[http("driverversion")]
-        fn get_driverversion(
-          &self
-        ) -> ASCOMResult<schemas::StringResponse>;
-
+        fn get_driverversion(&self) -> ASCOMResult<schemas::StringResponse>;
 
         /// This method returns the version of the ASCOM device interface contract to which this device complies. Only one interface version is current at a moment in time and all new devices should be built to the latest interface version. Applications can choose which device interface versions they support and it is in their interest to support  previous versions as well as the current version to ensure thay can use the largest number of devices.
         #[http("interfaceversion")]
-        fn get_interfaceversion(
-          &self
-        ) -> ASCOMResult<schemas::IntResponse>;
-
+        fn get_interfaceversion(&self) -> ASCOMResult<schemas::IntResponse>;
 
         /// The name of the device
         #[http("name")]
-        fn get_name(
-          &self
-        ) -> ASCOMResult<schemas::StringResponse>;
-
+        fn get_name(&self) -> ASCOMResult<schemas::StringResponse>;
 
         /// Returns the list of action names supported by this driver.
         #[http("supportedactions")]
-        fn get_supportedactions(
-          &self
-        ) -> ASCOMResult<schemas::StringArrayResponse>;
-
+        fn get_supportedactions(&self) -> ASCOMResult<schemas::StringArrayResponse>;
     }
 
     /// Camera Specific Methods
     #[http("camera")]
     pub trait Camera {
-
-
         /// Returns the X offset of the Bayer matrix, as defined in SensorType.
         #[http("bayeroffsetx")]
-        fn get_bayeroffsetx(
-          &self
-        ) -> ASCOMResult<schemas::IntResponse>;
-
+        fn get_bayeroffsetx(&self) -> ASCOMResult<schemas::IntResponse>;
 
         /// Returns the Y offset of the Bayer matrix, as defined in SensorType.
         #[http("bayeroffsety")]
-        fn get_bayeroffsety(
-          &self
-        ) -> ASCOMResult<schemas::IntResponse>;
-
+        fn get_bayeroffsety(&self) -> ASCOMResult<schemas::IntResponse>;
 
         /// Returns the binning factor for the X axis.
         #[http("binx")]
-        fn get_binx(
-          &self
-        ) -> ASCOMResult<schemas::IntResponse>;
-
+        fn get_binx(&self) -> ASCOMResult<schemas::IntResponse>;
 
         /// Sets the binning factor for the X axis.
         #[http("binx")]
-        fn set_binx(
-          &mut self,
-          request: schemas::PutCameraBinxRequest
-        ) -> ASCOMResult<()>;
-
+        fn set_binx(&mut self, request: schemas::PutCameraBinxRequest) -> ASCOMResult<()>;
 
         /// Returns the binning factor for the Y axis.
         #[http("biny")]
-        fn get_biny(
-          &self
-        ) -> ASCOMResult<schemas::IntResponse>;
-
+        fn get_biny(&self) -> ASCOMResult<schemas::IntResponse>;
 
         /// Sets the binning factor for the Y axis.
         #[http("biny")]
-        fn set_biny(
-          &mut self,
-          request: schemas::PutCameraBinyRequest
-        ) -> ASCOMResult<()>;
-
+        fn set_biny(&mut self, request: schemas::PutCameraBinyRequest) -> ASCOMResult<()>;
 
         /// Returns the current camera operational state as an integer. 0 = CameraIdle , 1 = CameraWaiting , 2 = CameraExposing , 3 = CameraReading , 4 = CameraDownload , 5 = CameraError
         #[http("camerastate")]
-        fn get_camerastate(
-          &self
-        ) -> ASCOMResult<schemas::IntResponse>;
-
+        fn get_camerastate(&self) -> ASCOMResult<schemas::IntResponse>;
 
         /// Returns the width of the CCD camera chip in unbinned pixels.
         #[http("cameraxsize")]
-        fn get_cameraxsize(
-          &self
-        ) -> ASCOMResult<schemas::IntResponse>;
-
+        fn get_cameraxsize(&self) -> ASCOMResult<schemas::IntResponse>;
 
         /// Returns the height of the CCD camera chip in unbinned pixels.
         #[http("cameraysize")]
-        fn get_cameraysize(
-          &self
-        ) -> ASCOMResult<schemas::IntResponse>;
-
+        fn get_cameraysize(&self) -> ASCOMResult<schemas::IntResponse>;
 
         /// Returns true if the camera can abort exposures; false if not.
         #[http("canabortexposure")]
-        fn get_canabortexposure(
-          &self
-        ) -> ASCOMResult<schemas::BoolResponse>;
-
+        fn get_canabortexposure(&self) -> ASCOMResult<schemas::BoolResponse>;
 
         /// Returns a flag showing whether this camera supports asymmetric binning
         #[http("canasymmetricbin")]
-        fn get_canasymmetricbin(
-          &self
-        ) -> ASCOMResult<schemas::BoolResponse>;
-
+        fn get_canasymmetricbin(&self) -> ASCOMResult<schemas::BoolResponse>;
 
         /// Indicates whether the camera has a fast readout mode.
         #[http("canfastreadout")]
-        fn get_canfastreadout(
-          &self
-        ) -> ASCOMResult<schemas::BoolResponse>;
-
+        fn get_canfastreadout(&self) -> ASCOMResult<schemas::BoolResponse>;
 
         /// If true, the camera's cooler power setting can be read.
         #[http("cangetcoolerpower")]
-        fn get_cangetcoolerpower(
-          &self
-        ) -> ASCOMResult<schemas::BoolResponse>;
-
+        fn get_cangetcoolerpower(&self) -> ASCOMResult<schemas::BoolResponse>;
 
         /// Returns a flag indicating whether this camera supports pulse guiding.
         #[http("canpulseguide")]
-        fn get_canpulseguide(
-          &self
-        ) -> ASCOMResult<schemas::BoolResponse>;
-
+        fn get_canpulseguide(&self) -> ASCOMResult<schemas::BoolResponse>;
 
         /// Returns a flag indicatig whether this camera supports setting the CCD temperature
         #[http("cansetccdtemperature")]
-        fn get_cansetccdtemperature(
-          &self
-        ) -> ASCOMResult<schemas::BoolResponse>;
-
+        fn get_cansetccdtemperature(&self) -> ASCOMResult<schemas::BoolResponse>;
 
         /// Returns a flag indicating whether this camera can stop an exposure that is in progress
         #[http("canstopexposure")]
-        fn get_canstopexposure(
-          &self
-        ) -> ASCOMResult<schemas::BoolResponse>;
-
+        fn get_canstopexposure(&self) -> ASCOMResult<schemas::BoolResponse>;
 
         /// Returns the current CCD temperature in degrees Celsius.
         #[http("ccdtemperature")]
-        fn get_ccdtemperature(
-          &self
-        ) -> ASCOMResult<schemas::DoubleResponse>;
-
+        fn get_ccdtemperature(&self) -> ASCOMResult<schemas::DoubleResponse>;
 
         /// Returns the current cooler on/off state.
         #[http("cooleron")]
-        fn get_cooleron(
-          &self
-        ) -> ASCOMResult<schemas::BoolResponse>;
-
+        fn get_cooleron(&self) -> ASCOMResult<schemas::BoolResponse>;
 
         /// Turns on and off the camera cooler. True = cooler on, False = cooler off
         #[http("cooleron")]
-        fn set_cooleron(
-          &mut self,
-          request: schemas::PutCameraCooleronRequest
-        ) -> ASCOMResult<()>;
-
+        fn set_cooleron(&mut self, request: schemas::PutCameraCooleronRequest) -> ASCOMResult<()>;
 
         /// Returns the present cooler power level, in percent.
         #[http("coolerpower")]
-        fn get_coolerpower(
-          &self
-        ) -> ASCOMResult<schemas::DoubleResponse>;
-
+        fn get_coolerpower(&self) -> ASCOMResult<schemas::DoubleResponse>;
 
         /// Returns the gain of the camera in photoelectrons per A/D unit.
         #[http("electronsperadu")]
-        fn get_electronsperadu(
-          &self
-        ) -> ASCOMResult<schemas::DoubleResponse>;
-
+        fn get_electronsperadu(&self) -> ASCOMResult<schemas::DoubleResponse>;
 
         /// Returns the maximum exposure time supported by StartExposure.
         #[http("exposuremax")]
-        fn get_exposuremax(
-          &self
-        ) -> ASCOMResult<schemas::DoubleResponse>;
-
+        fn get_exposuremax(&self) -> ASCOMResult<schemas::DoubleResponse>;
 
         /// Returns the Minimium exposure time in seconds that the camera supports through StartExposure.
         #[http("exposuremin")]
-        fn get_exposuremin(
-          &self
-        ) -> ASCOMResult<schemas::DoubleResponse>;
-
+        fn get_exposuremin(&self) -> ASCOMResult<schemas::DoubleResponse>;
 
         /// Returns the smallest increment in exposure time supported by StartExposure.
         #[http("exposureresolution")]
-        fn get_exposureresolution(
-          &self
-        ) -> ASCOMResult<schemas::DoubleResponse>;
-
+        fn get_exposureresolution(&self) -> ASCOMResult<schemas::DoubleResponse>;
 
         /// Returns whenther Fast Readout Mode is enabled.
         #[http("fastreadout")]
-        fn get_fastreadout(
-          &self
-        ) -> ASCOMResult<schemas::BoolResponse>;
-
+        fn get_fastreadout(&self) -> ASCOMResult<schemas::BoolResponse>;
 
         /// Sets whether Fast Readout Mode is enabled.
         #[http("fastreadout")]
-        fn set_fastreadout(
-          &mut self,
-          request: schemas::PutCameraFastreadoutRequest
-        ) -> ASCOMResult<()>;
-
+        fn set_fastreadout(&mut self, request: schemas::PutCameraFastreadoutRequest) -> ASCOMResult<()>;
 
         /// Reports the full well capacity of the camera in electrons, at the current camera settings (binning, SetupDialog settings, etc.).
         #[http("fullwellcapacity")]
-        fn get_fullwellcapacity(
-          &self
-        ) -> ASCOMResult<schemas::DoubleResponse>;
-
+        fn get_fullwellcapacity(&self) -> ASCOMResult<schemas::DoubleResponse>;
 
         /// The camera's gain (GAIN VALUE MODE) OR the index of the selected camera gain description in the Gains array (GAINS INDEX MODE).
         #[http("gain")]
-        fn get_gain(
-          &self
-        ) -> ASCOMResult<schemas::IntResponse>;
-
+        fn get_gain(&self) -> ASCOMResult<schemas::IntResponse>;
 
         /// The camera's gain (GAIN VALUE MODE) OR the index of the selected camera gain description in the Gains array (GAINS INDEX MODE).
         #[http("gain")]
-        fn set_gain(
-          &mut self,
-          request: schemas::PutCameraGainRequest
-        ) -> ASCOMResult<()>;
-
+        fn set_gain(&mut self, request: schemas::PutCameraGainRequest) -> ASCOMResult<()>;
 
         /// Returns the maximum value of Gain.
         #[http("gainmax")]
-        fn get_gainmax(
-          &self
-        ) -> ASCOMResult<schemas::IntResponse>;
-
+        fn get_gainmax(&self) -> ASCOMResult<schemas::IntResponse>;
 
         /// Returns the Minimum value of Gain.
         #[http("gainmin")]
-        fn get_gainmin(
-          &self
-        ) -> ASCOMResult<schemas::IntResponse>;
-
+        fn get_gainmin(&self) -> ASCOMResult<schemas::IntResponse>;
 
         /// Returns the Gains supported by the camera.
         #[http("gains")]
-        fn get_gains(
-          &self
-        ) -> ASCOMResult<schemas::StringArrayResponse>;
-
+        fn get_gains(&self) -> ASCOMResult<schemas::StringArrayResponse>;
 
         /// Returns a flag indicating whether this camera has a mechanical shutter.
         #[http("hasshutter")]
-        fn get_hasshutter(
-          &self
-        ) -> ASCOMResult<schemas::BoolResponse>;
-
+        fn get_hasshutter(&self) -> ASCOMResult<schemas::BoolResponse>;
 
         /// Returns the current heat sink temperature (called "ambient temperature" by some manufacturers) in degrees Celsius.
         #[http("heatsinktemperature")]
-        fn get_heatsinktemperature(
-          &self
-        ) -> ASCOMResult<schemas::DoubleResponse>;
-
+        fn get_heatsinktemperature(&self) -> ASCOMResult<schemas::DoubleResponse>;
 
         /**
-Returns an array of 32bit integers containing the pixel values from the last exposure. This call can return either a 2 dimension (monochrome images) or 3 dimension (colour or multi-plane images) array of size NumX \* NumY or NumX \* NumY \* NumPlanes. Where applicable, the size of NumPlanes has to be determined by inspection of the returned Array.
+        Returns an array of 32bit integers containing the pixel values from the last exposure. This call can return either a 2 dimension (monochrome images) or 3 dimension (colour or multi-plane images) array of size NumX \* NumY or NumX \* NumY \* NumPlanes. Where applicable, the size of NumPlanes has to be determined by inspection of the returned Array.
 
-Since 32bit integers are always returned by this call, the returned JSON Type value (0 = Unknown, 1 = short(16bit), 2 = int(32bit), 3 = Double) is always 2. The number of planes is given in the returned Rank value.
+        Since 32bit integers are always returned by this call, the returned JSON Type value (0 = Unknown, 1 = short(16bit), 2 = int(32bit), 3 = Double) is always 2. The number of planes is given in the returned Rank value.
 
-When de-serialising to an object it is essential to know the array Rank beforehand so that the correct data class can be used. This can be achieved through a regular expression or by direct parsing of the returned JSON string to extract the Type and Rank values before de-serialising.
+        When de-serialising to an object it is essential to know the array Rank beforehand so that the correct data class can be used. This can be achieved through a regular expression or by direct parsing of the returned JSON string to extract the Type and Rank values before de-serialising.
 
-This regular expression accomplishes the extraction into two named groups Type and Rank, which can then be used to select the correct de-serialisation data class:
+        This regular expression accomplishes the extraction into two named groups Type and Rank, which can then be used to select the correct de-serialisation data class:
 
-__`^*"Type":(?<Type>\d*),"Rank":(?<Rank>\d*)`__
+        __`^*"Type":(?<Type>\d*),"Rank":(?<Rank>\d*)`__
 
-When the SensorType is Monochrome, RGGB, CMYG, CMYG2 or LRGB, the serialised JSON array should have 2 dimensions. For example, the returned array should appear as below if NumX = 7, NumY = 5  and Pxy represents the pixel value at the zero based position x across and y down the image with the origin in the top left corner of the image.
+        When the SensorType is Monochrome, RGGB, CMYG, CMYG2 or LRGB, the serialised JSON array should have 2 dimensions. For example, the returned array should appear as below if NumX = 7, NumY = 5  and Pxy represents the pixel value at the zero based position x across and y down the image with the origin in the top left corner of the image.
 
-Please note that this is "column-major" order (column changes most rapidly) from the image's row and column perspective, while, from the array's perspective, serialisation is actually effected in "row-major" order (rightmost index changes most rapidly).  This unintuitive outcome arises because the ASCOM Camera Interface specification defines the image column dimension as the rightmost array dimension.
+        Please note that this is "column-major" order (column changes most rapidly) from the image's row and column perspective, while, from the array's perspective, serialisation is actually effected in "row-major" order (rightmost index changes most rapidly).  This unintuitive outcome arises because the ASCOM Camera Interface specification defines the image column dimension as the rightmost array dimension.
 
-[
+        [
 
-[P00,P01,P02,P03,P04],
+        [P00,P01,P02,P03,P04],
 
-[P10,P11,P12,P13,P14],
+        [P10,P11,P12,P13,P14],
 
-[P20,P21,P22,P23,P24],
+        [P20,P21,P22,P23,P24],
 
-[P30,P31,P32,P33,P34],
+        [P30,P31,P32,P33,P34],
 
-[P40,P41,P42,P43,P44],
+        [P40,P41,P42,P43,P44],
 
-[P50,P51,P52,P53,P54],
+        [P50,P51,P52,P53,P54],
 
-[P60,P61,P62,P63,P64]
+        [P60,P61,P62,P63,P64]
 
-]
+        ]
 
-When the SensorType is Color, the serialised JSON array will have 3 dimensions. For example, the returned array should appear as below if NumX = 7, NumY = 5  and Rxy, Gxy and Bxy represent the red, green and blue pixel values at the zero based position x across and y down the image with the origin in the top left corner of the image.  Please see note above regarding element ordering.
+        When the SensorType is Color, the serialised JSON array will have 3 dimensions. For example, the returned array should appear as below if NumX = 7, NumY = 5  and Rxy, Gxy and Bxy represent the red, green and blue pixel values at the zero based position x across and y down the image with the origin in the top left corner of the image.  Please see note above regarding element ordering.
 
-[
+        [
 
-[[R00,G00,B00],[R01,G01,B01],[R02,G02,B02],[R03,G03,B03],[R04,G04,B04]],
+        [[R00,G00,B00],[R01,G01,B01],[R02,G02,B02],[R03,G03,B03],[R04,G04,B04]],
 
-[[R10,G10,B10],[R11,G11,B11],[R12,G12,B12],[R13,G13,B13],[R14,G14,B14]],
+        [[R10,G10,B10],[R11,G11,B11],[R12,G12,B12],[R13,G13,B13],[R14,G14,B14]],
 
-[[R20,G20,B20],[R21,G21,B21],[R22,G22,B22],[R23,G23,B23],[R24,G24,B24]],
+        [[R20,G20,B20],[R21,G21,B21],[R22,G22,B22],[R23,G23,B23],[R24,G24,B24]],
 
-[[R30,G30,B30],[R31,G31,B31],[R32,G32,B32],[R33,G33,B33],[R34,G34,B34]],
+        [[R30,G30,B30],[R31,G31,B31],[R32,G32,B32],[R33,G33,B33],[R34,G34,B34]],
 
-[[R40,G40,B40],[R41,G41,B41],[R42,G42,B42],[R43,G43,B43],[R44,G44,B44]],
+        [[R40,G40,B40],[R41,G41,B41],[R42,G42,B42],[R43,G43,B43],[R44,G44,B44]],
 
-[[R50,G50,B50],[R51,G51,B51],[R52,G52,B52],[R53,G53,B53],[R54,G54,B54]],
+        [[R50,G50,B50],[R51,G51,B51],[R52,G52,B52],[R53,G53,B53],[R54,G54,B54]],
 
-[[R60,G60,B60],[R61,G61,B61],[R62,G62,B62],[R63,G63,B63],[R64,G64,B64]],
+        [[R60,G60,B60],[R61,G61,B61],[R62,G62,B62],[R63,G63,B63],[R64,G64,B64]],
 
-]
+        ]
 
-__`Performance`__
+        __`Performance`__
 
-Returning an image from an Alpaca device as a JSON array is very inefficient and can result in delays of 30 or more seconds while client and device process and send the huge JSON string over the network.  A new, much faster mechanic called ImageBytes - [Alpaca ImageBytes Concepts and Implementation](https://www.ascom-standards.org/Developer/AlpacaImageBytes.pdf) has been developed that sends data as a binary byte stream and can offer a 10 to 20 fold reduction in transfer time.  It is strongly recommended that Alpaca Cameras implement the ImageBytes mechanic as well as the JSON mechanic.
+        Returning an image from an Alpaca device as a JSON array is very inefficient and can result in delays of 30 or more seconds while client and device process and send the huge JSON string over the network.  A new, much faster mechanic called ImageBytes - [Alpaca ImageBytes Concepts and Implementation](https://www.ascom-standards.org/Developer/AlpacaImageBytes.pdf) has been developed that sends data as a binary byte stream and can offer a 10 to 20 fold reduction in transfer time.  It is strongly recommended that Alpaca Cameras implement the ImageBytes mechanic as well as the JSON mechanic.
 
-*/
+        */
         #[http("imagearray")]
-        fn get_imagearray(
-          &self
-        ) -> ASCOMResult<schemas::ImageArrayResponse>;
-
+        fn get_imagearray(&self) -> ASCOMResult<schemas::ImageArrayResponse>;
 
         /**
-Returns an array containing the pixel values from the last exposure. This call can return either a 2 dimension (monochrome images) or 3 dimension (colour or multi-plane images) array of size NumX \* NumY  or NumX \* NumY \* NumPlanes. Where applicable, the size of NumPlanes has to be determined by inspection of the returned Array.
+        Returns an array containing the pixel values from the last exposure. This call can return either a 2 dimension (monochrome images) or 3 dimension (colour or multi-plane images) array of size NumX \* NumY  or NumX \* NumY \* NumPlanes. Where applicable, the size of NumPlanes has to be determined by inspection of the returned Array.
 
-This call can return values as short(16bit) integers, int(32bit) integers or double floating point values. The nature of the returned values is given in the Type parameter: 0 = Unknown, 1 = short(16bit), 2 = int(32bit), 3 = Double. The number of planes is given in the returned Rank value.
+        This call can return values as short(16bit) integers, int(32bit) integers or double floating point values. The nature of the returned values is given in the Type parameter: 0 = Unknown, 1 = short(16bit), 2 = int(32bit), 3 = Double. The number of planes is given in the returned Rank value.
 
-When deserialising to an object it helps enormously to know the Type and Rank beforehand so that the correct data class can be used. This can be achieved through a regular expression or by direct parsing of the returned JSON string to extract the Type and Rank values before deserialising.
+        When deserialising to an object it helps enormously to know the Type and Rank beforehand so that the correct data class can be used. This can be achieved through a regular expression or by direct parsing of the returned JSON string to extract the Type and Rank values before deserialising.
 
-This regular expression accomplishes the extraction into two named groups Type and Rank, which can then be used to select the correct de-serialisation data class:
+        This regular expression accomplishes the extraction into two named groups Type and Rank, which can then be used to select the correct de-serialisation data class:
 
-__`^*"Type":(?<Type>\d*),"Rank":(?<Rank>\d*)`__
+        __`^*"Type":(?<Type>\d*),"Rank":(?<Rank>\d*)`__
 
-When the SensorType is Monochrome, RGGB, CMYG, CMYG2 or LRGB, the serialised JSON array should have 2 dimensions. For example, the returned array should appear as below if NumX = 7, NumY = 5  and Pxy represents the pixel value at the zero based position x across and y down the image with the origin in the top left corner of the image.
+        When the SensorType is Monochrome, RGGB, CMYG, CMYG2 or LRGB, the serialised JSON array should have 2 dimensions. For example, the returned array should appear as below if NumX = 7, NumY = 5  and Pxy represents the pixel value at the zero based position x across and y down the image with the origin in the top left corner of the image.
 
-Please note that this is "column-major" order (column changes most rapidly) from the image's row and column perspective, while, from the array's perspective, serialisation is actually effected in "row-major" order (rightmost index changes most rapidly).  This unintuitive outcome arises because the ASCOM Camera Interface specification defines the image column dimension as the rightmost array dimension.
+        Please note that this is "column-major" order (column changes most rapidly) from the image's row and column perspective, while, from the array's perspective, serialisation is actually effected in "row-major" order (rightmost index changes most rapidly).  This unintuitive outcome arises because the ASCOM Camera Interface specification defines the image column dimension as the rightmost array dimension.
 
-[
+        [
 
-[P00,P01,P02,P03,P04],
+        [P00,P01,P02,P03,P04],
 
-[P10,P11,P12,P13,P14],
+        [P10,P11,P12,P13,P14],
 
-[P20,P21,P22,P23,P24],
+        [P20,P21,P22,P23,P24],
 
-[P30,P31,P32,P33,P34],
+        [P30,P31,P32,P33,P34],
 
-[P40,P41,P42,P43,P44],
+        [P40,P41,P42,P43,P44],
 
-[P50,P51,P52,P53,P54],
+        [P50,P51,P52,P53,P54],
 
-[P60,P61,P62,P63,P64]
+        [P60,P61,P62,P63,P64]
 
-]
+        ]
 
-When the SensorType is Color, the serialised JSON array should have 3 dimensions. For example, the returned array should appear as below if NumX = 7, NumY = 5  and Rxy, Gxy and Bxy represent the red, green and blue pixel values at the zero based position x across and y down the image with the origin in the top left corner of the image.  Please see note above regarding element ordering.
+        When the SensorType is Color, the serialised JSON array should have 3 dimensions. For example, the returned array should appear as below if NumX = 7, NumY = 5  and Rxy, Gxy and Bxy represent the red, green and blue pixel values at the zero based position x across and y down the image with the origin in the top left corner of the image.  Please see note above regarding element ordering.
 
-[
+        [
 
-[[R00,G00,B00],[R01,G01,B01],[R02,G02,B02],[R03,G03,B03],[R04,G04,B04]],
+        [[R00,G00,B00],[R01,G01,B01],[R02,G02,B02],[R03,G03,B03],[R04,G04,B04]],
 
-[[R10,G10,B10],[R11,G11,B11],[R12,G12,B12],[R13,G13,B13],[R14,G14,B14]],
+        [[R10,G10,B10],[R11,G11,B11],[R12,G12,B12],[R13,G13,B13],[R14,G14,B14]],
 
-[[R20,G20,B20],[R21,G21,B21],[R22,G22,B22],[R23,G23,B23],[R24,G24,B24]],
+        [[R20,G20,B20],[R21,G21,B21],[R22,G22,B22],[R23,G23,B23],[R24,G24,B24]],
 
-[[R30,G30,B30],[R31,G31,B31],[R32,G32,B32],[R33,G33,B33],[R34,G34,B34]],
+        [[R30,G30,B30],[R31,G31,B31],[R32,G32,B32],[R33,G33,B33],[R34,G34,B34]],
 
-[[R40,G40,B40],[R41,G41,B41],[R42,G42,B42],[R43,G43,B43],[R44,G44,B44]],
+        [[R40,G40,B40],[R41,G41,B41],[R42,G42,B42],[R43,G43,B43],[R44,G44,B44]],
 
-[[R50,G50,B50],[R51,G51,B51],[R52,G52,B52],[R53,G53,B53],[R54,G54,B54]],
+        [[R50,G50,B50],[R51,G51,B51],[R52,G52,B52],[R53,G53,B53],[R54,G54,B54]],
 
-[[R60,G60,B60],[R61,G61,B61],[R62,G62,B62],[R63,G63,B63],[R64,G64,B64]],
+        [[R60,G60,B60],[R61,G61,B61],[R62,G62,B62],[R63,G63,B63],[R64,G64,B64]],
 
-]
+        ]
 
-__`Performance`__
+        __`Performance`__
 
-Returning an image from an Alpaca device as a JSON array is very inefficient and can result in delays of 30 or more seconds while client and device process and send the huge JSON string over the network.  A new, much faster mechanic called ImageBytes - [Alpaca ImageBytes Concepts and Implementation](https://www.ascom-standards.org/Developer/AlpacaImageBytes.pdf) has been developed that sends data as a binary byte stream and can offer a 10 to 20 fold reduction in transfer time.  It is strongly recommended that Alpaca Cameras implement the ImageBytes mechanic as well as the JSON mechanic.
+        Returning an image from an Alpaca device as a JSON array is very inefficient and can result in delays of 30 or more seconds while client and device process and send the huge JSON string over the network.  A new, much faster mechanic called ImageBytes - [Alpaca ImageBytes Concepts and Implementation](https://www.ascom-standards.org/Developer/AlpacaImageBytes.pdf) has been developed that sends data as a binary byte stream and can offer a 10 to 20 fold reduction in transfer time.  It is strongly recommended that Alpaca Cameras implement the ImageBytes mechanic as well as the JSON mechanic.
 
-*/
+        */
         #[http("imagearrayvariant")]
-        fn get_imagearrayvariant(
-          &self
-        ) -> ASCOMResult<schemas::ImageArrayResponse>;
-
+        fn get_imagearrayvariant(&self) -> ASCOMResult<schemas::ImageArrayResponse>;
 
         /// Returns a flag indicating whether the image is ready to be downloaded from the camera.
         #[http("imageready")]
-        fn get_imageready(
-          &self
-        ) -> ASCOMResult<schemas::BoolResponse>;
-
+        fn get_imageready(&self) -> ASCOMResult<schemas::BoolResponse>;
 
         /// Returns a flag indicating whether the camera is currrently in a PulseGuide operation.
         #[http("ispulseguiding")]
-        fn get_ispulseguiding(
-          &self
-        ) -> ASCOMResult<schemas::BoolResponse>;
-
+        fn get_ispulseguiding(&self) -> ASCOMResult<schemas::BoolResponse>;
 
         /// Reports the actual exposure duration in seconds (i.e. shutter open time).
         #[http("lastexposureduration")]
-        fn get_lastexposureduration(
-          &self
-        ) -> ASCOMResult<schemas::DoubleResponse>;
-
+        fn get_lastexposureduration(&self) -> ASCOMResult<schemas::DoubleResponse>;
 
         /// Reports the actual exposure start in the FITS-standard CCYY-MM-DDThh:mm:ss[.sss...] format.
         #[http("lastexposurestarttime")]
-        fn get_lastexposurestarttime(
-          &self
-        ) -> ASCOMResult<schemas::StringResponse>;
-
+        fn get_lastexposurestarttime(&self) -> ASCOMResult<schemas::StringResponse>;
 
         /// Reports the maximum ADU value the camera can produce.
         #[http("maxadu")]
-        fn get_maxadu(
-          &self
-        ) -> ASCOMResult<schemas::IntResponse>;
-
+        fn get_maxadu(&self) -> ASCOMResult<schemas::IntResponse>;
 
         /// Returns the maximum allowed binning for the X camera axis
         #[http("maxbinx")]
-        fn get_maxbinx(
-          &self
-        ) -> ASCOMResult<schemas::IntResponse>;
-
+        fn get_maxbinx(&self) -> ASCOMResult<schemas::IntResponse>;
 
         /// Returns the maximum allowed binning for the Y camera axis
         #[http("maxbiny")]
-        fn get_maxbiny(
-          &self
-        ) -> ASCOMResult<schemas::IntResponse>;
-
+        fn get_maxbiny(&self) -> ASCOMResult<schemas::IntResponse>;
 
         /// Returns the current subframe width, if binning is active, value is in binned pixels.
         #[http("numx")]
-        fn get_numx(
-          &self
-        ) -> ASCOMResult<schemas::IntResponse>;
-
+        fn get_numx(&self) -> ASCOMResult<schemas::IntResponse>;
 
         /// Sets the current subframe width.
         #[http("numx")]
-        fn set_numx(
-          &mut self,
-          request: schemas::PutCameraNumxRequest
-        ) -> ASCOMResult<()>;
-
+        fn set_numx(&mut self, request: schemas::PutCameraNumxRequest) -> ASCOMResult<()>;
 
         /// Returns the current subframe height, if binning is active, value is in binned pixels.
         #[http("numy")]
-        fn get_numy(
-          &self
-        ) -> ASCOMResult<schemas::IntResponse>;
-
+        fn get_numy(&self) -> ASCOMResult<schemas::IntResponse>;
 
         /// Sets the current subframe height.
         #[http("numy")]
-        fn set_numy(
-          &mut self,
-          request: schemas::PutCameraNumyRequest
-        ) -> ASCOMResult<()>;
-
+        fn set_numy(&mut self, request: schemas::PutCameraNumyRequest) -> ASCOMResult<()>;
 
         /// Returns the camera's offset (OFFSET VALUE MODE) OR the index of the selected camera offset description in the offsets array (OFFSETS INDEX MODE).
         #[http("offset")]
-        fn get_offset(
-          &self
-        ) -> ASCOMResult<schemas::IntResponse>;
-
+        fn get_offset(&self) -> ASCOMResult<schemas::IntResponse>;
 
         /// Sets the camera's offset (OFFSET VALUE MODE) OR the index of the selected camera offset description in the offsets array (OFFSETS INDEX MODE).
         #[http("offset")]
-        fn set_offset(
-          &mut self,
-          request: schemas::PutCameraOffsetRequest
-        ) -> ASCOMResult<()>;
-
+        fn set_offset(&mut self, request: schemas::PutCameraOffsetRequest) -> ASCOMResult<()>;
 
         /// Returns the maximum value of offset.
         #[http("offsetmax")]
-        fn get_offsetmax(
-          &self
-        ) -> ASCOMResult<schemas::IntResponse>;
-
+        fn get_offsetmax(&self) -> ASCOMResult<schemas::IntResponse>;
 
         /// Returns the Minimum value of offset.
         #[http("offsetmin")]
-        fn get_offsetmin(
-          &self
-        ) -> ASCOMResult<schemas::IntResponse>;
-
+        fn get_offsetmin(&self) -> ASCOMResult<schemas::IntResponse>;
 
         /// Returns the offsets supported by the camera.
         #[http("offsets")]
-        fn get_offsets(
-          &self
-        ) -> ASCOMResult<schemas::StringArrayResponse>;
-
+        fn get_offsets(&self) -> ASCOMResult<schemas::StringArrayResponse>;
 
         /// Returns the percentage of the current operation that is complete. If valid, returns an integer between 0 and 100, where 0 indicates 0% progress (function just started) and 100 indicates 100% progress (i.e. completion).
         #[http("percentcompleted")]
-        fn get_percentcompleted(
-          &self
-        ) -> ASCOMResult<schemas::IntResponse>;
-
+        fn get_percentcompleted(&self) -> ASCOMResult<schemas::IntResponse>;
 
         /// Returns the width of the CCD chip pixels in microns.
         #[http("pixelsizex")]
-        fn get_pixelsizex(
-          &self
-        ) -> ASCOMResult<schemas::DoubleResponse>;
-
+        fn get_pixelsizex(&self) -> ASCOMResult<schemas::DoubleResponse>;
 
         /// Returns the Height of the CCD chip pixels in microns.
         #[http("pixelsizey")]
-        fn get_pixelsizey(
-          &self
-        ) -> ASCOMResult<schemas::DoubleResponse>;
-
+        fn get_pixelsizey(&self) -> ASCOMResult<schemas::DoubleResponse>;
 
         /// ReadoutMode is an index into the array ReadoutModes and returns the desired readout mode for the camera. Defaults to 0 if not set.
         #[http("readoutmode")]
-        fn get_readoutmode(
-          &self
-        ) -> ASCOMResult<schemas::IntResponse>;
-
+        fn get_readoutmode(&self) -> ASCOMResult<schemas::IntResponse>;
 
         /// Sets the ReadoutMode as an index into the array ReadoutModes.
         #[http("readoutmode")]
-        fn set_readoutmode(
-          &mut self,
-          request: schemas::PutCameraReadoutmodeRequest
-        ) -> ASCOMResult<()>;
-
+        fn set_readoutmode(&mut self, request: schemas::PutCameraReadoutmodeRequest) -> ASCOMResult<()>;
 
         /// This property provides an array of strings, each of which describes an available readout mode of the camera. At least one string must be present in the list.
         #[http("readoutmodes")]
-        fn get_readoutmodes(
-          &self
-        ) -> ASCOMResult<schemas::StringArrayResponse>;
-
+        fn get_readoutmodes(&self) -> ASCOMResult<schemas::StringArrayResponse>;
 
         /// The name of the sensor used within the camera.
         #[http("sensorname")]
-        fn get_sensorname(
-          &self
-        ) -> ASCOMResult<schemas::StringResponse>;
-
+        fn get_sensorname(&self) -> ASCOMResult<schemas::StringResponse>;
 
         /**
-Returns a value indicating whether the sensor is monochrome, or what Bayer matrix it encodes. Where:
-- 0 = Monochrome,
-- 1 = Colour not requiring Bayer decoding
-- 2 = RGGB Bayer encoding
-- 3 = CMYG Bayer encoding
-- 4 = CMYG2 Bayer encoding
-- 5 = LRGB TRUESENSE Bayer encoding.
+        Returns a value indicating whether the sensor is monochrome, or what Bayer matrix it encodes. Where:
+        - 0 = Monochrome,
+        - 1 = Colour not requiring Bayer decoding
+        - 2 = RGGB Bayer encoding
+        - 3 = CMYG Bayer encoding
+        - 4 = CMYG2 Bayer encoding
+        - 5 = LRGB TRUESENSE Bayer encoding.
 
-Please see the ASCOM Help fie for more informaiton on the SensorType.
+        Please see the ASCOM Help fie for more informaiton on the SensorType.
 
-*/
+        */
         #[http("sensortype")]
-        fn get_sensortype(
-          &self
-        ) -> ASCOMResult<schemas::IntResponse>;
-
+        fn get_sensortype(&self) -> ASCOMResult<schemas::IntResponse>;
 
         /// Returns the current camera cooler setpoint in degrees Celsius.
         #[http("setccdtemperature")]
-        fn get_setccdtemperature(
-          &self
-        ) -> ASCOMResult<schemas::DoubleResponse>;
-
+        fn get_setccdtemperature(&self) -> ASCOMResult<schemas::DoubleResponse>;
 
         /// Set's the camera's cooler setpoint in degrees Celsius.
         #[http("setccdtemperature")]
-        fn set_setccdtemperature(
-          &mut self,
-          request: schemas::PutCameraSetccdtemperatureRequest
-        ) -> ASCOMResult<()>;
-
+        fn set_setccdtemperature(&mut self, request: schemas::PutCameraSetccdtemperatureRequest) -> ASCOMResult<()>;
 
         /// Sets the subframe start position for the X axis (0 based) and returns the current value. If binning is active, value is in binned pixels.
         #[http("startx")]
-        fn get_startx(
-          &self
-        ) -> ASCOMResult<schemas::IntResponse>;
-
+        fn get_startx(&self) -> ASCOMResult<schemas::IntResponse>;
 
         /// Sets the current subframe X axis start position in binned pixels.
         #[http("startx")]
-        fn set_startx(
-          &mut self,
-          request: schemas::PutCameraStartxRequest
-        ) -> ASCOMResult<()>;
-
+        fn set_startx(&mut self, request: schemas::PutCameraStartxRequest) -> ASCOMResult<()>;
 
         /// Sets the subframe start position for the Y axis (0 based) and returns the current value. If binning is active, value is in binned pixels.
         #[http("starty")]
-        fn get_starty(
-          &self
-        ) -> ASCOMResult<schemas::IntResponse>;
-
+        fn get_starty(&self) -> ASCOMResult<schemas::IntResponse>;
 
         /// Sets the current subframe Y axis start position in binned pixels.
         #[http("starty")]
-        fn set_starty(
-          &mut self,
-          request: schemas::PutCameraStartyRequest
-        ) -> ASCOMResult<()>;
-
+        fn set_starty(&mut self, request: schemas::PutCameraStartyRequest) -> ASCOMResult<()>;
 
         /// The Camera's sub exposure duration in seconds. Only available in Camera Interface Version 3 and later.
         #[http("subexposureduration")]
-        fn get_subexposureduration(
-          &self
-        ) -> ASCOMResult<schemas::DoubleResponse>;
-
+        fn get_subexposureduration(&self) -> ASCOMResult<schemas::DoubleResponse>;
 
         /// Sets image sub exposure duration in seconds. Only available in Camera Interface Version 3 and later.
         #[http("subexposureduration")]
-        fn set_subexposureduration(
-          &mut self,
-          request: schemas::PutCameraSubexposuredurationRequest
-        ) -> ASCOMResult<()>;
-
+        fn set_subexposureduration(&mut self, request: schemas::PutCameraSubexposuredurationRequest) -> ASCOMResult<()>;
 
         /// Aborts the current exposure, if any, and returns the camera to Idle state.
         #[http("abortexposure")]
-        fn set_abortexposure(
-          &mut self
-        ) -> ASCOMResult<()>;
-
+        fn set_abortexposure(&mut self) -> ASCOMResult<()>;
 
         /// Activates the Camera's mount control sytem to instruct the mount to move in a particular direction for a given period of time
         #[http("pulseguide")]
-        fn set_pulseguide(
-          &mut self,
-          request: schemas::PutCameraPulseguideRequest
-        ) -> ASCOMResult<()>;
-
+        fn set_pulseguide(&mut self, request: schemas::PutCameraPulseguideRequest) -> ASCOMResult<()>;
 
         /// Starts an exposure. Use ImageReady to check when the exposure is complete.
         #[http("startexposure")]
-        fn set_startexposure(
-          &mut self,
-          request: schemas::PutCameraStartexposureRequest
-        ) -> ASCOMResult<()>;
-
+        fn set_startexposure(&mut self, request: schemas::PutCameraStartexposureRequest) -> ASCOMResult<()>;
 
         /// Stops the current exposure, if any. If an exposure is in progress, the readout process is initiated. Ignored if readout is already in process.
         #[http("stopexposure")]
-        fn set_stopexposure(
-          &mut self
-        ) -> ASCOMResult<()>;
-
+        fn set_stopexposure(&mut self) -> ASCOMResult<()>;
     }
 
     /// CoverCalibrator Specific Methods
     #[http("covercalibrator")]
     pub trait Covercalibrator {
-
-
         /// Returns the current calibrator brightness in the range 0 (completely off) to MaxBrightness (fully on)
         #[http("brightness")]
-        fn get_brightness(
-          &self
-        ) -> ASCOMResult<schemas::IntResponse>;
-
+        fn get_brightness(&self) -> ASCOMResult<schemas::IntResponse>;
 
         /// Returns the state of the calibration device, if present, otherwise returns "NotPresent".  The calibrator state mode is specified as an integer value from the CalibratorStatus Enum.
         #[http("calibratorstate")]
-        fn get_calibratorstate(
-          &self
-        ) -> ASCOMResult<schemas::IntResponse>;
-
+        fn get_calibratorstate(&self) -> ASCOMResult<schemas::IntResponse>;
 
         /// Returns the state of the device cover, if present, otherwise returns "NotPresent".  The cover state mode is specified as an integer value from the CoverStatus Enum.
         #[http("coverstate")]
-        fn get_coverstate(
-          &self
-        ) -> ASCOMResult<schemas::IntResponse>;
-
+        fn get_coverstate(&self) -> ASCOMResult<schemas::IntResponse>;
 
         /// The Brightness value that makes the calibrator deliver its maximum illumination.
         #[http("maxbrightness")]
-        fn get_maxbrightness(
-          &self
-        ) -> ASCOMResult<schemas::IntResponse>;
-
+        fn get_maxbrightness(&self) -> ASCOMResult<schemas::IntResponse>;
 
         /// Turns the calibrator off if the device has calibration capability.
         #[http("calibratoroff")]
-        fn set_calibratoroff(
-          &mut self
-        ) -> ASCOMResult<()>;
-
+        fn set_calibratoroff(&mut self) -> ASCOMResult<()>;
 
         /// Turns the calibrator on at the specified brightness if the device has calibration capability.
         #[http("calibratoron")]
-        fn set_calibratoron(
-          &mut self,
-          request: schemas::PutCovercalibratorCalibratoronRequest
-        ) -> ASCOMResult<()>;
-
+        fn set_calibratoron(&mut self, request: schemas::PutCovercalibratorCalibratoronRequest) -> ASCOMResult<()>;
 
         /// Initiates cover closing if a cover is present.
         #[http("closecover")]
-        fn set_closecover(
-          &mut self
-        ) -> ASCOMResult<()>;
-
+        fn set_closecover(&mut self) -> ASCOMResult<()>;
 
         /// Stops any cover movement that may be in progress if a cover is present and cover movement can be interrupted.
         #[http("haltcover")]
-        fn set_haltcover(
-          &mut self
-        ) -> ASCOMResult<()>;
-
+        fn set_haltcover(&mut self) -> ASCOMResult<()>;
 
         /// Initiates cover opening if a cover is present.
         #[http("opencover")]
-        fn set_opencover(
-          &mut self
-        ) -> ASCOMResult<()>;
-
+        fn set_opencover(&mut self) -> ASCOMResult<()>;
     }
 
     /// Dome Specific Methods
     #[http("dome")]
     pub trait Dome {
-
-
         /// The dome altitude (degrees, horizon zero and increasing positive to 90 zenith).
         #[http("altitude")]
-        fn get_altitude(
-          &self
-        ) -> ASCOMResult<schemas::DoubleResponse>;
-
+        fn get_altitude(&self) -> ASCOMResult<schemas::DoubleResponse>;
 
         /// Indicates whether the dome is in the home position. This is normally used following a FindHome()  operation. The value is reset with any azimuth slew operation that moves the dome away from the home position. AtHome may also become true durng normal slew operations, if the dome passes through the home position and the dome controller hardware is capable of detecting that; or at the end of a slew operation if the dome comes to rest at the home position.
         #[http("athome")]
-        fn get_athome(
-          &self
-        ) -> ASCOMResult<schemas::BoolResponse>;
-
+        fn get_athome(&self) -> ASCOMResult<schemas::BoolResponse>;
 
         /// True if the dome is in the programmed park position. Set only following a Park() operation and reset with any slew operation.
         #[http("atpark")]
-        fn get_atpark(
-          &self
-        ) -> ASCOMResult<schemas::BoolResponse>;
-
+        fn get_atpark(&self) -> ASCOMResult<schemas::BoolResponse>;
 
         /// Returns the dome azimuth (degrees, North zero and increasing clockwise, i.e., 90 East, 180 South, 270 West)
         #[http("azimuth")]
-        fn get_azimuth(
-          &self
-        ) -> ASCOMResult<schemas::DoubleResponse>;
-
+        fn get_azimuth(&self) -> ASCOMResult<schemas::DoubleResponse>;
 
         /// True if the dome can move to the home position.
         #[http("canfindhome")]
-        fn get_canfindhome(
-          &self
-        ) -> ASCOMResult<schemas::BoolResponse>;
-
+        fn get_canfindhome(&self) -> ASCOMResult<schemas::BoolResponse>;
 
         /// True if the dome is capable of programmed parking (Park() method)
         #[http("canpark")]
-        fn get_canpark(
-          &self
-        ) -> ASCOMResult<schemas::BoolResponse>;
-
+        fn get_canpark(&self) -> ASCOMResult<schemas::BoolResponse>;
 
         /// True if driver is capable of setting the dome altitude.
         #[http("cansetaltitude")]
-        fn get_cansetaltitude(
-          &self
-        ) -> ASCOMResult<schemas::BoolResponse>;
-
+        fn get_cansetaltitude(&self) -> ASCOMResult<schemas::BoolResponse>;
 
         /// True if driver is capable of setting the dome azimuth.
         #[http("cansetazimuth")]
-        fn get_cansetazimuth(
-          &self
-        ) -> ASCOMResult<schemas::BoolResponse>;
-
+        fn get_cansetazimuth(&self) -> ASCOMResult<schemas::BoolResponse>;
 
         /// True if driver is capable of setting the dome park position.
         #[http("cansetpark")]
-        fn get_cansetpark(
-          &self
-        ) -> ASCOMResult<schemas::BoolResponse>;
-
+        fn get_cansetpark(&self) -> ASCOMResult<schemas::BoolResponse>;
 
         /// True if driver is capable of automatically operating shutter
         #[http("cansetshutter")]
-        fn get_cansetshutter(
-          &self
-        ) -> ASCOMResult<schemas::BoolResponse>;
-
+        fn get_cansetshutter(&self) -> ASCOMResult<schemas::BoolResponse>;
 
         /// True if driver is capable of slaving to a telescope.
         #[http("canslave")]
-        fn get_canslave(
-          &self
-        ) -> ASCOMResult<schemas::BoolResponse>;
-
+        fn get_canslave(&self) -> ASCOMResult<schemas::BoolResponse>;
 
         /// True if driver is capable of synchronizing the dome azimuth position using the SyncToAzimuth(Double) method.
         #[http("cansyncazimuth")]
-        fn get_cansyncazimuth(
-          &self
-        ) -> ASCOMResult<schemas::BoolResponse>;
-
+        fn get_cansyncazimuth(&self) -> ASCOMResult<schemas::BoolResponse>;
 
         /// Returns the status of the dome shutter or roll-off roof. 0 = Open, 1 = Closed, 2 = Opening, 3 = Closing, 4 = Shutter status error
         #[http("shutterstatus")]
-        fn get_shutterstatus(
-          &self
-        ) -> ASCOMResult<schemas::IntResponse>;
-
+        fn get_shutterstatus(&self) -> ASCOMResult<schemas::IntResponse>;
 
         /// True if the dome is slaved to the telescope in its hardware, else False.
         #[http("slaved")]
-        fn get_slaved(
-          &self
-        ) -> ASCOMResult<schemas::BoolResponse>;
-
+        fn get_slaved(&self) -> ASCOMResult<schemas::BoolResponse>;
 
         /// Sets the current subframe height.
         #[http("slaved")]
-        fn set_slaved(
-          &mut self,
-          request: schemas::PutDomeSlavedRequest
-        ) -> ASCOMResult<()>;
-
+        fn set_slaved(&mut self, request: schemas::PutDomeSlavedRequest) -> ASCOMResult<()>;
 
         /// True if any part of the dome is currently moving, False if all dome components are steady.
         #[http("slewing")]
-        fn get_slewing(
-          &self
-        ) -> ASCOMResult<schemas::BoolResponse>;
-
+        fn get_slewing(&self) -> ASCOMResult<schemas::BoolResponse>;
 
         /// Calling this method will immediately disable hardware slewing (Slaved will become False).
         #[http("abortslew")]
-        fn set_abortslew(
-          &mut self
-        ) -> ASCOMResult<()>;
-
+        fn set_abortslew(&mut self) -> ASCOMResult<()>;
 
         /// Close the shutter or otherwise shield telescope from the sky.
         #[http("closeshutter")]
-        fn set_closeshutter(
-          &mut self
-        ) -> ASCOMResult<()>;
-
+        fn set_closeshutter(&mut self) -> ASCOMResult<()>;
 
         /// After Home position is established initializes Azimuth to the default value and sets the AtHome flag.
         #[http("findhome")]
-        fn set_findhome(
-          &mut self
-        ) -> ASCOMResult<()>;
-
+        fn set_findhome(&mut self) -> ASCOMResult<()>;
 
         /// Open shutter or otherwise expose telescope to the sky.
         #[http("openshutter")]
-        fn set_openshutter(
-          &mut self
-        ) -> ASCOMResult<()>;
-
+        fn set_openshutter(&mut self) -> ASCOMResult<()>;
 
         /// After assuming programmed park position, sets AtPark flag.
         #[http("park")]
-        fn set_park(
-          &mut self
-        ) -> ASCOMResult<()>;
-
+        fn set_park(&mut self) -> ASCOMResult<()>;
 
         /// Set the current azimuth, altitude position of dome to be the park position.
         #[http("setpark")]
-        fn set_setpark(
-          &mut self
-        ) -> ASCOMResult<()>;
-
+        fn set_setpark(&mut self) -> ASCOMResult<()>;
 
         /// Slew the dome to the given altitude position.
         #[http("slewtoaltitude")]
-        fn set_slewtoaltitude(
-          &mut self,
-          request: schemas::PutDomeSlewtoaltitudeRequest
-        ) -> ASCOMResult<()>;
-
+        fn set_slewtoaltitude(&mut self, request: schemas::PutDomeSlewtoaltitudeRequest) -> ASCOMResult<()>;
 
         /// Slew the dome to the given azimuth position.
         #[http("slewtoazimuth")]
-        fn set_slewtoazimuth(
-          &mut self,
-          request: schemas::PutDomeSlewtoazimuthRequest
-        ) -> ASCOMResult<()>;
-
+        fn set_slewtoazimuth(&mut self, request: schemas::PutDomeSlewtoazimuthRequest) -> ASCOMResult<()>;
 
         /// Synchronize the current position of the dome to the given azimuth.
         #[http("synctoazimuth")]
-        fn set_synctoazimuth(
-          &mut self,
-          request: schemas::PutDomeSlewtoazimuthRequest
-        ) -> ASCOMResult<()>;
-
+        fn set_synctoazimuth(&mut self, request: schemas::PutDomeSlewtoazimuthRequest) -> ASCOMResult<()>;
     }
 
     /// FilterWheel Specific Methods
     #[http("filterwheel")]
     pub trait Filterwheel {
-
-
         /// An integer array of filter focus offsets.
         #[http("focusoffsets")]
-        fn get_focusoffsets(
-          &self
-        ) -> ASCOMResult<schemas::IntArrayResponse>;
-
+        fn get_focusoffsets(&self) -> ASCOMResult<schemas::IntArrayResponse>;
 
         /// The names of the filters
         #[http("names")]
-        fn get_names(
-          &self
-        ) -> ASCOMResult<schemas::StringArrayResponse>;
-
+        fn get_names(&self) -> ASCOMResult<schemas::StringArrayResponse>;
 
         /// Returns the current filter wheel position
         #[http("position")]
-        fn get_position(
-          &self
-        ) -> ASCOMResult<schemas::IntResponse>;
-
+        fn get_position(&self) -> ASCOMResult<schemas::IntResponse>;
 
         /// Sets the filter wheel position
         #[http("position")]
-        fn set_position(
-          &mut self,
-          request: schemas::PutFilterwheelPositionRequest
-        ) -> ASCOMResult<()>;
-
+        fn set_position(&mut self, request: schemas::PutFilterwheelPositionRequest) -> ASCOMResult<()>;
     }
 
     /// Focuser Specific Methods
     #[http("focuser")]
     pub trait Focuser {
-
-
         /// True if the focuser is capable of absolute position; that is, being commanded to a specific step location.
         #[http("absolute")]
-        fn get_absolute(
-          &self
-        ) -> ASCOMResult<schemas::BoolResponse>;
-
+        fn get_absolute(&self) -> ASCOMResult<schemas::BoolResponse>;
 
         /// True if the focuser is currently moving to a new position. False if the focuser is stationary.
         #[http("ismoving")]
-        fn get_ismoving(
-          &self
-        ) -> ASCOMResult<schemas::BoolResponse>;
-
+        fn get_ismoving(&self) -> ASCOMResult<schemas::BoolResponse>;
 
         /// Maximum increment size allowed by the focuser; i.e. the maximum number of steps allowed in one move operation.
         #[http("maxincrement")]
-        fn get_maxincrement(
-          &self
-        ) -> ASCOMResult<schemas::IntResponse>;
-
+        fn get_maxincrement(&self) -> ASCOMResult<schemas::IntResponse>;
 
         /// Maximum step position permitted.
         #[http("maxstep")]
-        fn get_maxstep(
-          &self
-        ) -> ASCOMResult<schemas::IntResponse>;
-
+        fn get_maxstep(&self) -> ASCOMResult<schemas::IntResponse>;
 
         /// Current focuser position, in steps.
         #[http("position")]
-        fn get_position(
-          &self
-        ) -> ASCOMResult<schemas::IntResponse>;
-
+        fn get_position(&self) -> ASCOMResult<schemas::IntResponse>;
 
         /// Step size (microns) for the focuser.
         #[http("stepsize")]
-        fn get_stepsize(
-          &self
-        ) -> ASCOMResult<schemas::DoubleResponse>;
-
+        fn get_stepsize(&self) -> ASCOMResult<schemas::DoubleResponse>;
 
         /// Gets the state of temperature compensation mode (if available), else always False.
         #[http("tempcomp")]
-        fn get_tempcomp(
-          &self
-        ) -> ASCOMResult<schemas::BoolResponse>;
-
+        fn get_tempcomp(&self) -> ASCOMResult<schemas::BoolResponse>;
 
         /// Sets the state of temperature compensation mode.
         #[http("tempcomp")]
-        fn set_tempcomp(
-          &mut self,
-          request: schemas::PutFocuserTempcompRequest
-        ) -> ASCOMResult<()>;
-
+        fn set_tempcomp(&mut self, request: schemas::PutFocuserTempcompRequest) -> ASCOMResult<()>;
 
         /// True if focuser has temperature compensation available.
         #[http("tempcompavailable")]
-        fn get_tempcompavailable(
-          &self
-        ) -> ASCOMResult<schemas::BoolResponse>;
-
+        fn get_tempcompavailable(&self) -> ASCOMResult<schemas::BoolResponse>;
 
         /// Current ambient temperature as measured by the focuser.
         #[http("temperature")]
-        fn get_temperature(
-          &self
-        ) -> ASCOMResult<schemas::DoubleResponse>;
-
+        fn get_temperature(&self) -> ASCOMResult<schemas::DoubleResponse>;
 
         /// Immediately stop any focuser motion due to a previous Move(Int32) method call.
         #[http("halt")]
-        fn set_halt(
-          &mut self
-        ) -> ASCOMResult<()>;
-
+        fn set_halt(&mut self) -> ASCOMResult<()>;
 
         /// Moves the focuser by the specified amount or to the specified position depending on the value of the Absolute property.
         #[http("move")]
-        fn set_move(
-          &mut self,
-          request: schemas::PutFocuserMoveRequest
-        ) -> ASCOMResult<()>;
-
+        fn set_move(&mut self, request: schemas::PutFocuserMoveRequest) -> ASCOMResult<()>;
     }
 
     /// ObservingConditions Specific Methods
     #[http("observingconditions")]
     pub trait Observingconditions {
-
-
         /// Gets the time period over which observations will be averaged
         #[http("averageperiod")]
-        fn get_averageperiod(
-          &self
-        ) -> ASCOMResult<schemas::DoubleResponse>;
-
+        fn get_averageperiod(&self) -> ASCOMResult<schemas::DoubleResponse>;
 
         /// Sets the time period over which observations will be averaged
         #[http("averageperiod")]
-        fn set_averageperiod(
-          &mut self,
-          request: schemas::PutObservingconditionsAverageperiodRequest
-        ) -> ASCOMResult<()>;
-
+        fn set_averageperiod(&mut self, request: schemas::PutObservingconditionsAverageperiodRequest) -> ASCOMResult<()>;
 
         /// Gets the percentage of the sky obscured by cloud
         #[http("cloudcover")]
-        fn get_cloudcover(
-          &self
-        ) -> ASCOMResult<schemas::DoubleResponse>;
-
+        fn get_cloudcover(&self) -> ASCOMResult<schemas::DoubleResponse>;
 
         /// Gets the atmospheric dew point at the observatory reported in °C.
         #[http("dewpoint")]
-        fn get_dewpoint(
-          &self
-        ) -> ASCOMResult<schemas::DoubleResponse>;
-
+        fn get_dewpoint(&self) -> ASCOMResult<schemas::DoubleResponse>;
 
         /// Gets the atmospheric  humidity (%) at the observatory
         #[http("humidity")]
-        fn get_humidity(
-          &self
-        ) -> ASCOMResult<schemas::DoubleResponse>;
-
+        fn get_humidity(&self) -> ASCOMResult<schemas::DoubleResponse>;
 
         /// Gets the atmospheric pressure in hectoPascals at the observatory's altitude - NOT reduced to sea level.
         #[http("pressure")]
-        fn get_pressure(
-          &self
-        ) -> ASCOMResult<schemas::DoubleResponse>;
-
+        fn get_pressure(&self) -> ASCOMResult<schemas::DoubleResponse>;
 
         /// Gets the rain rate (mm/hour) at the observatory.
         #[http("rainrate")]
-        fn get_rainrate(
-          &self
-        ) -> ASCOMResult<schemas::DoubleResponse>;
-
+        fn get_rainrate(&self) -> ASCOMResult<schemas::DoubleResponse>;
 
         /// Gets the sky brightness at the observatory (Lux)
         #[http("skybrightness")]
-        fn get_skybrightness(
-          &self
-        ) -> ASCOMResult<schemas::DoubleResponse>;
-
+        fn get_skybrightness(&self) -> ASCOMResult<schemas::DoubleResponse>;
 
         /// Gets the sky quality at the observatory (magnitudes per square arc second)
         #[http("skyquality")]
-        fn get_skyquality(
-          &self
-        ) -> ASCOMResult<schemas::DoubleResponse>;
-
+        fn get_skyquality(&self) -> ASCOMResult<schemas::DoubleResponse>;
 
         /// Gets the sky temperature(°C) at the observatory.
         #[http("skytemperature")]
-        fn get_skytemperature(
-          &self
-        ) -> ASCOMResult<schemas::DoubleResponse>;
-
+        fn get_skytemperature(&self) -> ASCOMResult<schemas::DoubleResponse>;
 
         /// Gets the seeing at the observatory measured as star full width half maximum (FWHM) in arc secs.
         #[http("starfwhm")]
-        fn get_starfwhm(
-          &self
-        ) -> ASCOMResult<schemas::DoubleResponse>;
-
+        fn get_starfwhm(&self) -> ASCOMResult<schemas::DoubleResponse>;
 
         /// Gets the temperature(°C) at the observatory.
         #[http("temperature")]
-        fn get_temperature(
-          &self
-        ) -> ASCOMResult<schemas::DoubleResponse>;
-
+        fn get_temperature(&self) -> ASCOMResult<schemas::DoubleResponse>;
 
         /// Gets the wind direction. The returned value must be between 0.0 and 360.0, interpreted according to the metereological standard, where a special value of 0.0 is returned when the wind speed is 0.0. Wind direction is measured clockwise from north, through east, where East=90.0, South=180.0, West=270.0 and North=360.0.
         #[http("winddirection")]
-        fn get_winddirection(
-          &self
-        ) -> ASCOMResult<schemas::DoubleResponse>;
-
+        fn get_winddirection(&self) -> ASCOMResult<schemas::DoubleResponse>;
 
         /// Gets the peak 3 second wind gust(m/s) at the observatory over the last 2 minutes.
         #[http("windgust")]
-        fn get_windgust(
-          &self
-        ) -> ASCOMResult<schemas::DoubleResponse>;
-
+        fn get_windgust(&self) -> ASCOMResult<schemas::DoubleResponse>;
 
         /// Gets the wind speed(m/s) at the observatory.
         #[http("windspeed")]
-        fn get_windspeed(
-          &self
-        ) -> ASCOMResult<schemas::DoubleResponse>;
-
+        fn get_windspeed(&self) -> ASCOMResult<schemas::DoubleResponse>;
 
         /// Forces the driver to immediately query its attached hardware to refresh sensor values.
         #[http("refresh")]
-        fn set_refresh(
-          &mut self
-        ) -> ASCOMResult<()>;
-
+        fn set_refresh(&mut self) -> ASCOMResult<()>;
 
         /// Gets a description of the sensor with the name specified in the SensorName parameter
         #[http("sensordescription")]
-        fn get_sensordescription(
-          &self,
-          request: schemas::GetObservingconditionsSensordescriptionRequest
-        ) -> ASCOMResult<schemas::StringResponse>;
-
+        fn get_sensordescription(&self, request: schemas::GetObservingconditionsSensordescriptionRequest) -> ASCOMResult<schemas::StringResponse>;
 
         /// Gets the time since the sensor specified in the SensorName parameter was last updated
         #[http("timesincelastupdate")]
-        fn get_timesincelastupdate(
-          &self,
-          request: schemas::GetObservingconditionsTimesincelastupdateRequest
-        ) -> ASCOMResult<schemas::DoubleResponse>;
-
+        fn get_timesincelastupdate(&self, request: schemas::GetObservingconditionsTimesincelastupdateRequest) -> ASCOMResult<schemas::DoubleResponse>;
     }
 
     /// Rotator Specific Methods
     #[http("rotator")]
     pub trait Rotator {
-
-
         /// True if the Rotator supports the Reverse method.
         #[http("canreverse")]
-        fn get_canreverse(
-          &self
-        ) -> ASCOMResult<schemas::BoolResponse>;
-
+        fn get_canreverse(&self) -> ASCOMResult<schemas::BoolResponse>;
 
         /// True if the rotator is currently moving to a new position. False if the focuser is stationary.
         #[http("ismoving")]
-        fn get_ismoving(
-          &self
-        ) -> ASCOMResult<schemas::BoolResponse>;
-
+        fn get_ismoving(&self) -> ASCOMResult<schemas::BoolResponse>;
 
         /// Returns the raw mechanical position of the rotator in degrees.
         #[http("mechanicalposition")]
-        fn get_mechanicalposition(
-          &self
-        ) -> ASCOMResult<schemas::DoubleResponse>;
-
+        fn get_mechanicalposition(&self) -> ASCOMResult<schemas::DoubleResponse>;
 
         /// Current instantaneous Rotator position, in degrees.
         #[http("position")]
-        fn get_position(
-          &self
-        ) -> ASCOMResult<schemas::DoubleResponse>;
-
+        fn get_position(&self) -> ASCOMResult<schemas::DoubleResponse>;
 
         /// Returns the rotator’s Reverse state.
         #[http("reverse")]
-        fn get_reverse(
-          &self
-        ) -> ASCOMResult<schemas::BoolResponse>;
-
+        fn get_reverse(&self) -> ASCOMResult<schemas::BoolResponse>;
 
         /// Sets the rotator’s Reverse state.
         #[http("reverse")]
-        fn set_reverse(
-          &mut self,
-          request: schemas::PutRotatorReverseRequest
-        ) -> ASCOMResult<()>;
-
+        fn set_reverse(&mut self, request: schemas::PutRotatorReverseRequest) -> ASCOMResult<()>;
 
         /// The minimum StepSize, in degrees.
         #[http("stepsize")]
-        fn get_stepsize(
-          &self
-        ) -> ASCOMResult<schemas::DoubleResponse>;
-
+        fn get_stepsize(&self) -> ASCOMResult<schemas::DoubleResponse>;
 
         /// The destination position angle for Move() and MoveAbsolute().
         #[http("targetposition")]
-        fn get_targetposition(
-          &self
-        ) -> ASCOMResult<schemas::DoubleResponse>;
-
+        fn get_targetposition(&self) -> ASCOMResult<schemas::DoubleResponse>;
 
         /// Immediately stop any Rotator motion due to a previous Move or MoveAbsolute method call.
         #[http("halt")]
-        fn set_halt(
-          &mut self
-        ) -> ASCOMResult<()>;
-
+        fn set_halt(&mut self) -> ASCOMResult<()>;
 
         /// Causes the rotator to move Position degrees relative to the current Position value.
         #[http("move")]
-        fn set_move(
-          &mut self,
-          request: schemas::PutRotatorMoveRequest
-        ) -> ASCOMResult<()>;
-
+        fn set_move(&mut self, request: schemas::PutRotatorMoveRequest) -> ASCOMResult<()>;
 
         /// Causes the rotator to move the absolute position of Position degrees.
         #[http("moveabsolute")]
-        fn set_moveabsolute(
-          &mut self,
-          request: schemas::PutRotatorMoveabsoluteRequest
-        ) -> ASCOMResult<()>;
-
+        fn set_moveabsolute(&mut self, request: schemas::PutRotatorMoveabsoluteRequest) -> ASCOMResult<()>;
 
         /// Causes the rotator to move the mechanical position of Position degrees.
         #[http("movemechanical")]
-        fn set_movemechanical(
-          &mut self,
-          request: schemas::PutRotatorMovemechanicalRequest
-        ) -> ASCOMResult<()>;
-
+        fn set_movemechanical(&mut self, request: schemas::PutRotatorMovemechanicalRequest) -> ASCOMResult<()>;
 
         /// Causes the rotator to sync to the position of Position degrees.
         #[http("sync")]
-        fn set_sync(
-          &mut self,
-          request: schemas::PutRotatorSyncRequest
-        ) -> ASCOMResult<()>;
-
+        fn set_sync(&mut self, request: schemas::PutRotatorSyncRequest) -> ASCOMResult<()>;
     }
 
     /// SafetyMonitor Specific Methods
     #[http("safetymonitor")]
     pub trait Safetymonitor {
-
-
         /// Indicates whether the monitored state is safe for use. True if the state is safe, False if it is unsafe.
         #[http("issafe")]
-        fn get_issafe(
-          &self
-        ) -> ASCOMResult<schemas::BoolResponse>;
-
+        fn get_issafe(&self) -> ASCOMResult<schemas::BoolResponse>;
     }
 
     /// Switch Specific Methods
     #[http("switch")]
     pub trait Switch {
-
-
         /// Returns the number of switch devices managed by this driver. Devices are numbered from 0 to MaxSwitch - 1
         #[http("maxswitch")]
-        fn get_maxswitch(
-          &self
-        ) -> ASCOMResult<schemas::IntResponse>;
-
+        fn get_maxswitch(&self) -> ASCOMResult<schemas::IntResponse>;
 
         /// Reports if the specified switch device can be written to, default true. This is false if the device cannot be written to, for example a limit switch or a sensor.  Devices are numbered from 0 to MaxSwitch - 1
         #[http("canwrite")]
-        fn get_canwrite(
-          &self,
-          request: schemas::GetSwitchCanwriteRequest
-        ) -> ASCOMResult<schemas::BoolResponse>;
-
+        fn get_canwrite(&self, request: schemas::GetSwitchCanwriteRequest) -> ASCOMResult<schemas::BoolResponse>;
 
         /// Return the state of switch device id as a boolean.  Devices are numbered from 0 to MaxSwitch - 1
         #[http("getswitch")]
-        fn get_getswitch(
-          &self,
-          request: schemas::GetSwitchGetswitchRequest
-        ) -> ASCOMResult<schemas::BoolResponse>;
-
+        fn get_getswitch(&self, request: schemas::GetSwitchGetswitchRequest) -> ASCOMResult<schemas::BoolResponse>;
 
         /// Gets the description of the specified switch device. This is to allow a fuller description of the device to be returned, for example for a tool tip. Devices are numbered from 0 to MaxSwitch - 1
         #[http("getswitchdescription")]
-        fn get_getswitchdescription(
-          &self,
-          request: schemas::GetSwitchGetswitchdescriptionRequest
-        ) -> ASCOMResult<schemas::StringResponse>;
-
+        fn get_getswitchdescription(&self, request: schemas::GetSwitchGetswitchdescriptionRequest) -> ASCOMResult<schemas::StringResponse>;
 
         /// Gets the name of the specified switch device. Devices are numbered from 0 to MaxSwitch - 1
         #[http("getswitchname")]
-        fn get_getswitchname(
-          &self,
-          request: schemas::GetSwitchGetswitchnameRequest
-        ) -> ASCOMResult<schemas::StringResponse>;
-
+        fn get_getswitchname(&self, request: schemas::GetSwitchGetswitchnameRequest) -> ASCOMResult<schemas::StringResponse>;
 
         /// Gets the value of the specified switch device as a double. Devices are numbered from 0 to MaxSwitch - 1, The value of this switch is expected to be between MinSwitchValue and MaxSwitchValue.
         #[http("getswitchvalue")]
-        fn get_getswitchvalue(
-          &self,
-          request: schemas::GetSwitchGetswitchvalueRequest
-        ) -> ASCOMResult<schemas::DoubleResponse>;
-
+        fn get_getswitchvalue(&self, request: schemas::GetSwitchGetswitchvalueRequest) -> ASCOMResult<schemas::DoubleResponse>;
 
         /// Gets the minimum value of the specified switch device as a double. Devices are numbered from 0 to MaxSwitch - 1.
         #[http("minswitchvalue")]
-        fn get_minswitchvalue(
-          &self,
-          request: schemas::GetSwitchMinswitchvalueRequest
-        ) -> ASCOMResult<schemas::DoubleResponse>;
-
+        fn get_minswitchvalue(&self, request: schemas::GetSwitchMinswitchvalueRequest) -> ASCOMResult<schemas::DoubleResponse>;
 
         /// Gets the maximum value of the specified switch device as a double. Devices are numbered from 0 to MaxSwitch - 1.
         #[http("maxswitchvalue")]
-        fn get_maxswitchvalue(
-          &self,
-          request: schemas::GetSwitchMaxswitchvalueRequest
-        ) -> ASCOMResult<schemas::DoubleResponse>;
-
+        fn get_maxswitchvalue(&self, request: schemas::GetSwitchMaxswitchvalueRequest) -> ASCOMResult<schemas::DoubleResponse>;
 
         /// Sets a switch controller device to the specified state, true or false.
         #[http("setswitch")]
-        fn set_setswitch(
-          &mut self,
-          request: schemas::PutSwitchSetswitchRequest
-        ) -> ASCOMResult<()>;
-
+        fn set_setswitch(&mut self, request: schemas::PutSwitchSetswitchRequest) -> ASCOMResult<()>;
 
         /// Sets a switch device name to the specified value.
         #[http("setswitchname")]
-        fn set_setswitchname(
-          &mut self,
-          request: schemas::PutSwitchSetswitchnameRequest
-        ) -> ASCOMResult<()>;
-
+        fn set_setswitchname(&mut self, request: schemas::PutSwitchSetswitchnameRequest) -> ASCOMResult<()>;
 
         /// Sets a switch device value to the specified value.
         #[http("setswitchvalue")]
-        fn set_setswitchvalue(
-          &mut self,
-          request: schemas::PutSwitchSetswitchvalueRequest
-        ) -> ASCOMResult<()>;
-
+        fn set_setswitchvalue(&mut self, request: schemas::PutSwitchSetswitchvalueRequest) -> ASCOMResult<()>;
 
         /// Returns the step size that this device supports (the difference between successive values of the device). Devices are numbered from 0 to MaxSwitch - 1.
         #[http("switchstep")]
-        fn get_switchstep(
-          &self,
-          request: schemas::GetSwitchSwitchstepRequest
-        ) -> ASCOMResult<schemas::DoubleResponse>;
-
+        fn get_switchstep(&self, request: schemas::GetSwitchSwitchstepRequest) -> ASCOMResult<schemas::DoubleResponse>;
     }
 
     /// Telescope Specific Methods
     #[http("telescope")]
     pub trait Telescope {
-
-
         /// Returns the alignment mode of the mount (Alt/Az, Polar, German Polar).  The alignment mode is specified as an integer value from the AlignmentModes Enum.
         #[http("alignmentmode")]
-        fn get_alignmentmode(
-          &self
-        ) -> ASCOMResult<schemas::IntResponse>;
-
+        fn get_alignmentmode(&self) -> ASCOMResult<schemas::IntResponse>;
 
         /// The altitude above the local horizon of the mount's current position (degrees, positive up)
         #[http("altitude")]
-        fn get_altitude(
-          &self
-        ) -> ASCOMResult<schemas::DoubleResponse>;
-
+        fn get_altitude(&self) -> ASCOMResult<schemas::DoubleResponse>;
 
         /// The area of the telescope's aperture, taking into account any obstructions (square meters)
         #[http("aperturearea")]
-        fn get_aperturearea(
-          &self
-        ) -> ASCOMResult<schemas::DoubleResponse>;
-
+        fn get_aperturearea(&self) -> ASCOMResult<schemas::DoubleResponse>;
 
         /// The telescope's effective aperture diameter (meters)
         #[http("aperturediameter")]
-        fn get_aperturediameter(
-          &self
-        ) -> ASCOMResult<schemas::DoubleResponse>;
-
+        fn get_aperturediameter(&self) -> ASCOMResult<schemas::DoubleResponse>;
 
         /// True if the mount is stopped in the Home position. Set only following a FindHome()  operation, and reset with any slew operation. This property must be False if the telescope does not support homing.
         #[http("athome")]
-        fn get_athome(
-          &self
-        ) -> ASCOMResult<schemas::BoolResponse>;
-
+        fn get_athome(&self) -> ASCOMResult<schemas::BoolResponse>;
 
         /// True if the telescope has been put into the parked state by the seee Park()  method. Set False by calling the Unpark() method.
         #[http("atpark")]
-        fn get_atpark(
-          &self
-        ) -> ASCOMResult<schemas::BoolResponse>;
-
+        fn get_atpark(&self) -> ASCOMResult<schemas::BoolResponse>;
 
         /// The azimuth at the local horizon of the mount's current position (degrees, North-referenced, positive East/clockwise).
         #[http("azimuth")]
-        fn get_azimuth(
-          &self
-        ) -> ASCOMResult<schemas::DoubleResponse>;
-
+        fn get_azimuth(&self) -> ASCOMResult<schemas::DoubleResponse>;
 
         /// True if this telescope is capable of programmed finding its home position (FindHome()  method).
         #[http("canfindhome")]
-        fn get_canfindhome(
-          &self
-        ) -> ASCOMResult<schemas::BoolResponse>;
-
+        fn get_canfindhome(&self) -> ASCOMResult<schemas::BoolResponse>;
 
         /// True if this telescope is capable of programmed parking (Park() method)
         #[http("canpark")]
-        fn get_canpark(
-          &self
-        ) -> ASCOMResult<schemas::BoolResponse>;
-
+        fn get_canpark(&self) -> ASCOMResult<schemas::BoolResponse>;
 
         /// True if this telescope is capable of software-pulsed guiding (via the PulseGuide(GuideDirections, Int32) method)
         #[http("canpulseguide")]
-        fn get_canpulseguide(
-          &self
-        ) -> ASCOMResult<schemas::BoolResponse>;
-
+        fn get_canpulseguide(&self) -> ASCOMResult<schemas::BoolResponse>;
 
         /// True if the DeclinationRate property can be changed to provide offset tracking in the declination axis.
         #[http("cansetdeclinationrate")]
-        fn get_cansetdeclinationrate(
-          &self
-        ) -> ASCOMResult<schemas::BoolResponse>;
-
+        fn get_cansetdeclinationrate(&self) -> ASCOMResult<schemas::BoolResponse>;
 
         /// True if the guide rate properties used for PulseGuide(GuideDirections, Int32) can ba adjusted.
         #[http("cansetguiderates")]
-        fn get_cansetguiderates(
-          &self
-        ) -> ASCOMResult<schemas::BoolResponse>;
-
+        fn get_cansetguiderates(&self) -> ASCOMResult<schemas::BoolResponse>;
 
         /// True if this telescope is capable of programmed setting of its park position (SetPark() method)
         #[http("cansetpark")]
-        fn get_cansetpark(
-          &self
-        ) -> ASCOMResult<schemas::BoolResponse>;
-
+        fn get_cansetpark(&self) -> ASCOMResult<schemas::BoolResponse>;
 
         /// True if the SideOfPier property can be set, meaning that the mount can be forced to flip.
         #[http("cansetpierside")]
-        fn get_cansetpierside(
-          &self
-        ) -> ASCOMResult<schemas::BoolResponse>;
-
+        fn get_cansetpierside(&self) -> ASCOMResult<schemas::BoolResponse>;
 
         /// True if the RightAscensionRate property can be changed to provide offset tracking in the right ascension axis. .
         #[http("cansetrightascensionrate")]
-        fn get_cansetrightascensionrate(
-          &self
-        ) -> ASCOMResult<schemas::BoolResponse>;
-
+        fn get_cansetrightascensionrate(&self) -> ASCOMResult<schemas::BoolResponse>;
 
         /// True if the Tracking property can be changed, turning telescope sidereal tracking on and off.
         #[http("cansettracking")]
-        fn get_cansettracking(
-          &self
-        ) -> ASCOMResult<schemas::BoolResponse>;
-
+        fn get_cansettracking(&self) -> ASCOMResult<schemas::BoolResponse>;
 
         /// True if this telescope is capable of programmed slewing (synchronous or asynchronous) to equatorial coordinates
         #[http("canslew")]
-        fn get_canslew(
-          &self
-        ) -> ASCOMResult<schemas::BoolResponse>;
-
+        fn get_canslew(&self) -> ASCOMResult<schemas::BoolResponse>;
 
         /// True if this telescope is capable of programmed slewing (synchronous or asynchronous) to local horizontal coordinates
         #[http("canslewaltaz")]
-        fn get_canslewaltaz(
-          &self
-        ) -> ASCOMResult<schemas::BoolResponse>;
-
+        fn get_canslewaltaz(&self) -> ASCOMResult<schemas::BoolResponse>;
 
         /// True if this telescope is capable of programmed asynchronous slewing to local horizontal coordinates
         #[http("canslewaltazasync")]
-        fn get_canslewaltazasync(
-          &self
-        ) -> ASCOMResult<schemas::BoolResponse>;
-
+        fn get_canslewaltazasync(&self) -> ASCOMResult<schemas::BoolResponse>;
 
         /// True if this telescope is capable of programmed asynchronous slewing to equatorial coordinates.
         #[http("canslewasync")]
-        fn get_canslewasync(
-          &self
-        ) -> ASCOMResult<schemas::BoolResponse>;
-
+        fn get_canslewasync(&self) -> ASCOMResult<schemas::BoolResponse>;
 
         /// True if this telescope is capable of programmed synching to equatorial coordinates.
         #[http("cansync")]
-        fn get_cansync(
-          &self
-        ) -> ASCOMResult<schemas::BoolResponse>;
-
+        fn get_cansync(&self) -> ASCOMResult<schemas::BoolResponse>;
 
         /// True if this telescope is capable of programmed synching to local horizontal coordinates
         #[http("cansyncaltaz")]
-        fn get_cansyncaltaz(
-          &self
-        ) -> ASCOMResult<schemas::BoolResponse>;
-
+        fn get_cansyncaltaz(&self) -> ASCOMResult<schemas::BoolResponse>;
 
         /// True if this telescope is capable of programmed unparking (UnPark() method)
         #[http("canunpark")]
-        fn get_canunpark(
-          &self
-        ) -> ASCOMResult<schemas::BoolResponse>;
-
+        fn get_canunpark(&self) -> ASCOMResult<schemas::BoolResponse>;
 
         /// The declination (degrees) of the mount's current equatorial coordinates, in the coordinate system given by the EquatorialSystem property. Reading the property will raise an error if the value is unavailable.
         #[http("declination")]
-        fn get_declination(
-          &self
-        ) -> ASCOMResult<schemas::DoubleResponse>;
-
+        fn get_declination(&self) -> ASCOMResult<schemas::DoubleResponse>;
 
         /// The declination tracking rate (arcseconds per second, default = 0.0)
         #[http("declinationrate")]
-        fn get_declinationrate(
-          &self
-        ) -> ASCOMResult<schemas::DoubleResponse>;
-
+        fn get_declinationrate(&self) -> ASCOMResult<schemas::DoubleResponse>;
 
         /// Sets the declination tracking rate (arcseconds per second)
         #[http("declinationrate")]
-        fn set_declinationrate(
-          &mut self,
-          request: schemas::PutTelescopeDeclinationrateRequest
-        ) -> ASCOMResult<()>;
-
+        fn set_declinationrate(&mut self, request: schemas::PutTelescopeDeclinationrateRequest) -> ASCOMResult<()>;
 
         /// True if the telescope or driver applies atmospheric refraction to coordinates.
         #[http("doesrefraction")]
-        fn get_doesrefraction(
-          &self
-        ) -> ASCOMResult<schemas::BoolResponse>;
-
+        fn get_doesrefraction(&self) -> ASCOMResult<schemas::BoolResponse>;
 
         /// Causes the rotator to move Position degrees relative to the current Position value.
         #[http("doesrefraction")]
-        fn set_doesrefraction(
-          &mut self,
-          request: schemas::PutTelescopeDoesrefractionRequest
-        ) -> ASCOMResult<()>;
-
+        fn set_doesrefraction(&mut self, request: schemas::PutTelescopeDoesrefractionRequest) -> ASCOMResult<()>;
 
         /// Returns the current equatorial coordinate system used by this telescope (e.g. Topocentric or J2000).
         #[http("equatorialsystem")]
-        fn get_equatorialsystem(
-          &self
-        ) -> ASCOMResult<schemas::IntResponse>;
-
+        fn get_equatorialsystem(&self) -> ASCOMResult<schemas::IntResponse>;
 
         /// The telescope's focal length in meters
         #[http("focallength")]
-        fn get_focallength(
-          &self
-        ) -> ASCOMResult<schemas::DoubleResponse>;
-
+        fn get_focallength(&self) -> ASCOMResult<schemas::DoubleResponse>;
 
         /// The current Declination movement rate offset for telescope guiding (degrees/sec)
         #[http("guideratedeclination")]
-        fn get_guideratedeclination(
-          &self
-        ) -> ASCOMResult<schemas::DoubleResponse>;
-
+        fn get_guideratedeclination(&self) -> ASCOMResult<schemas::DoubleResponse>;
 
         /// Sets the current Declination movement rate offset for telescope guiding (degrees/sec).
         #[http("guideratedeclination")]
-        fn set_guideratedeclination(
-          &mut self,
-          request: schemas::PutTelescopeGuideratedeclinationRequest
-        ) -> ASCOMResult<()>;
-
+        fn set_guideratedeclination(&mut self, request: schemas::PutTelescopeGuideratedeclinationRequest) -> ASCOMResult<()>;
 
         /// The current RightAscension movement rate offset for telescope guiding (degrees/sec)
         #[http("guideraterightascension")]
-        fn get_guideraterightascension(
-          &self
-        ) -> ASCOMResult<schemas::DoubleResponse>;
-
+        fn get_guideraterightascension(&self) -> ASCOMResult<schemas::DoubleResponse>;
 
         /// Sets the current RightAscension movement rate offset for telescope guiding (degrees/sec).
         #[http("guideraterightascension")]
-        fn set_guideraterightascension(
-          &mut self,
-          request: schemas::PutTelescopeGuideraterightascensionRequest
-        ) -> ASCOMResult<()>;
-
+        fn set_guideraterightascension(&mut self, request: schemas::PutTelescopeGuideraterightascensionRequest) -> ASCOMResult<()>;
 
         /// True if a PulseGuide(GuideDirections, Int32) command is in progress, False otherwise
         #[http("ispulseguiding")]
-        fn get_ispulseguiding(
-          &self
-        ) -> ASCOMResult<schemas::BoolResponse>;
-
+        fn get_ispulseguiding(&self) -> ASCOMResult<schemas::BoolResponse>;
 
         /// The right ascension (hours) of the mount's current equatorial coordinates, in the coordinate system given by the EquatorialSystem property
         #[http("rightascension")]
-        fn get_rightascension(
-          &self
-        ) -> ASCOMResult<schemas::DoubleResponse>;
-
+        fn get_rightascension(&self) -> ASCOMResult<schemas::DoubleResponse>;
 
         /// The right ascension tracking rate (arcseconds per second, default = 0.0)
         #[http("rightascensionrate")]
-        fn get_rightascensionrate(
-          &self
-        ) -> ASCOMResult<schemas::DoubleResponse>;
-
+        fn get_rightascensionrate(&self) -> ASCOMResult<schemas::DoubleResponse>;
 
         /// Sets the right ascension tracking rate (arcseconds per second)
         #[http("rightascensionrate")]
-        fn set_rightascensionrate(
-          &mut self,
-          request: schemas::PutTelescopeRightascensionrateRequest
-        ) -> ASCOMResult<()>;
-
+        fn set_rightascensionrate(&mut self, request: schemas::PutTelescopeRightascensionrateRequest) -> ASCOMResult<()>;
 
         /// Indicates the pointing state of the mount. 0 = pierEast, 1 = pierWest, -1= pierUnknown
         #[http("sideofpier")]
-        fn get_sideofpier(
-          &self
-        ) -> ASCOMResult<schemas::IntResponse>;
-
+        fn get_sideofpier(&self) -> ASCOMResult<schemas::IntResponse>;
 
         /// Sets the pointing state of the mount. 0 = pierEast, 1 = pierWest
         #[http("sideofpier")]
-        fn set_sideofpier(
-          &mut self,
-          request: schemas::PutTelescopeSideofpierRequest
-        ) -> ASCOMResult<()>;
-
+        fn set_sideofpier(&mut self, request: schemas::PutTelescopeSideofpierRequest) -> ASCOMResult<()>;
 
         /// The local apparent sidereal time from the telescope's internal clock (hours, sidereal).
         #[http("siderealtime")]
-        fn get_siderealtime(
-          &self
-        ) -> ASCOMResult<schemas::DoubleResponse>;
-
+        fn get_siderealtime(&self) -> ASCOMResult<schemas::DoubleResponse>;
 
         /// The elevation above mean sea level (meters) of the site at which the telescope is located.
         #[http("siteelevation")]
-        fn get_siteelevation(
-          &self
-        ) -> ASCOMResult<schemas::DoubleResponse>;
-
+        fn get_siteelevation(&self) -> ASCOMResult<schemas::DoubleResponse>;
 
         /// Sets the elevation above mean sea level (metres) of the site at which the telescope is located.
         #[http("siteelevation")]
-        fn set_siteelevation(
-          &mut self,
-          request: schemas::PutTelescopeSiteelevationRequest
-        ) -> ASCOMResult<()>;
-
+        fn set_siteelevation(&mut self, request: schemas::PutTelescopeSiteelevationRequest) -> ASCOMResult<()>;
 
         /// The geodetic(map) latitude (degrees, positive North, WGS84) of the site at which the telescope is located.
         #[http("sitelatitude")]
-        fn get_sitelatitude(
-          &self
-        ) -> ASCOMResult<schemas::DoubleResponse>;
-
+        fn get_sitelatitude(&self) -> ASCOMResult<schemas::DoubleResponse>;
 
         /// Sets the observing site's latitude (degrees).
         #[http("sitelatitude")]
-        fn set_sitelatitude(
-          &mut self,
-          request: schemas::PutTelescopeSitelatitudeRequest
-        ) -> ASCOMResult<()>;
-
+        fn set_sitelatitude(&mut self, request: schemas::PutTelescopeSitelatitudeRequest) -> ASCOMResult<()>;
 
         /// The longitude (degrees, positive East, WGS84) of the site at which the telescope is located.
         #[http("sitelongitude")]
-        fn get_sitelongitude(
-          &self
-        ) -> ASCOMResult<schemas::DoubleResponse>;
-
+        fn get_sitelongitude(&self) -> ASCOMResult<schemas::DoubleResponse>;
 
         /// Sets the observing site's longitude (degrees, positive East, WGS84).
         #[http("sitelongitude")]
-        fn set_sitelongitude(
-          &mut self,
-          request: schemas::PutTelescopeSitelongitudeRequest
-        ) -> ASCOMResult<()>;
-
+        fn set_sitelongitude(&mut self, request: schemas::PutTelescopeSitelongitudeRequest) -> ASCOMResult<()>;
 
         /// True if telescope is currently moving in response to one of the Slew methods or the MoveAxis(TelescopeAxes, Double) method, False at all other times.
         #[http("slewing")]
-        fn get_slewing(
-          &self
-        ) -> ASCOMResult<schemas::BoolResponse>;
-
+        fn get_slewing(&self) -> ASCOMResult<schemas::BoolResponse>;
 
         /// Returns the post-slew settling time (sec.).
         #[http("slewsettletime")]
-        fn get_slewsettletime(
-          &self
-        ) -> ASCOMResult<schemas::IntResponse>;
-
+        fn get_slewsettletime(&self) -> ASCOMResult<schemas::IntResponse>;
 
         /// Sets the  post-slew settling time (integer sec.).
         #[http("slewsettletime")]
-        fn set_slewsettletime(
-          &mut self,
-          request: schemas::PutTelescopeSlewsettletimeRequest
-        ) -> ASCOMResult<()>;
-
+        fn set_slewsettletime(&mut self, request: schemas::PutTelescopeSlewsettletimeRequest) -> ASCOMResult<()>;
 
         /// The declination (degrees, positive North) for the target of an equatorial slew or sync operation
         #[http("targetdeclination")]
-        fn get_targetdeclination(
-          &self
-        ) -> ASCOMResult<schemas::DoubleResponse>;
-
+        fn get_targetdeclination(&self) -> ASCOMResult<schemas::DoubleResponse>;
 
         /// Sets the declination (degrees, positive North) for the target of an equatorial slew or sync operation
         #[http("targetdeclination")]
-        fn set_targetdeclination(
-          &mut self,
-          request: schemas::PutTelescopeTargetdeclinationRequest
-        ) -> ASCOMResult<()>;
-
+        fn set_targetdeclination(&mut self, request: schemas::PutTelescopeTargetdeclinationRequest) -> ASCOMResult<()>;
 
         /// The right ascension (hours) for the target of an equatorial slew or sync operation
         #[http("targetrightascension")]
-        fn get_targetrightascension(
-          &self
-        ) -> ASCOMResult<schemas::DoubleResponse>;
-
+        fn get_targetrightascension(&self) -> ASCOMResult<schemas::DoubleResponse>;
 
         /// Sets the right ascension (hours) for the target of an equatorial slew or sync operation
         #[http("targetrightascension")]
-        fn set_targetrightascension(
-          &mut self,
-          request: schemas::PutTelescopeTargetrightascensionRequest
-        ) -> ASCOMResult<()>;
-
+        fn set_targetrightascension(&mut self, request: schemas::PutTelescopeTargetrightascensionRequest) -> ASCOMResult<()>;
 
         /// Returns the state of the telescope's sidereal tracking drive.
         #[http("tracking")]
-        fn get_tracking(
-          &self
-        ) -> ASCOMResult<schemas::BoolResponse>;
-
+        fn get_tracking(&self) -> ASCOMResult<schemas::BoolResponse>;
 
         /// Sets the state of the telescope's sidereal tracking drive.
         #[http("tracking")]
-        fn set_tracking(
-          &mut self,
-          request: schemas::PutTelescopeTrackingRequest
-        ) -> ASCOMResult<()>;
-
+        fn set_tracking(&mut self, request: schemas::PutTelescopeTrackingRequest) -> ASCOMResult<()>;
 
         /// The current tracking rate of the telescope's sidereal drive.
         #[http("trackingrate")]
-        fn get_trackingrate(
-          &self
-        ) -> ASCOMResult<schemas::IntResponse>;
-
+        fn get_trackingrate(&self) -> ASCOMResult<schemas::IntResponse>;
 
         /// Sets the tracking rate of the telescope's sidereal drive. 0 = driveSidereal, 1 = driveLunar, 2 = driveSolar, 3 = driveKing
         #[http("trackingrate")]
-        fn set_trackingrate(
-          &mut self,
-          request: schemas::PutTelescopeTrackingrateRequest
-        ) -> ASCOMResult<()>;
-
+        fn set_trackingrate(&mut self, request: schemas::PutTelescopeTrackingrateRequest) -> ASCOMResult<()>;
 
         /// Returns an array of supported DriveRates values that describe the permissible values of the TrackingRate property for this telescope type.
         #[http("trackingrates")]
-        fn get_trackingrates(
-          &self
-        ) -> ASCOMResult<schemas::DriveRatesResponse>;
-
+        fn get_trackingrates(&self) -> ASCOMResult<schemas::DriveRatesResponse>;
 
         /// The UTC date/time of the telescope's internal clock in ISO 8601 format including fractional seconds. The general format (in Microsoft custom date format style) is yyyy-MM-ddTHH:mm:ss.fffffffZ E.g. 2016-03-04T17:45:31.1234567Z or 2016-11-14T07:03:08.1234567Z Please note the compulsary trailing Z indicating the 'Zulu', UTC time zone.
         #[http("utcdate")]
-        fn get_utcdate(
-          &self
-        ) -> ASCOMResult<schemas::StringResponse>;
-
+        fn get_utcdate(&self) -> ASCOMResult<schemas::StringResponse>;
 
         /// The UTC date/time of the telescope's internal clock in ISO 8601 format including fractional seconds. The general format (in Microsoft custom date format style) is yyyy-MM-ddTHH:mm:ss.fffffffZ E.g. 2016-03-04T17:45:31.1234567Z or 2016-11-14T07:03:08.1234567Z Please note the compulsary trailing Z indicating the 'Zulu', UTC time zone.
         #[http("utcdate")]
-        fn set_utcdate(
-          &mut self,
-          request: schemas::PutTelescopeUtcdateRequest
-        ) -> ASCOMResult<()>;
-
+        fn set_utcdate(&mut self, request: schemas::PutTelescopeUtcdateRequest) -> ASCOMResult<()>;
 
         /// Immediately Stops a slew in progress.
         #[http("abortslew")]
-        fn set_abortslew(
-          &mut self
-        ) -> ASCOMResult<()>;
-
+        fn set_abortslew(&mut self) -> ASCOMResult<()>;
 
         /// The rates at which the telescope may be moved about the specified axis by the MoveAxis(TelescopeAxes, Double) method.
         #[http("axisrates")]
-        fn get_axisrates(
-          &self,
-          request: schemas::GetTelescopeAxisratesRequest
-        ) -> ASCOMResult<schemas::AxisRatesResponse>;
-
+        fn get_axisrates(&self, request: schemas::GetTelescopeAxisratesRequest) -> ASCOMResult<schemas::AxisRatesResponse>;
 
         /// True if this telescope can move the requested axis.
         #[http("canmoveaxis")]
-        fn get_canmoveaxis(
-          &self,
-          request: schemas::GetTelescopeCanmoveaxisRequest
-        ) -> ASCOMResult<schemas::BoolResponse>;
-
+        fn get_canmoveaxis(&self, request: schemas::GetTelescopeCanmoveaxisRequest) -> ASCOMResult<schemas::BoolResponse>;
 
         /// Predicts the pointing state that a German equatorial mount will be in if it slews to the given coordinates. The  return value will be one of - 0 = pierEast, 1 = pierWest, -1 = pierUnknown
         #[http("destinationsideofpier")]
-        fn get_destinationsideofpier(
-          &self,
-          request: schemas::GetTelescopeDestinationsideofpierRequest
-        ) -> ASCOMResult<schemas::IntResponse>;
-
+        fn get_destinationsideofpier(&self, request: schemas::GetTelescopeDestinationsideofpierRequest) -> ASCOMResult<schemas::IntResponse>;
 
         /// Locates the telescope's "home" position (synchronous)
         #[http("findhome")]
-        fn set_findhome(
-          &mut self
-        ) -> ASCOMResult<()>;
-
+        fn set_findhome(&mut self) -> ASCOMResult<()>;
 
         /// Move the telescope in one axis at the given rate.
         #[http("moveaxis")]
-        fn set_moveaxis(
-          &mut self,
-          request: schemas::PutTelescopeMoveaxisRequest
-        ) -> ASCOMResult<()>;
-
+        fn set_moveaxis(&mut self, request: schemas::PutTelescopeMoveaxisRequest) -> ASCOMResult<()>;
 
         /// Move the telescope to its park position, stop all motion (or restrict to a small safe range), and set AtPark to True. )
         #[http("park")]
-        fn set_park(
-          &mut self
-        ) -> ASCOMResult<()>;
-
+        fn set_park(&mut self) -> ASCOMResult<()>;
 
         /// Moves the scope in the given direction for the given interval or time at the rate given by the corresponding guide rate property
         #[http("pulseguide")]
-        fn set_pulseguide(
-          &mut self,
-          request: schemas::PutTelescopePulseguideRequest
-        ) -> ASCOMResult<()>;
-
+        fn set_pulseguide(&mut self, request: schemas::PutTelescopePulseguideRequest) -> ASCOMResult<()>;
 
         /// Sets the telescope's park position to be its current position.
         #[http("setpark")]
-        fn set_setpark(
-          &mut self
-        ) -> ASCOMResult<()>;
-
+        fn set_setpark(&mut self) -> ASCOMResult<()>;
 
         /// Move the telescope to the given local horizontal coordinates, return when slew is complete
         #[http("slewtoaltaz")]
-        fn set_slewtoaltaz(
-          &mut self,
-          request: schemas::PutTelescopeSlewtoaltazRequest
-        ) -> ASCOMResult<()>;
-
+        fn set_slewtoaltaz(&mut self, request: schemas::PutTelescopeSlewtoaltazRequest) -> ASCOMResult<()>;
 
         /// Move the telescope to the given local horizontal coordinates, return immediatley after the slew starts. The client can poll the Slewing method to determine when the mount reaches the intended coordinates.
         #[http("slewtoaltazasync")]
-        fn set_slewtoaltazasync(
-          &mut self,
-          request: schemas::PutTelescopeSlewtoaltazRequest
-        ) -> ASCOMResult<()>;
-
+        fn set_slewtoaltazasync(&mut self, request: schemas::PutTelescopeSlewtoaltazRequest) -> ASCOMResult<()>;
 
         /// Move the telescope to the given equatorial coordinates, return when slew is complete
         #[http("slewtocoordinates")]
-        fn set_slewtocoordinates(
-          &mut self,
-          request: schemas::PutTelescopeSlewtocoordinatesRequest
-        ) -> ASCOMResult<()>;
-
+        fn set_slewtocoordinates(&mut self, request: schemas::PutTelescopeSlewtocoordinatesRequest) -> ASCOMResult<()>;
 
         /// Move the telescope to the given equatorial coordinates, return immediatley after the slew starts. The client can poll the Slewing method to determine when the mount reaches the intended coordinates.
         #[http("slewtocoordinatesasync")]
-        fn set_slewtocoordinatesasync(
-          &mut self,
-          request: schemas::PutTelescopeSlewtocoordinatesRequest
-        ) -> ASCOMResult<()>;
-
+        fn set_slewtocoordinatesasync(&mut self, request: schemas::PutTelescopeSlewtocoordinatesRequest) -> ASCOMResult<()>;
 
         /// Move the telescope to the TargetRightAscension and TargetDeclination equatorial coordinates, return when slew is complete
         #[http("slewtotarget")]
-        fn set_slewtotarget(
-          &mut self
-        ) -> ASCOMResult<()>;
-
+        fn set_slewtotarget(&mut self) -> ASCOMResult<()>;
 
         /// Move the telescope to the TargetRightAscension and TargetDeclination equatorial coordinates, return immediatley after the slew starts. The client can poll the Slewing method to determine when the mount reaches the intended coordinates.
         #[http("slewtotargetasync")]
-        fn set_slewtotargetasync(
-          &mut self
-        ) -> ASCOMResult<()>;
-
+        fn set_slewtotargetasync(&mut self) -> ASCOMResult<()>;
 
         /// Matches the scope's local horizontal coordinates to the given local horizontal coordinates.
         #[http("synctoaltaz")]
-        fn set_synctoaltaz(
-          &mut self,
-          request: schemas::PutTelescopeSlewtoaltazRequest
-        ) -> ASCOMResult<()>;
-
+        fn set_synctoaltaz(&mut self, request: schemas::PutTelescopeSlewtoaltazRequest) -> ASCOMResult<()>;
 
         /// Matches the scope's equatorial coordinates to the given equatorial coordinates.
         #[http("synctocoordinates")]
-        fn set_synctocoordinates(
-          &mut self,
-          request: schemas::PutTelescopeSlewtocoordinatesRequest
-        ) -> ASCOMResult<()>;
-
+        fn set_synctocoordinates(&mut self, request: schemas::PutTelescopeSlewtocoordinatesRequest) -> ASCOMResult<()>;
 
         /// Matches the scope's equatorial coordinates to the TargetRightAscension and TargetDeclination equatorial coordinates.
         #[http("synctotarget")]
-        fn set_synctotarget(
-          &mut self
-        ) -> ASCOMResult<()>;
-
+        fn set_synctotarget(&mut self) -> ASCOMResult<()>;
 
         /// Takes telescope out of the Parked state. )
         #[http("unpark")]
-        fn set_unpark(
-          &mut self
-        ) -> ASCOMResult<()>;
-
+        fn set_unpark(&mut self) -> ASCOMResult<()>;
     }
-
 }
 
 pub fn service() -> actix_web::Scope {
