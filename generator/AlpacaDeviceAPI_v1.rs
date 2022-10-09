@@ -1291,7 +1291,7 @@ rpc! {
 
     /// FilterWheel Specific Methods
     #[http("filterwheel")]
-    pub trait Filterwheel {
+    pub trait FilterWheel {
         /// An integer array of filter focus offsets.
         #[http("focusoffsets")]
         fn get_focusoffsets(&self) -> ASCOMResult<Vec<i32>>;
@@ -1363,7 +1363,7 @@ rpc! {
 
     /// ObservingConditions Specific Methods
     #[http("observingconditions")]
-    pub trait Observingconditions {
+    pub trait ObservingConditions {
         /// Gets the time period over which observations will be averaged
         #[http("averageperiod")]
         fn get_averageperiod(&self) -> ASCOMResult<f64>;
@@ -1495,7 +1495,7 @@ rpc! {
 
     /// SafetyMonitor Specific Methods
     #[http("safetymonitor")]
-    pub trait Safetymonitor {
+    pub trait SafetyMonitor {
         /// Indicates whether the monitored state is safe for use. True if the state is safe, False if it is unsafe.
         #[http("issafe")]
         fn get_issafe(&self) -> ASCOMResult<bool>;
@@ -1883,11 +1883,11 @@ pub fn service() -> actix_web::Scope {
         .service(RpcService::<dyn Camera>::default())
         .service(RpcService::<dyn Covercalibrator>::default())
         .service(RpcService::<dyn Dome>::default())
-        .service(RpcService::<dyn Filterwheel>::default())
+        .service(RpcService::<dyn FilterWheel>::default())
         .service(RpcService::<dyn Focuser>::default())
-        .service(RpcService::<dyn Observingconditions>::default())
+        .service(RpcService::<dyn ObservingConditions>::default())
         .service(RpcService::<dyn Rotator>::default())
-        .service(RpcService::<dyn Safetymonitor>::default())
+        .service(RpcService::<dyn SafetyMonitor>::default())
         .service(RpcService::<dyn Switch>::default())
         .service(RpcService::<dyn Telescope>::default())
 }

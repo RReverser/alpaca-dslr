@@ -5,6 +5,7 @@ import { spawnSync } from 'child_process';
 import { toSnakeCase, toPascalCase } from 'js-convert-case';
 import { OpenAPIV3 } from 'openapi-types';
 import * as assert from 'assert/strict';
+import { getCSharpItems } from './parse-elendil.js';
 
 let api = (await openapi.parse(
   './AlpacaDeviceAPI_v1.yaml'
@@ -139,6 +140,7 @@ function registerSchema(
 let groupedOps: Record<
   string,
   {
+    typeName: string;
     description: string;
     paths: Array<{
       subPath: string;
@@ -267,6 +269,7 @@ for (let { method, path, id, operation } of ops()) {
   setXKind(schema, 'Response');
 
   (groupedOps[groupPath] ??= {
+    typeName: toPascalCase(groupPath),
     description: groupDescription,
     paths: []
   }).paths.push({
@@ -398,6 +401,16 @@ Object.entries(groupCounts)
 
 // TODO: correctly handle base class.
 delete groupedOps['{device_type}'];
+
+let sharp = await getCSharpItems();
+for (let [groupPath, group] of Object.entries(groupedOps)) {
+  let sharpItem = sharp[`i${groupPath}`];
+  if (sharpItem) {
+    group.typeName = sharpItem.name.slice(1);
+  } else {
+    console.warn(`Couldn't find C# counterpart for ${groupPath}`);
+  }
+}
 
 let rendered = render(
   template,

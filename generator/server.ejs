@@ -182,10 +182,10 @@ mod schemas {
 }
 
 rpc! {
-  <% for (let [groupPath, { description, paths }] of Object.entries(groupedOps)) { %>
+  <% for (let [groupPath, { description, paths, typeName }] of Object.entries(groupedOps)) { %>
     <%= doc(description) %>
     #[http("<%= groupPath %>")]
-    pub trait <%= toTypeName(groupPath) %> {
+    pub trait <%= typeName %> {
       <% for (let { subPath, method, operation, request, response } of paths) { %>
         <% request = handleType(request); %>
         <% response = handleType(response); %>
@@ -212,7 +212,7 @@ rpc! {
 
 pub fn service() -> actix_web::Scope {
   actix_web::web::scope("/api/v1")
-    <% for (let groupPath of Object.keys(groupedOps)) { %>
-      .service(RpcService::<dyn <%= toTypeName(groupPath) %>>::default())
+    <% for (let { typeName } of Object.values(groupedOps)) { %>
+      .service(RpcService::<dyn <%= typeName %>>::default())
     <% } %>
 }
