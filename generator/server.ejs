@@ -191,7 +191,15 @@ rpc! {
         <% response = handleType(response); %>
         <%= doc(operation.description) %>
         #[http("<%= subPath %>")]
-        fn <%= method === 'get' ? 'get' : 'set' %>_<%= subPath %>(
+        fn <%= toPropName(`${
+          method === 'get'
+          ? 'get_'
+          : (
+            paths.findIndex(({ subPath: subPath2, method: method2 }) => subPath === subPath2 && method2 === 'get') >= 0
+            ? 'set_'
+            : ''
+          )
+        }${subPath}`) %>(
           &<%= method === 'get' ? '' : 'mut ' %>self,
           <% if (request !== '()') { %>
           request: <%= request %>,

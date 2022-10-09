@@ -1130,19 +1130,19 @@ rpc! {
 
         /// Aborts the current exposure, if any, and returns the camera to Idle state.
         #[http("abortexposure")]
-        fn set_abortexposure(&mut self) -> ASCOMResult<()>;
+        fn abortexposure(&mut self) -> ASCOMResult<()>;
 
         /// Activates the Camera's mount control sytem to instruct the mount to move in a particular direction for a given period of time
         #[http("pulseguide")]
-        fn set_pulseguide(&mut self, request: schemas::PutCameraPulseguideRequest) -> ASCOMResult<()>;
+        fn pulseguide(&mut self, request: schemas::PutCameraPulseguideRequest) -> ASCOMResult<()>;
 
         /// Starts an exposure. Use ImageReady to check when the exposure is complete.
         #[http("startexposure")]
-        fn set_startexposure(&mut self, request: schemas::PutCameraStartexposureRequest) -> ASCOMResult<()>;
+        fn startexposure(&mut self, request: schemas::PutCameraStartexposureRequest) -> ASCOMResult<()>;
 
         /// Stops the current exposure, if any. If an exposure is in progress, the readout process is initiated. Ignored if readout is already in process.
         #[http("stopexposure")]
-        fn set_stopexposure(&mut self) -> ASCOMResult<()>;
+        fn stopexposure(&mut self) -> ASCOMResult<()>;
     }
 
     /// CoverCalibrator Specific Methods
@@ -1166,23 +1166,23 @@ rpc! {
 
         /// Turns the calibrator off if the device has calibration capability.
         #[http("calibratoroff")]
-        fn set_calibratoroff(&mut self) -> ASCOMResult<()>;
+        fn calibratoroff(&mut self) -> ASCOMResult<()>;
 
         /// Turns the calibrator on at the specified brightness if the device has calibration capability.
         #[http("calibratoron")]
-        fn set_calibratoron(&mut self, request: schemas::PutCovercalibratorCalibratoronRequest) -> ASCOMResult<()>;
+        fn calibratoron(&mut self, request: schemas::PutCovercalibratorCalibratoronRequest) -> ASCOMResult<()>;
 
         /// Initiates cover closing if a cover is present.
         #[http("closecover")]
-        fn set_closecover(&mut self) -> ASCOMResult<()>;
+        fn closecover(&mut self) -> ASCOMResult<()>;
 
         /// Stops any cover movement that may be in progress if a cover is present and cover movement can be interrupted.
         #[http("haltcover")]
-        fn set_haltcover(&mut self) -> ASCOMResult<()>;
+        fn haltcover(&mut self) -> ASCOMResult<()>;
 
         /// Initiates cover opening if a cover is present.
         #[http("opencover")]
-        fn set_opencover(&mut self) -> ASCOMResult<()>;
+        fn opencover(&mut self) -> ASCOMResult<()>;
     }
 
     /// Dome Specific Methods
@@ -1254,39 +1254,39 @@ rpc! {
 
         /// Calling this method will immediately disable hardware slewing (Slaved will become False).
         #[http("abortslew")]
-        fn set_abortslew(&mut self) -> ASCOMResult<()>;
+        fn abortslew(&mut self) -> ASCOMResult<()>;
 
         /// Close the shutter or otherwise shield telescope from the sky.
         #[http("closeshutter")]
-        fn set_closeshutter(&mut self) -> ASCOMResult<()>;
+        fn closeshutter(&mut self) -> ASCOMResult<()>;
 
         /// After Home position is established initializes Azimuth to the default value and sets the AtHome flag.
         #[http("findhome")]
-        fn set_findhome(&mut self) -> ASCOMResult<()>;
+        fn findhome(&mut self) -> ASCOMResult<()>;
 
         /// Open shutter or otherwise expose telescope to the sky.
         #[http("openshutter")]
-        fn set_openshutter(&mut self) -> ASCOMResult<()>;
+        fn openshutter(&mut self) -> ASCOMResult<()>;
 
         /// After assuming programmed park position, sets AtPark flag.
         #[http("park")]
-        fn set_park(&mut self) -> ASCOMResult<()>;
+        fn park(&mut self) -> ASCOMResult<()>;
 
         /// Set the current azimuth, altitude position of dome to be the park position.
         #[http("setpark")]
-        fn set_setpark(&mut self) -> ASCOMResult<()>;
+        fn setpark(&mut self) -> ASCOMResult<()>;
 
         /// Slew the dome to the given altitude position.
         #[http("slewtoaltitude")]
-        fn set_slewtoaltitude(&mut self, request: schemas::PutDomeSlewtoaltitudeRequest) -> ASCOMResult<()>;
+        fn slewtoaltitude(&mut self, request: schemas::PutDomeSlewtoaltitudeRequest) -> ASCOMResult<()>;
 
         /// Slew the dome to the given azimuth position.
         #[http("slewtoazimuth")]
-        fn set_slewtoazimuth(&mut self, request: schemas::PutDomeSlewtoazimuthRequest) -> ASCOMResult<()>;
+        fn slewtoazimuth(&mut self, request: schemas::PutDomeSlewtoazimuthRequest) -> ASCOMResult<()>;
 
         /// Synchronize the current position of the dome to the given azimuth.
         #[http("synctoazimuth")]
-        fn set_synctoazimuth(&mut self, request: schemas::PutDomeSlewtoazimuthRequest) -> ASCOMResult<()>;
+        fn synctoazimuth(&mut self, request: schemas::PutDomeSlewtoazimuthRequest) -> ASCOMResult<()>;
     }
 
     /// FilterWheel Specific Methods
@@ -1354,11 +1354,11 @@ rpc! {
 
         /// Immediately stop any focuser motion due to a previous Move(Int32) method call.
         #[http("halt")]
-        fn set_halt(&mut self) -> ASCOMResult<()>;
+        fn halt(&mut self) -> ASCOMResult<()>;
 
         /// Moves the focuser by the specified amount or to the specified position depending on the value of the Absolute property.
         #[http("move")]
-        fn set_move(&mut self, request: schemas::PutFocuserMoveRequest) -> ASCOMResult<()>;
+        fn r#move(&mut self, request: schemas::PutFocuserMoveRequest) -> ASCOMResult<()>;
     }
 
     /// ObservingConditions Specific Methods
@@ -1426,7 +1426,7 @@ rpc! {
 
         /// Forces the driver to immediately query its attached hardware to refresh sensor values.
         #[http("refresh")]
-        fn set_refresh(&mut self) -> ASCOMResult<()>;
+        fn refresh(&mut self) -> ASCOMResult<()>;
 
         /// Gets a description of the sensor with the name specified in the SensorName parameter
         #[http("sensordescription")]
@@ -1474,23 +1474,23 @@ rpc! {
 
         /// Immediately stop any Rotator motion due to a previous Move or MoveAbsolute method call.
         #[http("halt")]
-        fn set_halt(&mut self) -> ASCOMResult<()>;
+        fn halt(&mut self) -> ASCOMResult<()>;
 
         /// Causes the rotator to move Position degrees relative to the current Position value.
         #[http("move")]
-        fn set_move(&mut self, request: schemas::PutRotatorMoveRequest) -> ASCOMResult<()>;
+        fn r#move(&mut self, request: schemas::PutRotatorMoveRequest) -> ASCOMResult<()>;
 
         /// Causes the rotator to move the absolute position of Position degrees.
         #[http("moveabsolute")]
-        fn set_moveabsolute(&mut self, request: schemas::PutRotatorMoveabsoluteRequest) -> ASCOMResult<()>;
+        fn moveabsolute(&mut self, request: schemas::PutRotatorMoveabsoluteRequest) -> ASCOMResult<()>;
 
         /// Causes the rotator to move the mechanical position of Position degrees.
         #[http("movemechanical")]
-        fn set_movemechanical(&mut self, request: schemas::PutRotatorMovemechanicalRequest) -> ASCOMResult<()>;
+        fn movemechanical(&mut self, request: schemas::PutRotatorMovemechanicalRequest) -> ASCOMResult<()>;
 
         /// Causes the rotator to sync to the position of Position degrees.
         #[http("sync")]
-        fn set_sync(&mut self, request: schemas::PutRotatorSyncRequest) -> ASCOMResult<()>;
+        fn sync(&mut self, request: schemas::PutRotatorSyncRequest) -> ASCOMResult<()>;
     }
 
     /// SafetyMonitor Specific Methods
@@ -1538,15 +1538,15 @@ rpc! {
 
         /// Sets a switch controller device to the specified state, true or false.
         #[http("setswitch")]
-        fn set_setswitch(&mut self, request: schemas::PutSwitchSetswitchRequest) -> ASCOMResult<()>;
+        fn setswitch(&mut self, request: schemas::PutSwitchSetswitchRequest) -> ASCOMResult<()>;
 
         /// Sets a switch device name to the specified value.
         #[http("setswitchname")]
-        fn set_setswitchname(&mut self, request: schemas::PutSwitchSetswitchnameRequest) -> ASCOMResult<()>;
+        fn setswitchname(&mut self, request: schemas::PutSwitchSetswitchnameRequest) -> ASCOMResult<()>;
 
         /// Sets a switch device value to the specified value.
         #[http("setswitchvalue")]
-        fn set_setswitchvalue(&mut self, request: schemas::PutSwitchSetswitchvalueRequest) -> ASCOMResult<()>;
+        fn setswitchvalue(&mut self, request: schemas::PutSwitchSetswitchvalueRequest) -> ASCOMResult<()>;
 
         /// Returns the step size that this device supports (the difference between successive values of the device). Devices are numbered from 0 to MaxSwitch - 1.
         #[http("switchstep")]
@@ -1802,7 +1802,7 @@ rpc! {
 
         /// Immediately Stops a slew in progress.
         #[http("abortslew")]
-        fn set_abortslew(&mut self) -> ASCOMResult<()>;
+        fn abortslew(&mut self) -> ASCOMResult<()>;
 
         /// The rates at which the telescope may be moved about the specified axis by the MoveAxis(TelescopeAxes, Double) method.
         #[http("axisrates")]
@@ -1818,63 +1818,63 @@ rpc! {
 
         /// Locates the telescope's "home" position (synchronous)
         #[http("findhome")]
-        fn set_findhome(&mut self) -> ASCOMResult<()>;
+        fn findhome(&mut self) -> ASCOMResult<()>;
 
         /// Move the telescope in one axis at the given rate.
         #[http("moveaxis")]
-        fn set_moveaxis(&mut self, request: schemas::PutTelescopeMoveaxisRequest) -> ASCOMResult<()>;
+        fn moveaxis(&mut self, request: schemas::PutTelescopeMoveaxisRequest) -> ASCOMResult<()>;
 
         /// Move the telescope to its park position, stop all motion (or restrict to a small safe range), and set AtPark to True. )
         #[http("park")]
-        fn set_park(&mut self) -> ASCOMResult<()>;
+        fn park(&mut self) -> ASCOMResult<()>;
 
         /// Moves the scope in the given direction for the given interval or time at the rate given by the corresponding guide rate property
         #[http("pulseguide")]
-        fn set_pulseguide(&mut self, request: schemas::PutTelescopePulseguideRequest) -> ASCOMResult<()>;
+        fn pulseguide(&mut self, request: schemas::PutTelescopePulseguideRequest) -> ASCOMResult<()>;
 
         /// Sets the telescope's park position to be its current position.
         #[http("setpark")]
-        fn set_setpark(&mut self) -> ASCOMResult<()>;
+        fn setpark(&mut self) -> ASCOMResult<()>;
 
         /// Move the telescope to the given local horizontal coordinates, return when slew is complete
         #[http("slewtoaltaz")]
-        fn set_slewtoaltaz(&mut self, request: schemas::PutTelescopeSlewtoaltazRequest) -> ASCOMResult<()>;
+        fn slewtoaltaz(&mut self, request: schemas::PutTelescopeSlewtoaltazRequest) -> ASCOMResult<()>;
 
         /// Move the telescope to the given local horizontal coordinates, return immediatley after the slew starts. The client can poll the Slewing method to determine when the mount reaches the intended coordinates.
         #[http("slewtoaltazasync")]
-        fn set_slewtoaltazasync(&mut self, request: schemas::PutTelescopeSlewtoaltazRequest) -> ASCOMResult<()>;
+        fn slewtoaltazasync(&mut self, request: schemas::PutTelescopeSlewtoaltazRequest) -> ASCOMResult<()>;
 
         /// Move the telescope to the given equatorial coordinates, return when slew is complete
         #[http("slewtocoordinates")]
-        fn set_slewtocoordinates(&mut self, request: schemas::PutTelescopeSlewtocoordinatesRequest) -> ASCOMResult<()>;
+        fn slewtocoordinates(&mut self, request: schemas::PutTelescopeSlewtocoordinatesRequest) -> ASCOMResult<()>;
 
         /// Move the telescope to the given equatorial coordinates, return immediatley after the slew starts. The client can poll the Slewing method to determine when the mount reaches the intended coordinates.
         #[http("slewtocoordinatesasync")]
-        fn set_slewtocoordinatesasync(&mut self, request: schemas::PutTelescopeSlewtocoordinatesRequest) -> ASCOMResult<()>;
+        fn slewtocoordinatesasync(&mut self, request: schemas::PutTelescopeSlewtocoordinatesRequest) -> ASCOMResult<()>;
 
         /// Move the telescope to the TargetRightAscension and TargetDeclination equatorial coordinates, return when slew is complete
         #[http("slewtotarget")]
-        fn set_slewtotarget(&mut self) -> ASCOMResult<()>;
+        fn slewtotarget(&mut self) -> ASCOMResult<()>;
 
         /// Move the telescope to the TargetRightAscension and TargetDeclination equatorial coordinates, return immediatley after the slew starts. The client can poll the Slewing method to determine when the mount reaches the intended coordinates.
         #[http("slewtotargetasync")]
-        fn set_slewtotargetasync(&mut self) -> ASCOMResult<()>;
+        fn slewtotargetasync(&mut self) -> ASCOMResult<()>;
 
         /// Matches the scope's local horizontal coordinates to the given local horizontal coordinates.
         #[http("synctoaltaz")]
-        fn set_synctoaltaz(&mut self, request: schemas::PutTelescopeSlewtoaltazRequest) -> ASCOMResult<()>;
+        fn synctoaltaz(&mut self, request: schemas::PutTelescopeSlewtoaltazRequest) -> ASCOMResult<()>;
 
         /// Matches the scope's equatorial coordinates to the given equatorial coordinates.
         #[http("synctocoordinates")]
-        fn set_synctocoordinates(&mut self, request: schemas::PutTelescopeSlewtocoordinatesRequest) -> ASCOMResult<()>;
+        fn synctocoordinates(&mut self, request: schemas::PutTelescopeSlewtocoordinatesRequest) -> ASCOMResult<()>;
 
         /// Matches the scope's equatorial coordinates to the TargetRightAscension and TargetDeclination equatorial coordinates.
         #[http("synctotarget")]
-        fn set_synctotarget(&mut self) -> ASCOMResult<()>;
+        fn synctotarget(&mut self) -> ASCOMResult<()>;
 
         /// Takes telescope out of the Parked state. )
         #[http("unpark")]
-        fn set_unpark(&mut self) -> ASCOMResult<()>;
+        fn unpark(&mut self) -> ASCOMResult<()>;
     }
 }
 
