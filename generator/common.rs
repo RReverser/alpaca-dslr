@@ -51,7 +51,7 @@ fn generate_server_transaction_id() -> u32 {
 }
 
 // #[derive(Deserialize)]
-pub struct ASCOMRequest<T> {
+pub(crate) struct ASCOMRequest<T: 'static + DeserializeOwned> {
     // #[serde(flatten)]
     transaction: TransactionIds,
     // #[serde(flatten)]
@@ -87,13 +87,13 @@ impl<T: DeserializeOwned> ASCOMRequest<T> {
 }
 
 #[pin_project]
-pub struct BodyParamsFuture<T> {
+pub(crate) struct BodyParamsFuture<T: 'static + DeserializeOwned> {
     #[pin]
     inner: <Bytes as FromRequest>::Future,
     _phantom: std::marker::PhantomData<fn() -> ASCOMRequest<T>>,
 }
 
-impl<T> BodyParamsFuture<T> {
+impl<T: DeserializeOwned> BodyParamsFuture<T> {
     fn new(fut: <Bytes as FromRequest>::Future) -> Self {
         BodyParamsFuture {
             inner: fut,
@@ -132,13 +132,20 @@ impl<T: 'static + DeserializeOwned> FromRequest for ASCOMRequest<T> {
     }
 }
 
-impl<T: 'static + Send> ASCOMRequest<T> {
-    pub fn respond_with<U: Send + 'static>(self, root_span: RootSpan, f: impl FnOnce(T) -> Result<U, ASCOMError> + Send + 'static) -> impl Future<Output = Result<ASCOMResponse<U>, BlockingError>> {
+impl<T: 'static + Send + DeserializeOwned> ASCOMRequest<T> {
+    pub fn respond_with<U: 'static + ToResponse>(
+        self,
+        root_span: RootSpan,
+        f: impl FnOnce(T) -> Result<U, ASCOMError> + Send + 'static,
+    ) -> impl Future<Output = Result<ASCOMResponse<U>, BlockingError>>
+    where
+        U::Response: Send,
+    {
         self.transaction.record(root_span);
 
         actix_web::web::block(move || ASCOMResponse {
             transaction: self.transaction,
-            result: f(self.request),
+            result: f(self.request).map(ToResponse::to_response),
         })
     }
 }
@@ -222,21 +229,45 @@ ascom_error_codes! {
 }
 
 #[derive(Serialize)]
-pub struct ASCOMResponse<T> {
+pub(crate) struct ASCOMResponse<T: ToResponse> {
     #[serde(flatten)]
     transaction: TransactionIds,
-    #[serde(flatten, serialize_with = "serialize_result", bound = "T: Serialize")]
-    pub result: ASCOMResult<T>,
+    #[serde(flatten, serialize_with = "serialize_result")]
+    pub result: ASCOMResult<T::Response>,
 }
 
-fn serialize_result<T: Serialize, S: serde::Serializer>(value: &ASCOMResult<T>, serializer: S) -> Result<S::Ok, S::Error> {
+pub(crate) trait ToResponse {
+    type Response: Serialize;
+
+    fn to_response(self) -> Self::Response;
+}
+
+impl ToResponse for () {
+    type Response = ();
+
+    fn to_response(self) {}
+}
+
+#[derive(Serialize)]
+pub(crate) struct ValueResponse<T> {
+    /// Returned value.
+    value: T,
+}
+
+impl<T> From<T> for ValueResponse<T> {
+    fn from(value: T) -> Self {
+        Self { value }
+    }
+}
+
+fn serialize_result<R: Serialize, S: serde::Serializer>(value: &ASCOMResult<R>, serializer: S) -> Result<S::Ok, S::Error> {
     match value {
         Ok(value) => value.serialize(serializer),
         Err(error) => error.serialize(serializer),
     }
 }
 
-impl<T: Serialize> Responder for ASCOMResponse<T> {
+impl<T: ToResponse> Responder for ASCOMResponse<T> {
     type Body = <Json<Self> as Responder>::Body;
 
     fn respond_to(self, req: &HttpRequest) -> HttpResponse<Self::Body> {
@@ -244,7 +275,7 @@ impl<T: Serialize> Responder for ASCOMResponse<T> {
     }
 }
 
-pub struct DomainRootSpanBuilder;
+pub(crate) struct DomainRootSpanBuilder;
 
 impl tracing_actix_web::RootSpanBuilder for DomainRootSpanBuilder {
     fn on_request_start(request: &ServiceRequest) -> Span {
@@ -333,7 +364,7 @@ macro_rules! rpc {
             $(
                 $(#[doc = $method_doc:literal])*
                 #[http($method_path:literal)]
-                fn $method_name:ident(& $($mut_self:ident)* $(, $params:ident: $params_ty:ty)?) -> $return_type:ty;
+                fn $method_name:ident(& $($mut_self:ident)* $(, $params:ident: $params_ty:ty)?) -> ASCOMResult<$return_type:ty>;
             )*
         }
     )*) => {
@@ -342,7 +373,7 @@ macro_rules! rpc {
             pub trait $trait_name: Send + Sync {
                 $(
                     $(#[doc = $method_doc])*
-                    fn $method_name(& $($mut_self)* $(, $params: $params_ty)?) -> $return_type;
+                    fn $method_name(& $($mut_self)* $(, $params: $params_ty)?) -> ASCOMResult<$return_type>;
                 )*
             }
 
@@ -370,7 +401,7 @@ macro_rules! rpc {
                                 device_number: actix_web::web::Path<u32>,
                                 ascom: crate::api::common::ASCOMRequest<Params>
                             ) -> impl std::future::Future<Output = Result<
-                                crate::api::common::ASCOMResponse<impl serde::Serialize>,
+                                crate::api::common::ASCOMResponse<$return_type>,
                                 actix_web::error::BlockingError>
                             > {
                                 ascom.respond_with(root_span, move |params| {

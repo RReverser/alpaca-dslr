@@ -5,8 +5,6 @@ import { spawnSync } from 'child_process';
 import { toSnakeCase, toPascalCase } from 'js-convert-case';
 import { OpenAPIV3 } from 'openapi-types';
 import * as assert from 'assert/strict';
-import { inspect } from 'util';
-import { extraSchemas } from './extra-schemas.js';
 
 let api = (await openapi.parse(
   './AlpacaDeviceAPI_v1.yaml'
@@ -280,14 +278,11 @@ for (let { method, path, id, operation } of ops()) {
   });
 }
 
-let refReplacements: Record<string, OpenAPIV3.ReferenceObject> = {};
+let refReplacements: Record<
+  string,
+  OpenAPIV3.ReferenceObject | OpenAPIV3.SchemaObject
+> = {};
 let groupCounts: Record<string, number> = {};
-
-let extraSchemasWithoutOptFields = Object.fromEntries(
-  Object.entries(extraSchemas).map(([name, schema]) => {
-    return [jsonWithoutOptFields(schema), name];
-  })
-);
 
 for (let [schemaName, schema] of Object.entries(api.components!.schemas!)) {
   schema = resolveMaybeRef(schema);
@@ -332,6 +327,17 @@ for (let [schemaName, schema] of Object.entries(api.components!.schemas!)) {
       );
 
       schema.properties = otherProperties;
+
+      if (Object.keys(otherProperties).join(',') === 'Value') {
+        // Not using setXKind as I want to explicitly override it.
+        (schema as any)['x-kind'] = 'ValueResponse';
+
+        refReplacements[`#/components/schemas/${schemaName}`] =
+          schema.properties.Value;
+
+        continue;
+      }
+
       break;
     }
     case 'Request': {
@@ -363,23 +369,22 @@ for (let [schemaName, schema] of Object.entries(api.components!.schemas!)) {
     }
   }
 
-  let replacementName =
-    extraSchemasWithoutOptFields[jsonWithoutOptFields(schema)];
-
-  if (replacementName) {
-    delete api.components!.schemas![schemaName];
-
+  if (
+    schema.type === 'object' &&
+    Object.keys(schema.properties!).length === 0
+  ) {
+    // Explicit override.
+    (schema as any)['x-kind'] = 'Empty';
     refReplacements[`#/components/schemas/${schemaName}`] = {
-      $ref: `#/components/schemas/${replacementName}`
+      $ref: 'void'
     };
-  } else {
-    let key = jsonWithoutOptFields(schema);
-    groupCounts[key] ??= 0;
-    groupCounts[key]++;
+    continue;
   }
-}
 
-Object.assign(api.components!.schemas!, extraSchemas);
+  let key = jsonWithoutOptFields(schema);
+  groupCounts[key] ??= 0;
+  groupCounts[key]++;
+}
 
 Object.entries(groupCounts)
   .filter(([_, count]) => count > 1)
@@ -399,7 +404,6 @@ let rendered = render(
     refReplacements,
     groupedOps,
     assert,
-    dbg: (x: any) => inspect(x, { colors: true }),
     getContent,
     toPascalCase,
     toSnakeCase
@@ -410,7 +414,7 @@ let rendered = render(
 );
 
 // Help rustfmt format contents of the `rpc!` macro.
-rendered = rendered.replace('rpc!', 'mod __rpc__');
+rendered = rendered.replaceAll('rpc!', 'mod __rpc__');
 
 let rustfmt = spawnSync('rustfmt', ['--edition=2021'], {
   encoding: 'utf-8',
@@ -425,6 +429,6 @@ if (rustfmt.status !== 0) {
 rendered = rustfmt.stdout;
 
 // Revert the helper changes.
-rendered = rendered.replace('mod __rpc__', 'rpc!');
+rendered = rendered.replaceAll('mod __rpc__', 'rpc!');
 
 await writeFile('./AlpacaDeviceAPI_v1.rs', rendered);

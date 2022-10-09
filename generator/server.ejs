@@ -88,28 +88,19 @@ function doc(description) {
   }
 }
 
-function getRefTarget(ref) {
-  return (refReplacements[ref.$ref] || ref).$ref;
-}
-
-function resolveRef(ref) {
-  return refs.get(getRefTarget(ref));
-}
-
-function refToName(ref) {
-  let $ref = getRefTarget(ref);
-  assert.ok($ref, `Not a reference ${dbg(ref)}`);
-  if ($ref.startsWith('#/components/schemas/Empty')) {
-    return '()';
-  }
-  let match = $ref.match(/^#\/components\/(parameters|schemas|requestBodies|responses)\/(\w+)$/);
-  assert.ok(match, `Invalid reference ${dbg(ref)}`);
-  return `${toSnakeCase(match[1])}::${toTypeName(match[2])}`;
-}
-
 function handleType(schema) {
-  if (schema.$ref) {
-    return refToName(schema);
+  let { $ref } = schema;
+  if ($ref) {
+    let replacement = refReplacements[$ref];
+    if (replacement) {
+      return handleType(replacement);
+    }
+    if ($ref === 'void') {
+      return '()';
+    }
+    let match = $ref.match(/^#\/components\/(parameters|schemas|requestBodies|responses)\/(\w+)$/);
+    assert.ok(match, `Invalid reference ${$ref}`);
+    return `${toSnakeCase(match[1])}::${toTypeName(match[2])}`;
   }
   switch (schema.type) {
     case 'integer':
@@ -154,7 +145,16 @@ mod schemas {
   use super::*;
 
   <% for (let [schemaName, schema] of Object.entries(api.components.schemas)) { %>
-    <% if (schemaName.startsWith('Empty')) continue; %>
+    <% if (schema['x-kind'] === 'Empty') continue; %>
+    <% if (schema['x-kind'] === 'ValueResponse') { %>
+      impl ToResponse for <%= handleType(schema.properties.Value) %> {
+        type Response = ValueResponse<Self>;
+
+        fn to_response(self) -> Self::Response {
+          self.into()
+        }
+      }
+    <% continue; } %>
     <% schemaName = toTypeName(schemaName); %>
     #[derive(<%= schema['x-kind'] === 'Request' ? 'Deserialize' : 'Serialize' %>)]
     <% if (schema.type === 'object') { %>
@@ -169,6 +169,15 @@ mod schemas {
       #[repr(transparent)]
       pub struct <%= schemaName %>(<%= handleType(schema, schemaName, true) %>);
     <% } %>
+    <% if (schema['x-kind'] === 'Response') { %>
+      impl ToResponse for <%= schemaName %> {
+        type Response = Self;
+
+        fn to_response(self) -> Self::Response {
+          self
+        }
+      }
+    <% } %>
   <% } %>
 }
 
@@ -178,13 +187,16 @@ rpc! {
     #[http("<%= groupPath %>")]
     pub trait <%= toTypeName(groupPath) %> {
       <% for (let { subPath, method, operation, request, response } of paths) { %>
-        <% let requestRefName = refToName(request); %>
+        <% request = handleType(request); %>
+        <% response = handleType(response); %>
         <%= doc(operation.description) %>
         #[http("<%= subPath %>")]
         fn <%= method === 'get' ? 'get' : 'set' %>_<%= subPath %>(
-          &<%= method === 'get' ? '' : 'mut ' %>self<% if (requestRefName !== '()') { %>,
-          request: <%= requestRefName %><% } %>
-        ) -> ASCOMResult<<%= refToName(response) %>>;
+          &<%= method === 'get' ? '' : 'mut ' %>self,
+          <% if (request !== '()') { %>
+          request: <%= request %>,
+          <% } %>
+        ) -> ASCOMResult<<%= response %>>;
       <% } %>
     }
   <% } %>
