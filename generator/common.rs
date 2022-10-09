@@ -63,7 +63,7 @@ impl<T: DeserializeOwned> ASCOMRequest<T> {
     /// breaks all deserialization because it collects data into an internal representation
     /// first and then can't recover other types from string values stored from the query string.
     ///
-    /// See https://github.com/nox/serde_urlencoded/issues/33.
+    /// See [nox/serde_urlencoded#33](https://github.com/nox/serde_urlencoded/issues/33).
     fn from_encoded_params(encoded_params: &[u8]) -> Result<Self, actix_web::Error> {
         let mut transaction_params = form_urlencoded::Serializer::new(String::new());
         let mut request_params = form_urlencoded::Serializer::new(String::new());
@@ -167,6 +167,8 @@ pub struct ASCOMError {
     pub message: Cow<'static, str>,
 }
 
+pub type ASCOMResult<T> = Result<T, ASCOMError>;
+
 macro_rules! ascom_error_codes {
   ($(#[doc = $doc:literal] $name:ident = $value:literal,)*) => {
     impl ASCOMErrorCode {
@@ -218,10 +220,10 @@ pub struct ASCOMResponse<T> {
     #[serde(flatten)]
     transaction: TransactionIds,
     #[serde(flatten, serialize_with = "serialize_result", bound = "T: Serialize")]
-    pub result: Result<T, ASCOMError>,
+    pub result: ASCOMResult<T>,
 }
 
-fn serialize_result<T: Serialize, S: serde::Serializer>(value: &Result<T, ASCOMError>, serializer: S) -> Result<S::Ok, S::Error> {
+fn serialize_result<T: Serialize, S: serde::Serializer>(value: &ASCOMResult<T>, serializer: S) -> Result<S::Ok, S::Error> {
     match value {
         Ok(value) => value.serialize(serializer),
         Err(error) => error.serialize(serializer),
@@ -339,14 +341,14 @@ macro_rules! rpc {
             }
 
             impl crate::api::common::RpcDevices<dyn $trait_name> {
-                pub fn register<T: 'static + $trait_name>(&self, device: T) -> usize {
+                pub fn register<T: 'static + $trait_name>(&self, device: T) -> u32 {
                     self.register_dyn(Box::new(device))
                 }
             }
 
             impl actix_web::dev::HttpServiceFactory for crate::api::common::RpcService<dyn $trait_name> {
                 fn register(self, config: &mut actix_web::dev::AppService) {
-                    fn missing_device_err(device_number: usize) -> ASCOMError {
+                    fn missing_device_err(device_number: u32) -> ASCOMError {
                         ASCOMError {
                             code: crate::api::common::ASCOMErrorCode::NOT_CONNECTED,
                             message: format!("{} #{} not found", stringify!($trait_name), device_number).into(),
@@ -362,7 +364,7 @@ macro_rules! rpc {
                             fn $method_name(
                                 devices: actix_web::web::Data<crate::api::common::RpcDevices<dyn $trait_name>>,
                                 root_span: tracing_actix_web::RootSpan,
-                                device_number: actix_web::web::Path<usize>,
+                                device_number: actix_web::web::Path<u32>,
                                 ascom: crate::api::common::ASCOMRequest<Params>
                             ) -> impl std::future::Future<Output = Result<
                                 crate::api::common::ASCOMResponse<impl serde::Serialize>,
@@ -392,3 +394,5 @@ macro_rules! rpc {
         )*
     };
 }
+
+pub(crate) use rpc;

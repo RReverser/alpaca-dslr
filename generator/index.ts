@@ -8,16 +8,9 @@ import * as assert from 'assert/strict';
 import { inspect } from 'util';
 import { extraSchemas } from './extra-schemas.js';
 
-interface MethodExtension {
-  'x-path'?: OpenAPIV3.ReferenceObject;
-  'x-request'?: OpenAPIV3.ReferenceObject;
-  'x-requestKind'?: 'Query' | 'Form';
-  'x-response'?: OpenAPIV3.ReferenceObject;
-}
-
 let api = (await openapi.parse(
   './AlpacaDeviceAPI_v1.yaml'
-)) as OpenAPIV3.Document<MethodExtension>;
+)) as OpenAPIV3.Document;
 let refs = await openapi.resolve(api);
 let template = await readFile('./server.ejs', 'utf-8');
 
@@ -145,50 +138,89 @@ function registerSchema(
   return { $ref: `#/components/schemas/${name}` };
 }
 
+let groupedOps: Record<
+  string,
+  {
+    description: string;
+    paths: Array<{
+      subPath: string;
+      method: OpenAPIV3.HttpMethods;
+      operation: OpenAPIV3.OperationObject;
+      request: OpenAPIV3.ReferenceObject;
+      response: OpenAPIV3.ReferenceObject;
+    }>;
+  }
+> = {};
+
 // Extract path parameters, query parameters and bodies that are not in api.components yet.
 // Add all of them to api.components, and replace the originals with $ref references.
 for (let { method, path, id, operation } of ops()) {
-  let groupedParams: Record<string, OpenAPIV3.NonArraySchemaObject> = {};
+  assert.equal(operation.tags?.length, 1, 'Unexpected number of tags');
+  let groupDescription = operation.tags[0];
+
+  let pathMatch = path.match(
+    /^\/(\{device_type\}|\w+)\/\{device_number\}\/(\w+)$/
+  );
+  assert.ok(pathMatch, `Path in unexpected format: ${path}`);
+  let [, groupPath, subPath] = pathMatch;
+
+  let groupedParams: Record<string, OpenAPIV3.ParameterObject[]> = {};
   for (let param of operation.parameters || []) {
     param = resolveMaybeRef(param);
-    let schema = (groupedParams[param.in] ??= {
-      type: 'object',
-      properties: {}
-    });
-    schema.properties![param.name] = {
-      description: param.description,
-      ...param.schema
-    };
-    if (param.required) {
-      (schema.required ??= []).push(param.name);
-    }
+    (groupedParams[param.in] ??= []).push(param);
   }
 
   let typeId = toPascalCase(id);
 
   let { path: pathParams, query: queryParams, ...other } = groupedParams;
-  assert.deepEqual(other, {});
+  assert.deepEqual(other, {}, 'Unexpected parameters');
 
-  assert.ok(pathParams, `Missing path parameters for ${id}`);
-  setXKind(pathParams, 'Path');
-  let pathParamsRef = registerSchema(`${typeId}Path`, pathParams);
+  assert.deepEqual(
+    Object.fromEntries(
+      pathParams.map(({ name, required, schema }) => [
+        name,
+        { type: resolveMaybeRef(schema)?.type, required }
+      ])
+    ),
+    {
+      ...(groupPath === '{device_type}'
+        ? { device_type: { type: 'string', required: true } }
+        : {}),
+      device_number: { type: 'integer', required: true }
+    },
+    `Unexpected path parameters for ${method} ${path}`
+  );
 
   let requestBody = resolveMaybeRef(operation.requestBody);
 
-  let requestParams;
+  let requestParams: OpenAPIV3.SchemaObject;
+  let requestParamsRef: OpenAPIV3.ReferenceObject;
 
   if (method === 'get') {
-    assert.ok(queryParams, `Missing query parameters for ${id}`);
-    assert.ok(!requestBody, `Unexpected request body for ${id}`);
+    assert.ok(queryParams, `Missing query parameters for ${method} ${path}`);
+    assert.ok(!requestBody, `Unexpected request body for ${method} ${path}`);
 
-    setXKind(queryParams, 'Request');
     requestParams = {
-      ref: registerSchema(`${typeId}Request`, queryParams),
-      kind: 'Query' as const
+      type: 'object',
+      properties: {}
     };
+    for (let param of queryParams) {
+      requestParams.properties![param.name] = {
+        description: param.description,
+        ...param.schema
+      };
+      if (param.required) {
+        (requestParams.required ??= []).push(param.name);
+      }
+    }
+
+    requestParamsRef = registerSchema(`${typeId}Request`, requestParams);
   } else {
-    assert.ok(!queryParams, `Unexpected query parameters for ${id}`);
-    assert.ok(requestBody, `Missing request body for ${id}`);
+    assert.ok(
+      !queryParams,
+      `Unexpected query parameters for ${method} ${path}`
+    );
+    assert.ok(requestBody, `Missing request body for ${method} ${path}`);
 
     let { content, schema } = getContent(
       requestBody,
@@ -199,16 +231,11 @@ for (let { method, path, id, operation } of ops()) {
       content.schema = registerSchema(`${typeId}Request`, schema);
     }
 
-    setXKind(schema, 'Request');
-    requestParams = {
-      ref: content.schema,
-      kind: 'Form' as const
-    };
+    requestParams = schema;
+    requestParamsRef = content.schema;
   }
 
-  operation['x-path'] = pathParamsRef;
-  operation['x-request'] = requestParams.ref;
-  operation['x-requestKind'] = requestParams.kind;
+  setXKind(requestParams, 'Request');
 
   let { 200: successfulResponse, ...errorResponses } = operation.responses;
 
@@ -240,6 +267,17 @@ for (let { method, path, id, operation } of ops()) {
   }
 
   setXKind(schema, 'Response');
+
+  (groupedOps[groupPath] ??= {
+    description: groupDescription,
+    paths: []
+  }).paths.push({
+    subPath,
+    method,
+    operation,
+    request: requestParamsRef,
+    response: content.schema
+  });
 }
 
 let refReplacements: Record<string, OpenAPIV3.ReferenceObject> = {};
@@ -359,7 +397,7 @@ let rendered = render(
     api,
     refs,
     refReplacements,
-    ops,
+    groupedOps,
     assert,
     dbg: (x: any) => inspect(x, { colors: true }),
     getContent,
@@ -374,8 +412,10 @@ let rendered = render(
 await writeFile('./AlpacaDeviceAPI_v1.rs', rendered);
 
 try {
-  execFileSync('rustfmt', [
-    '+nightly',
+  execFileSync('rustup', [
+    'run',
+    'nightly',
+    'rustfmt',
     '--edition=2021',
     'AlpacaDeviceAPI_v1.rs'
   ]);

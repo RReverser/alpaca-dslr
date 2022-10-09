@@ -6,10 +6,7 @@
 
 #![allow(unused_variables)]
 
-use actix_web::{error::BlockingError, get, put, web::Path};
 use serde::{Deserialize, Serialize};
-use std::future::Future;
-use tracing_actix_web::RootSpan;
 
 mod common;
 pub use common::*;
@@ -17,12 +14,72 @@ pub use common::*;
 <%
 const toTypeName = toPascalCase;
 
+const rustKeywords = new Set([
+  "as",
+  "use",
+  "extern crate",
+  "break",
+  "const",
+  "continue",
+  "crate",
+  "else",
+  "if",
+  "enum",
+  "extern",
+  "false",
+  "fn",
+  "for",
+  "if",
+  "impl",
+  "in",
+  "for",
+  "let",
+  "loop",
+  "match",
+  "mod",
+  "move",
+  "mut",
+  "pub",
+  "impl",
+  "ref",
+  "return",
+  "Self",
+  "self",
+  "static",
+  "struct",
+  "super",
+  "trait",
+  "true",
+  "type",
+  "unsafe",
+  "use",
+  "where",
+  "while",
+  "abstract",
+  "alignof",
+  "become",
+  "box",
+  "do",
+  "final",
+  "macro",
+  "offsetof",
+  "override",
+  "priv",
+  "proc",
+  "pure",
+  "sizeof",
+  "typeof",
+  "unsized",
+  "virtual",
+  "yield"
+]);
+
 function toPropName(name) {
-  let converted = toSnakeCase(name);
-  if (converted === 'type') {
-    converted += '_';
+  name = toSnakeCase(name);
+  if (rustKeywords.has(name)) {
+    name = `r#${name}`;
   }
-  return converted;
+  return name;
 }
 
 function doc(description) {
@@ -123,43 +180,27 @@ mod schemas {
   <% } %>
 }
 
-<% for (let { path: pathUrl, method: methodName, id, operation: method } of ops()) { %>
-  <%= doc(`${method.summary}${method.description && method.description !== method.summary ? `\n\n${method.description}` : ''}`) %>
-  #[<%= methodName %>("<%= pathUrl %>")]
-  fn <%= id %>(
-    root_span: RootSpan,
-    <% let pathRef = method['x-path'], pathRefName = refToName(pathRef); %>
-    <% if (pathRefName !== '()') { %>
-      path: Path<<%= pathRefName %>>,
-    <% } %>
-    <% let requestRef = method['x-request'], requestRefName = refToName(requestRef); %>
-    request: ASCOMRequest<<%= requestRefName %>>
-  ) -> impl Future<Output = Result<
-    ASCOMResponse<<%= refToName(method.responses[200].content['application/json'].schema) %>>,
-    BlockingError
-  >> {
-    <% if (pathRefName !== '()') { %>
-      let <%= pathRefName %> {
-        <% for (let param in resolveRef(pathRef).properties) { %>
-          <%= toPropName(param) %>,
-        <% } %>
-      } = path.into_inner();
-    <% } %>
-
-    request.respond_with(root_span, move |<%= requestRefName %><% if (requestRefName !== '()') { %> {
-      <% for (let param in resolveRef(requestRef).properties) { %>
-        <%= toPropName(param) %>,
+rpc! {
+  <% for (let [groupPath, { description, paths }] of Object.entries(groupedOps)) { %>
+    <%= doc(description) %>
+    #[http("<%= groupPath %>")]
+    pub trait <%= toTypeName(groupPath) %> {
+      <% for (let { subPath, method, operation, request, response } of paths) { %>
+        <% let requestRefName = refToName(request); %>
+        <%= doc(operation.description) %>
+        #[http("<%= subPath %>")]
+        fn <%= method === 'get' ? 'get' : 'set' %>_<%= subPath %>(
+          &<%= method === 'get' ? '' : 'mut ' %>self<% if (requestRefName !== '()') { %>,
+          request: <%= requestRefName %><% } %>
+        ) -> ASCOMResult<<%= refToName(response) %>>;
       <% } %>
-    }<% } %>| {
-      Err(ASCOMError::ACTION_NOT_IMPLEMENTED)
-    })
-  }
-
-<% } %>
+    }
+  <% } %>
+}
 
 pub fn service() -> actix_web::Scope {
   actix_web::web::scope("/api/v1")
-    <% for (let { id } of ops()) { %>
-      .service(<%= id %>)
+    <% for (let groupPath of Object.keys(groupedOps)) { %>
+      .service(RpcService::<dyn <%= toTypeName(groupPath) %>>::default())
     <% } %>
 }
