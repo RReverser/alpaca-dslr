@@ -4,8 +4,9 @@ fn main() {
     println!("cargo:rerun-if-changed=generator/server.ejs");
     assert!(std::process::Command::new("pwsh")
         .current_dir("generator")
+        .arg("-noprofile")
         .arg("-c")
-        .arg("&{ ts-node-esm index.ts }")
+        .arg("ts-node-esm index.ts; exit $LASTEXITCODE")
         .status()
         .unwrap()
         .success());
