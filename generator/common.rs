@@ -167,6 +167,12 @@ pub struct ASCOMError {
     pub message: Cow<'static, str>,
 }
 
+impl ASCOMError {
+    pub fn new(code: ASCOMErrorCode, message: impl Into<Cow<'static, str>>) -> Self {
+        Self { code, message: message.into() }
+    }
+}
+
 pub type ASCOMResult<T> = Result<T, ASCOMError>;
 
 macro_rules! ascom_error_codes {
@@ -349,10 +355,7 @@ macro_rules! rpc {
             impl actix_web::dev::HttpServiceFactory for crate::api::common::RpcService<dyn $trait_name> {
                 fn register(self, config: &mut actix_web::dev::AppService) {
                     fn missing_device_err(device_number: u32) -> ASCOMError {
-                        ASCOMError {
-                            code: crate::api::common::ASCOMErrorCode::NOT_CONNECTED,
-                            message: format!("{} #{} not found", stringify!($trait_name), device_number).into(),
-                        }
+                        ASCOMError::new(crate::api::common::ASCOMErrorCode::NOT_CONNECTED, format!("{} #{} not found", stringify!($trait_name), device_number))
                     }
 
                     let scope =
