@@ -180,7 +180,7 @@ impl ASCOMError {
     }
 }
 
-pub type ASCOMResult<T> = Result<T, ASCOMError>;
+pub type ASCOMResult<T = ()> = Result<T, ASCOMError>;
 
 macro_rules! ascom_error_codes {
   ($(#[doc = $doc:literal] $name:ident = $value:literal,)*) => {
@@ -229,7 +229,7 @@ ascom_error_codes! {
 }
 
 #[derive(Serialize)]
-pub(crate) struct ASCOMResponse<T: ToResponse> {
+pub(crate) struct ASCOMResponse<T: ToResponse = ()> {
     #[serde(flatten)]
     transaction: TransactionIds,
     #[serde(flatten, serialize_with = "serialize_result")]
@@ -364,7 +364,7 @@ macro_rules! rpc {
             $(
                 $(#[doc = $method_doc:literal])*
                 #[http($method_path:literal)]
-                fn $method_name:ident(& $($mut_self:ident)* $(, $params:ident: $params_ty:ty)?) -> ASCOMResult<$return_type:ty>;
+                fn $method_name:ident(& $($mut_self:ident)* $(, $params:ident: $params_ty:ty)?) $(-> $return_type:ty)?;
             )*
         }
     )*) => {
@@ -373,7 +373,9 @@ macro_rules! rpc {
             pub trait $trait_name: Send + Sync {
                 $(
                     $(#[doc = $method_doc])*
-                    fn $method_name(& $($mut_self)* $(, $params: $params_ty)?) -> ASCOMResult<$return_type>;
+                    fn $method_name(& $($mut_self)* $(, $params: $params_ty)?) -> ASCOMResult$(<$return_type>)? {
+                        Err(ASCOMError::ACTION_NOT_IMPLEMENTED)
+                    }
                 )*
             }
 
@@ -401,7 +403,7 @@ macro_rules! rpc {
                                 device_number: actix_web::web::Path<u32>,
                                 ascom: crate::api::common::ASCOMRequest<Params>
                             ) -> impl std::future::Future<Output = Result<
-                                crate::api::common::ASCOMResponse<$return_type>,
+                                crate::api::common::ASCOMResponse$(<$return_type>)?,
                                 actix_web::error::BlockingError>
                             > {
                                 ascom.respond_with(root_span, move |params| {

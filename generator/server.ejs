@@ -126,7 +126,11 @@ rpc! {
           <% if (request !== '()') { %>
           request: <%= request %>,
           <% } %>
-        ) -> ASCOMResult<<%= response %>>;
+        )
+        <% if (response !== '()') { %>
+          -> <%= response %>
+        <% } %>
+        ;
       <% } %>
     }
   <% } %>
