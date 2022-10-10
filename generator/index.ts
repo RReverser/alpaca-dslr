@@ -519,9 +519,6 @@ Object.entries(groupCounts)
     );
   });
 
-// TODO: correctly handle base class.
-delete groupedOps['{device_type}'];
-
 let rendered = render(
   template,
   {

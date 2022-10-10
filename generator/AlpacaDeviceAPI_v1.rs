@@ -728,6 +728,73 @@ mod schemas {
 
 rpc! {
 
+    /// ASCOM Methods Common To All Devices
+    #[http("{device_type}")]
+    pub trait Device {
+        /**
+        Actions and SupportedActions are a standardised means for drivers to extend functionality beyond the built-in capabilities of the ASCOM device interfaces.
+
+        The key advantage of using Actions is that drivers can expose any device specific functionality required. The downside is that, in order to use these unique features, every application author would need to create bespoke code to present or exploit them.
+
+        The Action parameter and return strings are deceptively simple, but can support transmission of arbitrarily complex data structures, for example through JSON encoding.
+
+        This capability will be of primary value to
+         * <span style="font-size:14px;">bespoke software and hardware configurations where a single entity controls both the consuming application software and the hardware / driver environment</span>
+         * <span style="font-size:14px;">a group of application and device authors to quickly formulate and try out new interface capabilities without requiring an immediate change to the ASCOM device interface, which will take a lot longer than just agreeing a name, input parameters and a standard response for an Action command.</span>
+
+
+        The list of Action commands supported by a driver can be discovered through the SupportedActions property.
+
+        This method should return an error message and NotImplementedException error number (0x400) if the driver just implements the standard ASCOM device methods and has no bespoke, unique, functionality.
+        */
+        #[http("action")]
+        fn action(&mut self, request: schemas::PutActionRequest) -> String;
+
+        /// Transmits an arbitrary string to the device and does not wait for a response. Optionally, protocol framing characters may be added to the string before transmission.
+        #[http("commandblind")]
+        fn command_blind(&mut self, request: schemas::PutCommandblindRequest);
+
+        /// Transmits an arbitrary string to the device and waits for a boolean response. Optionally, protocol framing characters may be added to the string before transmission.
+        #[http("commandbool")]
+        fn command_bool(&mut self, request: schemas::PutCommandblindRequest) -> bool;
+
+        /// Transmits an arbitrary string to the device and waits for a string response. Optionally, protocol framing characters may be added to the string before transmission.
+        #[http("commandstring")]
+        fn command_string(&mut self, request: schemas::PutCommandblindRequest) -> String;
+
+        /// Retrieves the connected state of the device
+        #[http("connected")]
+        fn connected(&self) -> bool;
+
+        /// Sets the connected state of the device
+        #[http("connected")]
+        fn set_connected(&mut self, request: schemas::PutConnectedRequest);
+
+        /// The description of the device
+        #[http("description")]
+        fn description(&self) -> String;
+
+        /// The description of the driver
+        #[http("driverinfo")]
+        fn driver_info(&self) -> String;
+
+        /// A string containing only the major and minor version of the driver.
+        #[http("driverversion")]
+        fn driver_version(&self) -> String;
+
+        /// This method returns the version of the ASCOM device interface contract to which this device complies. Only one interface version is current at a moment in time and all new devices should be built to the latest interface version. Applications can choose which device interface versions they support and it is in their interest to support  previous versions as well as the current version to ensure thay can use the largest number of devices.
+        #[http("interfaceversion")]
+        fn interface_version(&self) -> i32;
+
+        /// The name of the device
+        #[http("name")]
+        fn name(&self) -> String;
+
+        /// Returns the list of action names supported by this driver.
+        #[http("supportedactions")]
+        fn supported_actions(&self) -> Vec<String>;
+    }
+
     /// Camera Specific Methods
     #[http("camera")]
     pub trait Camera {
@@ -1880,6 +1947,7 @@ rpc! {
 
 pub fn service() -> actix_web::Scope {
     actix_web::web::scope("/api/v1")
+        .service(RpcService::<dyn Device>::default())
         .service(RpcService::<dyn Camera>::default())
         .service(RpcService::<dyn CoverCalibrator>::default())
         .service(RpcService::<dyn Dome>::default())

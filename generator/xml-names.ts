@@ -6,8 +6,8 @@ class CanonicalDevice {
 
   constructor(public readonly name: string) {}
 
-  registerMethod(method: string) {
-    this._methods[method.toLowerCase()] = method;
+  registerMethod(method: string, subPath: string = method.toLowerCase()) {
+    this._methods[subPath] = method;
   }
 
   getMethod(subPath: string) {
@@ -23,8 +23,8 @@ class CanonicalDevice {
 class CanonicalDevices {
   private _devices: Record<string, CanonicalDevice> = {};
 
-  registerDevice(name: string) {
-    return (this._devices[name.toLowerCase()] ??= new CanonicalDevice(name));
+  registerDevice(name: string, path: string = name.toLowerCase()) {
+    return (this._devices[path] ??= new CanonicalDevice(name));
   }
 
   getDevice(path: string) {
@@ -45,7 +45,7 @@ export async function getCanonicalNames() {
     canonical.registerDevice(device).registerMethod(method);
   }
 
-  let generic = canonical.registerDevice('{device_type}');
+  let generic = canonical.registerDevice('Device', '{device_type}');
   for (let [, method] of xml.matchAll(/M:Alpaca\.AlpacaController\.(\w+)\(/g)) {
     generic.registerMethod(method);
   }
