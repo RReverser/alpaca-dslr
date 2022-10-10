@@ -1,8 +1,8 @@
 use actix_web::{
     dev::{ServiceRequest, ServiceResponse},
-    error::{BlockingError, ErrorBadRequest},
+    error::ErrorBadRequest,
     web::{Bytes, Json, Path},
-    HttpMessage, HttpRequest, HttpResponse, Responder,
+    HttpRequest, HttpResponse, Responder,
 };
 
 use serde::{Deserialize, Serialize};
@@ -62,7 +62,9 @@ impl ASCOMRequest {
     /// first and then can't recover other types from string values stored from the query string.
     ///
     /// See [nox/serde_urlencoded#33](https://github.com/nox/serde_urlencoded/issues/33).
-    fn from_encoded_params(encoded_params: impl AsRef<[u8]>) -> Result<Self, serde_urlencoded::de::Error> {
+    fn from_encoded_params(
+        encoded_params: impl AsRef<[u8]>,
+    ) -> Result<Self, serde_urlencoded::de::Error> {
         let mut transaction_params = form_urlencoded::Serializer::new(String::new());
         let mut request_params = form_urlencoded::Serializer::new(String::new());
 
@@ -85,7 +87,11 @@ impl ASCOMRequest {
 }
 
 impl ASCOMRequest {
-    pub fn respond_with(self, root_span: RootSpan, f: impl FnOnce(&str) -> Result<serde_json::Value, ASCOMError> + Send + 'static) -> ASCOMResponse {
+    pub fn respond_with(
+        self,
+        root_span: RootSpan,
+        f: impl FnOnce(&str) -> Result<serde_json::Value, ASCOMError> + Send + 'static,
+    ) -> ASCOMResponse {
         self.transaction.record(root_span);
 
         ASCOMResponse {
@@ -106,7 +112,10 @@ impl ASCOMErrorCode {
         /// The maximum value for driver-specific error numbers.
         const DRIVER_MAX: u16 = 0xFFF;
 
-        assert!(code <= DRIVER_MAX - DRIVER_BASE, "Driver error code out of range");
+        assert!(
+            code <= DRIVER_MAX - DRIVER_BASE,
+            "Driver error code out of range"
+        );
         Self(DRIVER_BASE + code)
     }
 }
@@ -121,7 +130,10 @@ pub struct ASCOMError {
 
 impl ASCOMError {
     pub fn new(code: ASCOMErrorCode, message: impl Into<Cow<'static, str>>) -> Self {
-        Self { code, message: message.into() }
+        Self {
+            code,
+            message: message.into(),
+        }
     }
 }
 
@@ -205,7 +217,10 @@ impl<T> From<T> for ValueResponse<T> {
     }
 }
 
-fn serialize_result<R: Serialize, S: serde::Serializer>(value: &ASCOMResult<R>, serializer: S) -> Result<S::Ok, S::Error> {
+fn serialize_result<R: Serialize, S: serde::Serializer>(
+    value: &ASCOMResult<R>,
+    serializer: S,
+) -> Result<S::Ok, S::Error> {
     match value {
         Ok(value) => value.serialize(serializer),
         Err(error) => error.serialize(serializer),
@@ -226,7 +241,12 @@ impl tracing_actix_web::RootSpanBuilder for DomainRootSpanBuilder {
     fn on_request_start(request: &ServiceRequest) -> Span {
         use tracing::field::Empty;
 
-        tracing_actix_web::root_span!(request, client_id = Empty, client_transaction_id = Empty, server_transaction_id = Empty)
+        tracing_actix_web::root_span!(
+            request,
+            client_id = Empty,
+            client_transaction_id = Empty,
+            server_transaction_id = Empty
+        )
     }
 
     fn on_request_end<B>(span: Span, outcome: &Result<ServiceResponse<B>, actix_web::Error>) {
@@ -238,7 +258,10 @@ type DevicesStorage = HashMap<(&'static str, usize), Box<Mutex<dyn super::Device
 
 impl fmt::Debug for dyn super::Device {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        f.debug_struct(self.ty()).field("name", &self.name()).field("description", &self.description()).finish()
+        f.debug_struct(self.ty())
+            .field("name", &self.name())
+            .field("description", &self.description())
+            .finish()
     }
 }
 
@@ -256,13 +279,16 @@ impl DevicesBuilder {
     pub fn with<T: super::Device + 'static>(mut self, device: T) -> Self {
         let index_ref = self.counters.entry(device.ty()).or_insert(0);
         let index = *index_ref;
-        self.devices.insert((device.ty(), index), Box::new(Mutex::new(device)));
+        self.devices
+            .insert((device.ty(), index), Box::new(Mutex::new(device)));
         *index_ref += 1;
         self
     }
 
     pub fn finish(self) -> Devices {
-        Devices { devices: Arc::new(self.devices) }
+        Devices {
+            devices: Arc::new(self.devices),
+        }
     }
 }
 
@@ -272,7 +298,14 @@ pub struct Devices {
 }
 
 impl Devices {
-    pub fn handle_action(&self, is_mut: bool, device_type: &str, device_number: usize, action: &str, params: &str) -> ASCOMResult<serde_json::Value> {
+    pub fn handle_action(
+        &self,
+        is_mut: bool,
+        device_type: &str,
+        device_number: usize,
+        action: &str,
+        params: &str,
+    ) -> ASCOMResult<serde_json::Value> {
         self.devices
             .get(&(device_type, device_number))
             .ok_or(ASCOMError::NOT_CONNECTED)?
@@ -284,7 +317,12 @@ impl Devices {
 
 impl actix_web::dev::HttpServiceFactory for Devices {
     fn register(self, config: &mut actix_web::dev::AppService) {
-        fn handler(request: &HttpRequest, root_span: RootSpan, path: Path<(String, usize, String)>, params: &[u8]) -> impl Future<Output = actix_web::Result<ASCOMResponse>> {
+        fn handler(
+            request: &HttpRequest,
+            root_span: RootSpan,
+            path: Path<(String, usize, String)>,
+            params: &[u8],
+        ) -> impl Future<Output = actix_web::Result<ASCOMResponse>> {
             let devices = request.app_data::<Devices>().unwrap().clone();
             let ascom_res = ASCOMRequest::from_encoded_params(params);
 
@@ -304,10 +342,19 @@ impl actix_web::dev::HttpServiceFactory for Devices {
 
         let resource = actix_web::web::resource("/api/v1/{device_type}/{device_number}/{action}")
             .app_data(self)
-            .route(
-                actix_web::web::get().to(move |request: HttpRequest, root_span: RootSpan, path: Path<(String, usize, String)>| handler(&request, root_span, path, request.query_string().as_bytes())),
-            )
-            .route(actix_web::web::post().to(move |request: HttpRequest, root_span: RootSpan, path: Path<(String, usize, String)>, body: Bytes| handler(&request, root_span, path, &body)));
+            .route(actix_web::web::get().to(
+                move |request: HttpRequest,
+                      root_span: RootSpan,
+                      path: Path<(String, usize, String)>| {
+                    handler(&request, root_span, path, request.query_string().as_bytes())
+                },
+            ))
+            .route(actix_web::web::post().to(
+                move |request: HttpRequest,
+                      root_span: RootSpan,
+                      path: Path<(String, usize, String)>,
+                      body: Bytes| handler(&request, root_span, path, &body),
+            ));
 
         actix_web::dev::HttpServiceFactory::register(resource, config);
     }
