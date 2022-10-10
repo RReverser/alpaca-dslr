@@ -51,7 +51,7 @@ fn generate_server_transaction_id() -> u32 {
 }
 
 // #[derive(Deserialize)]
-pub(crate) struct ASCOMRequest<T: 'static + DeserializeOwned> {
+pub(crate) struct ASCOMRequest<T: 'static + DeserializeOwned = ()> {
     // #[serde(flatten)]
     transaction: TransactionIds,
     // #[serde(flatten)]
@@ -331,7 +331,6 @@ impl<T: ?Sized> Default for RpcService<T> {
     }
 }
 
-#[allow(unused_macros)]
 macro_rules! rpc {
     (@dashmap_get $dashmap:expr, $index:expr, mut self) => {
         $dashmap.get_mut($index)
@@ -339,14 +338,6 @@ macro_rules! rpc {
 
     (@dashmap_get $dashmap:expr, $index:expr, self) => {
         $dashmap.get($index)
-    };
-
-    (@type_or_void $name:ident = $ty:ty) => {
-        type $name = $ty;
-    };
-
-    (@type_or_void $name:ident) => {
-        type $name = ();
     };
 
     (@http_method mut self) => {
@@ -369,6 +360,7 @@ macro_rules! rpc {
         }
     )*) => {
         $(
+            #[allow(unused_variables)]
             $(#[doc = $doc])*
             pub trait $trait_name: Send + Sync {
                 $(
@@ -395,18 +387,16 @@ macro_rules! rpc {
                         actix_web::web::scope(concat!("/", $path, "/{device_number}"))
                         .app_data(actix_web::web::Data::new(crate::api::common::RpcDevices::<dyn $trait_name>::default()))
                         $(.route(concat!("/", $method_path), {
-                            rpc!(@type_or_void Params $( = $params_ty)?);
-
                             fn $method_name(
                                 devices: actix_web::web::Data<crate::api::common::RpcDevices<dyn $trait_name>>,
                                 root_span: tracing_actix_web::RootSpan,
                                 device_number: actix_web::web::Path<u32>,
-                                ascom: crate::api::common::ASCOMRequest<Params>
+                                ascom: crate::api::common::ASCOMRequest$(<$params_ty>)?,
                             ) -> impl std::future::Future<Output = Result<
                                 crate::api::common::ASCOMResponse$(<$return_type>)?,
                                 actix_web::error::BlockingError>
                             > {
-                                ascom.respond_with(root_span, move |params| {
+                                ascom.respond_with(root_span, move |_params| {
                                     let device_number = device_number.into_inner();
 
                                     rpc!(@dashmap_get devices, device_number, $($mut_self)*)
@@ -414,7 +404,7 @@ macro_rules! rpc {
                                         missing_device_err(device_number)
                                     })?
                                     .$method_name($({
-                                        let $params = params;
+                                        let $params = _params;
                                         $params
                                     })?)
                                 })

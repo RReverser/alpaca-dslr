@@ -35,7 +35,7 @@ The SetupDialog method has been omitted from the Alpaca Device API because it pr
 
 */
 
-#![allow(unused_variables, rustdoc::broken_intra_doc_links)]
+#![allow(rustdoc::broken_intra_doc_links)]
 
 use serde::{Deserialize, Serialize};
 
