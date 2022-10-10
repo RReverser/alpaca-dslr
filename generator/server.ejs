@@ -12,76 +12,6 @@ mod common;
 pub use common::*;
 
 <%
-const toTypeName = toPascalCase;
-
-const rustKeywords = new Set([
-  "as",
-  "use",
-  "extern crate",
-  "break",
-  "const",
-  "continue",
-  "crate",
-  "else",
-  "if",
-  "enum",
-  "extern",
-  "false",
-  "fn",
-  "for",
-  "if",
-  "impl",
-  "in",
-  "for",
-  "let",
-  "loop",
-  "match",
-  "mod",
-  "move",
-  "mut",
-  "pub",
-  "impl",
-  "ref",
-  "return",
-  "Self",
-  "self",
-  "static",
-  "struct",
-  "super",
-  "trait",
-  "true",
-  "type",
-  "unsafe",
-  "use",
-  "where",
-  "while",
-  "abstract",
-  "alignof",
-  "become",
-  "box",
-  "do",
-  "final",
-  "macro",
-  "offsetof",
-  "override",
-  "priv",
-  "proc",
-  "pure",
-  "sizeof",
-  "typeof",
-  "unsized",
-  "virtual",
-  "yield"
-]);
-
-function toPropName(name) {
-  name = toSnakeCase(name);
-  if (rustKeywords.has(name)) {
-    name = `r#${name}`;
-  }
-  return name;
-}
-
 function doc(description) {
   if (description) {
     return description.includes('\n') ? `/**\n${description}\n*/` : `/// ${description}`;
@@ -98,9 +28,9 @@ function handleType(schema) {
     if ($ref === 'void') {
       return '()';
     }
-    let match = $ref.match(/^#\/components\/(parameters|schemas|requestBodies|responses)\/(\w+)$/);
+    let match = $ref.match(/^#\/components\/schemas\/(\w+)$/);
     assert.ok(match, `Invalid reference ${$ref}`);
-    return `${toSnakeCase(match[1])}::${toTypeName(match[2])}`;
+    return `schemas::${toTypeName(match[1])}`;
   }
   switch (schema.type) {
     case 'integer':
@@ -186,20 +116,12 @@ rpc! {
     <%= doc(description) %>
     #[http("<%= groupPath %>")]
     pub trait <%= typeName %> {
-      <% for (let { subPath, method, operation, request, response } of paths) { %>
+      <% for (let { subPath, method, fnName, operation, request, response } of paths) { %>
         <% request = handleType(request); %>
         <% response = handleType(response); %>
         <%= doc(operation.description) %>
         #[http("<%= subPath %>")]
-        fn <%= toPropName(`${
-          method === 'get'
-          ? 'get_'
-          : (
-            paths.findIndex(({ subPath: subPath2, method: method2 }) => subPath === subPath2 && method2 === 'get') >= 0
-            ? 'set_'
-            : ''
-          )
-        }${subPath}`) %>(
+        fn <%= fnName %>(
           &<%= method === 'get' ? '' : 'mut ' %>self,
           <% if (request !== '()') { %>
           request: <%= request %>,

@@ -5,7 +5,7 @@ import { spawnSync } from 'child_process';
 import { toSnakeCase, toPascalCase } from 'js-convert-case';
 import { OpenAPIV3 } from 'openapi-types';
 import * as assert from 'assert/strict';
-import { getCSharpItems } from './parse-elendil.js';
+import { getCanonicalNames } from './xml-names.js';
 
 let api = (await openapi.parse(
   './AlpacaDeviceAPI_v1.yaml'
@@ -137,6 +137,106 @@ function registerSchema(
   return { $ref: `#/components/schemas/${name}` };
 }
 
+const rustKeywords = new Set([
+  'as',
+  'use',
+  'extern crate',
+  'break',
+  'const',
+  'continue',
+  'crate',
+  'else',
+  'if',
+  'enum',
+  'extern',
+  'false',
+  'fn',
+  'for',
+  'if',
+  'impl',
+  'in',
+  'for',
+  'let',
+  'loop',
+  'match',
+  'mod',
+  'move',
+  'mut',
+  'pub',
+  'impl',
+  'ref',
+  'return',
+  'Self',
+  'self',
+  'static',
+  'struct',
+  'super',
+  'trait',
+  'true',
+  'type',
+  'unsafe',
+  'use',
+  'where',
+  'while',
+  'abstract',
+  'alignof',
+  'become',
+  'box',
+  'do',
+  'final',
+  'macro',
+  'offsetof',
+  'override',
+  'priv',
+  'proc',
+  'pure',
+  'sizeof',
+  'typeof',
+  'unsized',
+  'virtual',
+  'yield'
+]);
+
+function toPropName(name: string) {
+  name = toSnakeCase(name);
+  if (rustKeywords.has(name)) {
+    name = `r#${name}`;
+  }
+  return name;
+}
+
+let canonicalNames = await getCanonicalNames();
+
+// for (let [groupPath, group] of Object.entries(groupedOps)) {
+//   let canonicalGroup = canonicalNames[groupPath];
+//   if (!canonicalGroup) {
+//     console.warn(`Couldn't find canonical name for ${groupPath}`);
+//     continue;
+//   }
+//   group.typeName = canonicalGroup.name;
+//   for (let path of group.paths) {
+//     let canonicalMethodName = canonicalGroup.methods[path.subPath];
+//     if (!canonicalMethodName) {
+//       console.warn(
+//         `Couldn't find canonical name for ${group.typeName}::${path.subPath}`
+//       );
+//       continue;
+//     }
+
+//     if (path.method === 'get') {
+//       if (canonicalMethodName.startsWith('Get')) {
+//         canonicalMethodName = canonicalMethodName.slice(3);
+//       }
+//     } else if (
+//       api.paths[`/${groupPath}/{device_number}/${path.subPath}`]?.get
+//     ) {
+//       canonicalMethodName = `Set${canonicalMethodName}`;
+//     }
+
+//     path.fnName = toPropName(canonicalMethodName);
+//   }
+// }
+
 let groupedOps: Record<
   string,
   {
@@ -145,6 +245,7 @@ let groupedOps: Record<
     paths: Array<{
       subPath: string;
       method: OpenAPIV3.HttpMethods;
+      fnName: string;
       operation: OpenAPIV3.OperationObject;
       request: OpenAPIV3.ReferenceObject;
       response: OpenAPIV3.ReferenceObject;
@@ -260,24 +361,43 @@ for (let { method, path, id, operation } of ops()) {
 
   successfulResponse = resolveMaybeRef(successfulResponse);
 
-  let { content, schema } = getContent(successfulResponse, 'application/json');
+  let { content: responseContent, schema: responseSchema } = getContent(
+    successfulResponse,
+    'application/json'
+  );
 
-  if (!isRef(content.schema)) {
-    content.schema = registerSchema(`${typeId}Response`, schema);
+  if (!isRef(responseContent.schema)) {
+    responseContent.schema = registerSchema(
+      `${typeId}Response`,
+      responseSchema
+    );
   }
 
-  setXKind(schema, 'Response');
+  setXKind(responseSchema, 'Response');
+
+  let canonicalDevice = canonicalNames.getDevice(groupPath);
+
+  let fnName = canonicalDevice.getMethod(subPath);
+  if (method === 'get') {
+    if (fnName.startsWith('Get')) {
+      fnName = fnName.slice(3);
+    }
+  } else if (api.paths[path]?.get) {
+    fnName = `Set${fnName}`;
+  }
+  fnName = toPropName(fnName);
 
   (groupedOps[groupPath] ??= {
-    typeName: toPascalCase(groupPath),
+    typeName: canonicalDevice.name,
     description: groupDescription,
     paths: []
   }).paths.push({
     subPath,
     method,
+    fnName,
     operation,
     request: requestParamsRef,
-    response: content.schema
+    response: responseContent.schema
   });
 }
 
@@ -402,16 +522,6 @@ Object.entries(groupCounts)
 // TODO: correctly handle base class.
 delete groupedOps['{device_type}'];
 
-let sharp = await getCSharpItems();
-for (let [groupPath, group] of Object.entries(groupedOps)) {
-  let sharpItem = sharp[`i${groupPath}`];
-  if (sharpItem) {
-    group.typeName = sharpItem.name.slice(1);
-  } else {
-    console.warn(`Couldn't find C# counterpart for ${groupPath}`);
-  }
-}
-
 let rendered = render(
   template,
   {
@@ -421,8 +531,8 @@ let rendered = render(
     groupedOps,
     assert,
     getContent,
-    toPascalCase,
-    toSnakeCase
+    toTypeName: toPascalCase,
+    toPropName
   },
   {
     escape: x => x
