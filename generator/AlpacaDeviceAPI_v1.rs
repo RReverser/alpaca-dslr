@@ -797,7 +797,7 @@ rpc! {
 
     /// Camera Specific Methods
     #[http("camera")]
-    pub trait Camera {
+    pub trait Camera: Device {
         /// Returns the X offset of the Bayer matrix, as defined in SensorType.
         #[http("bayeroffsetx")]
         fn bayer_offset_x(&self) -> i32;
@@ -1214,7 +1214,7 @@ rpc! {
 
     /// CoverCalibrator Specific Methods
     #[http("covercalibrator")]
-    pub trait CoverCalibrator {
+    pub trait CoverCalibrator: Device {
         /// Returns the current calibrator brightness in the range 0 (completely off) to MaxBrightness (fully on)
         #[http("brightness")]
         fn brightness(&self) -> i32;
@@ -1254,7 +1254,7 @@ rpc! {
 
     /// Dome Specific Methods
     #[http("dome")]
-    pub trait Dome {
+    pub trait Dome: Device {
         /// The dome altitude (degrees, horizon zero and increasing positive to 90 zenith).
         #[http("altitude")]
         fn altitude(&self) -> f64;
@@ -1358,7 +1358,7 @@ rpc! {
 
     /// FilterWheel Specific Methods
     #[http("filterwheel")]
-    pub trait FilterWheel {
+    pub trait FilterWheel: Device {
         /// An integer array of filter focus offsets.
         #[http("focusoffsets")]
         fn focus_offsets(&self) -> Vec<i32>;
@@ -1378,7 +1378,7 @@ rpc! {
 
     /// Focuser Specific Methods
     #[http("focuser")]
-    pub trait Focuser {
+    pub trait Focuser: Device {
         /// True if the focuser is capable of absolute position; that is, being commanded to a specific step location.
         #[http("absolute")]
         fn absolute(&self) -> bool;
@@ -1430,7 +1430,7 @@ rpc! {
 
     /// ObservingConditions Specific Methods
     #[http("observingconditions")]
-    pub trait ObservingConditions {
+    pub trait ObservingConditions: Device {
         /// Gets the time period over which observations will be averaged
         #[http("averageperiod")]
         fn average_period(&self) -> f64;
@@ -1506,7 +1506,7 @@ rpc! {
 
     /// Rotator Specific Methods
     #[http("rotator")]
-    pub trait Rotator {
+    pub trait Rotator: Device {
         /// True if the Rotator supports the Reverse method.
         #[http("canreverse")]
         fn can_reverse(&self) -> bool;
@@ -1562,7 +1562,7 @@ rpc! {
 
     /// SafetyMonitor Specific Methods
     #[http("safetymonitor")]
-    pub trait SafetyMonitor {
+    pub trait SafetyMonitor: Device {
         /// Indicates whether the monitored state is safe for use. True if the state is safe, False if it is unsafe.
         #[http("issafe")]
         fn is_safe(&self) -> bool;
@@ -1570,7 +1570,7 @@ rpc! {
 
     /// Switch Specific Methods
     #[http("switch")]
-    pub trait Switch {
+    pub trait Switch: Device {
         /// Returns the number of switch devices managed by this driver. Devices are numbered from 0 to MaxSwitch - 1
         #[http("maxswitch")]
         fn max_switch(&self) -> i32;
@@ -1622,7 +1622,7 @@ rpc! {
 
     /// Telescope Specific Methods
     #[http("telescope")]
-    pub trait Telescope {
+    pub trait Telescope: Device {
         /// Returns the alignment mode of the mount (Alt/Az, Polar, German Polar).  The alignment mode is specified as an integer value from the AlignmentModes Enum.
         #[http("alignmentmode")]
         fn alignment_mode(&self) -> i32;
@@ -1943,19 +1943,4 @@ rpc! {
         #[http("unpark")]
         fn un_park(&mut self);
     }
-}
-
-pub fn service() -> actix_web::Scope {
-    actix_web::web::scope("/api/v1")
-        .service(RpcService::<dyn Device>::default())
-        .service(RpcService::<dyn Camera>::default())
-        .service(RpcService::<dyn CoverCalibrator>::default())
-        .service(RpcService::<dyn Dome>::default())
-        .service(RpcService::<dyn FilterWheel>::default())
-        .service(RpcService::<dyn Focuser>::default())
-        .service(RpcService::<dyn ObservingConditions>::default())
-        .service(RpcService::<dyn Rotator>::default())
-        .service(RpcService::<dyn SafetyMonitor>::default())
-        .service(RpcService::<dyn Switch>::default())
-        .service(RpcService::<dyn Telescope>::default())
 }

@@ -115,7 +115,11 @@ rpc! {
   <% for (let [groupPath, { description, paths, typeName }] of Object.entries(groupedOps)) { %>
     <%= doc(description) %>
     #[http("<%= groupPath %>")]
-    pub trait <%= typeName %> {
+    pub trait <%= typeName %>
+      <% if (typeName !== 'Device') { %>
+        : Device
+      <% } %>
+    {
       <% for (let { subPath, method, fnName, operation, request, response } of paths) { %>
         <% request = handleType(request); %>
         <% response = handleType(response); %>
@@ -134,11 +138,4 @@ rpc! {
       <% } %>
     }
   <% } %>
-}
-
-pub fn service() -> actix_web::Scope {
-  actix_web::web::scope("/api/v1")
-    <% for (let { typeName } of Object.values(groupedOps)) { %>
-      .service(RpcService::<dyn <%= typeName %>>::default())
-    <% } %>
 }

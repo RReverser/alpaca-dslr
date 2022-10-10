@@ -5,15 +5,15 @@ use actix_web::{
     web::{Bytes, Json, Query},
     FromRequest, HttpMessage, HttpRequest, HttpResponse, Responder,
 };
-use dashmap::DashMap;
+
 use pin_project::pin_project;
-use serde::{de::DeserializeOwned, Deserialize, Serialize};
+use serde::{Deserialize, Serialize};
 use std::borrow::Cow;
-use std::future::Future;
-use std::marker::PhantomData;
-use std::ops::{Deref, DerefMut};
-use std::pin::Pin;
+use std::collections::HashMap;
 use std::sync::atomic::AtomicU32;
+use std::sync::Arc;
+use std::{fmt, pin::Pin};
+use std::{future::Future, sync::Mutex};
 use tracing::Span;
 use tracing_actix_web::RootSpan;
 
@@ -51,14 +51,14 @@ fn generate_server_transaction_id() -> u32 {
 }
 
 // #[derive(Deserialize)]
-pub(crate) struct ASCOMRequest<T: 'static + DeserializeOwned = ()> {
+pub(crate) struct ASCOMRequest {
     // #[serde(flatten)]
     transaction: TransactionIds,
     // #[serde(flatten)]
-    pub request: T,
+    request_encoded_params: String,
 }
 
-impl<T: DeserializeOwned> ASCOMRequest<T> {
+impl ASCOMRequest {
     /// This awkward machinery is to accomodate for the fact that the serde(flatten)
     /// breaks all deserialization because it collects data into an internal representation
     /// first and then can't recover other types from string values stored from the query string.
@@ -81,38 +81,34 @@ impl<T: DeserializeOwned> ASCOMRequest<T> {
 
         Ok(ASCOMRequest {
             transaction: Query::<TransactionIds>::from_query(&transaction_params.finish())?.into_inner(),
-            request: Query::<T>::from_query(&request_params.finish())?.into_inner(),
+            request_encoded_params: request_params.finish(),
         })
     }
 }
 
 #[pin_project]
-pub(crate) struct BodyParamsFuture<T: 'static + DeserializeOwned> {
+pub(crate) struct BodyParamsFuture {
     #[pin]
     inner: <Bytes as FromRequest>::Future,
-    _phantom: std::marker::PhantomData<fn() -> ASCOMRequest<T>>,
 }
 
-impl<T: DeserializeOwned> BodyParamsFuture<T> {
-    fn new(fut: <Bytes as FromRequest>::Future) -> Self {
-        BodyParamsFuture {
-            inner: fut,
-            _phantom: std::marker::PhantomData,
-        }
+impl BodyParamsFuture {
+    fn new(inner: <Bytes as FromRequest>::Future) -> Self {
+        BodyParamsFuture { inner }
     }
 }
 
-impl<T: DeserializeOwned> Future for BodyParamsFuture<T> {
-    type Output = Result<ASCOMRequest<T>, actix_web::Error>;
+impl Future for BodyParamsFuture {
+    type Output = Result<ASCOMRequest, actix_web::Error>;
 
     fn poll(self: Pin<&mut Self>, cx: &mut std::task::Context<'_>) -> std::task::Poll<Self::Output> {
         self.project().inner.poll(cx).map(|encoded_params| ASCOMRequest::from_encoded_params(encoded_params?.as_ref()))
     }
 }
 
-impl<T: 'static + DeserializeOwned> FromRequest for ASCOMRequest<T> {
+impl FromRequest for ASCOMRequest {
     type Error = actix_web::Error;
-    type Future = actix_utils::future::Either<actix_utils::future::Ready<Result<Self, actix_web::Error>>, BodyParamsFuture<T>>;
+    type Future = actix_utils::future::Either<actix_utils::future::Ready<Result<Self, actix_web::Error>>, BodyParamsFuture>;
 
     fn from_request(req: &HttpRequest, payload: &mut Payload) -> Self::Future {
         if req.method() == Method::GET {
@@ -132,25 +128,18 @@ impl<T: 'static + DeserializeOwned> FromRequest for ASCOMRequest<T> {
     }
 }
 
-impl<T: 'static + Send + DeserializeOwned> ASCOMRequest<T> {
-    pub fn respond_with<U: 'static + ToResponse>(
-        self,
-        root_span: RootSpan,
-        f: impl FnOnce(T) -> Result<U, ASCOMError> + Send + 'static,
-    ) -> impl Future<Output = Result<ASCOMResponse<U>, BlockingError>>
-    where
-        U::Response: Send,
-    {
+impl ASCOMRequest {
+    pub fn respond_with(self, root_span: RootSpan, f: impl FnOnce(&str) -> Result<serde_json::Value, ASCOMError> + Send + 'static) -> impl Future<Output = Result<ASCOMResponse, BlockingError>> {
         self.transaction.record(root_span);
 
         actix_web::web::block(move || ASCOMResponse {
             transaction: self.transaction,
-            result: f(self.request).map(ToResponse::to_response),
+            result: f(&self.request_encoded_params),
         })
     }
 }
 
-#[derive(Serialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize)]
 pub struct ASCOMErrorCode(u16);
 
 impl ASCOMErrorCode {
@@ -166,7 +155,7 @@ impl ASCOMErrorCode {
     }
 }
 
-#[derive(Serialize)]
+#[derive(Debug, Clone, Serialize)]
 pub struct ASCOMError {
     #[serde(rename = "ErrorNumber")]
     pub code: ASCOMErrorCode,
@@ -229,11 +218,11 @@ ascom_error_codes! {
 }
 
 #[derive(Serialize)]
-pub(crate) struct ASCOMResponse<T: ToResponse = ()> {
+pub(crate) struct ASCOMResponse {
     #[serde(flatten)]
     transaction: TransactionIds,
     #[serde(flatten, serialize_with = "serialize_result")]
-    pub result: ASCOMResult<T::Response>,
+    pub result: ASCOMResult<serde_json::Value>,
 }
 
 pub(crate) trait ToResponse {
@@ -267,7 +256,7 @@ fn serialize_result<R: Serialize, S: serde::Serializer>(value: &ASCOMResult<R>, 
     }
 }
 
-impl<T: ToResponse> Responder for ASCOMResponse<T> {
+impl Responder for ASCOMResponse {
     type Body = <Json<Self> as Responder>::Body;
 
     fn respond_to(self, req: &HttpRequest) -> HttpResponse<Self::Body> {
@@ -289,57 +278,73 @@ impl tracing_actix_web::RootSpanBuilder for DomainRootSpanBuilder {
     }
 }
 
-pub struct RpcDevices<T: ?Sized> {
-    devices: DashMap<u32, Box<T>>,
-    counter: AtomicU32,
-}
+type DevicesStorage = HashMap<(&'static str, usize), Box<Mutex<dyn super::Device>>>;
 
-impl<T: ?Sized> Default for RpcDevices<T> {
-    fn default() -> Self {
-        Self {
-            devices: DashMap::new(),
-            counter: AtomicU32::new(0),
-        }
+impl fmt::Debug for dyn super::Device {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.debug_struct(self.ty()).field("name", &self.name()).field("description", &self.description()).finish()
     }
 }
 
-impl<T: ?Sized> RpcDevices<T> {
-    pub fn register_dyn(&self, device: Box<T>) -> u32 {
-        let id = self.counter.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
-        self.devices.insert(id, device);
-        id
+#[derive(Debug, Default)]
+pub struct DevicesBuilder {
+    devices: DevicesStorage,
+    counters: HashMap<&'static str, usize>,
+}
+
+impl DevicesBuilder {
+    pub fn new() -> Self {
+        Self::default()
     }
 
-    pub fn unregister(&self, id: u32) {
-        self.devices.remove(&id);
+    pub fn with<T: super::Device + 'static>(mut self, device: T) -> Self {
+        let index_ref = self.counters.entry(device.ty()).or_insert(0);
+        let index = *index_ref;
+        self.devices.insert((device.ty(), index), Box::new(Mutex::new(device)));
+        *index_ref += 1;
+        self
     }
 
-    pub fn get(&self, id: u32) -> Option<impl '_ + Deref<Target = impl Deref<Target = T>>> {
-        self.devices.get(&id)
-    }
-
-    pub fn get_mut(&self, id: u32) -> Option<impl '_ + DerefMut<Target = impl DerefMut<Target = T>>> {
-        self.devices.get_mut(&id)
+    pub fn finish(self) -> Devices {
+        Devices { devices: Arc::new(self.devices) }
     }
 }
 
-pub struct RpcService<T: ?Sized>(PhantomData<T>);
+#[derive(Debug, Clone)]
+pub struct Devices {
+    devices: Arc<DevicesStorage>,
+}
 
-impl<T: ?Sized> Default for RpcService<T> {
-    fn default() -> Self {
-        Self(PhantomData)
+impl Devices {
+    pub fn handle_action(&self, is_mut: bool, device_type: &str, device_number: usize, action: &str, params: &str) -> ASCOMResult<serde_json::Value> {
+        self.devices
+            .get(&(device_type, device_number))
+            .ok_or(ASCOMError::NOT_CONNECTED)?
+            .lock()
+            .unwrap()
+            .handle_action(is_mut, action, params)
+    }
+}
+
+impl actix_web::dev::HttpServiceFactory for Devices {
+    fn register(self, config: &mut actix_web::dev::AppService) {
+        let resource = actix_web::web::resource("/api/v1/{device_type}/{device_number}/{action}")
+            .app_data(self)
+            .guard(actix_web::guard::Any(actix_web::guard::Get()).or(actix_web::guard::Put()))
+            .to(
+                move |request: HttpRequest, root_span: tracing_actix_web::RootSpan, path: actix_web::web::Path<(String, usize, String)>, ascom: crate::api::common::ASCOMRequest| {
+                    let devices = request.app_data::<Self>().unwrap().clone();
+                    let is_mut = request.method() == actix_web::http::Method::PUT;
+                    let (device_type, device_number, action) = path.into_inner();
+                    ascom.respond_with(root_span, move |params| devices.handle_action(is_mut, &device_type, device_number, &action, params))
+                },
+            );
+
+        actix_web::dev::HttpServiceFactory::register(resource, config);
     }
 }
 
 macro_rules! rpc {
-    (@dashmap_get $dashmap:expr, $index:expr, mut self) => {
-        $dashmap.get_mut($index)
-    };
-
-    (@dashmap_get $dashmap:expr, $index:expr, self) => {
-        $dashmap.get($index)
-    };
-
     (@http_method mut self) => {
         actix_web::web::put
     };
@@ -348,10 +353,22 @@ macro_rules! rpc {
         actix_web::web::get
     };
 
+    (@if_parent $parent_trait_name:ident { $($then:tt)* } { $($else:tt)* }) => {
+        $($then)*
+    };
+
+    (@if_parent { $($then:tt)* } { $($else:tt)* }) => {
+        $($else)*
+    };
+
+    (@is_mut mut self) => (true);
+
+    (@is_mut self) => (false);
+
     ($(
         $(#[doc = $doc:literal])*
         #[http($path:literal)]
-        pub trait $trait_name:ident {
+        pub trait $trait_name:ident $(: $parent_trait_name:ident)? {
             $(
                 $(#[doc = $method_doc:literal])*
                 #[http($method_path:literal)]
@@ -362,59 +379,41 @@ macro_rules! rpc {
         $(
             #[allow(unused_variables)]
             $(#[doc = $doc])*
-            pub trait $trait_name: Send + Sync {
+            pub trait $trait_name: $($parent_trait_name +)? Send + Sync {
+                rpc!(@if_parent $($parent_trait_name)? {
+                    const TYPE: &'static str = $path;
+                } {
+                    fn ty(&self) -> &'static str;
+
+                    fn handle_action(&mut self, is_mut: bool, action: &str, params: &str) -> ASCOMResult<serde_json::Value>;
+                });
+
                 $(
                     $(#[doc = $method_doc])*
                     fn $method_name(& $($mut_self)* $(, $params: $params_ty)?) -> ASCOMResult$(<$return_type>)? {
                         Err(ASCOMError::ACTION_NOT_IMPLEMENTED)
                     }
                 )*
-            }
 
-            impl crate::api::common::RpcDevices<dyn $trait_name> {
-                pub fn register<T: 'static + $trait_name>(&self, device: T) -> u32 {
-                    self.register_dyn(Box::new(device))
-                }
-            }
-
-            impl actix_web::dev::HttpServiceFactory for crate::api::common::RpcService<dyn $trait_name> {
-                fn register(self, config: &mut actix_web::dev::AppService) {
-                    fn missing_device_err(device_number: u32) -> ASCOMError {
-                        ASCOMError::new(crate::api::common::ASCOMErrorCode::NOT_CONNECTED, format!("{} #{} not found", stringify!($trait_name), device_number))
+                fn handle_action_impl(&mut self, is_mut: bool, action: &str, params: &str) -> ASCOMResult<serde_json::Value> {
+                    match (is_mut, action) {
+                        $((rpc!(@is_mut $($mut_self)*), $method_path) => {
+                            $(
+                                let $params =
+                                    serde_urlencoded::from_str::<$params_ty>(params)
+                                    .map_err(|err| ASCOMError::new(ASCOMErrorCode::INVALID_VALUE, err.to_string()))?;
+                            )?
+                            let result = self.$method_name($($params)?)?;
+                            serde_json::to_value(result).map_err(|err| ASCOMError::new(ASCOMErrorCode::UNSPECIFIED, err.to_string()))
+                        })*
+                        _ => {
+                            rpc!(@if_parent $($parent_trait_name)? {
+                                $($parent_trait_name)?::handle_action_impl(self, is_mut, action, params)
+                            } {
+                                Err(ASCOMError::ACTION_NOT_IMPLEMENTED)
+                            })
+                        }
                     }
-
-                    let scope =
-                        actix_web::web::scope(concat!("/", $path, "/{device_number}"))
-                        .app_data(actix_web::web::Data::new(crate::api::common::RpcDevices::<dyn $trait_name>::default()))
-                        $(.route(concat!("/", $method_path), {
-                            fn $method_name(
-                                devices: actix_web::web::Data<crate::api::common::RpcDevices<dyn $trait_name>>,
-                                root_span: tracing_actix_web::RootSpan,
-                                device_number: actix_web::web::Path<u32>,
-                                ascom: crate::api::common::ASCOMRequest$(<$params_ty>)?,
-                            ) -> impl std::future::Future<Output = Result<
-                                crate::api::common::ASCOMResponse$(<$return_type>)?,
-                                actix_web::error::BlockingError>
-                            > {
-                                ascom.respond_with(root_span, move |_params| {
-                                    let device_number = device_number.into_inner();
-
-                                    rpc!(@dashmap_get devices, device_number, $($mut_self)*)
-                                    .ok_or_else(move || {
-                                        missing_device_err(device_number)
-                                    })?
-                                    .$method_name($({
-                                        let $params = _params;
-                                        $params
-                                    })?)
-                                })
-                            }
-
-                            rpc!(@http_method $($mut_self)*)().to($method_name)
-                        }))*
-                        ;
-
-                    actix_web::dev::HttpServiceFactory::register(scope, config);
                 }
             }
         )*
