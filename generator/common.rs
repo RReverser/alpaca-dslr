@@ -1,19 +1,17 @@
 use actix_web::{
-    dev::{Payload, ServiceRequest, ServiceResponse},
+    dev::{ServiceRequest, ServiceResponse},
     error::{BlockingError, ErrorBadRequest},
-    http::Method,
-    web::{Bytes, Json, Query},
-    FromRequest, HttpMessage, HttpRequest, HttpResponse, Responder,
+    web::{Bytes, Json, Path},
+    HttpMessage, HttpRequest, HttpResponse, Responder,
 };
 
-use pin_project::pin_project;
 use serde::{Deserialize, Serialize};
-use std::borrow::Cow;
 use std::collections::HashMap;
+use std::fmt;
 use std::sync::atomic::AtomicU32;
 use std::sync::Arc;
-use std::{fmt, pin::Pin};
-use std::{future::Future, sync::Mutex};
+use std::sync::Mutex;
+use std::{borrow::Cow, future::Future};
 use tracing::Span;
 use tracing_actix_web::RootSpan;
 
@@ -64,11 +62,11 @@ impl ASCOMRequest {
     /// first and then can't recover other types from string values stored from the query string.
     ///
     /// See [nox/serde_urlencoded#33](https://github.com/nox/serde_urlencoded/issues/33).
-    fn from_encoded_params(encoded_params: &[u8]) -> Result<Self, actix_web::Error> {
+    fn from_encoded_params(encoded_params: impl AsRef<[u8]>) -> Result<Self, serde_urlencoded::de::Error> {
         let mut transaction_params = form_urlencoded::Serializer::new(String::new());
         let mut request_params = form_urlencoded::Serializer::new(String::new());
 
-        for (key, value) in form_urlencoded::parse(encoded_params) {
+        for (key, value) in form_urlencoded::parse(encoded_params.as_ref()) {
             match key.as_ref() {
                 "ClientID" | "ClientTransactionID" => {
                     transaction_params.append_pair(&key, &value);
@@ -80,62 +78,20 @@ impl ASCOMRequest {
         }
 
         Ok(ASCOMRequest {
-            transaction: Query::<TransactionIds>::from_query(&transaction_params.finish())?.into_inner(),
+            transaction: serde_urlencoded::from_str(&transaction_params.finish())?,
             request_encoded_params: request_params.finish(),
         })
     }
 }
 
-#[pin_project]
-pub(crate) struct BodyParamsFuture {
-    #[pin]
-    inner: <Bytes as FromRequest>::Future,
-}
-
-impl BodyParamsFuture {
-    fn new(inner: <Bytes as FromRequest>::Future) -> Self {
-        BodyParamsFuture { inner }
-    }
-}
-
-impl Future for BodyParamsFuture {
-    type Output = Result<ASCOMRequest, actix_web::Error>;
-
-    fn poll(self: Pin<&mut Self>, cx: &mut std::task::Context<'_>) -> std::task::Poll<Self::Output> {
-        self.project().inner.poll(cx).map(|encoded_params| ASCOMRequest::from_encoded_params(encoded_params?.as_ref()))
-    }
-}
-
-impl FromRequest for ASCOMRequest {
-    type Error = actix_web::Error;
-    type Future = actix_utils::future::Either<actix_utils::future::Ready<Result<Self, actix_web::Error>>, BodyParamsFuture>;
-
-    fn from_request(req: &HttpRequest, payload: &mut Payload) -> Self::Future {
-        if req.method() == Method::GET {
-            actix_utils::future::Either::left(actix_utils::future::ready(ASCOMRequest::from_encoded_params(req.query_string().as_bytes())))
-        } else {
-            if let Err(err) = req.mime_type().map_err(actix_web::Error::from).and_then(|mime| {
-                if mime != Some(mime::APPLICATION_WWW_FORM_URLENCODED) {
-                    Err(ErrorBadRequest("Invalid content type"))
-                } else {
-                    Ok(())
-                }
-            }) {
-                return actix_utils::future::Either::left(actix_utils::future::err(err));
-            }
-            actix_utils::future::Either::right(BodyParamsFuture::new(Bytes::from_request(req, payload)))
-        }
-    }
-}
-
 impl ASCOMRequest {
-    pub fn respond_with(self, root_span: RootSpan, f: impl FnOnce(&str) -> Result<serde_json::Value, ASCOMError> + Send + 'static) -> impl Future<Output = Result<ASCOMResponse, BlockingError>> {
+    pub fn respond_with(self, root_span: RootSpan, f: impl FnOnce(&str) -> Result<serde_json::Value, ASCOMError> + Send + 'static) -> ASCOMResponse {
         self.transaction.record(root_span);
 
-        actix_web::web::block(move || ASCOMResponse {
+        ASCOMResponse {
             transaction: self.transaction,
             result: f(&self.request_encoded_params),
-        })
+        }
     }
 }
 
@@ -328,17 +284,30 @@ impl Devices {
 
 impl actix_web::dev::HttpServiceFactory for Devices {
     fn register(self, config: &mut actix_web::dev::AppService) {
+        fn handler(request: &HttpRequest, root_span: RootSpan, path: Path<(String, usize, String)>, params: &[u8]) -> impl Future<Output = actix_web::Result<ASCOMResponse>> {
+            let devices = request.app_data::<Devices>().unwrap().clone();
+            let ascom_res = ASCOMRequest::from_encoded_params(params);
+
+            async {
+                let ascom = ascom_res.map_err(ErrorBadRequest)?;
+
+                actix_web::web::block(move || {
+                    ascom.respond_with(root_span, move |params| {
+                        let (device_type, device_number, action) = path.into_inner();
+                        devices.handle_action(false, &device_type, device_number, &action, params)
+                    })
+                })
+                .map_err(actix_web::Error::from)
+                .await
+            }
+        }
+
         let resource = actix_web::web::resource("/api/v1/{device_type}/{device_number}/{action}")
             .app_data(self)
-            .guard(actix_web::guard::Any(actix_web::guard::Get()).or(actix_web::guard::Put()))
-            .to(
-                move |request: HttpRequest, root_span: tracing_actix_web::RootSpan, path: actix_web::web::Path<(String, usize, String)>, ascom: crate::api::common::ASCOMRequest| {
-                    let devices = request.app_data::<Self>().unwrap().clone();
-                    let is_mut = request.method() == actix_web::http::Method::PUT;
-                    let (device_type, device_number, action) = path.into_inner();
-                    ascom.respond_with(root_span, move |params| devices.handle_action(is_mut, &device_type, device_number, &action, params))
-                },
-            );
+            .route(
+                actix_web::web::get().to(move |request: HttpRequest, root_span: RootSpan, path: Path<(String, usize, String)>| handler(&request, root_span, path, request.query_string().as_bytes())),
+            )
+            .route(actix_web::web::post().to(move |request: HttpRequest, root_span: RootSpan, path: Path<(String, usize, String)>, body: Bytes| handler(&request, root_span, path, &body)));
 
         actix_web::dev::HttpServiceFactory::register(resource, config);
     }
@@ -420,4 +389,5 @@ macro_rules! rpc {
     };
 }
 
+use futures_util::TryFutureExt;
 pub(crate) use rpc;
