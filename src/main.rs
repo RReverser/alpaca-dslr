@@ -1,10 +1,10 @@
 use actix_web::{App, HttpServer};
-use api::{Camera, Device, DevicesBuilder, DomainRootSpanBuilder};
+use api::{Camera, Device, DevicesBuilder, ResponseJson};
 
 use tracing_subscriber::fmt::format::FmtSpan;
 use tracing_subscriber::prelude::*;
 
-#[path = "../generator/AlpacaDeviceAPI_v1.rs"]
+#[path = "../generator/mod.rs"]
 pub mod api;
 
 struct MyCamera;
@@ -19,7 +19,7 @@ impl Device for MyCamera {
         is_mut: bool,
         action: &str,
         params: &str,
-    ) -> api::ASCOMResult<serde_json::Value> {
+    ) -> api::ASCOMResult<ResponseJson> {
         Camera::handle_action_impl(self, is_mut, action, params)
     }
 }
@@ -37,7 +37,7 @@ pub async fn main() -> std::io::Result<()> {
 
     HttpServer::new(move || {
         App::new()
-            .wrap(tracing_actix_web::TracingLogger::<DomainRootSpanBuilder>::new())
+            .wrap(tracing_actix_web::TracingLogger::default())
             .service(devices.clone())
     })
     .bind(("127.0.0.1", 8080))?

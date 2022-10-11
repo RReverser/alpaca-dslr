@@ -6,10 +6,7 @@
 
 #![allow(rustdoc::broken_intra_doc_links)]
 
-use serde::{Deserialize, Serialize};
-
-mod common;
-pub use common::*;
+use super::*;
 
 <%
 function doc(description) {
@@ -75,16 +72,7 @@ mod schemas {
   use super::*;
 
   <% for (let [schemaName, schema] of Object.entries(api.components.schemas)) { %>
-    <% if (schema['x-kind'] === 'Empty') continue; %>
-    <% if (schema['x-kind'] === 'ValueResponse') { %>
-      impl ToResponse for <%= handleType(schema.properties.Value) %> {
-        type Response = ValueResponse<Self>;
-
-        fn to_response(self) -> Self::Response {
-          self.into()
-        }
-      }
-    <% continue; } %>
+    <% if (schema['x-kind'] === 'Empty' || schema['x-kind'] === 'ValueResponse') continue; %>
     <% schemaName = toTypeName(schemaName); %>
     #[derive(<%= schema['x-kind'] === 'Request' ? 'Deserialize' : 'Serialize' %>)]
     <% if (schema.type === 'object') { %>
@@ -98,15 +86,6 @@ mod schemas {
     <% } else { %>
       #[repr(transparent)]
       pub struct <%= schemaName %>(<%= handleType(schema, schemaName, true) %>);
-    <% } %>
-    <% if (schema['x-kind'] === 'Response') { %>
-      impl ToResponse for <%= schemaName %> {
-        type Response = Self;
-
-        fn to_response(self) -> Self::Response {
-          self
-        }
-      }
     <% } %>
   <% } %>
 }

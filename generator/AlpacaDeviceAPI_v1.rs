@@ -37,10 +37,7 @@ The SetupDialog method has been omitted from the Alpaca Device API because it pr
 
 #![allow(rustdoc::broken_intra_doc_links)]
 
-use serde::{Deserialize, Serialize};
-
-mod common;
-pub use common::*;
+use super::*;
 
 mod schemas {
     use super::*;
@@ -61,70 +58,6 @@ mod schemas {
         pub value: Option<Vec<Vec<f64>>>,
     }
 
-    impl ToResponse for ImageArrayResponse {
-        type Response = Self;
-
-        fn to_response(self) -> Self::Response {
-            self
-        }
-    }
-
-    impl ToResponse for bool {
-        type Response = ValueResponse<Self>;
-
-        fn to_response(self) -> Self::Response {
-            self.into()
-        }
-    }
-
-    impl ToResponse for f64 {
-        type Response = ValueResponse<Self>;
-
-        fn to_response(self) -> Self::Response {
-            self.into()
-        }
-    }
-
-    impl ToResponse for i32 {
-        type Response = ValueResponse<Self>;
-
-        fn to_response(self) -> Self::Response {
-            self.into()
-        }
-    }
-
-    impl ToResponse for Vec<i32> {
-        type Response = ValueResponse<Self>;
-
-        fn to_response(self) -> Self::Response {
-            self.into()
-        }
-    }
-
-    impl ToResponse for String {
-        type Response = ValueResponse<Self>;
-
-        fn to_response(self) -> Self::Response {
-            self.into()
-        }
-    }
-
-    impl ToResponse for Vec<String> {
-        type Response = ValueResponse<Self>;
-
-        fn to_response(self) -> Self::Response {
-            self.into()
-        }
-    }
-
-    impl ToResponse for Vec<schemas::AxisRate> {
-        type Response = ValueResponse<Self>;
-
-        fn to_response(self) -> Self::Response {
-            self.into()
-        }
-    }
-
     #[derive(Serialize)]
 
     pub struct AxisRate {
@@ -135,14 +68,6 @@ mod schemas {
         /// The minimum rate (degrees per second) This must always be a positive number. It indicates the maximum rate in either direction about the axis.
         #[serde(rename = "Minimum")]
         pub minimum: f64,
-    }
-
-    impl ToResponse for Vec<schemas::DriveRate> {
-        type Response = ValueResponse<Self>;
-
-        fn to_response(self) -> Self::Response {
-            self.into()
-        }
     }
 
     #[derive(Serialize)]
@@ -1193,7 +1118,11 @@ rpc! {
 
         /// Sets image sub exposure duration in seconds. Only available in Camera Interface Version 3 and later.
         #[http("subexposureduration")]
-        fn set_sub_exposure_duration(&mut self, request: schemas::PutCameraSubexposuredurationRequest);
+        fn set_sub_exposure_duration(
+            &mut self,
+
+            request: schemas::PutCameraSubexposuredurationRequest,
+        );
 
         /// Aborts the current exposure, if any, and returns the camera to Idle state.
         #[http("abortexposure")]
@@ -1437,7 +1366,11 @@ rpc! {
 
         /// Sets the time period over which observations will be averaged
         #[http("averageperiod")]
-        fn set_average_period(&mut self, request: schemas::PutObservingconditionsAverageperiodRequest);
+        fn set_average_period(
+            &mut self,
+
+            request: schemas::PutObservingconditionsAverageperiodRequest,
+        );
 
         /// Gets the percentage of the sky obscured by cloud
         #[http("cloudcover")]
@@ -1497,11 +1430,19 @@ rpc! {
 
         /// Gets a description of the sensor with the name specified in the SensorName parameter
         #[http("sensordescription")]
-        fn sensor_description(&self, request: schemas::GetObservingconditionsSensordescriptionRequest) -> String;
+        fn sensor_description(
+            &self,
+
+            request: schemas::GetObservingconditionsSensordescriptionRequest,
+        ) -> String;
 
         /// Gets the time since the sensor specified in the SensorName parameter was last updated
         #[http("timesincelastupdate")]
-        fn time_since_last_update(&self, request: schemas::GetObservingconditionsTimesincelastupdateRequest) -> f64;
+        fn time_since_last_update(
+            &self,
+
+            request: schemas::GetObservingconditionsTimesincelastupdateRequest,
+        ) -> f64;
     }
 
     /// Rotator Specific Methods
@@ -1585,7 +1526,11 @@ rpc! {
 
         /// Gets the description of the specified switch device. This is to allow a fuller description of the device to be returned, for example for a tool tip. Devices are numbered from 0 to MaxSwitch - 1
         #[http("getswitchdescription")]
-        fn switch_description(&self, request: schemas::GetSwitchGetswitchdescriptionRequest) -> String;
+        fn switch_description(
+            &self,
+
+            request: schemas::GetSwitchGetswitchdescriptionRequest,
+        ) -> String;
 
         /// Gets the name of the specified switch device. Devices are numbered from 0 to MaxSwitch - 1
         #[http("getswitchname")]
@@ -1749,7 +1694,11 @@ rpc! {
 
         /// Sets the current Declination movement rate offset for telescope guiding (degrees/sec).
         #[http("guideratedeclination")]
-        fn set_guide_rate_declination(&mut self, request: schemas::PutTelescopeGuideratedeclinationRequest);
+        fn set_guide_rate_declination(
+            &mut self,
+
+            request: schemas::PutTelescopeGuideratedeclinationRequest,
+        );
 
         /// The current RightAscension movement rate offset for telescope guiding (degrees/sec)
         #[http("guideraterightascension")]
@@ -1757,7 +1706,11 @@ rpc! {
 
         /// Sets the current RightAscension movement rate offset for telescope guiding (degrees/sec).
         #[http("guideraterightascension")]
-        fn set_guide_rate_right_ascension(&mut self, request: schemas::PutTelescopeGuideraterightascensionRequest);
+        fn set_guide_rate_right_ascension(
+            &mut self,
+
+            request: schemas::PutTelescopeGuideraterightascensionRequest,
+        );
 
         /// True if a PulseGuide(GuideDirections, Int32) command is in progress, False otherwise
         #[http("ispulseguiding")]
@@ -1773,7 +1726,11 @@ rpc! {
 
         /// Sets the right ascension tracking rate (arcseconds per second)
         #[http("rightascensionrate")]
-        fn set_right_ascension_rate(&mut self, request: schemas::PutTelescopeRightascensionrateRequest);
+        fn set_right_ascension_rate(
+            &mut self,
+
+            request: schemas::PutTelescopeRightascensionrateRequest,
+        );
 
         /// Indicates the pointing state of the mount. 0 = pierEast, 1 = pierWest, -1= pierUnknown
         #[http("sideofpier")]
@@ -1829,7 +1786,11 @@ rpc! {
 
         /// Sets the declination (degrees, positive North) for the target of an equatorial slew or sync operation
         #[http("targetdeclination")]
-        fn set_target_declination(&mut self, request: schemas::PutTelescopeTargetdeclinationRequest);
+        fn set_target_declination(
+            &mut self,
+
+            request: schemas::PutTelescopeTargetdeclinationRequest,
+        );
 
         /// The right ascension (hours) for the target of an equatorial slew or sync operation
         #[http("targetrightascension")]
@@ -1837,7 +1798,11 @@ rpc! {
 
         /// Sets the right ascension (hours) for the target of an equatorial slew or sync operation
         #[http("targetrightascension")]
-        fn set_target_right_ascension(&mut self, request: schemas::PutTelescopeTargetrightascensionRequest);
+        fn set_target_right_ascension(
+            &mut self,
+
+            request: schemas::PutTelescopeTargetrightascensionRequest,
+        );
 
         /// Returns the state of the telescope's sidereal tracking drive.
         #[http("tracking")]
@@ -1873,7 +1838,11 @@ rpc! {
 
         /// The rates at which the telescope may be moved about the specified axis by the MoveAxis(TelescopeAxes, Double) method.
         #[http("axisrates")]
-        fn axis_rates(&self, request: schemas::GetTelescopeAxisratesRequest) -> Vec<schemas::AxisRate>;
+        fn axis_rates(
+            &self,
+
+            request: schemas::GetTelescopeAxisratesRequest,
+        ) -> Vec<schemas::AxisRate>;
 
         /// True if this telescope can move the requested axis.
         #[http("canmoveaxis")]
@@ -1881,7 +1850,11 @@ rpc! {
 
         /// Predicts the pointing state that a German equatorial mount will be in if it slews to the given coordinates. The  return value will be one of - 0 = pierEast, 1 = pierWest, -1 = pierUnknown
         #[http("destinationsideofpier")]
-        fn destination_side_of_pier(&self, request: schemas::GetTelescopeDestinationsideofpierRequest) -> i32;
+        fn destination_side_of_pier(
+            &self,
+
+            request: schemas::GetTelescopeDestinationsideofpierRequest,
+        ) -> i32;
 
         /// Locates the telescope's "home" position (synchronous)
         #[http("findhome")]
@@ -1917,7 +1890,11 @@ rpc! {
 
         /// Move the telescope to the given equatorial coordinates, return immediatley after the slew starts. The client can poll the Slewing method to determine when the mount reaches the intended coordinates.
         #[http("slewtocoordinatesasync")]
-        fn slew_to_coordinates_async(&mut self, request: schemas::PutTelescopeSlewtocoordinatesRequest);
+        fn slew_to_coordinates_async(
+            &mut self,
+
+            request: schemas::PutTelescopeSlewtocoordinatesRequest,
+        );
 
         /// Move the telescope to the TargetRightAscension and TargetDeclination equatorial coordinates, return when slew is complete
         #[http("slewtotarget")]
