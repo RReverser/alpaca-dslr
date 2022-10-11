@@ -74,6 +74,7 @@ mod schemas {
   <% for (let [schemaName, schema] of Object.entries(api.components.schemas)) { %>
     <% if (schema['x-kind'] === 'Empty' || schema['x-kind'] === 'ValueResponse') continue; %>
     <% schemaName = toTypeName(schemaName); %>
+    <%= doc(schema.description) %>
     #[derive(<%= schema['x-kind'] === 'Request' ? 'Deserialize' : 'Serialize' %>)]
     <% if (schema.type === 'object') { %>
       pub struct <%= schemaName %> {

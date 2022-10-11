@@ -58,6 +58,7 @@ mod schemas {
         pub value: Option<Vec<Vec<f64>>>,
     }
 
+    /// Axis rate object
     #[derive(Serialize)]
 
     pub struct AxisRate {
@@ -70,6 +71,14 @@ mod schemas {
         pub minimum: f64,
     }
 
+    /**
+    DriveRate object corresponding to one of the standard drive rates
+
+      driveSidereal =  0  - Sidereal tracking rate (15.041 arcseconds per second).
+      driveLunar = 1 - Lunar tracking rate (14.685 arcseconds per second).
+      driveSolar = 2 - Solar tracking rate (15.0 arcseconds per second).
+      driveKing = 3 - King tracking rate (15.0369 arcseconds per second).
+    */
     #[derive(Serialize)]
     #[repr(transparent)]
     pub struct DriveRate(f64);
