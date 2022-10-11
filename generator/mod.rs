@@ -5,7 +5,6 @@ use serde::{Deserialize, Serialize};
 use std::borrow::Cow;
 use std::collections::HashMap;
 use std::fmt;
-use std::future::Future;
 use std::sync::atomic::AtomicU32;
 use std::sync::{Arc, Mutex};
 
@@ -80,7 +79,7 @@ impl ASCOMRequest {
 impl ASCOMRequest {
     pub fn respond_with(
         self,
-        f: impl FnOnce(&str) -> Result<ResponseJson, ASCOMError> + Send + 'static,
+        f: impl FnOnce(&str) -> Result<ResponseJson, ASCOMError> + 'static,
     ) -> ASCOMResponse {
         let _span = self.transaction.span();
 
@@ -201,9 +200,10 @@ impl Responder for ASCOMResponse {
     }
 }
 
-type DevicesStorage = HashMap<(&'static str, usize), Box<Mutex<dyn super::Device>>>;
+type DevicesStorage =
+    HashMap<(&'static str, usize), Box<Mutex<dyn super::Device + Send + Sync + 'static>>>;
 
-impl fmt::Debug for dyn super::Device {
+impl fmt::Debug for dyn super::Device + Send + Sync {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         f.debug_struct(self.ty())
             .field("name", &self.name())
@@ -223,7 +223,7 @@ impl DevicesBuilder {
         Self::default()
     }
 
-    pub fn with<T: super::Device + 'static>(mut self, device: T) -> Self {
+    pub fn with<T: super::Device + Send + Sync + 'static>(mut self, device: T) -> Self {
         let index_ref = self.counters.entry(device.ty()).or_insert(0);
         let index = *index_ref;
         self.devices
@@ -268,21 +268,19 @@ impl actix_web::dev::HttpServiceFactory for Devices {
             request: &HttpRequest,
             path: Path<(String, usize, String)>,
             params: &[u8],
-        ) -> impl Future<Output = actix_web::Result<ASCOMResponse>> {
-            let devices = request.app_data::<Devices>().unwrap().clone();
-            let ascom_res = ASCOMRequest::from_encoded_params(params);
+        ) -> actix_utils::future::Ready<actix_web::Result<ASCOMResponse>> {
+            let response = match ASCOMRequest::from_encoded_params(params) {
+                Ok(ascom) => {
+                    let devices = request.app_data::<Devices>().unwrap().clone();
 
-            async {
-                let ascom = ascom_res.map_err(ErrorBadRequest)?;
-
-                Ok(actix_web::web::block(move || {
-                    ascom.respond_with(move |params| {
+                    Ok(ascom.respond_with(move |params| {
                         let (device_type, device_number, action) = path.into_inner();
                         devices.handle_action(false, &device_type, device_number, &action, params)
-                    })
-                })
-                .await?)
-            }
+                    }))
+                }
+                Err(err) => Err(ErrorBadRequest(err)),
+            };
+            actix_utils::future::ready(response)
         }
 
         let resource = actix_web::web::resource("/api/v1/{device_type}/{device_number}/{action}")
@@ -354,7 +352,7 @@ macro_rules! rpc {
         $(
             #[allow(unused_variables)]
             $(#[doc = $doc])*
-            pub trait $trait_name: $($parent_trait_name +)? Send + Sync {
+            pub trait $trait_name $(: $parent_trait_name)? {
                 rpc!(@if_parent $($parent_trait_name)? {
                     const TYPE: &'static str = $path;
                 } {
