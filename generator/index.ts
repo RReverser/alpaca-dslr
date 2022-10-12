@@ -407,9 +407,31 @@ let refReplacements: Record<
 > = {};
 let groupCounts: Record<string, number> = {};
 
+// Extract enums from properties.
+for (let [schemaName, schema] of Object.entries(api.components!.schemas!)) {
+  schema = resolveMaybeRef(schema);
+  if (schema.type === 'object') {
+    for (let [propName, prop] of Object.entries(schema.properties!)) {
+      if (isRef(prop)) continue;
+      if (prop.enum) {
+        assert.equal(prop.type, 'integer');
+        setXKind(prop, (schema as any)['x-kind']);
+        schema.properties![propName] = registerSchema(
+          schemaName + propName,
+          prop
+        );
+      }
+    }
+  }
+}
+
 for (let [schemaName, schema] of Object.entries(api.components!.schemas!)) {
   schema = resolveMaybeRef(schema);
   cleanupSchema(schema);
+
+  if (schema.type !== 'object') {
+    continue;
+  }
 
   let kind = (schema as any)['x-kind'];
   switch (kind) {
@@ -492,10 +514,7 @@ for (let [schemaName, schema] of Object.entries(api.components!.schemas!)) {
     }
   }
 
-  if (
-    schema.type === 'object' &&
-    Object.keys(schema.properties!).length === 0
-  ) {
+  if (Object.keys(schema.properties!).length === 0) {
     // Explicit override.
     (schema as any)['x-kind'] = 'Empty';
     refReplacements[`#/components/schemas/${schemaName}`] = {

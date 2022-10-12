@@ -11,9 +11,12 @@ use super::*;
 <%
 function doc(description) {
   if (description) {
+    description = description.trim();
     return description.includes('\n') ? `/**\n${description}\n*/` : `/// ${description}`;
   }
 }
+
+let inSchemas = false;
 
 function handleType(schema) {
   let { $ref } = schema;
@@ -27,10 +30,15 @@ function handleType(schema) {
     }
     let match = $ref.match(/^#\/components\/schemas\/(\w+)$/);
     assert.ok(match, `Invalid reference ${$ref}`);
-    return `schemas::${toTypeName(match[1])}`;
+    let typeName = toTypeName(match[1]);
+    if (!inSchemas) {
+      typeName = `schemas::${typeName}`;
+    }
+    return typeName;
   }
   switch (schema.type) {
     case 'integer':
+      if (schema.enum) break;
       switch (schema.format) {
         case 'uint32':
           return 'u32';
@@ -48,7 +56,7 @@ function handleType(schema) {
     case 'boolean':
       return 'bool';
   }
-  console.warn(`Unhandled schema type`, schema);
+  console.warn(`Unhandled type`, schema);
   return '()';
 }
 
@@ -68,6 +76,7 @@ function getTypeDescription(schema) {
 }
 %>
 
+<% inSchemas = true; %>
 mod schemas {
   use super::*;
 
@@ -75,7 +84,7 @@ mod schemas {
     <% if (schema['x-kind'] === 'Empty' || schema['x-kind'] === 'ValueResponse') continue; %>
     <% schemaName = toTypeName(schemaName); %>
     <%= doc(schema.description) %>
-    #[derive(<%= schema['x-kind'] === 'Request' ? 'Deserialize' : 'Serialize' %>)]
+    #[derive(<%= schema['x-kind'] === 'Request' ? 'Deserialize' : 'Serialize' %><%= schema.enum ? '_repr' : '' %>)]
     <% if (schema.type === 'object') { %>
       pub struct <%= schemaName %> {
         <% for (let [propName, prop] of Object.entries(schema.properties)) { %>
@@ -84,12 +93,19 @@ mod schemas {
           pub <%= toPropName(propName) %>: <%= handleOptType(prop, schema.required?.includes(propName)) %>,
         <% } %>
       }
-    <% } else { %>
-      #[repr(transparent)]
-      pub struct <%= schemaName %>(<%= handleType(schema, schemaName, true) %>);
-    <% } %>
+    <% } else if (schema.enum) { %>
+      <% assert.equal(schema.type, 'integer'); %>
+      #[repr(i8)]
+      pub enum <%= schemaName %> {
+        <% for (let [i, value] of schema.enum.entries()) { %>
+          <%= doc(schema['x-enum-descriptions']?.[i]) %>
+          <%= schema['x-enum-varnames'][i] %> = <%= value %>,
+        <% } %>
+      }
+    <% } else throw new Error(`Unhandled schema ${schemaName}`); %>
   <% } %>
 }
+<% inSchemas = false; %>
 
 rpc! {
   <% for (let [groupPath, { description, paths, typeName }] of Object.entries(groupedOps)) { %>

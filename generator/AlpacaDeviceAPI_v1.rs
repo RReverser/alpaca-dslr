@@ -45,9 +45,8 @@ mod schemas {
     #[derive(Serialize)]
 
     pub struct ImageArrayResponse {
-        /// 0 = Unknown, 1 = Short(int16), 2 = Integer (int32), 3 = Double (Double precision real number).
         #[serde(rename = "Type")]
-        pub r#type: Option<i32>,
+        pub r#type: Option<ImageArrayResponseType>,
 
         /// The array's rank, will be 2 (single plane image (monochrome)) or 3 (multi-plane image).
         #[serde(rename = "Rank")]
@@ -71,17 +70,33 @@ mod schemas {
         pub minimum: f64,
     }
 
-    /**
-    DriveRate object corresponding to one of the standard drive rates
+    /// DriveRate enum corresponding to one of the standard drive rates.
+    #[derive(Serialize_repr)]
+    #[repr(i8)]
+    pub enum DriveRate {
+        /// 15.041 arcseconds per second
+        Sidereal = 0,
 
-      driveSidereal =  0  - Sidereal tracking rate (15.041 arcseconds per second).
-      driveLunar = 1 - Lunar tracking rate (14.685 arcseconds per second).
-      driveSolar = 2 - Solar tracking rate (15.0 arcseconds per second).
-      driveKing = 3 - King tracking rate (15.0369 arcseconds per second).
-    */
-    #[derive(Serialize)]
-    #[repr(transparent)]
-    pub struct DriveRate(f64);
+        /// 14.685 arcseconds per second
+        Lunar = 1,
+
+        /// 15.0 arcseconds per second
+        Solar = 2,
+
+        /// 15.0369 arcseconds per second
+        King = 3,
+    }
+
+    /// The axis of mount rotation.
+    #[derive(Serialize_repr)]
+    #[repr(i8)]
+    pub enum Axis {
+        Primary = 0,
+
+        Secondary = 1,
+
+        Tertiary = 2,
+    }
 
     #[derive(Deserialize)]
 
@@ -222,11 +237,10 @@ mod schemas {
     #[derive(Deserialize)]
 
     pub struct PutCameraPulseguideRequest {
-        /// Direction of movement (0 = North, 1 = South, 2 = East, 3 = West)
         #[serde(rename = "Direction")]
-        pub direction: i32,
+        pub direction: PutCameraPulseguideRequestDirection,
 
-        /// Duration of movement in milli-seconds
+        /// The duration of the guide-rate motion (milliseconds)
         #[serde(rename = "Duration")]
         pub duration: i32,
     }
@@ -506,9 +520,8 @@ mod schemas {
     #[derive(Deserialize)]
 
     pub struct PutTelescopeSideofpierRequest {
-        /// New pointing state.
         #[serde(rename = "SideOfPier")]
-        pub side_of_pier: i32,
+        pub side_of_pier: PutTelescopeSideofpierRequestSideOfPier,
     }
 
     #[derive(Deserialize)]
@@ -570,9 +583,8 @@ mod schemas {
     #[derive(Deserialize)]
 
     pub struct PutTelescopeTrackingrateRequest {
-        /// New tracking rate
         #[serde(rename = "TrackingRate")]
-        pub tracking_rate: i32,
+        pub tracking_rate: DriveRate,
     }
 
     #[derive(Deserialize)]
@@ -586,17 +598,15 @@ mod schemas {
     #[derive(Deserialize)]
 
     pub struct GetTelescopeAxisratesRequest {
-        /// The axis about which rate information is desired. 0 = axisPrimary, 1 = axisSecondary, 2 = axisTertiary.
         #[serde(rename = "Axis")]
-        pub axis: i32,
+        pub axis: Axis,
     }
 
     #[derive(Deserialize)]
 
     pub struct GetTelescopeCanmoveaxisRequest {
-        /// The axis about which rate information is desired. 0 = axisPrimary, 1 = axisSecondary, 2 = axisTertiary.
         #[serde(rename = "Axis")]
-        pub axis: i32,
+        pub axis: Axis,
     }
 
     #[derive(Deserialize)]
@@ -614,25 +624,12 @@ mod schemas {
     #[derive(Deserialize)]
 
     pub struct PutTelescopeMoveaxisRequest {
-        /// The axis about which rate information is desired. 0 = axisPrimary, 1 = axisSecondary, 2 = axisTertiary.
         #[serde(rename = "Axis")]
-        pub axis: i32,
+        pub axis: Axis,
 
         /// The rate of motion (deg/sec) about the specified axis
         #[serde(rename = "Rate")]
         pub rate: f64,
-    }
-
-    #[derive(Deserialize)]
-
-    pub struct PutTelescopePulseguideRequest {
-        /// The direction in which the guide-rate motion is to be made. 0 = guideNorth, 1 = guideSouth, 2 = guideEast, 3 = guideWest
-        #[serde(rename = "Direction")]
-        pub direction: i32,
-
-        /// The duration of the guide-rate motion (milliseconds)
-        #[serde(rename = "Duration")]
-        pub duration: i32,
     }
 
     #[derive(Deserialize)]
@@ -657,6 +654,114 @@ mod schemas {
         /// Declination coordinate (degrees)
         #[serde(rename = "Declination")]
         pub declination: f64,
+    }
+
+    #[derive(Serialize_repr)]
+    #[repr(i8)]
+    pub enum ImageArrayResponseType {
+        Unknown = 0,
+
+        /// int16
+        Short = 1,
+
+        /// int32
+        Integer = 2,
+
+        /// Double precision real number
+        Double = 3,
+    }
+
+    /// Returned camera state
+    #[derive(Serialize_repr)]
+    #[repr(i8)]
+    pub enum CameraStateResponseValue {
+        Idle = 0,
+
+        Waiting = 1,
+
+        Exposing = 2,
+
+        Reading = 3,
+
+        Download = 4,
+
+        Error = 5,
+    }
+
+    /// Returned sensor type
+    #[derive(Serialize_repr)]
+    #[repr(i8)]
+    pub enum SensorTypeResponseValue {
+        /// Camera produces monochrome array with no Bayer encoding
+        Monochrome = 0,
+
+        /// Camera produces color image directly, not requiring Bayer decoding
+        Color = 1,
+
+        /// Camera produces RGGB encoded Bayer array images
+        RGGB = 2,
+
+        /// Camera produces CMYG encoded Bayer array images
+        CMYG = 3,
+
+        /// Camera produces CMYG2 encoded Bayer array images
+        CMYG2 = 4,
+
+        /// Camera produces Kodak TRUESENSE LRGB encoded Bayer array images
+        LRGB = 5,
+    }
+
+    /// Returned dome shutter status
+    #[derive(Serialize_repr)]
+    #[repr(i8)]
+    pub enum DomeShutterStatusResponseValue {
+        Open = 0,
+
+        Closed = 1,
+
+        Opening = 2,
+
+        Closing = 3,
+
+        Error = 4,
+    }
+
+    /// Returned side of pier
+    #[derive(Serialize_repr)]
+    #[repr(i8)]
+    pub enum SideOfPierResponseValue {
+        /// Normal pointing state - Mount on the East side of pier (looking West).
+        East = 0,
+
+        /// Through the pole pointing state - Mount on the West side of pier (looking East).
+        West = 1,
+
+        /// Unknown or indeterminate.
+        Unknown = -1,
+    }
+
+    /// The direction in which the guide-rate motion is to be made.
+    #[derive(Deserialize_repr)]
+    #[repr(i8)]
+    pub enum PutCameraPulseguideRequestDirection {
+        North = 0,
+
+        South = 1,
+
+        East = 2,
+
+        West = 3,
+    }
+
+    /// New pointing state.
+    #[derive(Deserialize_repr)]
+    #[repr(i8)]
+    pub enum PutTelescopeSideofpierRequestSideOfPier {
+        /// Normal pointing state - Mount on the East side of pier (looking West).
+        East = 0,
+
+        /// Through the pole pointing state - Mount on the West side of pier (looking East).
+        West = 1,
     }
 }
 
@@ -756,9 +861,9 @@ rpc! {
         #[http("biny")]
         fn set_bin_y(&mut self, request: schemas::PutCameraBinyRequest);
 
-        /// Returns the current camera operational state as an integer. 0 = CameraIdle , 1 = CameraWaiting , 2 = CameraExposing , 3 = CameraReading , 4 = CameraDownload , 5 = CameraError
+        /// Returns the current camera operational state.
         #[http("camerastate")]
-        fn camera_state(&self) -> i32;
+        fn camera_state(&self) -> schemas::CameraStateResponseValue;
 
         /// Returns the width of the CCD camera chip in unbinned pixels.
         #[http("cameraxsize")]
@@ -924,7 +1029,6 @@ rpc! {
         __`Performance`__
 
         Returning an image from an Alpaca device as a JSON array is very inefficient and can result in delays of 30 or more seconds while client and device process and send the huge JSON string over the network.  A new, much faster mechanic called ImageBytes - [Alpaca ImageBytes Concepts and Implementation](https://www.ascom-standards.org/Developer/AlpacaImageBytes.pdf) has been developed that sends data as a binary byte stream and can offer a 10 to 20 fold reduction in transfer time.  It is strongly recommended that Alpaca Cameras implement the ImageBytes mechanic as well as the JSON mechanic.
-
         */
         #[http("imagearray")]
         fn image_array(&self) -> schemas::ImageArrayResponse;
@@ -985,7 +1089,6 @@ rpc! {
         __`Performance`__
 
         Returning an image from an Alpaca device as a JSON array is very inefficient and can result in delays of 30 or more seconds while client and device process and send the huge JSON string over the network.  A new, much faster mechanic called ImageBytes - [Alpaca ImageBytes Concepts and Implementation](https://www.ascom-standards.org/Developer/AlpacaImageBytes.pdf) has been developed that sends data as a binary byte stream and can offer a 10 to 20 fold reduction in transfer time.  It is strongly recommended that Alpaca Cameras implement the ImageBytes mechanic as well as the JSON mechanic.
-
         */
         #[http("imagearrayvariant")]
         fn image_array_variant(&self) -> schemas::ImageArrayResponse;
@@ -1082,20 +1185,9 @@ rpc! {
         #[http("sensorname")]
         fn sensor_name(&self) -> String;
 
-        /**
-        Returns a value indicating whether the sensor is monochrome, or what Bayer matrix it encodes. Where:
-        - 0 = Monochrome,
-        - 1 = Colour not requiring Bayer decoding
-        - 2 = RGGB Bayer encoding
-        - 3 = CMYG Bayer encoding
-        - 4 = CMYG2 Bayer encoding
-        - 5 = LRGB TRUESENSE Bayer encoding.
-
-        Please see the ASCOM Help fie for more informaiton on the SensorType.
-
-        */
+        /// Returns a value indicating whether the sensor is monochrome, or what Bayer matrix it encodes.
         #[http("sensortype")]
-        fn sensor_type(&self) -> i32;
+        fn sensor_type(&self) -> schemas::SensorTypeResponseValue;
 
         /// Returns the current camera cooler setpoint in degrees Celsius.
         #[http("setccdtemperature")]
@@ -1241,9 +1333,9 @@ rpc! {
         #[http("cansyncazimuth")]
         fn can_sync_azimuth(&self) -> bool;
 
-        /// Returns the status of the dome shutter or roll-off roof. 0 = Open, 1 = Closed, 2 = Opening, 3 = Closing, 4 = Shutter status error
+        /// Returns the status of the dome shutter or roll-off roof.
         #[http("shutterstatus")]
-        fn shutter_status(&self) -> i32;
+        fn shutter_status(&self) -> schemas::DomeShutterStatusResponseValue;
 
         /// True if the dome is slaved to the telescope in its hardware, else False.
         #[http("slaved")]
@@ -1741,11 +1833,11 @@ rpc! {
             request: schemas::PutTelescopeRightascensionrateRequest,
         );
 
-        /// Indicates the pointing state of the mount. 0 = pierEast, 1 = pierWest, -1= pierUnknown
+        /// Indicates the pointing state of the mount.
         #[http("sideofpier")]
-        fn side_of_pier(&self) -> i32;
+        fn side_of_pier(&self) -> schemas::SideOfPierResponseValue;
 
-        /// Sets the pointing state of the mount. 0 = pierEast, 1 = pierWest
+        /// Sets the pointing state of the mount.
         #[http("sideofpier")]
         fn set_side_of_pier(&mut self, request: schemas::PutTelescopeSideofpierRequest);
 
@@ -1825,7 +1917,7 @@ rpc! {
         #[http("trackingrate")]
         fn tracking_rate(&self) -> i32;
 
-        /// Sets the tracking rate of the telescope's sidereal drive. 0 = driveSidereal, 1 = driveLunar, 2 = driveSolar, 3 = driveKing
+        /// Sets the tracking rate of the telescope's sidereal drive.
         #[http("trackingrate")]
         fn set_tracking_rate(&mut self, request: schemas::PutTelescopeTrackingrateRequest);
 
@@ -1857,13 +1949,13 @@ rpc! {
         #[http("canmoveaxis")]
         fn can_move_axis(&self, request: schemas::GetTelescopeCanmoveaxisRequest) -> bool;
 
-        /// Predicts the pointing state that a German equatorial mount will be in if it slews to the given coordinates. The  return value will be one of - 0 = pierEast, 1 = pierWest, -1 = pierUnknown
+        /// Predicts the pointing state that a German equatorial mount will be in if it slews to the given coordinates.
         #[http("destinationsideofpier")]
         fn destination_side_of_pier(
             &self,
 
             request: schemas::GetTelescopeDestinationsideofpierRequest,
-        ) -> i32;
+        ) -> schemas::SideOfPierResponseValue;
 
         /// Locates the telescope's "home" position (synchronous)
         #[http("findhome")]
@@ -1879,7 +1971,7 @@ rpc! {
 
         /// Moves the scope in the given direction for the given interval or time at the rate given by the corresponding guide rate property
         #[http("pulseguide")]
-        fn pulse_guide(&mut self, request: schemas::PutTelescopePulseguideRequest);
+        fn pulse_guide(&mut self, request: schemas::PutCameraPulseguideRequest);
 
         /// Sets the telescope's park position to be its current position.
         #[http("setpark")]
