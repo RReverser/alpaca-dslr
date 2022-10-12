@@ -248,7 +248,7 @@ mod schemas {
     pub struct PutCovercalibratorCalibratoronRequest {
         /// The required brightness in the range 0 to MaxBrightness
         #[serde(rename = "Brightness")]
-        pub brightness: Option<i32>,
+        pub brightness: i32,
     }
 
     #[derive(Deserialize)]
