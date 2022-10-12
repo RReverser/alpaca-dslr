@@ -1,11 +1,8 @@
 use actix_web::{App, HttpServer};
-use api::{Camera, Device, DevicesBuilder, ResponseJson};
-
+use ascom_alpaca_rs::api::{Camera, Device};
+use ascom_alpaca_rs::{ASCOMResult, DevicesBuilder, OpaqueResponse};
 use tracing_subscriber::fmt::format::FmtSpan;
 use tracing_subscriber::prelude::*;
-
-#[path = "../generator/mod.rs"]
-pub mod api;
 
 struct MyCamera;
 
@@ -19,7 +16,7 @@ impl Device for MyCamera {
         is_mut: bool,
         action: &str,
         params: &str,
-    ) -> api::ASCOMResult<ResponseJson> {
+    ) -> ASCOMResult<OpaqueResponse> {
         Camera::handle_action_impl(self, is_mut, action, params)
     }
 }

@@ -37,7 +37,9 @@ The SetupDialog method has been omitted from the Alpaca Device API because it pr
 
 #![allow(rustdoc::broken_intra_doc_links)]
 
-use super::*;
+use crate::rpc;
+use serde::{Deserialize, Serialize};
+use serde_repr::{Deserialize_repr, Serialize_repr};
 
 mod schemas {
     use super::*;

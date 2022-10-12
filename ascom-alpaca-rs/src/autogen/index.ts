@@ -572,4 +572,4 @@ rendered = rustfmt.stdout;
 // Revert the helper changes.
 rendered = rendered.replaceAll('mod __rpc__', 'rpc!');
 
-await writeFile('./AlpacaDeviceAPI_v1.rs', rendered);
+await writeFile('./mod.rs', rendered);
