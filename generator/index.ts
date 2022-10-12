@@ -415,7 +415,6 @@ for (let [schemaName, schema] of Object.entries(api.components!.schemas!)) {
       if (isRef(prop)) continue;
       if (prop.enum) {
         assert.equal(prop.type, 'integer');
-        setXKind(prop, (schema as any)['x-kind']);
         schema.properties![propName] = registerSchema(
           schemaName + propName,
           prop

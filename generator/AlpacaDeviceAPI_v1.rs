@@ -42,7 +42,7 @@ use super::*;
 mod schemas {
     use super::*;
 
-    #[derive(Serialize)]
+    #[derive(Serialize, Deserialize)]
 
     pub struct ImageArrayResponse {
         #[serde(rename = "Type")]
@@ -58,7 +58,7 @@ mod schemas {
     }
 
     /// Axis rate object
-    #[derive(Serialize)]
+    #[derive(Serialize, Deserialize)]
 
     pub struct AxisRate {
         /// The maximum rate (degrees per second) This must always be a positive number. It indicates the maximum rate in either direction about the axis.
@@ -71,7 +71,7 @@ mod schemas {
     }
 
     /// DriveRate enum corresponding to one of the standard drive rates.
-    #[derive(Serialize_repr)]
+    #[derive(Serialize_repr, Deserialize_repr)]
     #[repr(i8)]
     pub enum DriveRate {
         /// 15.041 arcseconds per second
@@ -88,7 +88,7 @@ mod schemas {
     }
 
     /// The axis of mount rotation.
-    #[derive(Serialize_repr)]
+    #[derive(Serialize_repr, Deserialize_repr)]
     #[repr(i8)]
     pub enum Axis {
         Primary = 0,
@@ -98,7 +98,7 @@ mod schemas {
         Tertiary = 2,
     }
 
-    #[derive(Deserialize)]
+    #[derive(Serialize, Deserialize)]
 
     pub struct PutActionRequest {
         /// A well known name that represents the action to be carried out.
@@ -110,7 +110,7 @@ mod schemas {
         pub parameters: String,
     }
 
-    #[derive(Deserialize)]
+    #[derive(Serialize, Deserialize)]
 
     pub struct PutCommandblindRequest {
         /// The literal command string to be transmitted.
@@ -122,7 +122,7 @@ mod schemas {
         pub raw: String,
     }
 
-    #[derive(Deserialize)]
+    #[derive(Serialize, Deserialize)]
 
     pub struct PutConnectedRequest {
         /// Set True to connect to the device hardware, set False to disconnect from the device hardware
@@ -130,7 +130,7 @@ mod schemas {
         pub connected: bool,
     }
 
-    #[derive(Deserialize)]
+    #[derive(Serialize, Deserialize)]
 
     pub struct PutCameraBinxRequest {
         /// The X binning value
@@ -138,7 +138,7 @@ mod schemas {
         pub bin_x: i32,
     }
 
-    #[derive(Deserialize)]
+    #[derive(Serialize, Deserialize)]
 
     pub struct PutCameraBinyRequest {
         /// The Y binning value
@@ -146,7 +146,7 @@ mod schemas {
         pub bin_y: i32,
     }
 
-    #[derive(Deserialize)]
+    #[derive(Serialize, Deserialize)]
 
     pub struct PutCameraCooleronRequest {
         /// Cooler state
@@ -154,7 +154,7 @@ mod schemas {
         pub cooler_on: bool,
     }
 
-    #[derive(Deserialize)]
+    #[derive(Serialize, Deserialize)]
 
     pub struct PutCameraFastreadoutRequest {
         /// True to enable fast readout mode
@@ -162,7 +162,7 @@ mod schemas {
         pub fast_readout: bool,
     }
 
-    #[derive(Deserialize)]
+    #[derive(Serialize, Deserialize)]
 
     pub struct PutCameraGainRequest {
         /// Index of the current camera gain in the Gains string array.
@@ -170,7 +170,7 @@ mod schemas {
         pub gain: i32,
     }
 
-    #[derive(Deserialize)]
+    #[derive(Serialize, Deserialize)]
 
     pub struct PutCameraNumxRequest {
         /// Sets the subframe width, if binning is active, value is in binned pixels.
@@ -178,7 +178,7 @@ mod schemas {
         pub num_x: i32,
     }
 
-    #[derive(Deserialize)]
+    #[derive(Serialize, Deserialize)]
 
     pub struct PutCameraNumyRequest {
         /// Sets the subframe height, if binning is active, value is in binned pixels.
@@ -186,7 +186,7 @@ mod schemas {
         pub num_y: i32,
     }
 
-    #[derive(Deserialize)]
+    #[derive(Serialize, Deserialize)]
 
     pub struct PutCameraOffsetRequest {
         /// Index of the current camera offset in the offsets string array.
@@ -194,7 +194,7 @@ mod schemas {
         pub offset: i32,
     }
 
-    #[derive(Deserialize)]
+    #[derive(Serialize, Deserialize)]
 
     pub struct PutCameraReadoutmodeRequest {
         /// Index into the ReadoutModes array of string readout mode names indicating the camera's current readout mode.
@@ -202,7 +202,7 @@ mod schemas {
         pub readout_mode: i32,
     }
 
-    #[derive(Deserialize)]
+    #[derive(Serialize, Deserialize)]
 
     pub struct PutCameraSetccdtemperatureRequest {
         /// Temperature set point (degrees Celsius).
@@ -210,7 +210,7 @@ mod schemas {
         pub set_ccdtemperature: f64,
     }
 
-    #[derive(Deserialize)]
+    #[derive(Serialize, Deserialize)]
 
     pub struct PutCameraStartxRequest {
         /// The subframe X axis start position in binned pixels.
@@ -218,7 +218,7 @@ mod schemas {
         pub start_x: i32,
     }
 
-    #[derive(Deserialize)]
+    #[derive(Serialize, Deserialize)]
 
     pub struct PutCameraStartyRequest {
         /// The subframe Y axis start position in binned pixels.
@@ -226,7 +226,7 @@ mod schemas {
         pub start_y: i32,
     }
 
-    #[derive(Deserialize)]
+    #[derive(Serialize, Deserialize)]
 
     pub struct PutCameraSubexposuredurationRequest {
         /// The request sub exposure duration in seconds
@@ -234,7 +234,7 @@ mod schemas {
         pub sub_exposure_duration: f64,
     }
 
-    #[derive(Deserialize)]
+    #[derive(Serialize, Deserialize)]
 
     pub struct PutCameraPulseguideRequest {
         #[serde(rename = "Direction")]
@@ -245,7 +245,7 @@ mod schemas {
         pub duration: i32,
     }
 
-    #[derive(Deserialize)]
+    #[derive(Serialize, Deserialize)]
 
     pub struct PutCameraStartexposureRequest {
         /// Duration of exposure in seconds
@@ -257,7 +257,7 @@ mod schemas {
         pub light: bool,
     }
 
-    #[derive(Deserialize)]
+    #[derive(Serialize, Deserialize)]
 
     pub struct PutCovercalibratorCalibratoronRequest {
         /// The required brightness in the range 0 to MaxBrightness
@@ -265,7 +265,7 @@ mod schemas {
         pub brightness: i32,
     }
 
-    #[derive(Deserialize)]
+    #[derive(Serialize, Deserialize)]
 
     pub struct PutDomeSlavedRequest {
         /// True if telescope is slaved to dome, otherwise false
@@ -273,7 +273,7 @@ mod schemas {
         pub slaved: bool,
     }
 
-    #[derive(Deserialize)]
+    #[derive(Serialize, Deserialize)]
 
     pub struct PutDomeSlewtoaltitudeRequest {
         /// Target dome altitude (degrees, horizon zero and increasing positive to 90 zenith)
@@ -281,7 +281,7 @@ mod schemas {
         pub altitude: f64,
     }
 
-    #[derive(Deserialize)]
+    #[derive(Serialize, Deserialize)]
 
     pub struct PutDomeSlewtoazimuthRequest {
         /// Target dome azimuth (degrees, North zero and increasing clockwise. i.e., 90 East, 180 South, 270 West)
@@ -289,7 +289,7 @@ mod schemas {
         pub azimuth: f64,
     }
 
-    #[derive(Deserialize)]
+    #[derive(Serialize, Deserialize)]
 
     pub struct PutFilterwheelPositionRequest {
         /// The number of the filter wheel position to select
@@ -297,7 +297,7 @@ mod schemas {
         pub position: i32,
     }
 
-    #[derive(Deserialize)]
+    #[derive(Serialize, Deserialize)]
 
     pub struct PutFocuserTempcompRequest {
         /// Set true to enable the focuser's temperature compensation mode, otherwise false for normal operation.
@@ -305,7 +305,7 @@ mod schemas {
         pub temp_comp: bool,
     }
 
-    #[derive(Deserialize)]
+    #[derive(Serialize, Deserialize)]
 
     pub struct PutFocuserMoveRequest {
         /// Step distance or absolute position, depending on the value of the Absolute property
@@ -313,7 +313,7 @@ mod schemas {
         pub position: i32,
     }
 
-    #[derive(Deserialize)]
+    #[derive(Serialize, Deserialize)]
 
     pub struct PutObservingconditionsAverageperiodRequest {
         /// Time period (hours) over which to average sensor readings
@@ -321,7 +321,7 @@ mod schemas {
         pub average_period: f64,
     }
 
-    #[derive(Deserialize)]
+    #[derive(Serialize, Deserialize)]
 
     pub struct GetObservingconditionsSensordescriptionRequest {
         /// Name of the sensor whose description is required
@@ -329,7 +329,7 @@ mod schemas {
         pub sensor_name: String,
     }
 
-    #[derive(Deserialize)]
+    #[derive(Serialize, Deserialize)]
 
     pub struct GetObservingconditionsTimesincelastupdateRequest {
         /// Name of the sensor whose last update time is required
@@ -337,7 +337,7 @@ mod schemas {
         pub sensor_name: String,
     }
 
-    #[derive(Deserialize)]
+    #[derive(Serialize, Deserialize)]
 
     pub struct PutRotatorReverseRequest {
         /// True if the rotation and angular direction must be reversed to match the optical characteristcs
@@ -345,7 +345,7 @@ mod schemas {
         pub reverse: bool,
     }
 
-    #[derive(Deserialize)]
+    #[derive(Serialize, Deserialize)]
 
     pub struct PutRotatorMoveRequest {
         /// Relative position to move in degrees from current Position.
@@ -353,7 +353,7 @@ mod schemas {
         pub position: f64,
     }
 
-    #[derive(Deserialize)]
+    #[derive(Serialize, Deserialize)]
 
     pub struct PutRotatorMoveabsoluteRequest {
         /// Absolute position in degrees.
@@ -361,7 +361,7 @@ mod schemas {
         pub position: f64,
     }
 
-    #[derive(Deserialize)]
+    #[derive(Serialize, Deserialize)]
 
     pub struct PutRotatorMovemechanicalRequest {
         /// Absolute position in degrees.
@@ -369,7 +369,7 @@ mod schemas {
         pub position: f64,
     }
 
-    #[derive(Deserialize)]
+    #[derive(Serialize, Deserialize)]
 
     pub struct PutRotatorSyncRequest {
         /// Absolute position in degrees.
@@ -377,7 +377,7 @@ mod schemas {
         pub position: f64,
     }
 
-    #[derive(Deserialize)]
+    #[derive(Serialize, Deserialize)]
 
     pub struct GetSwitchCanwriteRequest {
         /// The device number (0 to MaxSwitch - 1)
@@ -385,7 +385,7 @@ mod schemas {
         pub id: i32,
     }
 
-    #[derive(Deserialize)]
+    #[derive(Serialize, Deserialize)]
 
     pub struct GetSwitchGetswitchRequest {
         /// The device number (0 to MaxSwitch - 1)
@@ -393,7 +393,7 @@ mod schemas {
         pub id: i32,
     }
 
-    #[derive(Deserialize)]
+    #[derive(Serialize, Deserialize)]
 
     pub struct GetSwitchGetswitchdescriptionRequest {
         /// The device number (0 to MaxSwitch - 1)
@@ -401,7 +401,7 @@ mod schemas {
         pub id: i32,
     }
 
-    #[derive(Deserialize)]
+    #[derive(Serialize, Deserialize)]
 
     pub struct GetSwitchGetswitchnameRequest {
         /// The device number (0 to MaxSwitch - 1)
@@ -409,7 +409,7 @@ mod schemas {
         pub id: i32,
     }
 
-    #[derive(Deserialize)]
+    #[derive(Serialize, Deserialize)]
 
     pub struct GetSwitchGetswitchvalueRequest {
         /// The device number (0 to MaxSwitch - 1)
@@ -417,7 +417,7 @@ mod schemas {
         pub id: i32,
     }
 
-    #[derive(Deserialize)]
+    #[derive(Serialize, Deserialize)]
 
     pub struct GetSwitchMinswitchvalueRequest {
         /// The device number (0 to MaxSwitch - 1)
@@ -425,7 +425,7 @@ mod schemas {
         pub id: i32,
     }
 
-    #[derive(Deserialize)]
+    #[derive(Serialize, Deserialize)]
 
     pub struct GetSwitchMaxswitchvalueRequest {
         /// The device number (0 to MaxSwitch - 1)
@@ -433,7 +433,7 @@ mod schemas {
         pub id: i32,
     }
 
-    #[derive(Deserialize)]
+    #[derive(Serialize, Deserialize)]
 
     pub struct PutSwitchSetswitchRequest {
         /// The device number (0 to MaxSwitch - 1)
@@ -445,7 +445,7 @@ mod schemas {
         pub state: bool,
     }
 
-    #[derive(Deserialize)]
+    #[derive(Serialize, Deserialize)]
 
     pub struct PutSwitchSetswitchnameRequest {
         /// The device number (0 to MaxSwitch - 1)
@@ -457,7 +457,7 @@ mod schemas {
         pub name: String,
     }
 
-    #[derive(Deserialize)]
+    #[derive(Serialize, Deserialize)]
 
     pub struct PutSwitchSetswitchvalueRequest {
         /// The device number (0 to MaxSwitch - 1)
@@ -469,7 +469,7 @@ mod schemas {
         pub value: f64,
     }
 
-    #[derive(Deserialize)]
+    #[derive(Serialize, Deserialize)]
 
     pub struct GetSwitchSwitchstepRequest {
         /// The device number (0 to MaxSwitch - 1)
@@ -477,7 +477,7 @@ mod schemas {
         pub id: i32,
     }
 
-    #[derive(Deserialize)]
+    #[derive(Serialize, Deserialize)]
 
     pub struct PutTelescopeDeclinationrateRequest {
         /// Declination tracking rate (arcseconds per second)
@@ -485,7 +485,7 @@ mod schemas {
         pub declination_rate: f64,
     }
 
-    #[derive(Deserialize)]
+    #[derive(Serialize, Deserialize)]
 
     pub struct PutTelescopeDoesrefractionRequest {
         /// Set True to make the telescope or driver applie atmospheric refraction to coordinates.
@@ -493,7 +493,7 @@ mod schemas {
         pub does_refraction: bool,
     }
 
-    #[derive(Deserialize)]
+    #[derive(Serialize, Deserialize)]
 
     pub struct PutTelescopeGuideratedeclinationRequest {
         /// Declination movement rate offset degrees/sec).
@@ -501,7 +501,7 @@ mod schemas {
         pub guide_rate_declination: f64,
     }
 
-    #[derive(Deserialize)]
+    #[derive(Serialize, Deserialize)]
 
     pub struct PutTelescopeGuideraterightascensionRequest {
         /// RightAscension movement rate offset degrees/sec).
@@ -509,7 +509,7 @@ mod schemas {
         pub guide_rate_right_ascension: f64,
     }
 
-    #[derive(Deserialize)]
+    #[derive(Serialize, Deserialize)]
 
     pub struct PutTelescopeRightascensionrateRequest {
         /// Right ascension tracking rate (arcseconds per second)
@@ -517,14 +517,14 @@ mod schemas {
         pub right_ascension_rate: f64,
     }
 
-    #[derive(Deserialize)]
+    #[derive(Serialize, Deserialize)]
 
     pub struct PutTelescopeSideofpierRequest {
         #[serde(rename = "SideOfPier")]
         pub side_of_pier: PutTelescopeSideofpierRequestSideOfPier,
     }
 
-    #[derive(Deserialize)]
+    #[derive(Serialize, Deserialize)]
 
     pub struct PutTelescopeSiteelevationRequest {
         /// Elevation above mean sea level (metres).
@@ -532,7 +532,7 @@ mod schemas {
         pub site_elevation: f64,
     }
 
-    #[derive(Deserialize)]
+    #[derive(Serialize, Deserialize)]
 
     pub struct PutTelescopeSitelatitudeRequest {
         /// Site latitude (degrees)
@@ -540,7 +540,7 @@ mod schemas {
         pub site_latitude: f64,
     }
 
-    #[derive(Deserialize)]
+    #[derive(Serialize, Deserialize)]
 
     pub struct PutTelescopeSitelongitudeRequest {
         /// Site longitude (degrees, positive East, WGS84)
@@ -548,7 +548,7 @@ mod schemas {
         pub site_longitude: f64,
     }
 
-    #[derive(Deserialize)]
+    #[derive(Serialize, Deserialize)]
 
     pub struct PutTelescopeSlewsettletimeRequest {
         /// Settling time (integer sec.).
@@ -556,7 +556,7 @@ mod schemas {
         pub slew_settle_time: i32,
     }
 
-    #[derive(Deserialize)]
+    #[derive(Serialize, Deserialize)]
 
     pub struct PutTelescopeTargetdeclinationRequest {
         /// Target declination(degrees)
@@ -564,7 +564,7 @@ mod schemas {
         pub target_declination: f64,
     }
 
-    #[derive(Deserialize)]
+    #[derive(Serialize, Deserialize)]
 
     pub struct PutTelescopeTargetrightascensionRequest {
         /// Target right ascension(hours)
@@ -572,7 +572,7 @@ mod schemas {
         pub target_right_ascension: f64,
     }
 
-    #[derive(Deserialize)]
+    #[derive(Serialize, Deserialize)]
 
     pub struct PutTelescopeTrackingRequest {
         /// Tracking enabled / disabled
@@ -580,14 +580,14 @@ mod schemas {
         pub tracking: bool,
     }
 
-    #[derive(Deserialize)]
+    #[derive(Serialize, Deserialize)]
 
     pub struct PutTelescopeTrackingrateRequest {
         #[serde(rename = "TrackingRate")]
         pub tracking_rate: DriveRate,
     }
 
-    #[derive(Deserialize)]
+    #[derive(Serialize, Deserialize)]
 
     pub struct PutTelescopeUtcdateRequest {
         /// UTC date/time in ISO 8601 format.
@@ -595,21 +595,21 @@ mod schemas {
         pub utcdate: String,
     }
 
-    #[derive(Deserialize)]
+    #[derive(Serialize, Deserialize)]
 
     pub struct GetTelescopeAxisratesRequest {
         #[serde(rename = "Axis")]
         pub axis: Axis,
     }
 
-    #[derive(Deserialize)]
+    #[derive(Serialize, Deserialize)]
 
     pub struct GetTelescopeCanmoveaxisRequest {
         #[serde(rename = "Axis")]
         pub axis: Axis,
     }
 
-    #[derive(Deserialize)]
+    #[derive(Serialize, Deserialize)]
 
     pub struct GetTelescopeDestinationsideofpierRequest {
         /// Right Ascension coordinate (0.0 to 23.99999999 hours)
@@ -621,7 +621,7 @@ mod schemas {
         pub declination: f64,
     }
 
-    #[derive(Deserialize)]
+    #[derive(Serialize, Deserialize)]
 
     pub struct PutTelescopeMoveaxisRequest {
         #[serde(rename = "Axis")]
@@ -632,7 +632,7 @@ mod schemas {
         pub rate: f64,
     }
 
-    #[derive(Deserialize)]
+    #[derive(Serialize, Deserialize)]
 
     pub struct PutTelescopeSlewtoaltazRequest {
         /// Azimuth coordinate (degrees, North-referenced, positive East/clockwise)
@@ -644,7 +644,7 @@ mod schemas {
         pub altitude: f64,
     }
 
-    #[derive(Deserialize)]
+    #[derive(Serialize, Deserialize)]
 
     pub struct PutTelescopeSlewtocoordinatesRequest {
         /// Right Ascension coordinate (hours)
@@ -656,7 +656,7 @@ mod schemas {
         pub declination: f64,
     }
 
-    #[derive(Serialize_repr)]
+    #[derive(Serialize_repr, Deserialize_repr)]
     #[repr(i8)]
     pub enum ImageArrayResponseType {
         Unknown = 0,
@@ -672,7 +672,7 @@ mod schemas {
     }
 
     /// Returned camera state
-    #[derive(Serialize_repr)]
+    #[derive(Serialize_repr, Deserialize_repr)]
     #[repr(i8)]
     pub enum CameraStateResponseValue {
         Idle = 0,
@@ -689,7 +689,7 @@ mod schemas {
     }
 
     /// Returned sensor type
-    #[derive(Serialize_repr)]
+    #[derive(Serialize_repr, Deserialize_repr)]
     #[repr(i8)]
     pub enum SensorTypeResponseValue {
         /// Camera produces monochrome array with no Bayer encoding
@@ -699,20 +699,20 @@ mod schemas {
         Color = 1,
 
         /// Camera produces RGGB encoded Bayer array images
-        RGGB = 2,
+        Rggb = 2,
 
         /// Camera produces CMYG encoded Bayer array images
-        CMYG = 3,
+        Cmyg = 3,
 
         /// Camera produces CMYG2 encoded Bayer array images
-        CMYG2 = 4,
+        Cmyg2 = 4,
 
         /// Camera produces Kodak TRUESENSE LRGB encoded Bayer array images
-        LRGB = 5,
+        Lrgb = 5,
     }
 
     /// Returned dome shutter status
-    #[derive(Serialize_repr)]
+    #[derive(Serialize_repr, Deserialize_repr)]
     #[repr(i8)]
     pub enum DomeShutterStatusResponseValue {
         Open = 0,
@@ -727,7 +727,7 @@ mod schemas {
     }
 
     /// Returned side of pier
-    #[derive(Serialize_repr)]
+    #[derive(Serialize_repr, Deserialize_repr)]
     #[repr(i8)]
     pub enum SideOfPierResponseValue {
         /// Normal pointing state - Mount on the East side of pier (looking West).
@@ -741,7 +741,7 @@ mod schemas {
     }
 
     /// The direction in which the guide-rate motion is to be made.
-    #[derive(Deserialize_repr)]
+    #[derive(Serialize_repr, Deserialize_repr)]
     #[repr(i8)]
     pub enum PutCameraPulseguideRequestDirection {
         North = 0,
@@ -754,7 +754,7 @@ mod schemas {
     }
 
     /// New pointing state.
-    #[derive(Deserialize_repr)]
+    #[derive(Serialize_repr, Deserialize_repr)]
     #[repr(i8)]
     pub enum PutTelescopeSideofpierRequestSideOfPier {
         /// Normal pointing state - Mount on the East side of pier (looking West).

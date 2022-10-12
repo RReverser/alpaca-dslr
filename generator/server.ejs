@@ -84,7 +84,7 @@ mod schemas {
     <% if (schema['x-kind'] === 'Empty' || schema['x-kind'] === 'ValueResponse') continue; %>
     <% schemaName = toTypeName(schemaName); %>
     <%= doc(schema.description) %>
-    #[derive(<%= schema['x-kind'] === 'Request' ? 'Deserialize' : 'Serialize' %><%= schema.enum ? '_repr' : '' %>)]
+    #[derive(<%= ['Serialize', 'Deserialize'].map(trait => `${trait}${schema.enum ? '_repr' : ''}`).join(', ') %>)]
     <% if (schema.type === 'object') { %>
       pub struct <%= schemaName %> {
         <% for (let [propName, prop] of Object.entries(schema.properties)) { %>
@@ -99,7 +99,7 @@ mod schemas {
       pub enum <%= schemaName %> {
         <% for (let [i, value] of schema.enum.entries()) { %>
           <%= doc(schema['x-enum-descriptions']?.[i]) %>
-          <%= schema['x-enum-varnames'][i] %> = <%= value %>,
+          <%= toTypeName(schema['x-enum-varnames'][i]) %> = <%= value %>,
         <% } %>
       }
     <% } else throw new Error(`Unhandled schema ${schemaName}`); %>

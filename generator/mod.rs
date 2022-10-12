@@ -2,6 +2,7 @@ use actix_web::error::ErrorBadRequest;
 use actix_web::web::{Bytes, Json, Path};
 use actix_web::{HttpRequest, HttpResponse, Responder};
 use serde::{Deserialize, Serialize};
+use serde_repr::{Deserialize_repr, Serialize_repr};
 use std::borrow::Cow;
 use std::collections::HashMap;
 use std::fmt;
