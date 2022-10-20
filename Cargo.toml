@@ -4,10 +4,15 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-actix-web = "4.2.1"
-ascom-alpaca-rs = { path = "./ascom-alpaca-rs", features = ["actix"] }
-tracing-actix-web = "0.6.1"
-tracing-subscriber = "0.3.16"
+ascom-alpaca-rs = { path = "./ascom-alpaca-rs" }
+axum = "0.5.16"
+tokio = { version = "1.21.2", features = ["rt", "macros"] }
+tower-http = { version = "0.3.4", features = ["trace"] }
+tracing = "0.1.37"
+tracing-subscriber = { version = "0.3.16", features = ["env-filter"] }
 
 [workspace]
 members = ["ascom-alpaca-rs"]
+
+[patch.crates-io]
+serde_plain = { git = "https://github.com/RReverser/serde-plain", branch = "fix-serde-skip" }
