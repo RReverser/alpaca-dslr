@@ -9,7 +9,7 @@ struct MyCamera;
 
 impl Device for MyCamera {
     fn ty(&self) -> &'static str {
-        <MyCamera as Camera>::TYPE
+        <dyn Camera>::TYPE
     }
 
     fn handle_action(
@@ -18,7 +18,7 @@ impl Device for MyCamera {
         action: &str,
         params: ASCOMParams,
     ) -> ASCOMResult<OpaqueResponse> {
-        Camera::handle_action_impl(self, is_mut, action, params)
+        <dyn Camera>::handle_action_impl(self, is_mut, action, params)
     }
 }
 
