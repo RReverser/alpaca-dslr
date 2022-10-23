@@ -13,6 +13,3 @@ tracing-subscriber = { version = "0.3.16", features = ["env-filter"] }
 
 [workspace]
 members = ["ascom-alpaca-rs"]
-
-[patch.crates-io]
-serde_plain = { git = "https://github.com/RReverser/serde-plain", branch = "fix-serde-skip" }
