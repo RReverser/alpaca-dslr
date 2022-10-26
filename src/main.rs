@@ -5,8 +5,8 @@ use ascom_alpaca_rs::{
 use gphoto2::camera::CameraEvent;
 use gphoto2::file::CameraFilePath;
 use gphoto2::widget::ToggleWidget;
+use net_literals::{addr, ipv6};
 use send_wrapper::SendWrapper;
-use std::net::SocketAddr;
 use std::rc::Rc;
 use tokio::task::LocalSet;
 use tokio::time::sleep;
@@ -517,6 +517,23 @@ impl Camera for MyCameraDevice {
     }
 }
 
+async fn start_alpaca_discovery_server(alpaca_port: u16) -> anyhow::Result<()> {
+    let discovery_msg = format!(r#"{{"AlpacaPort":{}}}"#, alpaca_port);
+    let socket = tokio::net::UdpSocket::bind(addr!("[::]:32227")).await?;
+    socket.join_multicast_v6(&ipv6!("ff12::a1:9aca"), 0)?;
+    let mut buf = [0; 16];
+    loop {
+        let (len, src) = socket.recv_from(&mut buf).await?;
+        let data = &buf[..len];
+        if data == b"alpacadiscovery1" {
+            tracing::debug!(%src, "Received Alpaca discovery request");
+            socket.send_to(discovery_msg.as_bytes(), src).await?;
+        } else {
+            tracing::warn!(%src, "Received unknown multicast packet");
+        }
+    }
+}
+
 #[tokio::main(flavor = "current_thread")]
 async fn main() -> anyhow::Result<()> {
     // initialize tracing
@@ -533,20 +550,60 @@ async fn main() -> anyhow::Result<()> {
         .finish();
 
     // run our app with hyper
-    let addr = SocketAddr::from(([127, 0, 0, 1], 3000));
+    let addr = addr!("[::]:3000");
 
     tracing::info!(%addr, "Starting server");
 
-    LocalSet::new()
-        .run_until(
-            axum::Server::bind(&addr).serve(
-                devices
-                    .into_router()
-                    .layer(TraceLayer::new_for_http())
-                    .into_make_service(),
-            ),
-        )
-        .await?;
+    let server = axum::Server::try_bind(&addr)?;
 
-    Ok(())
+    let local_set = LocalSet::new();
+
+    tokio::try_join!(
+        start_alpaca_discovery_server(addr.port()),
+        local_set.run_until(async move {
+            server
+                .serve(
+                    devices
+                        .into_router()
+                        .route(
+                            "/management/apiversions",
+                            axum::routing::get(|| async { r#"{"Value":[1]}"# }),
+                        )
+                        .route(
+                            "/management/v1/description",
+                            axum::routing::get(|| async {
+                                r#"{
+                                    "Value": {
+                                        "ServerName": "alpaca-dslr",
+                                        "Manufacturer": "RReverser",
+                                        "ManufacturerVersion": "0.0.1",
+                                        "Location": "Earth"
+                                    }
+                                }"#
+                            }),
+                        )
+                        .route(
+                            "/management/v1/configureddevices",
+                            axum::routing::get(|| async {
+                                r#"{
+                                    "Value": [
+                                        {
+                                            "DeviceType": "Camera",
+                                            "DeviceNumber": 0,
+                                            "UniqueID": "MyCamera",
+                                            "Description": "My Camera"
+                                        }
+                                    ]
+                                }"#
+                            }),
+                        )
+                        .layer(TraceLayer::new_for_http())
+                        .into_make_service(),
+                )
+                .await?;
+
+            Ok(())
+        })
+    )
+    .map(|_| ())
 }
