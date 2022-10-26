@@ -23,24 +23,24 @@ struct MyCamera {
 impl MyCamera {
     pub fn new(inner: gphoto2::Camera) -> anyhow::Result<Self> {
         let dimensions = {
-            let span = tracing::debug_span!("Determine dimensions");
+            let span = tracing::trace_span!("Determine dimensions");
             let _enter = span.enter();
 
-            tracing::debug!("Capturing test image");
+            tracing::trace!("Capturing test image");
             let camera_file_path = inner.capture_image()?;
             let folder = camera_file_path.folder();
             let name = camera_file_path.name();
             let fs = inner.fs();
-            tracing::debug!("Downloading test image from the camera");
+            tracing::trace!("Downloading test image from the camera");
             let camera_file = fs.download(&folder, &name)?;
-            tracing::debug!("Deleting test image from the camera");
+            tracing::trace!("Deleting test image from the camera");
             fs.delete_file(&folder, &name)?;
 
             let mime_type = camera_file.mime_type();
             let img_format = image::ImageFormat::from_mime_type(&mime_type)
                 .ok_or_else(|| anyhow::anyhow!("unknown image format {mime_type}"))?;
 
-            tracing::debug!(mime_type, ?img_format, "Test image format");
+            tracing::trace!(mime_type, ?img_format, "Test image format");
 
             image::io::Reader::with_format(
                 std::io::Cursor::new(camera_file.get_data()?),
@@ -500,6 +500,8 @@ async fn main() -> anyhow::Result<()> {
 
     // run our app with hyper
     let addr = SocketAddr::from(([127, 0, 0, 1], 3000));
+
+    tracing::info!(%addr, "Starting server");
 
     LocalSet::new()
         .run_until(
