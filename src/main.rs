@@ -20,6 +20,14 @@ struct MyCamera {
     current_exposure: Option<tokio::task::JoinHandle<ASCOMResult<CameraFilePath>>>,
 }
 
+impl std::ops::Deref for MyCamera {
+    type Target = gphoto2::Camera;
+
+    fn deref(&self) -> &Self::Target {
+        &self.inner
+    }
+}
+
 impl MyCamera {
     pub fn new(inner: gphoto2::Camera) -> anyhow::Result<Self> {
         let dimensions = {
@@ -63,11 +71,18 @@ impl MyCamera {
     }
 }
 
-impl std::ops::Deref for MyCamera {
-    type Target = gphoto2::Camera;
+#[derive(Default)]
+struct MyCameraDevice {
+    camera: Option<MyCamera>,
+}
 
-    fn deref(&self) -> &Self::Target {
-        &self.inner
+impl MyCameraDevice {
+    fn camera(&self) -> ASCOMResult<&MyCamera> {
+        self.camera.as_ref().ok_or(ASCOMError::NOT_CONNECTED)
+    }
+
+    fn camera_mut(&mut self) -> ASCOMResult<&mut MyCamera> {
+        self.camera.as_mut().ok_or(ASCOMError::NOT_CONNECTED)
     }
 }
 
@@ -77,7 +92,7 @@ fn convert_err(err: impl std::string::ToString) -> ASCOMError {
 }
 
 #[allow(unused_variables)]
-impl Device for MyCamera {
+impl Device for MyCameraDevice {
     fn ty(&self) -> &'static str {
         <dyn Camera>::TYPE
     }
@@ -116,15 +131,35 @@ impl Device for MyCamera {
     }
 
     fn connected(&self) -> ascom_alpaca_rs::ASCOMResult<bool> {
-        Ok(true)
+        Ok(self.camera.is_some())
     }
 
     fn set_connected(&mut self, connected: bool) -> ascom_alpaca_rs::ASCOMResult {
-        Err(ascom_alpaca_rs::ASCOMError::NOT_IMPLEMENTED)
+        if connected == self.camera.is_some() {
+            return Ok(());
+        }
+
+        if connected {
+            let span = tracing::trace_span!("Connecting to camera");
+            let _enter = span.enter();
+
+            self.camera = Some(
+                MyCamera::new(
+                    gphoto2::Context::new()
+                        .and_then(|ctx| ctx.autodetect_camera())
+                        .map_err(convert_err)?,
+                )
+                .map_err(convert_err)?,
+            );
+        } else {
+            self.camera = None;
+        }
+
+        Ok(())
     }
 
     fn description(&self) -> ascom_alpaca_rs::ASCOMResult<String> {
-        self.inner.about().map_err(convert_err)
+        self.camera()?.about().map_err(convert_err)
     }
 
     fn driver_info(&self) -> ascom_alpaca_rs::ASCOMResult<String> {
@@ -140,7 +175,7 @@ impl Device for MyCamera {
     }
 
     fn name(&self) -> ascom_alpaca_rs::ASCOMResult<String> {
-        Ok(self.inner.abilities().model().into_owned())
+        Ok(self.camera()?.abilities().model().into_owned())
     }
 
     fn supported_actions(&self) -> ascom_alpaca_rs::ASCOMResult<Vec<String>> {
@@ -149,7 +184,7 @@ impl Device for MyCamera {
 }
 
 #[allow(unused_variables)]
-impl Camera for MyCamera {
+impl Camera for MyCameraDevice {
     fn bayer_offset_x(&self) -> ascom_alpaca_rs::ASCOMResult<i32> {
         Err(ascom_alpaca_rs::ASCOMError::NOT_IMPLEMENTED)
     }
@@ -181,11 +216,11 @@ impl Camera for MyCamera {
     }
 
     fn camera_xsize(&self) -> ascom_alpaca_rs::ASCOMResult<i32> {
-        Ok(self.dimensions.0 as i32)
+        Ok(self.camera()?.dimensions.0 as i32)
     }
 
     fn camera_ysize(&self) -> ascom_alpaca_rs::ASCOMResult<i32> {
-        Ok(self.dimensions.1 as i32)
+        Ok(self.camera()?.dimensions.1 as i32)
     }
 
     fn can_abort_exposure(&self) -> ascom_alpaca_rs::ASCOMResult<bool> {
@@ -446,11 +481,12 @@ impl Camera for MyCamera {
     }
 
     fn start_exposure(&mut self, duration: f64, light: bool) -> ascom_alpaca_rs::ASCOMResult {
-        if self.current_exposure.is_some() {
+        let camera = self.camera_mut()?;
+        if camera.current_exposure.is_some() {
             return Err(ASCOMError::INVALID_OPERATION);
         }
-        let inner = Rc::clone(&self.inner);
-        self.current_exposure = Some(tokio::task::spawn_local(async move {
+        let inner = Rc::clone(&camera.inner);
+        camera.current_exposure = Some(tokio::task::spawn_local(async move {
             let bulb_toggle = inner
                 .config_key::<ToggleWidget>("bulb")
                 .map_err(convert_err)?;
@@ -493,9 +529,7 @@ async fn main() -> anyhow::Result<()> {
     gphoto2_test::set_env();
 
     let devices = DevicesBuilder::new()
-        .with(MyCamera::new(
-            gphoto2::Context::new()?.autodetect_camera()?,
-        )?)
+        .with(MyCameraDevice::default())
         .finish();
 
     // run our app with hyper
