@@ -10,7 +10,9 @@ use net_literals::{addr, ipv6};
 use send_wrapper::SendWrapper;
 use std::rc::Rc;
 use std::sync::{Arc, Mutex};
-use std::time::Duration;
+use std::time::{Duration, Instant};
+use time::format_description::well_known::Rfc3339;
+use time::OffsetDateTime;
 use tokio::select;
 use tokio::sync::oneshot;
 use tokio::task::{JoinHandle, LocalSet};
@@ -26,10 +28,16 @@ enum ExposingState {
     Reading,
 }
 
+struct SuccessfulExposure {
+    camera_file_path: CameraFilePath,
+    start_utc: OffsetDateTime,
+    duration: Duration,
+}
+
 enum State {
     Idle,
     InExposure(CurrentExposure),
-    AfterExposure(ASCOMResult<CameraFilePath>),
+    AfterExposure(ASCOMResult<SuccessfulExposure>),
 }
 
 struct CurrentExposure {
@@ -49,15 +57,18 @@ async fn expose(
     duration: Duration,
     stop_exposure: oneshot::Receiver<()>,
     state: &Atomic<ExposingState>,
-) -> gphoto2::Result<CameraFilePath> {
+) -> gphoto2::Result<SuccessfulExposure> {
     let bulb_toggle = camera.config_key::<ToggleWidget>("bulb")?;
     bulb_toggle.set_toggled(true);
     camera.set_config(&bulb_toggle)?;
     state.store(ExposingState::Exposing, atomic::Ordering::Relaxed);
+    let start_utc = OffsetDateTime::now_utc();
+    let start_instant = Instant::now();
     select! {
         _ = sleep(duration) => {},
         _ = stop_exposure => {}
     };
+    let elapsed = start_instant.elapsed();
     bulb_toggle.set_toggled(false);
     camera.set_config(&bulb_toggle)?;
     state.store(ExposingState::Reading, atomic::Ordering::Relaxed);
@@ -73,7 +84,11 @@ async fn expose(
             _ => {}
         }
     };
-    Ok(path)
+    Ok(SuccessfulExposure {
+        camera_file_path: path,
+        start_utc,
+        duration: elapsed,
+    })
 }
 
 struct MyCamera {
@@ -418,7 +433,10 @@ impl Camera for MyCameraDevice {
     }
 
     fn image_ready(&self) -> ascom_alpaca_rs::ASCOMResult<bool> {
-        Ok(matches!(*self.camera()?.state(), State::AfterExposure(_)))
+        Ok(matches!(
+            *self.camera()?.state(),
+            State::AfterExposure { .. }
+        ))
     }
 
     fn is_pulse_guiding(&self) -> ascom_alpaca_rs::ASCOMResult<bool> {
@@ -426,11 +444,26 @@ impl Camera for MyCameraDevice {
     }
 
     fn last_exposure_duration(&self) -> ascom_alpaca_rs::ASCOMResult<f64> {
-        Err(ascom_alpaca_rs::ASCOMError::NOT_IMPLEMENTED)
+        match *self.camera()?.state() {
+            State::AfterExposure(Ok(SuccessfulExposure { duration, .. })) => {
+                Ok(duration.as_secs_f64())
+            }
+            _ => Err(ascom_alpaca_rs::ASCOMError::INVALID_OPERATION),
+        }
     }
 
     fn last_exposure_start_time(&self) -> ascom_alpaca_rs::ASCOMResult<String> {
-        Err(ascom_alpaca_rs::ASCOMError::NOT_IMPLEMENTED)
+        match *self.camera()?.state() {
+            State::AfterExposure(Ok(SuccessfulExposure { start_utc, .. })) => {
+                // We need CCYY-MM-DDThh:mm:ss[.sss...]. This is close to RFC3339, but
+                // we need to remove the Z timezone suffix.
+                let mut result = start_utc.format(&Rfc3339).map_err(convert_err)?;
+                let last_char = result.pop();
+                debug_assert_eq!(last_char, Some('Z'));
+                Ok(result)
+            }
+            _ => Err(ascom_alpaca_rs::ASCOMError::INVALID_OPERATION),
+        }
     }
 
     fn max_adu(&self) -> ascom_alpaca_rs::ASCOMResult<i32> {

@@ -18,6 +18,7 @@ gphoto2_test = { git = "https://github.com/maxicarlos08/gphoto2-rs" }
 net-literals = "0.2.0"
 pin-project = "1.0.12"
 atomic = "0.5.1"
+time = { version = "0.3.17", features = ["formatting"] }
 
 [workspace]
 members = ["ascom-alpaca-rs"]
