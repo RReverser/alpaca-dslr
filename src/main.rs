@@ -217,11 +217,11 @@ impl Device for MyCameraDevice {
 #[allow(unused_variables)]
 impl Camera for MyCameraDevice {
     fn bayer_offset_x(&self) -> ascom_alpaca_rs::ASCOMResult<i32> {
-        Err(ascom_alpaca_rs::ASCOMError::NOT_IMPLEMENTED)
+        Ok(0)
     }
 
     fn bayer_offset_y(&self) -> ascom_alpaca_rs::ASCOMResult<i32> {
-        Err(ascom_alpaca_rs::ASCOMError::NOT_IMPLEMENTED)
+        Ok(0)
     }
 
     fn bin_x(&self) -> ascom_alpaca_rs::ASCOMResult<i32> {
@@ -310,15 +310,19 @@ impl Camera for MyCameraDevice {
     }
 
     fn exposure_max(&self) -> ascom_alpaca_rs::ASCOMResult<f64> {
-        Err(ascom_alpaca_rs::ASCOMError::NOT_IMPLEMENTED)
+        Ok(100. * 60. * 60.)
     }
 
     fn exposure_min(&self) -> ascom_alpaca_rs::ASCOMResult<f64> {
-        Err(ascom_alpaca_rs::ASCOMError::NOT_IMPLEMENTED)
+        Ok(0.1)
     }
 
     fn exposure_resolution(&self) -> ascom_alpaca_rs::ASCOMResult<f64> {
-        Err(ascom_alpaca_rs::ASCOMError::NOT_IMPLEMENTED)
+        // TODO: adjust this as we go.
+        // Considering that we need to do some high-latency operations,
+        // I'm not sure we can go very low in terms of precision here,
+        // so for now setting to 0.1 seconds as a rough estimate.
+        Ok(0.1)
     }
 
     fn fast_readout(&self) -> ascom_alpaca_rs::ASCOMResult<bool> {
@@ -480,7 +484,7 @@ impl Camera for MyCameraDevice {
     }
 
     fn start_x(&self) -> ascom_alpaca_rs::ASCOMResult<i32> {
-        Err(ascom_alpaca_rs::ASCOMError::NOT_IMPLEMENTED)
+        Ok(0)
     }
 
     fn set_start_x(&mut self, start_x: i32) -> ascom_alpaca_rs::ASCOMResult {
@@ -488,7 +492,7 @@ impl Camera for MyCameraDevice {
     }
 
     fn start_y(&self) -> ascom_alpaca_rs::ASCOMResult<i32> {
-        Err(ascom_alpaca_rs::ASCOMError::NOT_IMPLEMENTED)
+        Ok(0)
     }
 
     fn set_start_y(&mut self, start_y: i32) -> ascom_alpaca_rs::ASCOMResult {
@@ -530,31 +534,31 @@ impl Camera for MyCameraDevice {
         let (stop_exposure_sender, stop_exposure_receiver) = oneshot::channel();
         *current_exposure = Some(CurrentExposure {
             join_handle: tokio::task::spawn_local(async move {
-            let bulb_toggle = inner
-                .config_key::<ToggleWidget>("bulb")
-                .map_err(convert_err)?;
-            bulb_toggle.set_toggled(true);
-            inner.set_config(&bulb_toggle).map_err(convert_err)?;
+                let bulb_toggle = inner
+                    .config_key::<ToggleWidget>("bulb")
+                    .map_err(convert_err)?;
+                bulb_toggle.set_toggled(true);
+                inner.set_config(&bulb_toggle).map_err(convert_err)?;
                 select! {
                     _ = sleep(std::time::Duration::from_secs_f64(duration)) => {},
                     _ = stop_exposure_receiver => {}
                 };
-            bulb_toggle.set_toggled(false);
-            inner.set_config(&bulb_toggle).map_err(convert_err)?;
-            let path = loop {
-                match inner
-                    .wait_event(std::time::Duration::from_secs(3))
-                    .map_err(convert_err)?
-                {
-                    CameraEvent::NewFile(path) => break path,
-                    CameraEvent::Timeout => {
-                        return Err(convert_err("timeout while waiting for captured image"))
+                bulb_toggle.set_toggled(false);
+                inner.set_config(&bulb_toggle).map_err(convert_err)?;
+                let path = loop {
+                    match inner
+                        .wait_event(std::time::Duration::from_secs(3))
+                        .map_err(convert_err)?
+                    {
+                        CameraEvent::NewFile(path) => break path,
+                        CameraEvent::Timeout => {
+                            return Err(convert_err("timeout while waiting for captured image"))
+                        }
+                        _ => {}
                     }
-                    _ => {}
-                }
-            };
+                };
                 *current_exposure_clone.lock().unwrap() = None;
-            Ok(path)
+                Ok(path)
             }),
             early_stop_sender: Some(stop_exposure_sender),
         });
