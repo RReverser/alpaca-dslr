@@ -112,14 +112,21 @@ impl MyCamera {
             let _enter = span.enter();
 
             tracing::trace!("Capturing test image");
-            let camera_file_path = inner.capture_image()?;
-            let folder = camera_file_path.folder();
-            let name = camera_file_path.name();
-            let fs = inner.fs();
-            tracing::trace!("Downloading test image from the camera");
-            let camera_file = fs.download(&folder, &name)?;
-            tracing::trace!("Deleting test image from the camera");
-            fs.delete_file(&folder, &name)?;
+            let camera_file = inner.capture_preview().or_else(|e| {
+                if e.kind() != gphoto2::error::ErrorKind::NotSupported {
+                    return Err(e);
+                }
+                tracing::warn!("Preview capture not supported, falling back to full image capture");
+                let camera_file_path = inner.capture_image()?;
+                let folder = camera_file_path.folder();
+                let name = camera_file_path.name();
+                let fs = inner.fs();
+                tracing::trace!("Downloading test image from the camera");
+                let camera_file = fs.download(&folder, &name)?;
+                tracing::trace!("Deleting test image from the camera");
+                fs.delete_file(&folder, &name)?;
+                Ok(camera_file)
+            })?;
 
             let mime_type = camera_file.mime_type();
             let img_format = image::ImageFormat::from_mime_type(&mime_type)
