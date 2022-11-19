@@ -2,16 +2,15 @@ use ascom_alpaca_rs::api::{Camera, Device};
 use ascom_alpaca_rs::{
     ASCOMError, ASCOMErrorCode, ASCOMParams, ASCOMResult, DevicesBuilder, OpaqueResponse,
 };
+use atomic::Atomic;
 use gphoto2::camera::CameraEvent;
 use gphoto2::file::CameraFilePath;
 use gphoto2::widget::ToggleWidget;
 use net_literals::{addr, ipv6};
-use pin_project::{pin_project, pinned_drop};
 use send_wrapper::SendWrapper;
-use std::future::Future;
-use std::pin::Pin;
 use std::rc::Rc;
 use std::sync::{Arc, Mutex};
+use std::time::Duration;
 use tokio::select;
 use tokio::sync::oneshot;
 use tokio::task::{JoinHandle, LocalSet};
@@ -20,35 +19,67 @@ use tower_http::trace::TraceLayer;
 use tracing_subscriber::fmt::format::FmtSpan;
 use tracing_subscriber::prelude::*;
 
-#[pin_project(PinnedDrop)]
+#[derive(Clone, Copy)]
+enum ExposingState {
+    Waiting,
+    Exposing,
+    Reading,
+}
+
+enum State {
+    Idle,
+    InExposure(CurrentExposure),
+    AfterExposure(ASCOMResult<CameraFilePath>),
+}
+
 struct CurrentExposure {
-    #[pin]
-    join_handle: JoinHandle<ASCOMResult<CameraFilePath>>,
+    join_handle: JoinHandle<()>,
     early_stop_sender: Option<oneshot::Sender<()>>,
+    state: Arc<Atomic<ExposingState>>,
 }
 
-impl Future for CurrentExposure {
-    type Output = <JoinHandle<ASCOMResult<CameraFilePath>> as Future>::Output;
-
-    fn poll(
-        self: std::pin::Pin<&mut Self>,
-        cx: &mut std::task::Context<'_>,
-    ) -> std::task::Poll<Self::Output> {
-        self.project().join_handle.poll(cx)
-    }
-}
-
-#[pinned_drop]
-impl PinnedDrop for CurrentExposure {
-    fn drop(self: Pin<&mut Self>) {
+impl Drop for CurrentExposure {
+    fn drop(&mut self) {
         self.join_handle.abort();
     }
+}
+
+async fn expose(
+    camera: &gphoto2::Camera,
+    duration: Duration,
+    stop_exposure: oneshot::Receiver<()>,
+    state: &Atomic<ExposingState>,
+) -> gphoto2::Result<CameraFilePath> {
+    let bulb_toggle = camera.config_key::<ToggleWidget>("bulb")?;
+    bulb_toggle.set_toggled(true);
+    camera.set_config(&bulb_toggle)?;
+    state.store(ExposingState::Exposing, atomic::Ordering::Relaxed);
+    select! {
+        _ = sleep(duration) => {},
+        _ = stop_exposure => {}
+    };
+    bulb_toggle.set_toggled(false);
+    camera.set_config(&bulb_toggle)?;
+    state.store(ExposingState::Reading, atomic::Ordering::Relaxed);
+    let path = loop {
+        match camera.wait_event(std::time::Duration::from_secs(3))? {
+            CameraEvent::NewFile(path) => break path,
+            CameraEvent::Timeout => {
+                return Err(gphoto2::Error::new(
+                    gphoto2::libgphoto2_sys::GP_ERROR_TIMEOUT,
+                    Some("timeout while waiting for captured image".to_owned()),
+                ))
+            }
+            _ => {}
+        }
+    };
+    Ok(path)
 }
 
 struct MyCamera {
     inner: SendWrapper<Rc<gphoto2::Camera>>,
     dimensions: (u32, u32),
-    current_exposure: Arc<Mutex<Option<CurrentExposure>>>,
+    state: Arc<Mutex<State>>,
 }
 
 impl std::ops::Deref for MyCamera {
@@ -97,8 +128,12 @@ impl MyCamera {
         Ok(Self {
             inner: SendWrapper::new(Rc::new(inner)),
             dimensions,
-            current_exposure: Default::default(),
+            state: Arc::new(Mutex::new(State::Idle)),
         })
+    }
+
+    fn state(&self) -> std::sync::MutexGuard<'_, State> {
+        self.state.lock().unwrap()
     }
 }
 
@@ -243,14 +278,19 @@ impl Camera for MyCameraDevice {
     fn camera_state(
         &self,
     ) -> ascom_alpaca_rs::ASCOMResult<ascom_alpaca_rs::api::CameraStateResponse> {
-        // TODO: more granular states e.g. for Download.
-        Ok(
-            if self.camera()?.current_exposure.lock().unwrap().is_some() {
-                ascom_alpaca_rs::api::CameraStateResponse::Exposing
-            } else {
-                ascom_alpaca_rs::api::CameraStateResponse::Idle
+        // TODO: `Download` state
+        Ok(match &*self.camera()?.state() {
+            State::Idle => ascom_alpaca_rs::api::CameraStateResponse::Idle,
+            State::InExposure(exposure) => match exposure.state.load(atomic::Ordering::Relaxed) {
+                ExposingState::Waiting => ascom_alpaca_rs::api::CameraStateResponse::Waiting,
+                ExposingState::Exposing => ascom_alpaca_rs::api::CameraStateResponse::Exposing,
+                ExposingState::Reading => ascom_alpaca_rs::api::CameraStateResponse::Reading,
             },
-        )
+            State::AfterExposure(result) => match result {
+                Ok(_) => ascom_alpaca_rs::api::CameraStateResponse::Idle,
+                Err(_) => ascom_alpaca_rs::api::CameraStateResponse::Error,
+            },
+        })
     }
 
     fn camera_xsize(&self) -> ascom_alpaca_rs::ASCOMResult<i32> {
@@ -378,7 +418,7 @@ impl Camera for MyCameraDevice {
     }
 
     fn image_ready(&self) -> ascom_alpaca_rs::ASCOMResult<bool> {
-        Err(ascom_alpaca_rs::ASCOMError::NOT_IMPLEMENTED)
+        Ok(matches!(*self.camera()?.state(), State::AfterExposure(_)))
     }
 
     fn is_pulse_guiding(&self) -> ascom_alpaca_rs::ASCOMResult<bool> {
@@ -511,8 +551,13 @@ impl Camera for MyCameraDevice {
     }
 
     fn abort_exposure(&mut self) -> ascom_alpaca_rs::ASCOMResult {
-        *self.camera_mut()?.current_exposure.lock().unwrap() = None;
-        Ok(())
+        match &mut *self.camera_mut()?.state() {
+            camera_state @ State::InExposure(_) => {
+                *camera_state = State::Idle;
+                Ok(())
+            }
+            _ => Err(ASCOMError::INVALID_OPERATION),
+        }
     }
 
     fn pulse_guide(
@@ -525,40 +570,23 @@ impl Camera for MyCameraDevice {
 
     fn start_exposure(&mut self, duration: f64, light: bool) -> ascom_alpaca_rs::ASCOMResult {
         let camera = self.camera_mut()?;
-        let mut current_exposure = camera.current_exposure.lock().unwrap();
-        if current_exposure.is_some() {
-            return Err(ASCOMError::INVALID_OPERATION);
-        }
         let inner = Rc::clone(&camera.inner);
-        let current_exposure_clone = Arc::clone(&camera.current_exposure);
         let (stop_exposure_sender, stop_exposure_receiver) = oneshot::channel();
-        *current_exposure = Some(CurrentExposure {
+        let state = Arc::clone(&camera.state);
+        let exposing_state = Arc::new(Atomic::new(ExposingState::Waiting));
+        *camera.state() = State::InExposure(CurrentExposure {
+            state: Arc::clone(&exposing_state),
             join_handle: tokio::task::spawn_local(async move {
-                let bulb_toggle = inner
-                    .config_key::<ToggleWidget>("bulb")
-                    .map_err(convert_err)?;
-                bulb_toggle.set_toggled(true);
-                inner.set_config(&bulb_toggle).map_err(convert_err)?;
-                select! {
-                    _ = sleep(std::time::Duration::from_secs_f64(duration)) => {},
-                    _ = stop_exposure_receiver => {}
-                };
-                bulb_toggle.set_toggled(false);
-                inner.set_config(&bulb_toggle).map_err(convert_err)?;
-                let path = loop {
-                    match inner
-                        .wait_event(std::time::Duration::from_secs(3))
-                        .map_err(convert_err)?
-                    {
-                        CameraEvent::NewFile(path) => break path,
-                        CameraEvent::Timeout => {
-                            return Err(convert_err("timeout while waiting for captured image"))
-                        }
-                        _ => {}
-                    }
-                };
-                *current_exposure_clone.lock().unwrap() = None;
-                Ok(path)
+                let result = expose(
+                    &inner,
+                    Duration::from_secs_f64(duration),
+                    stop_exposure_receiver,
+                    &exposing_state,
+                )
+                .await
+                .map_err(convert_err);
+
+                *state.lock().unwrap() = State::AfterExposure(result);
             }),
             early_stop_sender: Some(stop_exposure_sender),
         });
@@ -566,20 +594,20 @@ impl Camera for MyCameraDevice {
     }
 
     fn stop_exposure(&mut self) -> ascom_alpaca_rs::ASCOMResult {
-        self.camera_mut()?
-            .current_exposure
-            .lock()
-            .unwrap()
-            .as_mut()
+        match &mut *self.camera_mut()?.state() {
+            State::InExposure(current_exposure) => {
+                current_exposure
+                    .early_stop_sender
+                    .take()
+                    // `stop_exposure` was already called.
+                    .ok_or(ASCOMError::INVALID_OPERATION)?
+                    .send(())
+                    // The exposure already finished or was aborted.
+                    .map_err(|_| ASCOMError::INVALID_OPERATION)
+            }
             // There is no exposure in progress.
-            .ok_or(ASCOMError::INVALID_OPERATION)?
-            .early_stop_sender
-            .take()
-            // `stop_exposure` was already called.
-            .ok_or(ASCOMError::INVALID_OPERATION)?
-            .send(())
-            // The exposure already finished or was aborted.
-            .map_err(|_| ASCOMError::INVALID_OPERATION)
+            _ => Err(ASCOMError::INVALID_OPERATION),
+        }
     }
 }
 

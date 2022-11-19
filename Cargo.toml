@@ -17,6 +17,7 @@ tracing-subscriber = { version = "0.3.16", features = ["env-filter"] }
 gphoto2_test = { git = "https://github.com/maxicarlos08/gphoto2-rs" }
 net-literals = "0.2.0"
 pin-project = "1.0.12"
+atomic = "0.5.1"
 
 [workspace]
 members = ["ascom-alpaca-rs"]
