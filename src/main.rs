@@ -212,7 +212,14 @@ impl Camera for MyCameraDevice {
     fn camera_state(
         &self,
     ) -> ascom_alpaca_rs::ASCOMResult<ascom_alpaca_rs::api::CameraStateResponse> {
-        Ok(ascom_alpaca_rs::api::CameraStateResponse::Idle)
+        // TODO: more granular states e.g. for Download.
+        Ok(
+            if self.camera()?.current_exposure.lock().unwrap().is_some() {
+                ascom_alpaca_rs::api::CameraStateResponse::Exposing
+            } else {
+                ascom_alpaca_rs::api::CameraStateResponse::Idle
+            },
+        )
     }
 
     fn camera_xsize(&self) -> ascom_alpaca_rs::ASCOMResult<i32> {
