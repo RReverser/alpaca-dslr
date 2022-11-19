@@ -6,18 +6,49 @@ use gphoto2::camera::CameraEvent;
 use gphoto2::file::CameraFilePath;
 use gphoto2::widget::ToggleWidget;
 use net_literals::{addr, ipv6};
+use pin_project::{pin_project, pinned_drop};
 use send_wrapper::SendWrapper;
+use std::future::Future;
+use std::pin::Pin;
 use std::rc::Rc;
-use tokio::task::LocalSet;
+use std::sync::{Arc, Mutex};
+use tokio::select;
+use tokio::sync::oneshot;
+use tokio::task::{JoinHandle, LocalSet};
 use tokio::time::sleep;
 use tower_http::trace::TraceLayer;
 use tracing_subscriber::fmt::format::FmtSpan;
 use tracing_subscriber::prelude::*;
 
+#[pin_project(PinnedDrop)]
+struct CurrentExposure {
+    #[pin]
+    join_handle: JoinHandle<ASCOMResult<CameraFilePath>>,
+    early_stop_sender: Option<oneshot::Sender<()>>,
+}
+
+impl Future for CurrentExposure {
+    type Output = <JoinHandle<ASCOMResult<CameraFilePath>> as Future>::Output;
+
+    fn poll(
+        self: std::pin::Pin<&mut Self>,
+        cx: &mut std::task::Context<'_>,
+    ) -> std::task::Poll<Self::Output> {
+        self.project().join_handle.poll(cx)
+    }
+}
+
+#[pinned_drop]
+impl PinnedDrop for CurrentExposure {
+    fn drop(self: Pin<&mut Self>) {
+        self.join_handle.abort();
+    }
+}
+
 struct MyCamera {
     inner: SendWrapper<Rc<gphoto2::Camera>>,
     dimensions: (u32, u32),
-    current_exposure: Option<tokio::task::JoinHandle<ASCOMResult<CameraFilePath>>>,
+    current_exposure: Arc<Mutex<Option<CurrentExposure>>>,
 }
 
 impl std::ops::Deref for MyCamera {
@@ -66,7 +97,7 @@ impl MyCamera {
         Ok(Self {
             inner: SendWrapper::new(Rc::new(inner)),
             dimensions,
-            current_exposure: None,
+            current_exposure: Default::default(),
         })
     }
 }
@@ -231,7 +262,7 @@ impl Camera for MyCameraDevice {
     }
 
     fn can_abort_exposure(&self) -> ascom_alpaca_rs::ASCOMResult<bool> {
-        Ok(false)
+        Ok(true)
     }
 
     fn can_asymmetric_bin(&self) -> ascom_alpaca_rs::ASCOMResult<bool> {
@@ -255,7 +286,7 @@ impl Camera for MyCameraDevice {
     }
 
     fn can_stop_exposure(&self) -> ascom_alpaca_rs::ASCOMResult<bool> {
-        Ok(false)
+        Ok(true)
     }
 
     fn ccdtemperature(&self) -> ascom_alpaca_rs::ASCOMResult<f64> {
@@ -476,7 +507,8 @@ impl Camera for MyCameraDevice {
     }
 
     fn abort_exposure(&mut self) -> ascom_alpaca_rs::ASCOMResult {
-        Err(ascom_alpaca_rs::ASCOMError::NOT_IMPLEMENTED)
+        *self.camera_mut()?.current_exposure.lock().unwrap() = None;
+        Ok(())
     }
 
     fn pulse_guide(
@@ -489,17 +521,24 @@ impl Camera for MyCameraDevice {
 
     fn start_exposure(&mut self, duration: f64, light: bool) -> ascom_alpaca_rs::ASCOMResult {
         let camera = self.camera_mut()?;
-        if camera.current_exposure.is_some() {
+        let mut current_exposure = camera.current_exposure.lock().unwrap();
+        if current_exposure.is_some() {
             return Err(ASCOMError::INVALID_OPERATION);
         }
         let inner = Rc::clone(&camera.inner);
-        camera.current_exposure = Some(tokio::task::spawn_local(async move {
+        let current_exposure_clone = Arc::clone(&camera.current_exposure);
+        let (stop_exposure_sender, stop_exposure_receiver) = oneshot::channel();
+        *current_exposure = Some(CurrentExposure {
+            join_handle: tokio::task::spawn_local(async move {
             let bulb_toggle = inner
                 .config_key::<ToggleWidget>("bulb")
                 .map_err(convert_err)?;
             bulb_toggle.set_toggled(true);
             inner.set_config(&bulb_toggle).map_err(convert_err)?;
-            sleep(std::time::Duration::from_secs_f64(duration)).await;
+                select! {
+                    _ = sleep(std::time::Duration::from_secs_f64(duration)) => {},
+                    _ = stop_exposure_receiver => {}
+                };
             bulb_toggle.set_toggled(false);
             inner.set_config(&bulb_toggle).map_err(convert_err)?;
             let path = loop {
@@ -514,13 +553,29 @@ impl Camera for MyCameraDevice {
                     _ => {}
                 }
             };
+                *current_exposure_clone.lock().unwrap() = None;
             Ok(path)
-        }));
+            }),
+            early_stop_sender: Some(stop_exposure_sender),
+        });
         Ok(())
     }
 
     fn stop_exposure(&mut self) -> ascom_alpaca_rs::ASCOMResult {
-        Err(ascom_alpaca_rs::ASCOMError::NOT_IMPLEMENTED)
+        self.camera_mut()?
+            .current_exposure
+            .lock()
+            .unwrap()
+            .as_mut()
+            // There is no exposure in progress.
+            .ok_or(ASCOMError::INVALID_OPERATION)?
+            .early_stop_sender
+            .take()
+            // `stop_exposure` was already called.
+            .ok_or(ASCOMError::INVALID_OPERATION)?
+            .send(())
+            // The exposure already finished or was aborted.
+            .map_err(|_| ASCOMError::INVALID_OPERATION)
     }
 }
 
