@@ -262,7 +262,7 @@ impl Device for MyCameraDevice {
     }
 
     fn interface_version(&self) -> ascom_alpaca_rs::ASCOMResult<i32> {
-        Err(ascom_alpaca_rs::ASCOMError::NOT_IMPLEMENTED)
+        Ok(3)
     }
 
     fn name(&self) -> ascom_alpaca_rs::ASCOMResult<String> {
