@@ -628,6 +628,11 @@ impl Camera for MyCameraDevice {
     }
 
     fn start_exposure(&mut self, duration: f64, light: bool) -> ascom_alpaca_rs::ASCOMResult {
+        // TODO: use Duration::try_from_secs_f64(duration) once stable.
+        if !(0.0..Duration::MAX.as_secs_f64()).contains(&duration) {
+            return Err(ascom_alpaca_rs::ASCOMError::INVALID_VALUE);
+        }
+        let duration = Duration::from_secs_f64(duration);
         let camera = self.camera_mut()?;
         let inner = Rc::clone(&camera.inner);
         let (stop_exposure_sender, stop_exposure_receiver) = oneshot::channel();
@@ -635,13 +640,8 @@ impl Camera for MyCameraDevice {
         let exposing_state = Arc::new(Atomic::new(ExposingState::Waiting));
         *camera.state() = State::InExposure(CurrentExposure {
             state: Arc::clone(&exposing_state),
-            join_handle: tokio::task::spawn_local(async move {
-                let result = expose(
-                    &inner,
-                    Duration::from_secs_f64(duration),
-                    stop_exposure_receiver,
-                    &exposing_state,
-                )
+            join_handle: local_set().spawn_local(async move {
+                let result = expose(&inner, duration, stop_exposure_receiver, &exposing_state)
                 .await
                 .map_err(convert_err);
 
@@ -687,6 +687,13 @@ async fn start_alpaca_discovery_server(alpaca_port: u16) -> anyhow::Result<()> {
     }
 }
 
+pub fn local_set() -> Rc<LocalSet> {
+    thread_local! {
+        static LOCAL_SET: Rc<LocalSet> = Default::default();
+    }
+    LOCAL_SET.with(Rc::clone)
+}
+
 #[tokio::main(flavor = "current_thread")]
 async fn main() -> anyhow::Result<()> {
     // initialize tracing
@@ -708,8 +715,7 @@ async fn main() -> anyhow::Result<()> {
     tracing::info!(%addr, "Starting server");
 
     let server = axum::Server::try_bind(&addr)?;
-
-    let local_set = LocalSet::new();
+    let local_set = local_set();
 
     tokio::try_join!(
         start_alpaca_discovery_server(addr.port()),
