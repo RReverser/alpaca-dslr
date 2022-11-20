@@ -435,7 +435,7 @@ impl Camera for MyCameraDevice {
     }
 
     fn has_shutter(&self) -> ascom_alpaca_rs::ASCOMResult<bool> {
-        Err(ascom_alpaca_rs::ASCOMError::NOT_IMPLEMENTED)
+        Ok(true)
     }
 
     fn heat_sink_temperature(&self) -> ascom_alpaca_rs::ASCOMResult<f64> {
