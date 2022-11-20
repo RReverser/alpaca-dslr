@@ -289,7 +289,13 @@ impl Camera for MyCameraDevice {
     }
 
     fn set_bin_x(&mut self, bin_x: i32) -> ascom_alpaca_rs::ASCOMResult {
-        Err(ascom_alpaca_rs::ASCOMError::NOT_IMPLEMENTED)
+        if bin_x != 1 {
+            return Err(ASCOMError::new(
+                ASCOMErrorCode::INVALID_VALUE,
+                "binning not supported",
+            ));
+        }
+        Ok(())
     }
 
     fn bin_y(&self) -> ascom_alpaca_rs::ASCOMResult<i32> {
@@ -297,7 +303,13 @@ impl Camera for MyCameraDevice {
     }
 
     fn set_bin_y(&mut self, bin_y: i32) -> ascom_alpaca_rs::ASCOMResult {
-        Err(ascom_alpaca_rs::ASCOMError::NOT_IMPLEMENTED)
+        if bin_y != 1 {
+            return Err(ASCOMError::new(
+                ASCOMErrorCode::INVALID_VALUE,
+                "binning not supported",
+            ));
+        }
+        Ok(())
     }
 
     fn camera_state(
