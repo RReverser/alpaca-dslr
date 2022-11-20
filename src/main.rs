@@ -596,7 +596,7 @@ impl Camera for MyCameraDevice {
                 *camera_state = State::Idle;
                 Ok(())
             }
-            _ => Err(ASCOMError::INVALID_OPERATION),
+            State::Idle | State::AfterExposure(_) => Ok(()),
         }
     }
 
@@ -646,7 +646,7 @@ impl Camera for MyCameraDevice {
                     .map_err(|_| ASCOMError::INVALID_OPERATION)
             }
             // There is no exposure in progress.
-            _ => Err(ASCOMError::INVALID_OPERATION),
+            State::Idle | State::AfterExposure(_) => Ok(()),
         }
     }
 }
