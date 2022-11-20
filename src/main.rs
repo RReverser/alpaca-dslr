@@ -93,8 +93,9 @@ async fn expose(
 
 struct MyCamera {
     inner: SendWrapper<Rc<gphoto2::Camera>>,
-    dimensions: (u32, u32),
     state: Arc<Mutex<State>>,
+    dimensions: (u32, u32),
+    subframe: image::math::Rect,
 }
 
 impl std::ops::Deref for MyCamera {
@@ -107,7 +108,7 @@ impl std::ops::Deref for MyCamera {
 
 impl MyCamera {
     pub fn new(inner: gphoto2::Camera) -> anyhow::Result<Self> {
-        let dimensions = {
+        let (width, height) = {
             let span = tracing::trace_span!("Determine dimensions");
             let _enter = span.enter();
 
@@ -141,16 +142,18 @@ impl MyCamera {
             .into_dimensions()
         }?;
 
-        tracing::info!(
-            width = dimensions.0,
-            height = dimensions.1,
-            "Detected camera dimensions"
-        );
+        tracing::info!(width, height, "Detected camera dimensions");
 
         Ok(Self {
             inner: SendWrapper::new(Rc::new(inner)),
-            dimensions,
             state: Arc::new(Mutex::new(State::Idle)),
+            dimensions: (width, height),
+            subframe: image::math::Rect {
+                x: 0,
+                y: 0,
+                width,
+                height,
+            },
         })
     }
 
@@ -486,19 +489,21 @@ impl Camera for MyCameraDevice {
     }
 
     fn num_x(&self) -> ascom_alpaca_rs::ASCOMResult<i32> {
-        Err(ascom_alpaca_rs::ASCOMError::NOT_IMPLEMENTED)
+        Ok(self.camera()?.subframe.width as i32)
     }
 
     fn set_num_x(&mut self, num_x: i32) -> ascom_alpaca_rs::ASCOMResult {
-        Err(ascom_alpaca_rs::ASCOMError::NOT_IMPLEMENTED)
+        self.camera_mut()?.subframe.width = num_x as _;
+        Ok(())
     }
 
     fn num_y(&self) -> ascom_alpaca_rs::ASCOMResult<i32> {
-        Err(ascom_alpaca_rs::ASCOMError::NOT_IMPLEMENTED)
+        Ok(self.camera()?.subframe.height as _)
     }
 
     fn set_num_y(&mut self, num_y: i32) -> ascom_alpaca_rs::ASCOMResult {
-        Err(ascom_alpaca_rs::ASCOMError::NOT_IMPLEMENTED)
+        self.camera_mut()?.subframe.height = num_y as _;
+        Ok(())
     }
 
     fn offset(&self) -> ascom_alpaca_rs::ASCOMResult<i32> {
@@ -564,19 +569,21 @@ impl Camera for MyCameraDevice {
     }
 
     fn start_x(&self) -> ascom_alpaca_rs::ASCOMResult<i32> {
-        Ok(0)
+        Ok(self.camera()?.subframe.x as _)
     }
 
     fn set_start_x(&mut self, start_x: i32) -> ascom_alpaca_rs::ASCOMResult {
-        Err(ascom_alpaca_rs::ASCOMError::NOT_IMPLEMENTED)
+        self.camera_mut()?.subframe.x = start_x as _;
+        Ok(())
     }
 
     fn start_y(&self) -> ascom_alpaca_rs::ASCOMResult<i32> {
-        Ok(0)
+        Ok(self.camera()?.subframe.y as _)
     }
 
     fn set_start_y(&mut self, start_y: i32) -> ascom_alpaca_rs::ASCOMResult {
-        Err(ascom_alpaca_rs::ASCOMError::NOT_IMPLEMENTED)
+        self.camera_mut()?.subframe.y = start_y as _;
+        Ok(())
     }
 
     fn sub_exposure_duration(&self) -> ascom_alpaca_rs::ASCOMResult<f64> {
