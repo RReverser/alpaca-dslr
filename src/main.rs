@@ -18,7 +18,6 @@ use tokio::sync::oneshot;
 use tokio::task::{JoinHandle, LocalSet};
 use tokio::time::sleep;
 use tower_http::trace::TraceLayer;
-use tracing_subscriber::fmt::format::FmtSpan;
 use tracing_subscriber::prelude::*;
 
 #[derive(Clone, Copy)]
@@ -699,7 +698,6 @@ async fn main() -> anyhow::Result<()> {
     // initialize tracing
     tracing_subscriber::fmt()
         .with_env_filter(tracing_subscriber::EnvFilter::from_default_env())
-        .with_span_events(FmtSpan::CLOSE)
         .finish()
         .init();
 
