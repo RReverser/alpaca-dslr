@@ -382,7 +382,8 @@ impl Camera for MyCameraDevice {
     }
 
     fn electrons_per_adu(&self) -> ascom_alpaca_rs::ASCOMResult<f64> {
-        Err(ascom_alpaca_rs::ASCOMError::NOT_IMPLEMENTED)
+        // TODO: better default? Integrate camera info somehow?
+        Ok(1.)
     }
 
     fn exposure_max(&self) -> ascom_alpaca_rs::ASCOMResult<f64> {
@@ -410,7 +411,7 @@ impl Camera for MyCameraDevice {
     }
 
     fn full_well_capacity(&self) -> ascom_alpaca_rs::ASCOMResult<f64> {
-        Err(ascom_alpaca_rs::ASCOMError::NOT_IMPLEMENTED)
+        Ok(u16::MAX.into())
     }
 
     fn gain(&self) -> ascom_alpaca_rs::ASCOMResult<i32> {
