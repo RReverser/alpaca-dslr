@@ -4,8 +4,9 @@ use ascom_alpaca_rs::{
 };
 use atomic::Atomic;
 use gphoto2::camera::CameraEvent;
-use gphoto2::file::CameraFilePath;
+use gphoto2::file::{CameraFile, CameraFilePath};
 use gphoto2::widget::ToggleWidget;
+use image::DynamicImage;
 use net_literals::{addr, ipv6};
 use send_wrapper::SendWrapper;
 use std::rc::Rc;
@@ -28,7 +29,7 @@ enum ExposingState {
 }
 
 struct SuccessfulExposure {
-    camera_file_path: CameraFilePath,
+    image: DynamicImage,
     start_utc: OffsetDateTime,
     duration: Duration,
 }
@@ -51,12 +52,52 @@ impl Drop for CurrentExposure {
     }
 }
 
+fn download_and_delete(
+    camera: &gphoto2::Camera,
+    path: &CameraFilePath,
+) -> gphoto2::Result<CameraFile> {
+    let folder = path.folder();
+    let folder = folder.as_ref();
+
+    let filename = path.name();
+    let filename = filename.as_ref();
+
+    let span = tracing::trace_span!("Download & delete image from camera", folder, filename);
+    let _enter = span.enter();
+
+    let fs = camera.fs();
+
+    tracing::trace!("Downloading image");
+    let camera_file = fs.download(folder, filename)?;
+
+    tracing::trace!("Deleting image");
+    fs.delete_file(folder, filename)?;
+
+    Ok(camera_file)
+}
+
+fn camera_file_to_image(
+    camera_file: CameraFile,
+) -> anyhow::Result<image::io::Reader<impl std::io::BufRead + std::io::Seek>> {
+    let mime_type = camera_file.mime_type();
+    let img_format = image::ImageFormat::from_mime_type(&mime_type)
+        .ok_or_else(|| anyhow::anyhow!("unsupported image format {mime_type}"))?;
+
+    tracing::trace!(mime_type, ?img_format, "Determined image format");
+
+    Ok(image::io::Reader::with_format(
+        std::io::Cursor::new(camera_file.get_data()?),
+        img_format,
+    ))
+}
+
 async fn expose(
     camera: &gphoto2::Camera,
     duration: Duration,
     stop_exposure: oneshot::Receiver<()>,
     state: &Atomic<ExposingState>,
-) -> gphoto2::Result<SuccessfulExposure> {
+    subframe: image::math::Rect,
+) -> anyhow::Result<SuccessfulExposure> {
     let bulb_toggle = camera.config_key::<ToggleWidget>("bulb")?;
     bulb_toggle.set_toggled(true);
     camera.set_config(&bulb_toggle)?;
@@ -73,18 +114,24 @@ async fn expose(
     state.store(ExposingState::Reading, atomic::Ordering::Relaxed);
     let path = loop {
         match camera.wait_event(std::time::Duration::from_secs(3))? {
-            CameraEvent::NewFile(path) => break path,
+            CameraEvent::NewFile(path) => {
+                break path;
+            }
             CameraEvent::Timeout => {
-                return Err(gphoto2::Error::new(
-                    gphoto2::libgphoto2_sys::GP_ERROR_TIMEOUT,
-                    Some("timeout while waiting for captured image".to_owned()),
-                ))
+                anyhow::bail!("Timeout while waiting for camera to finish exposing");
             }
             _ => {}
         }
     };
+    let camera_file = download_and_delete(camera, &path)?;
+    let image_reader = camera_file_to_image(camera_file)?;
     Ok(SuccessfulExposure {
-        camera_file_path: path,
+        image: image_reader.decode()?.crop_imm(
+            subframe.x,
+            subframe.y,
+            subframe.width,
+            subframe.height,
+        ),
         start_utc,
         duration: elapsed,
     })
@@ -638,10 +685,17 @@ impl Camera for MyCameraDevice {
         let (stop_exposure_sender, stop_exposure_receiver) = oneshot::channel();
         let state = Arc::clone(&camera.state);
         let exposing_state = Arc::new(Atomic::new(ExposingState::Waiting));
+        let subframe = camera.subframe;
         *camera.state() = State::InExposure(CurrentExposure {
             state: Arc::clone(&exposing_state),
             join_handle: local_set().spawn_local(async move {
-                let result = expose(&inner, duration, stop_exposure_receiver, &exposing_state)
+                let result = expose(
+                    &inner,
+                    duration,
+                    stop_exposure_receiver,
+                    &exposing_state,
+                    subframe,
+                )
                 .await
                 .map_err(convert_err);
 
