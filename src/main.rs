@@ -1,6 +1,6 @@
 use ascom_alpaca_rs::api::{Camera, Device};
 use ascom_alpaca_rs::{
-    ASCOMError, ASCOMErrorCode, ASCOMParams, ASCOMResult, DevicesBuilder, OpaqueResponse,
+    ASCOMError, ASCOMErrorCode, ASCOMParams, ASCOMResult, Devices, DevicesBuilder, OpaqueResponse,
 };
 use atomic::Atomic;
 use gphoto2::camera::CameraEvent;
@@ -9,6 +9,8 @@ use gphoto2::widget::ToggleWidget;
 use image::DynamicImage;
 use net_literals::{addr, ipv6};
 use send_wrapper::SendWrapper;
+use std::future::Future;
+use std::net::SocketAddr;
 use std::rc::Rc;
 use std::sync::{Arc, Mutex};
 use std::time::{Duration, Instant};
@@ -741,40 +743,23 @@ async fn start_alpaca_discovery_server(alpaca_port: u16) -> anyhow::Result<()> {
     }
 }
 
-pub fn local_set() -> Rc<LocalSet> {
+fn local_set() -> Rc<LocalSet> {
     thread_local! {
         static LOCAL_SET: Rc<LocalSet> = Default::default();
     }
     LOCAL_SET.with(Rc::clone)
 }
 
-#[tokio::main(flavor = "current_thread")]
-async fn main() -> anyhow::Result<()> {
-    // initialize tracing
-    tracing_subscriber::fmt()
-        .with_env_filter(tracing_subscriber::EnvFilter::from_default_env())
-        .finish()
-        .init();
-
-    gphoto2_test::set_env();
-
-    let devices = DevicesBuilder::new()
-        .with(MyCameraDevice::default())
-        .finish();
-
-    // run our app with hyper
-    let addr = addr!("[::]:3000");
-
-    tracing::info!(%addr, "Starting server");
-
+fn start_alpaca_server(
+    addr: SocketAddr,
+    devices: Devices,
+) -> anyhow::Result<impl Future<Output = anyhow::Result<()>>> {
     let server = axum::Server::try_bind(&addr)?;
-    let local_set = local_set();
 
-    tokio::try_join!(
-        start_alpaca_discovery_server(addr.port()),
-        local_set.run_until(async move {
-            server
-                .serve(
+    Ok(async move {
+        local_set()
+            .run_until(
+                server.serve(
                     devices
                         .into_router()
                         .route(
@@ -811,11 +796,36 @@ async fn main() -> anyhow::Result<()> {
                         )
                         .layer(TraceLayer::new_for_http())
                         .into_make_service(),
-                )
-                .await?;
+                ),
+            )
+            .await
+            .map_err(Into::into)
+    })
+}
 
-            Ok(())
-        })
-    )
-    .map(|_| ())
+#[tokio::main(flavor = "current_thread")]
+async fn main() -> anyhow::Result<()> {
+    // initialize tracing
+    tracing_subscriber::fmt()
+        .with_env_filter(tracing_subscriber::EnvFilter::from_default_env())
+        .finish()
+        .init();
+
+    gphoto2_test::set_env();
+
+    let devices = DevicesBuilder::new()
+        .with(MyCameraDevice::default())
+        .finish();
+
+    // run our app with hyper
+    let addr = addr!("[::]:3000");
+
+    tracing::info!(%addr, "Binding Alpaca server");
+
+    let alpaca_server = start_alpaca_server(addr, devices)?;
+
+    tracing::debug!("Starting Alpaca discovery and main servers");
+
+    // Start the discovery server only once we ensured that the Alpaca server is bound to a port successfully.
+    tokio::try_join!(start_alpaca_discovery_server(addr.port()), alpaca_server).map(|_| ())
 }
