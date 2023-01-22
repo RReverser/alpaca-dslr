@@ -497,12 +497,6 @@ impl Camera for MyCameraDevice {
         Err(ascom_alpaca_rs::ASCOMError::NOT_IMPLEMENTED)
     }
 
-    fn image_array_variant(
-        &self,
-    ) -> ascom_alpaca_rs::ASCOMResult<ascom_alpaca_rs::api::ImageArrayResponse> {
-        Err(ascom_alpaca_rs::ASCOMError::NOT_IMPLEMENTED)
-    }
-
     fn image_ready(&self) -> ascom_alpaca_rs::ASCOMResult<bool> {
         Ok(matches!(
             *self.camera()?.state(),
