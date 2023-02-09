@@ -1,7 +1,5 @@
 use ascom_alpaca_rs::api::{Camera, Device};
-use ascom_alpaca_rs::{
-    ASCOMError, ASCOMErrorCode, ASCOMParams, ASCOMResult, Devices, DevicesBuilder, OpaqueResponse,
-};
+use ascom_alpaca_rs::{ASCOMError, ASCOMErrorCode, ASCOMResult, DevicesStorage};
 use atomic::Atomic;
 use gphoto2::camera::CameraEvent;
 use gphoto2::file::{CameraFile, CameraFilePath};
@@ -232,19 +230,6 @@ fn convert_err(err: impl std::string::ToString) -> ASCOMError {
 
 #[allow(unused_variables)]
 impl Device for MyCameraDevice {
-    fn ty(&self) -> &'static str {
-        <dyn Camera>::TYPE
-    }
-
-    fn handle_action(
-        &mut self,
-        is_mut: bool,
-        action: &str,
-        params: ASCOMParams,
-    ) -> ASCOMResult<OpaqueResponse> {
-        <dyn Camera>::handle_action_impl(self, is_mut, action, params)
-    }
-
     fn action(
         &mut self,
         action: String,
@@ -746,7 +731,7 @@ fn local_set() -> Rc<LocalSet> {
 
 fn start_alpaca_server(
     addr: SocketAddr,
-    devices: Devices,
+    devices: DevicesStorage,
 ) -> anyhow::Result<impl Future<Output = anyhow::Result<()>>> {
     let server = axum::Server::try_bind(&addr)?;
 
@@ -807,9 +792,10 @@ async fn main() -> anyhow::Result<()> {
 
     gphoto2_test::set_env();
 
-    let devices = DevicesBuilder::new()
-        .with(MyCameraDevice::default())
-        .finish();
+    let mut devices = DevicesStorage::default();
+    MyCameraDevice::default().add_to(&mut devices);
+
+    tracing::debug!(?devices, "Registered Alpaca devices");
 
     // run our app with hyper
     let addr = addr!("[::]:3000");
