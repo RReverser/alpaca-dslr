@@ -236,6 +236,10 @@ fn convert_err(err: impl std::string::ToString) -> ASCOMError {
 
 #[allow(unused_variables)]
 impl Device for MyCameraDevice {
+    fn unique_id(&self) -> &str {
+        "ffe84935-e951-45b3-9835-d532b04ee932"
+    }
+
     fn action(&mut self, action: String, parameters: String) -> ASCOMResult<String> {
         Err(ASCOMError::NOT_IMPLEMENTED)
     }
@@ -764,10 +768,6 @@ fn start_alpaca_server(
                     devices
                         .into_router()
                         .route(
-                            "/management/apiversions",
-                            axum::routing::get(|| async { r#"{"Value":[1]}"# }),
-                        )
-                        .route(
                             "/management/v1/description",
                             axum::routing::get(|| async {
                                 r#"{
@@ -777,21 +777,6 @@ fn start_alpaca_server(
                                         "ManufacturerVersion": "0.0.1",
                                         "Location": "Earth"
                                     }
-                                }"#
-                            }),
-                        )
-                        .route(
-                            "/management/v1/configureddevices",
-                            axum::routing::get(|| async {
-                                r#"{
-                                    "Value": [
-                                        {
-                                            "DeviceType": "Camera",
-                                            "DeviceNumber": 0,
-                                            "UniqueID": "MyCamera",
-                                            "Description": "My Camera"
-                                        }
-                                    ]
                                 }"#
                             }),
                         )
