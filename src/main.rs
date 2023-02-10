@@ -4,9 +4,10 @@ use atomic::Atomic;
 use gphoto2::camera::CameraEvent;
 use gphoto2::file::{CameraFile, CameraFilePath};
 use gphoto2::widget::ToggleWidget;
-use image::DynamicImage;
+use image::{DynamicImage, ImageBuffer, Pixel};
 use net_literals::{addr, ipv6};
 use send_wrapper::SendWrapper;
+use std::borrow::Cow;
 use std::future::Future;
 use std::net::SocketAddr;
 use std::rc::Rc;
@@ -20,6 +21,11 @@ use tokio::task::{JoinHandle, LocalSet};
 use tokio::time::sleep;
 use tower_http::trace::TraceLayer;
 use tracing_subscriber::prelude::*;
+
+const ERR_UNSUPPORTED_IMAGE_FORMAT: ASCOMError = ASCOMError {
+    code: ASCOMErrorCode::new_for_driver(0),
+    message: Cow::Borrowed("Unsupported image format"),
+};
 
 #[derive(Clone, Copy)]
 enum ExposingState {
@@ -230,35 +236,27 @@ fn convert_err(err: impl std::string::ToString) -> ASCOMError {
 
 #[allow(unused_variables)]
 impl Device for MyCameraDevice {
-    fn action(
-        &mut self,
-        action: String,
-        parameters: String,
-    ) -> ascom_alpaca_rs::ASCOMResult<String> {
-        Err(ascom_alpaca_rs::ASCOMError::NOT_IMPLEMENTED)
+    fn action(&mut self, action: String, parameters: String) -> ASCOMResult<String> {
+        Err(ASCOMError::NOT_IMPLEMENTED)
     }
 
-    fn command_blind(&mut self, command: String, raw: String) -> ascom_alpaca_rs::ASCOMResult {
-        Err(ascom_alpaca_rs::ASCOMError::NOT_IMPLEMENTED)
+    fn command_blind(&mut self, command: String, raw: String) -> ASCOMResult {
+        Err(ASCOMError::NOT_IMPLEMENTED)
     }
 
-    fn command_bool(&mut self, command: String, raw: String) -> ascom_alpaca_rs::ASCOMResult<bool> {
-        Err(ascom_alpaca_rs::ASCOMError::NOT_IMPLEMENTED)
+    fn command_bool(&mut self, command: String, raw: String) -> ASCOMResult<bool> {
+        Err(ASCOMError::NOT_IMPLEMENTED)
     }
 
-    fn command_string(
-        &mut self,
-        command: String,
-        raw: String,
-    ) -> ascom_alpaca_rs::ASCOMResult<String> {
-        Err(ascom_alpaca_rs::ASCOMError::NOT_IMPLEMENTED)
+    fn command_string(&mut self, command: String, raw: String) -> ASCOMResult<String> {
+        Err(ASCOMError::NOT_IMPLEMENTED)
     }
 
-    fn connected(&self) -> ascom_alpaca_rs::ASCOMResult<bool> {
+    fn connected(&self) -> ASCOMResult<bool> {
         Ok(self.camera.is_some())
     }
 
-    fn set_connected(&mut self, connected: bool) -> ascom_alpaca_rs::ASCOMResult {
+    fn set_connected(&mut self, connected: bool) -> ASCOMResult {
         if connected == self.camera.is_some() {
             return Ok(());
         }
@@ -282,46 +280,46 @@ impl Device for MyCameraDevice {
         Ok(())
     }
 
-    fn description(&self) -> ascom_alpaca_rs::ASCOMResult<String> {
+    fn description(&self) -> ASCOMResult<String> {
         self.camera()?.about().map_err(convert_err)
     }
 
-    fn driver_info(&self) -> ascom_alpaca_rs::ASCOMResult<String> {
+    fn driver_info(&self) -> ASCOMResult<String> {
         Ok(env!("CARGO_PKG_DESCRIPTION").to_owned())
     }
 
-    fn driver_version(&self) -> ascom_alpaca_rs::ASCOMResult<String> {
+    fn driver_version(&self) -> ASCOMResult<String> {
         Ok(env!("CARGO_PKG_VERSION").to_owned())
     }
 
-    fn interface_version(&self) -> ascom_alpaca_rs::ASCOMResult<i32> {
+    fn interface_version(&self) -> ASCOMResult<i32> {
         Ok(3)
     }
 
-    fn name(&self) -> ascom_alpaca_rs::ASCOMResult<String> {
+    fn name(&self) -> ASCOMResult<String> {
         Ok(self.camera()?.abilities().model().into_owned())
     }
 
-    fn supported_actions(&self) -> ascom_alpaca_rs::ASCOMResult<Vec<String>> {
+    fn supported_actions(&self) -> ASCOMResult<Vec<String>> {
         Ok(vec![])
     }
 }
 
 #[allow(unused_variables)]
 impl Camera for MyCameraDevice {
-    fn bayer_offset_x(&self) -> ascom_alpaca_rs::ASCOMResult<i32> {
+    fn bayer_offset_x(&self) -> ASCOMResult<i32> {
         Ok(0)
     }
 
-    fn bayer_offset_y(&self) -> ascom_alpaca_rs::ASCOMResult<i32> {
+    fn bayer_offset_y(&self) -> ASCOMResult<i32> {
         Ok(0)
     }
 
-    fn bin_x(&self) -> ascom_alpaca_rs::ASCOMResult<i32> {
+    fn bin_x(&self) -> ASCOMResult<i32> {
         Ok(1)
     }
 
-    fn set_bin_x(&mut self, bin_x: i32) -> ascom_alpaca_rs::ASCOMResult {
+    fn set_bin_x(&mut self, bin_x: i32) -> ASCOMResult {
         if bin_x != 1 {
             return Err(ASCOMError::new(
                 ASCOMErrorCode::INVALID_VALUE,
@@ -331,11 +329,11 @@ impl Camera for MyCameraDevice {
         Ok(())
     }
 
-    fn bin_y(&self) -> ascom_alpaca_rs::ASCOMResult<i32> {
+    fn bin_y(&self) -> ASCOMResult<i32> {
         Ok(1)
     }
 
-    fn set_bin_y(&mut self, bin_y: i32) -> ascom_alpaca_rs::ASCOMResult {
+    fn set_bin_y(&mut self, bin_y: i32) -> ASCOMResult {
         if bin_y != 1 {
             return Err(ASCOMError::new(
                 ASCOMErrorCode::INVALID_VALUE,
@@ -345,9 +343,7 @@ impl Camera for MyCameraDevice {
         Ok(())
     }
 
-    fn camera_state(
-        &self,
-    ) -> ascom_alpaca_rs::ASCOMResult<ascom_alpaca_rs::api::CameraStateResponse> {
+    fn camera_state(&self) -> ASCOMResult<ascom_alpaca_rs::api::CameraStateResponse> {
         // TODO: `Download` state
         Ok(match &*self.camera()?.state() {
             State::Idle => ascom_alpaca_rs::api::CameraStateResponse::Idle,
@@ -363,72 +359,72 @@ impl Camera for MyCameraDevice {
         })
     }
 
-    fn camera_xsize(&self) -> ascom_alpaca_rs::ASCOMResult<i32> {
+    fn camera_xsize(&self) -> ASCOMResult<i32> {
         Ok(self.camera()?.dimensions.0 as i32)
     }
 
-    fn camera_ysize(&self) -> ascom_alpaca_rs::ASCOMResult<i32> {
+    fn camera_ysize(&self) -> ASCOMResult<i32> {
         Ok(self.camera()?.dimensions.1 as i32)
     }
 
-    fn can_abort_exposure(&self) -> ascom_alpaca_rs::ASCOMResult<bool> {
+    fn can_abort_exposure(&self) -> ASCOMResult<bool> {
         Ok(true)
     }
 
-    fn can_asymmetric_bin(&self) -> ascom_alpaca_rs::ASCOMResult<bool> {
+    fn can_asymmetric_bin(&self) -> ASCOMResult<bool> {
         Ok(false)
     }
 
-    fn can_fast_readout(&self) -> ascom_alpaca_rs::ASCOMResult<bool> {
+    fn can_fast_readout(&self) -> ASCOMResult<bool> {
         Ok(false)
     }
 
-    fn can_get_cooler_power(&self) -> ascom_alpaca_rs::ASCOMResult<bool> {
+    fn can_get_cooler_power(&self) -> ASCOMResult<bool> {
         Ok(false)
     }
 
-    fn can_pulse_guide(&self) -> ascom_alpaca_rs::ASCOMResult<bool> {
+    fn can_pulse_guide(&self) -> ASCOMResult<bool> {
         Ok(false)
     }
 
-    fn can_set_ccdtemperature(&self) -> ascom_alpaca_rs::ASCOMResult<bool> {
+    fn can_set_ccdtemperature(&self) -> ASCOMResult<bool> {
         Ok(false)
     }
 
-    fn can_stop_exposure(&self) -> ascom_alpaca_rs::ASCOMResult<bool> {
+    fn can_stop_exposure(&self) -> ASCOMResult<bool> {
         Ok(true)
     }
 
-    fn ccdtemperature(&self) -> ascom_alpaca_rs::ASCOMResult<f64> {
-        Err(ascom_alpaca_rs::ASCOMError::NOT_IMPLEMENTED)
+    fn ccdtemperature(&self) -> ASCOMResult<f64> {
+        Err(ASCOMError::NOT_IMPLEMENTED)
     }
 
-    fn cooler_on(&self) -> ascom_alpaca_rs::ASCOMResult<bool> {
-        Err(ascom_alpaca_rs::ASCOMError::NOT_IMPLEMENTED)
+    fn cooler_on(&self) -> ASCOMResult<bool> {
+        Err(ASCOMError::NOT_IMPLEMENTED)
     }
 
-    fn set_cooler_on(&mut self, cooler_on: bool) -> ascom_alpaca_rs::ASCOMResult {
-        Err(ascom_alpaca_rs::ASCOMError::NOT_IMPLEMENTED)
+    fn set_cooler_on(&mut self, cooler_on: bool) -> ASCOMResult {
+        Err(ASCOMError::NOT_IMPLEMENTED)
     }
 
-    fn cooler_power(&self) -> ascom_alpaca_rs::ASCOMResult<f64> {
-        Err(ascom_alpaca_rs::ASCOMError::NOT_IMPLEMENTED)
+    fn cooler_power(&self) -> ASCOMResult<f64> {
+        Err(ASCOMError::NOT_IMPLEMENTED)
     }
 
-    fn electrons_per_adu(&self) -> ascom_alpaca_rs::ASCOMResult<f64> {
+    fn electrons_per_adu(&self) -> ASCOMResult<f64> {
         // TODO: better default? Integrate camera info somehow?
         Ok(1.)
     }
 
-    fn exposure_max(&self) -> ascom_alpaca_rs::ASCOMResult<f64> {
+    fn exposure_max(&self) -> ASCOMResult<f64> {
         Ok(100. * 60. * 60.)
     }
 
-    fn exposure_min(&self) -> ascom_alpaca_rs::ASCOMResult<f64> {
+    fn exposure_min(&self) -> ASCOMResult<f64> {
         Ok(0.1)
     }
 
-    fn exposure_resolution(&self) -> ascom_alpaca_rs::ASCOMResult<f64> {
+    fn exposure_resolution(&self) -> ASCOMResult<f64> {
         // TODO: adjust this as we go.
         // Considering that we need to do some high-latency operations,
         // I'm not sure we can go very low in terms of precision here,
@@ -436,73 +432,104 @@ impl Camera for MyCameraDevice {
         Ok(0.1)
     }
 
-    fn fast_readout(&self) -> ascom_alpaca_rs::ASCOMResult<bool> {
-        Err(ascom_alpaca_rs::ASCOMError::NOT_IMPLEMENTED)
+    fn fast_readout(&self) -> ASCOMResult<bool> {
+        Err(ASCOMError::NOT_IMPLEMENTED)
     }
 
-    fn set_fast_readout(&mut self, fast_readout: bool) -> ascom_alpaca_rs::ASCOMResult {
-        Err(ascom_alpaca_rs::ASCOMError::NOT_IMPLEMENTED)
+    fn set_fast_readout(&mut self, fast_readout: bool) -> ASCOMResult {
+        Err(ASCOMError::NOT_IMPLEMENTED)
     }
 
-    fn full_well_capacity(&self) -> ascom_alpaca_rs::ASCOMResult<f64> {
+    fn full_well_capacity(&self) -> ASCOMResult<f64> {
         Ok(u16::MAX.into())
     }
 
-    fn gain(&self) -> ascom_alpaca_rs::ASCOMResult<i32> {
-        Err(ascom_alpaca_rs::ASCOMError::NOT_IMPLEMENTED)
+    fn gain(&self) -> ASCOMResult<i32> {
+        Err(ASCOMError::NOT_IMPLEMENTED)
     }
 
-    fn set_gain(&mut self, gain: i32) -> ascom_alpaca_rs::ASCOMResult {
-        Err(ascom_alpaca_rs::ASCOMError::NOT_IMPLEMENTED)
+    fn set_gain(&mut self, gain: i32) -> ASCOMResult {
+        Err(ASCOMError::NOT_IMPLEMENTED)
     }
 
-    fn gain_max(&self) -> ascom_alpaca_rs::ASCOMResult<i32> {
-        Err(ascom_alpaca_rs::ASCOMError::NOT_IMPLEMENTED)
+    fn gain_max(&self) -> ASCOMResult<i32> {
+        Err(ASCOMError::NOT_IMPLEMENTED)
     }
 
-    fn gain_min(&self) -> ascom_alpaca_rs::ASCOMResult<i32> {
-        Err(ascom_alpaca_rs::ASCOMError::NOT_IMPLEMENTED)
+    fn gain_min(&self) -> ASCOMResult<i32> {
+        Err(ASCOMError::NOT_IMPLEMENTED)
     }
 
-    fn gains(&self) -> ascom_alpaca_rs::ASCOMResult<Vec<String>> {
-        Err(ascom_alpaca_rs::ASCOMError::NOT_IMPLEMENTED)
+    fn gains(&self) -> ASCOMResult<Vec<String>> {
+        Err(ASCOMError::NOT_IMPLEMENTED)
     }
 
-    fn has_shutter(&self) -> ascom_alpaca_rs::ASCOMResult<bool> {
+    fn has_shutter(&self) -> ASCOMResult<bool> {
         Ok(true)
     }
 
-    fn heat_sink_temperature(&self) -> ascom_alpaca_rs::ASCOMResult<f64> {
-        Err(ascom_alpaca_rs::ASCOMError::NOT_IMPLEMENTED)
+    fn heat_sink_temperature(&self) -> ASCOMResult<f64> {
+        Err(ASCOMError::NOT_IMPLEMENTED)
     }
 
-    fn image_array(
-        &self,
-    ) -> ascom_alpaca_rs::ASCOMResult<ascom_alpaca_rs::api::ImageArrayResponse> {
-        Err(ascom_alpaca_rs::ASCOMError::NOT_IMPLEMENTED)
+    fn image_array(&self) -> ASCOMResult<ascom_alpaca_rs::api::ImageArrayResponse> {
+        fn flat_samples<P: Pixel>(img: &ImageBuffer<P, Vec<P::Subpixel>>) -> (u8, Vec<i32>)
+        where
+            P::Subpixel: Into<i32>,
+        {
+            let flat_samples = img.as_flat_samples();
+            let channels = flat_samples.layout.channels;
+            let data = flat_samples.as_slice().iter().map(|&x| x.into()).collect();
+            (channels, data)
+        }
+
+        match &*self.camera()?.state() {
+            State::AfterExposure(Ok(SuccessfulExposure { image, .. })) => {
+                let (channels, data) = match image {
+                    DynamicImage::ImageLuma8(image) => flat_samples(image),
+                    DynamicImage::ImageLuma16(image) => flat_samples(image),
+                    DynamicImage::ImageRgb8(image) => flat_samples(image),
+                    DynamicImage::ImageRgb16(image) => flat_samples(image),
+                    _ => return Err(ERR_UNSUPPORTED_IMAGE_FORMAT),
+                };
+
+                Ok(ascom_alpaca_rs::api::ImageArrayResponse {
+                    data: ndarray::Array::from_shape_vec(
+                        (
+                            image.width() as usize,
+                            image.height() as usize,
+                            channels.into(),
+                        ),
+                        data,
+                    )
+                    .expect("shape mismatch when creating image array"),
+                })
+            }
+            _ => Err(ASCOMError::INVALID_OPERATION),
+        }
     }
 
-    fn image_ready(&self) -> ascom_alpaca_rs::ASCOMResult<bool> {
+    fn image_ready(&self) -> ASCOMResult<bool> {
         Ok(matches!(
             *self.camera()?.state(),
             State::AfterExposure { .. }
         ))
     }
 
-    fn is_pulse_guiding(&self) -> ascom_alpaca_rs::ASCOMResult<bool> {
-        Err(ascom_alpaca_rs::ASCOMError::NOT_IMPLEMENTED)
+    fn is_pulse_guiding(&self) -> ASCOMResult<bool> {
+        Err(ASCOMError::NOT_IMPLEMENTED)
     }
 
-    fn last_exposure_duration(&self) -> ascom_alpaca_rs::ASCOMResult<f64> {
+    fn last_exposure_duration(&self) -> ASCOMResult<f64> {
         match *self.camera()?.state() {
             State::AfterExposure(Ok(SuccessfulExposure { duration, .. })) => {
                 Ok(duration.as_secs_f64())
             }
-            _ => Err(ascom_alpaca_rs::ASCOMError::INVALID_OPERATION),
+            _ => Err(ASCOMError::INVALID_OPERATION),
         }
     }
 
-    fn last_exposure_start_time(&self) -> ascom_alpaca_rs::ASCOMResult<String> {
+    fn last_exposure_start_time(&self) -> ASCOMResult<String> {
         match *self.camera()?.state() {
             State::AfterExposure(Ok(SuccessfulExposure { start_utc, .. })) => {
                 // We need CCYY-MM-DDThh:mm:ss[.sss...]. This is close to RFC3339, but
@@ -512,132 +539,127 @@ impl Camera for MyCameraDevice {
                 debug_assert_eq!(last_char, Some('Z'));
                 Ok(result)
             }
-            _ => Err(ascom_alpaca_rs::ASCOMError::INVALID_OPERATION),
+            _ => Err(ASCOMError::INVALID_OPERATION),
         }
     }
 
-    fn max_adu(&self) -> ascom_alpaca_rs::ASCOMResult<i32> {
-        Err(ascom_alpaca_rs::ASCOMError::NOT_IMPLEMENTED)
+    fn max_adu(&self) -> ASCOMResult<i32> {
+        Err(ASCOMError::NOT_IMPLEMENTED)
     }
 
-    fn max_bin_x(&self) -> ascom_alpaca_rs::ASCOMResult<i32> {
+    fn max_bin_x(&self) -> ASCOMResult<i32> {
         Ok(1)
     }
 
-    fn max_bin_y(&self) -> ascom_alpaca_rs::ASCOMResult<i32> {
+    fn max_bin_y(&self) -> ASCOMResult<i32> {
         Ok(1)
     }
 
-    fn num_x(&self) -> ascom_alpaca_rs::ASCOMResult<i32> {
+    fn num_x(&self) -> ASCOMResult<i32> {
         Ok(self.camera()?.subframe.width as i32)
     }
 
-    fn set_num_x(&mut self, num_x: i32) -> ascom_alpaca_rs::ASCOMResult {
+    fn set_num_x(&mut self, num_x: i32) -> ASCOMResult {
         self.camera_mut()?.subframe.width = num_x as _;
         Ok(())
     }
 
-    fn num_y(&self) -> ascom_alpaca_rs::ASCOMResult<i32> {
+    fn num_y(&self) -> ASCOMResult<i32> {
         Ok(self.camera()?.subframe.height as _)
     }
 
-    fn set_num_y(&mut self, num_y: i32) -> ascom_alpaca_rs::ASCOMResult {
+    fn set_num_y(&mut self, num_y: i32) -> ASCOMResult {
         self.camera_mut()?.subframe.height = num_y as _;
         Ok(())
     }
 
-    fn offset(&self) -> ascom_alpaca_rs::ASCOMResult<i32> {
-        Err(ascom_alpaca_rs::ASCOMError::NOT_IMPLEMENTED)
+    fn offset(&self) -> ASCOMResult<i32> {
+        Err(ASCOMError::NOT_IMPLEMENTED)
     }
 
-    fn set_offset(&mut self, offset: i32) -> ascom_alpaca_rs::ASCOMResult {
-        Err(ascom_alpaca_rs::ASCOMError::NOT_IMPLEMENTED)
+    fn set_offset(&mut self, offset: i32) -> ASCOMResult {
+        Err(ASCOMError::NOT_IMPLEMENTED)
     }
 
-    fn offset_max(&self) -> ascom_alpaca_rs::ASCOMResult<i32> {
-        Err(ascom_alpaca_rs::ASCOMError::NOT_IMPLEMENTED)
+    fn offset_max(&self) -> ASCOMResult<i32> {
+        Err(ASCOMError::NOT_IMPLEMENTED)
     }
 
-    fn offset_min(&self) -> ascom_alpaca_rs::ASCOMResult<i32> {
-        Err(ascom_alpaca_rs::ASCOMError::NOT_IMPLEMENTED)
+    fn offset_min(&self) -> ASCOMResult<i32> {
+        Err(ASCOMError::NOT_IMPLEMENTED)
     }
 
-    fn offsets(&self) -> ascom_alpaca_rs::ASCOMResult<Vec<String>> {
-        Err(ascom_alpaca_rs::ASCOMError::NOT_IMPLEMENTED)
+    fn offsets(&self) -> ASCOMResult<Vec<String>> {
+        Err(ASCOMError::NOT_IMPLEMENTED)
     }
 
-    fn percent_completed(&self) -> ascom_alpaca_rs::ASCOMResult<i32> {
-        Err(ascom_alpaca_rs::ASCOMError::NOT_IMPLEMENTED)
+    fn percent_completed(&self) -> ASCOMResult<i32> {
+        Err(ASCOMError::NOT_IMPLEMENTED)
     }
 
-    fn pixel_size_x(&self) -> ascom_alpaca_rs::ASCOMResult<f64> {
-        Err(ascom_alpaca_rs::ASCOMError::NOT_IMPLEMENTED)
+    fn pixel_size_x(&self) -> ASCOMResult<f64> {
+        Err(ASCOMError::NOT_IMPLEMENTED)
     }
 
-    fn pixel_size_y(&self) -> ascom_alpaca_rs::ASCOMResult<f64> {
-        Err(ascom_alpaca_rs::ASCOMError::NOT_IMPLEMENTED)
+    fn pixel_size_y(&self) -> ASCOMResult<f64> {
+        Err(ASCOMError::NOT_IMPLEMENTED)
     }
 
-    fn readout_mode(&self) -> ascom_alpaca_rs::ASCOMResult<i32> {
-        Err(ascom_alpaca_rs::ASCOMError::NOT_IMPLEMENTED)
+    fn readout_mode(&self) -> ASCOMResult<i32> {
+        Err(ASCOMError::NOT_IMPLEMENTED)
     }
 
-    fn set_readout_mode(&mut self, readout_mode: i32) -> ascom_alpaca_rs::ASCOMResult {
-        Err(ascom_alpaca_rs::ASCOMError::NOT_IMPLEMENTED)
+    fn set_readout_mode(&mut self, readout_mode: i32) -> ASCOMResult {
+        Err(ASCOMError::NOT_IMPLEMENTED)
     }
 
-    fn readout_modes(&self) -> ascom_alpaca_rs::ASCOMResult<Vec<String>> {
-        Err(ascom_alpaca_rs::ASCOMError::NOT_IMPLEMENTED)
+    fn readout_modes(&self) -> ASCOMResult<Vec<String>> {
+        Err(ASCOMError::NOT_IMPLEMENTED)
     }
 
-    fn sensor_name(&self) -> ascom_alpaca_rs::ASCOMResult<String> {
-        Err(ascom_alpaca_rs::ASCOMError::NOT_IMPLEMENTED)
+    fn sensor_name(&self) -> ASCOMResult<String> {
+        Err(ASCOMError::NOT_IMPLEMENTED)
     }
 
-    fn sensor_type(
-        &self,
-    ) -> ascom_alpaca_rs::ASCOMResult<ascom_alpaca_rs::api::SensorTypeResponse> {
+    fn sensor_type(&self) -> ASCOMResult<ascom_alpaca_rs::api::SensorTypeResponse> {
         Ok(ascom_alpaca_rs::api::SensorTypeResponse::Color)
     }
 
-    fn set_ccdtemperature(&self) -> ascom_alpaca_rs::ASCOMResult<f64> {
-        Err(ascom_alpaca_rs::ASCOMError::NOT_IMPLEMENTED)
+    fn set_ccdtemperature(&self) -> ASCOMResult<f64> {
+        Err(ASCOMError::NOT_IMPLEMENTED)
     }
 
-    fn set_set_ccdtemperature(&mut self, set_ccdtemperature: f64) -> ascom_alpaca_rs::ASCOMResult {
-        Err(ascom_alpaca_rs::ASCOMError::NOT_IMPLEMENTED)
+    fn set_set_ccdtemperature(&mut self, set_ccdtemperature: f64) -> ASCOMResult {
+        Err(ASCOMError::NOT_IMPLEMENTED)
     }
 
-    fn start_x(&self) -> ascom_alpaca_rs::ASCOMResult<i32> {
+    fn start_x(&self) -> ASCOMResult<i32> {
         Ok(self.camera()?.subframe.x as _)
     }
 
-    fn set_start_x(&mut self, start_x: i32) -> ascom_alpaca_rs::ASCOMResult {
+    fn set_start_x(&mut self, start_x: i32) -> ASCOMResult {
         self.camera_mut()?.subframe.x = start_x as _;
         Ok(())
     }
 
-    fn start_y(&self) -> ascom_alpaca_rs::ASCOMResult<i32> {
+    fn start_y(&self) -> ASCOMResult<i32> {
         Ok(self.camera()?.subframe.y as _)
     }
 
-    fn set_start_y(&mut self, start_y: i32) -> ascom_alpaca_rs::ASCOMResult {
+    fn set_start_y(&mut self, start_y: i32) -> ASCOMResult {
         self.camera_mut()?.subframe.y = start_y as _;
         Ok(())
     }
 
-    fn sub_exposure_duration(&self) -> ascom_alpaca_rs::ASCOMResult<f64> {
-        Err(ascom_alpaca_rs::ASCOMError::NOT_IMPLEMENTED)
+    fn sub_exposure_duration(&self) -> ASCOMResult<f64> {
+        Err(ASCOMError::NOT_IMPLEMENTED)
     }
 
-    fn set_sub_exposure_duration(
-        &mut self,
-        sub_exposure_duration: f64,
-    ) -> ascom_alpaca_rs::ASCOMResult {
-        Err(ascom_alpaca_rs::ASCOMError::NOT_IMPLEMENTED)
+    fn set_sub_exposure_duration(&mut self, sub_exposure_duration: f64) -> ASCOMResult {
+        Err(ASCOMError::NOT_IMPLEMENTED)
     }
 
-    fn abort_exposure(&mut self) -> ascom_alpaca_rs::ASCOMResult {
+    fn abort_exposure(&mut self) -> ASCOMResult {
         match &mut *self.camera_mut()?.state() {
             camera_state @ State::InExposure(_) => {
                 *camera_state = State::Idle;
@@ -651,14 +673,14 @@ impl Camera for MyCameraDevice {
         &mut self,
         direction: ascom_alpaca_rs::api::PutPulseGuideDirection,
         duration: i32,
-    ) -> ascom_alpaca_rs::ASCOMResult {
-        Err(ascom_alpaca_rs::ASCOMError::NOT_IMPLEMENTED)
+    ) -> ASCOMResult {
+        Err(ASCOMError::NOT_IMPLEMENTED)
     }
 
-    fn start_exposure(&mut self, duration: f64, light: bool) -> ascom_alpaca_rs::ASCOMResult {
+    fn start_exposure(&mut self, duration: f64, light: bool) -> ASCOMResult {
         // TODO: use Duration::try_from_secs_f64(duration) once stable.
         if !(0.0..Duration::MAX.as_secs_f64()).contains(&duration) {
-            return Err(ascom_alpaca_rs::ASCOMError::INVALID_VALUE);
+            return Err(ASCOMError::INVALID_VALUE);
         }
         let duration = Duration::from_secs_f64(duration);
         let camera = self.camera_mut()?;
@@ -687,7 +709,7 @@ impl Camera for MyCameraDevice {
         Ok(())
     }
 
-    fn stop_exposure(&mut self) -> ascom_alpaca_rs::ASCOMResult {
+    fn stop_exposure(&mut self) -> ASCOMResult {
         match &mut *self.camera_mut()?.state() {
             State::InExposure(current_exposure) => {
                 current_exposure
