@@ -1,5 +1,5 @@
 use ascom_alpaca_rs::api::{Camera, Device};
-use ascom_alpaca_rs::{ASCOMError, ASCOMErrorCode, ASCOMResult, DevicesStorage};
+use ascom_alpaca_rs::{ASCOMError, ASCOMErrorCode, ASCOMResult, Devices};
 use atomic::Atomic;
 use gphoto2::camera::CameraEvent;
 use gphoto2::file::{CameraFile, CameraFilePath};
@@ -731,7 +731,7 @@ fn local_set() -> Rc<LocalSet> {
 
 fn start_alpaca_server(
     addr: SocketAddr,
-    devices: DevicesStorage,
+    devices: Devices,
 ) -> anyhow::Result<impl Future<Output = anyhow::Result<()>>> {
     let server = axum::Server::try_bind(&addr)?;
 
@@ -792,7 +792,7 @@ async fn main() -> anyhow::Result<()> {
 
     gphoto2_test::set_env();
 
-    let mut devices = DevicesStorage::default();
+    let mut devices = Devices::default();
     MyCameraDevice::default().add_to(&mut devices);
 
     tracing::debug!(?devices, "Registered Alpaca devices");
