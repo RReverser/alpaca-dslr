@@ -7,18 +7,16 @@ use gphoto2::file::{CameraFile, CameraFilePath};
 use gphoto2::widget::ToggleWidget;
 use image::{DynamicImage, ImageBuffer, Pixel};
 use net_literals::{addr, ipv6};
-use send_wrapper::SendWrapper;
 use std::borrow::Cow;
 use std::future::Future;
 use std::net::SocketAddr;
-use std::rc::Rc;
-use std::sync::{Arc, Mutex};
+use std::sync::Arc;
 use std::time::{Duration, Instant};
 use time::format_description::well_known::Rfc3339;
 use time::OffsetDateTime;
 use tokio::select;
-use tokio::sync::oneshot;
-use tokio::task::{JoinHandle, LocalSet};
+use tokio::sync::{oneshot, Mutex};
+use tokio::task::JoinHandle;
 use tokio::time::sleep;
 use tower_http::trace::TraceLayer;
 use tracing_subscriber::prelude::*;
@@ -59,7 +57,7 @@ impl Drop for CurrentExposure {
     }
 }
 
-fn download_and_delete(
+async fn download_and_delete(
     camera: &gphoto2::Camera,
     path: &CameraFilePath,
 ) -> gphoto2::Result<CameraFile> {
@@ -75,16 +73,17 @@ fn download_and_delete(
     let fs = camera.fs();
 
     tracing::trace!("Downloading image");
-    let camera_file = fs.download(folder, filename)?;
+    let camera_file = fs.download(folder, filename).await?;
 
     tracing::trace!("Deleting image");
-    fs.delete_file(folder, filename)?;
+    fs.delete_file(folder, filename).await?;
 
     Ok(camera_file)
 }
 
-fn camera_file_to_image(
+async fn camera_file_to_image(
     camera_file: CameraFile,
+    context: &gphoto2::Context,
 ) -> anyhow::Result<image::io::Reader<impl std::io::BufRead + std::io::Seek>> {
     let mime_type = camera_file.mime_type();
     let img_format = image::ImageFormat::from_mime_type(&mime_type)
@@ -93,21 +92,22 @@ fn camera_file_to_image(
     tracing::trace!(mime_type, ?img_format, "Determined image format");
 
     Ok(image::io::Reader::with_format(
-        std::io::Cursor::new(camera_file.get_data()?),
+        std::io::Cursor::new(camera_file.get_data(context).await?),
         img_format,
     ))
 }
 
 async fn expose(
     camera: &gphoto2::Camera,
+    context: &gphoto2::Context,
     duration: Duration,
     stop_exposure: oneshot::Receiver<()>,
     state: &Atomic<ExposingState>,
     subframe: image::math::Rect,
 ) -> anyhow::Result<SuccessfulExposure> {
-    let bulb_toggle = camera.config_key::<ToggleWidget>("bulb")?;
+    let bulb_toggle = camera.config_key::<ToggleWidget>("bulb").await?;
     bulb_toggle.set_toggled(true);
-    camera.set_config(&bulb_toggle)?;
+    camera.set_config(&bulb_toggle).await?;
     state.store(ExposingState::Exposing, atomic::Ordering::Relaxed);
     let start_utc = OffsetDateTime::now_utc();
     let start_instant = Instant::now();
@@ -117,10 +117,10 @@ async fn expose(
     };
     let elapsed = start_instant.elapsed();
     bulb_toggle.set_toggled(false);
-    camera.set_config(&bulb_toggle)?;
+    camera.set_config(&bulb_toggle).await?;
     state.store(ExposingState::Reading, atomic::Ordering::Relaxed);
     let path = loop {
-        match camera.wait_event(std::time::Duration::from_secs(3))? {
+        match camera.wait_event(std::time::Duration::from_secs(3)).await? {
             CameraEvent::NewFile(path) => {
                 break path;
             }
@@ -130,8 +130,8 @@ async fn expose(
             _ => {}
         }
     };
-    let camera_file = download_and_delete(camera, &path)?;
-    let image_reader = camera_file_to_image(camera_file)?;
+    let camera_file = download_and_delete(camera, &path).await?;
+    let image_reader = camera_file_to_image(camera_file, context).await?;
     Ok(SuccessfulExposure {
         image: image_reader.decode()?.crop_imm(
             subframe.x,
@@ -145,7 +145,8 @@ async fn expose(
 }
 
 struct MyCamera {
-    inner: SendWrapper<Rc<gphoto2::Camera>>,
+    context: gphoto2::Context,
+    inner: gphoto2::Camera,
     state: Arc<Mutex<State>>,
     dimensions: (u32, u32),
     subframe: image::math::Rect,
@@ -166,27 +167,30 @@ impl std::ops::Deref for MyCamera {
 }
 
 impl MyCamera {
-    pub fn new(inner: gphoto2::Camera) -> anyhow::Result<Self> {
+    pub async fn new(inner: gphoto2::Camera, context: gphoto2::Context) -> anyhow::Result<Self> {
         let (width, height) = {
             let span = tracing::trace_span!("Determine dimensions");
             let _enter = span.enter();
 
             tracing::trace!("Capturing test image");
-            let camera_file = inner.capture_preview().or_else(|e| {
-                if e.kind() != gphoto2::error::ErrorKind::NotSupported {
-                    return Err(e);
+            let capture_preview_task = inner.capture_preview();
+            let camera_file = match capture_preview_task.await {
+                Err(e) if e.kind() == gphoto2::error::ErrorKind::NotSupported => {
+                    tracing::warn!(
+                        "Preview capture not supported, falling back to full image capture"
+                    );
+                    let camera_file_path = inner.capture_image().await?;
+                    let folder = camera_file_path.folder();
+                    let name = camera_file_path.name();
+                    let fs = inner.fs();
+                    tracing::trace!("Downloading test image from the camera");
+                    let camera_file = fs.download(&folder, &name).await?;
+                    tracing::trace!("Deleting test image from the camera");
+                    fs.delete_file(&folder, &name).await?;
+                    camera_file
                 }
-                tracing::warn!("Preview capture not supported, falling back to full image capture");
-                let camera_file_path = inner.capture_image()?;
-                let folder = camera_file_path.folder();
-                let name = camera_file_path.name();
-                let fs = inner.fs();
-                tracing::trace!("Downloading test image from the camera");
-                let camera_file = fs.download(&folder, &name)?;
-                tracing::trace!("Deleting test image from the camera");
-                fs.delete_file(&folder, &name)?;
-                Ok(camera_file)
-            })?;
+                result => result?,
+            };
 
             let mime_type = camera_file.mime_type();
             let img_format = image::ImageFormat::from_mime_type(&mime_type)
@@ -195,7 +199,7 @@ impl MyCamera {
             tracing::trace!(mime_type, ?img_format, "Test image format");
 
             image::io::Reader::with_format(
-                std::io::Cursor::new(camera_file.get_data()?),
+                std::io::Cursor::new(camera_file.get_data(&context).await?),
                 img_format,
             )
             .into_dimensions()
@@ -204,7 +208,8 @@ impl MyCamera {
         tracing::info!(width, height, "Detected camera dimensions");
 
         Ok(Self {
-            inner: SendWrapper::new(Rc::new(inner)),
+            context,
+            inner,
             state: Arc::new(Mutex::new(State::Idle)),
             dimensions: (width, height),
             subframe: image::math::Rect {
@@ -216,8 +221,8 @@ impl MyCamera {
         })
     }
 
-    fn state(&self) -> std::sync::MutexGuard<'_, State> {
-        self.state.lock().unwrap()
+    async fn state(&self) -> tokio::sync::MutexGuard<'_, State> {
+        self.state.lock().await
     }
 }
 
@@ -277,14 +282,10 @@ impl Device for MyCameraDevice {
             let span = tracing::trace_span!("Connecting to camera");
             let _enter = span.enter();
 
-            self.camera = Some(
-                MyCamera::new(
-                    gphoto2::Context::new()
-                        .and_then(|ctx| ctx.autodetect_camera())
-                        .map_err(convert_err)?,
-                )
-                .map_err(convert_err)?,
-            );
+            let context = gphoto2::Context::new().map_err(convert_err)?;
+            let camera = context.autodetect_camera().await.map_err(convert_err)?;
+
+            self.camera = Some(MyCamera::new(camera, context).await.map_err(convert_err)?);
         } else {
             self.camera = None;
         }
@@ -358,7 +359,7 @@ impl Camera for MyCameraDevice {
 
     async fn camera_state(&self) -> ASCOMResult<ascom_alpaca_rs::api::CameraStateResponse> {
         // TODO: `Download` state
-        Ok(match &*self.camera()?.state() {
+        Ok(match &*self.camera()?.state().await {
             State::Idle => ascom_alpaca_rs::api::CameraStateResponse::Idle,
             State::InExposure(exposure) => match exposure.state.load(atomic::Ordering::Relaxed) {
                 ExposingState::Waiting => ascom_alpaca_rs::api::CameraStateResponse::Waiting,
@@ -496,7 +497,7 @@ impl Camera for MyCameraDevice {
             (channels, data)
         }
 
-        match &*self.camera()?.state() {
+        match &*self.camera()?.state().await {
             State::AfterExposure(Ok(SuccessfulExposure { image, .. })) => {
                 let (channels, data) = match image {
                     DynamicImage::ImageLuma8(image) => flat_samples(image),
@@ -524,7 +525,7 @@ impl Camera for MyCameraDevice {
 
     async fn image_ready(&self) -> ASCOMResult<bool> {
         Ok(matches!(
-            *self.camera()?.state(),
+            *self.camera()?.state().await,
             State::AfterExposure { .. }
         ))
     }
@@ -534,7 +535,7 @@ impl Camera for MyCameraDevice {
     }
 
     async fn last_exposure_duration(&self) -> ASCOMResult<f64> {
-        match *self.camera()?.state() {
+        match *self.camera()?.state().await {
             State::AfterExposure(Ok(SuccessfulExposure { duration, .. })) => {
                 Ok(duration.as_secs_f64())
             }
@@ -543,7 +544,7 @@ impl Camera for MyCameraDevice {
     }
 
     async fn last_exposure_start_time(&self) -> ASCOMResult<String> {
-        match *self.camera()?.state() {
+        match *self.camera()?.state().await {
             State::AfterExposure(Ok(SuccessfulExposure { start_utc, .. })) => {
                 // We need CCYY-MM-DDThh:mm:ss[.sss...]. This is close to RFC3339, but
                 // we need to remove the Z timezone suffix.
@@ -673,7 +674,7 @@ impl Camera for MyCameraDevice {
     }
 
     async fn abort_exposure(&mut self) -> ASCOMResult {
-        match &mut *self.camera_mut()?.state() {
+        match &mut *self.camera_mut()?.state().await {
             camera_state @ State::InExposure(_) => {
                 *camera_state = State::Idle;
                 Ok(())
@@ -697,16 +698,18 @@ impl Camera for MyCameraDevice {
         }
         let duration = Duration::from_secs_f64(duration);
         let camera = self.camera_mut()?;
-        let inner = Rc::clone(&camera.inner);
+        let context = camera.context.clone();
+        let inner = camera.inner.clone();
         let (stop_exposure_sender, stop_exposure_receiver) = oneshot::channel();
         let state = Arc::clone(&camera.state);
         let exposing_state = Arc::new(Atomic::new(ExposingState::Waiting));
         let subframe = camera.subframe;
-        *camera.state() = State::InExposure(CurrentExposure {
+        *camera.state().await = State::InExposure(CurrentExposure {
             state: Arc::clone(&exposing_state),
-            join_handle: local_set().spawn_local(async move {
+            join_handle: tokio::task::spawn(async move {
                 let result = expose(
                     &inner,
+                    &context,
                     duration,
                     stop_exposure_receiver,
                     &exposing_state,
@@ -715,7 +718,7 @@ impl Camera for MyCameraDevice {
                 .await
                 .map_err(convert_err);
 
-                *state.lock().unwrap() = State::AfterExposure(result);
+                *state.lock().await = State::AfterExposure(result);
             }),
             early_stop_sender: Some(stop_exposure_sender),
         });
@@ -723,7 +726,7 @@ impl Camera for MyCameraDevice {
     }
 
     async fn stop_exposure(&mut self) -> ASCOMResult {
-        match &mut *self.camera_mut()?.state() {
+        match &mut *self.camera_mut()?.state().await {
             State::InExposure(current_exposure) => {
                 current_exposure
                     .early_stop_sender
@@ -757,13 +760,6 @@ async fn start_alpaca_discovery_server(alpaca_port: u16) -> anyhow::Result<()> {
     }
 }
 
-fn local_set() -> Rc<LocalSet> {
-    thread_local! {
-        static LOCAL_SET: Rc<LocalSet> = Default::default();
-    }
-    LOCAL_SET.with(Rc::clone)
-}
-
 fn start_alpaca_server(
     addr: SocketAddr,
     devices: Devices,
@@ -771,15 +767,14 @@ fn start_alpaca_server(
     let server = axum::Server::try_bind(&addr)?;
 
     Ok(async move {
-        local_set()
-            .run_until(
-                server.serve(
-                    devices
-                        .into_router()
-                        .route(
-                            "/management/v1/description",
-                            axum::routing::get(|| async {
-                                r#"{
+        server
+            .serve(
+                devices
+                    .into_router()
+                    .route(
+                        "/management/v1/description",
+                        axum::routing::get(|| async {
+                            r#"{
                                     "Value": {
                                         "ServerName": "alpaca-dslr",
                                         "Manufacturer": "RReverser",
@@ -787,18 +782,17 @@ fn start_alpaca_server(
                                         "Location": "Earth"
                                     }
                                 }"#
-                            }),
-                        )
-                        .layer(TraceLayer::new_for_http())
-                        .into_make_service(),
-                ),
+                        }),
+                    )
+                    .layer(TraceLayer::new_for_http())
+                    .into_make_service(),
             )
             .await
             .map_err(Into::into)
     })
 }
 
-#[tokio::main(flavor = "current_thread")]
+#[tokio::main]
 async fn main() -> anyhow::Result<()> {
     // initialize tracing
     tracing_subscriber::fmt()
