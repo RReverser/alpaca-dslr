@@ -310,7 +310,10 @@ impl Device for MyCameraDevice {
     }
 
     async fn name(&self) -> ASCOMResult<String> {
-        Ok(self.camera()?.abilities().model().into_owned())
+        Ok(match &self.camera {
+            Some(camera) => camera.abilities().model().into_owned(),
+            None => "My Camera".to_owned(),
+        })
     }
 
     async fn supported_actions(&self) -> ASCOMResult<Vec<String>> {
