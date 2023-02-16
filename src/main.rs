@@ -249,8 +249,8 @@ fn convert_err(err: impl std::string::ToString) -> ASCOMError {
 #[allow(unused_variables)]
 #[async_trait]
 impl Device for MyCameraDevice {
-    async fn unique_id(&self) -> String {
-        "ffe84935-e951-45b3-9835-d532b04ee932".to_owned()
+    fn unique_id(&self) -> &str {
+        "ffe84935-e951-45b3-9835-d532b04ee932"
     }
 
     async fn action(&mut self, action: String, parameters: String) -> ASCOMResult<String> {
