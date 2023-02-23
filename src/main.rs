@@ -1,12 +1,14 @@
 use ascom_alpaca_rs::api::{Camera, Device, ServerInfo};
-use ascom_alpaca_rs::{ASCOMError, ASCOMErrorCode, ASCOMResult, CargoServerInfo, Devices};
+use ascom_alpaca_rs::{
+    discovery, ASCOMError, ASCOMErrorCode, ASCOMResult, CargoServerInfo, Devices,
+};
 use async_trait::async_trait;
 use atomic::Atomic;
 use gphoto2::camera::CameraEvent;
 use gphoto2::file::{CameraFile, CameraFilePath};
 use gphoto2::widget::ToggleWidget;
 use image::{DynamicImage, ImageBuffer, Pixel};
-use net_literals::{addr, ipv6};
+use net_literals::addr;
 use std::borrow::Cow;
 use std::future::Future;
 use std::net::SocketAddr;
@@ -746,23 +748,6 @@ impl Camera for MyCameraDevice {
     }
 }
 
-async fn start_alpaca_discovery_server(alpaca_port: u16) -> anyhow::Result<()> {
-    let discovery_msg = format!(r#"{{"AlpacaPort":{}}}"#, alpaca_port);
-    let socket = tokio::net::UdpSocket::bind(addr!("[::]:32227")).await?;
-    socket.join_multicast_v6(&ipv6!("ff12::a1:9aca"), 0)?;
-    let mut buf = [0; 16];
-    loop {
-        let (len, src) = socket.recv_from(&mut buf).await?;
-        let data = &buf[..len];
-        if data == b"alpacadiscovery1" {
-            tracing::debug!(%src, "Received Alpaca discovery request");
-            socket.send_to(discovery_msg.as_bytes(), src).await?;
-        } else {
-            tracing::warn!(%src, "Received unknown multicast packet");
-        }
-    }
-}
-
 fn start_alpaca_server(
     addr: SocketAddr,
     devices: Devices,
@@ -808,5 +793,5 @@ async fn main() -> anyhow::Result<()> {
     tracing::debug!("Starting Alpaca discovery and main servers");
 
     // Start the discovery server only once we ensured that the Alpaca server is bound to a port successfully.
-    tokio::try_join!(start_alpaca_discovery_server(addr.port()), alpaca_server).map(|_| ())
+    tokio::try_join!(discovery::start_server(addr.port()), alpaca_server).map(|_| ())
 }
