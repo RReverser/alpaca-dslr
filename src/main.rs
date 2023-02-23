@@ -1,5 +1,5 @@
-use ascom_alpaca_rs::api::{Camera, Device};
-use ascom_alpaca_rs::{ASCOMError, ASCOMErrorCode, ASCOMResult, Devices};
+use ascom_alpaca_rs::api::{Camera, Device, ServerInfo};
+use ascom_alpaca_rs::{ASCOMError, ASCOMErrorCode, ASCOMResult, CargoServerInfo, Devices};
 use async_trait::async_trait;
 use atomic::Atomic;
 use gphoto2::camera::CameraEvent;
@@ -766,6 +766,7 @@ async fn start_alpaca_discovery_server(alpaca_port: u16) -> anyhow::Result<()> {
 fn start_alpaca_server(
     addr: SocketAddr,
     devices: Devices,
+    server_info: ServerInfo,
 ) -> anyhow::Result<impl Future<Output = anyhow::Result<()>>> {
     let server = axum::Server::try_bind(&addr)?;
 
@@ -773,20 +774,7 @@ fn start_alpaca_server(
         server
             .serve(
                 devices
-                    .into_router()
-                    .route(
-                        "/management/v1/description",
-                        axum::routing::get(|| async {
-                            r#"{
-                                    "Value": {
-                                        "ServerName": "alpaca-dslr",
-                                        "Manufacturer": "RReverser",
-                                        "ManufacturerVersion": "0.0.1",
-                                        "Location": "Earth"
-                                    }
-                                }"#
-                        }),
-                    )
+                    .into_router(server_info)
                     .layer(TraceLayer::new_for_http())
                     .into_make_service(),
             )
@@ -815,7 +803,7 @@ async fn main() -> anyhow::Result<()> {
 
     tracing::info!(%addr, "Binding Alpaca server");
 
-    let alpaca_server = start_alpaca_server(addr, devices)?;
+    let alpaca_server = start_alpaca_server(addr, devices, CargoServerInfo!())?;
 
     tracing::debug!("Starting Alpaca discovery and main servers");
 
