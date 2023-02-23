@@ -296,7 +296,7 @@ impl Device for MyCameraDevice {
     }
 
     async fn description(&self) -> ASCOMResult<String> {
-        self.camera()?.about().map_err(convert_err)
+        Ok(self.camera()?.abilities().model().into_owned())
     }
 
     async fn driver_info(&self) -> ASCOMResult<String> {
@@ -312,10 +312,7 @@ impl Device for MyCameraDevice {
     }
 
     async fn name(&self) -> ASCOMResult<String> {
-        Ok(match &self.camera {
-            Some(camera) => camera.abilities().model().into_owned(),
-            None => "My Camera".to_owned(),
-        })
+        Ok("My Camera".to_owned())
     }
 
     async fn supported_actions(&self) -> ASCOMResult<Vec<String>> {
