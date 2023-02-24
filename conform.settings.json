@@ -8,7 +8,7 @@
   "ApplicationPort": 1471,
   "Debug": true,
   "TraceDiscovery": true,
-  "TraceAlpacaCalls": true,
+  "TraceAlpacaCalls": false,
   "TestProperties": true,
   "TestMethods": true,
   "TestPerformance": false,
