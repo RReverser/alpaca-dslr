@@ -778,7 +778,7 @@ async fn main() -> anyhow::Result<()> {
         .finish()
         .init();
 
-    gphoto2_test::set_env();
+    gphoto2::libgphoto2_sys::test_utils::set_env();
 
     let mut devices = Devices::default();
     MyCameraDevice::default().add_to(&mut devices);
