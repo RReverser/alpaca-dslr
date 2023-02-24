@@ -28,7 +28,7 @@ const ERR_UNSUPPORTED_IMAGE_FORMAT: ASCOMError = ASCOMError {
     message: Cow::Borrowed("Unsupported image format"),
 };
 
-#[derive(Clone, Copy)]
+#[derive(Debug, Clone, Copy)]
 enum ExposingState {
     Waiting,
     Exposing,
@@ -45,6 +45,26 @@ enum State {
     Idle,
     InExposure(CurrentExposure),
     AfterExposure(ASCOMResult<SuccessfulExposure>),
+}
+
+impl State {
+    fn as_successful_exposure(&self) -> ASCOMResult<&SuccessfulExposure> {
+        match self {
+            State::AfterExposure(Ok(exposure)) => Ok(exposure),
+            State::AfterExposure(Err(err)) => Err(err.clone()),
+            State::Idle => Err(ASCOMError::new(
+                ASCOMErrorCode::INVALID_OPERATION,
+                "Camera is idle",
+            )),
+            State::InExposure(CurrentExposure { state, .. }) => Err(ASCOMError::new(
+                ASCOMErrorCode::INVALID_OPERATION,
+                format!(
+                    "Camera is currently making a picture (status: {:?})",
+                    state.load(atomic::Ordering::Relaxed)
+                ),
+            )),
+        }
+    }
 }
 
 struct CurrentExposure {
@@ -499,30 +519,27 @@ impl Camera for MyCameraDevice {
             (channels, data)
         }
 
-        match &*self.camera()?.state().await {
-            State::AfterExposure(Ok(SuccessfulExposure { image, .. })) => {
-                let (channels, data) = match image {
-                    DynamicImage::ImageLuma8(image) => flat_samples(image),
-                    DynamicImage::ImageLuma16(image) => flat_samples(image),
-                    DynamicImage::ImageRgb8(image) => flat_samples(image),
-                    DynamicImage::ImageRgb16(image) => flat_samples(image),
-                    _ => return Err(ERR_UNSUPPORTED_IMAGE_FORMAT),
-                };
+        let state = self.camera()?.state().await;
+        let image = &state.as_successful_exposure()?.image;
+        let (channels, data) = match image {
+            DynamicImage::ImageLuma8(image) => flat_samples(image),
+            DynamicImage::ImageLuma16(image) => flat_samples(image),
+            DynamicImage::ImageRgb8(image) => flat_samples(image),
+            DynamicImage::ImageRgb16(image) => flat_samples(image),
+            _ => return Err(ERR_UNSUPPORTED_IMAGE_FORMAT),
+        };
 
-                Ok(ascom_alpaca_rs::api::ImageArrayResponse {
-                    data: ndarray::Array::from_shape_vec(
-                        (
-                            image.width() as usize,
-                            image.height() as usize,
-                            channels.into(),
-                        ),
-                        data,
-                    )
-                    .expect("shape mismatch when creating image array"),
-                })
-            }
-            _ => Err(ASCOMError::INVALID_OPERATION),
-        }
+        Ok(ascom_alpaca_rs::api::ImageArrayResponse {
+            data: ndarray::Array::from_shape_vec(
+                (
+                    image.width() as usize,
+                    image.height() as usize,
+                    channels.into(),
+                ),
+                data,
+            )
+            .expect("shape mismatch when creating image array"),
+        })
     }
 
     async fn image_ready(&self) -> ASCOMResult<bool> {
@@ -537,26 +554,29 @@ impl Camera for MyCameraDevice {
     }
 
     async fn last_exposure_duration(&self) -> ASCOMResult<f64> {
-        match *self.camera()?.state().await {
-            State::AfterExposure(Ok(SuccessfulExposure { duration, .. })) => {
-                Ok(duration.as_secs_f64())
-            }
-            _ => Err(ASCOMError::INVALID_OPERATION),
-        }
+        Ok(self
+            .camera()?
+            .state()
+            .await
+            .as_successful_exposure()?
+            .duration
+            .as_secs_f64())
     }
 
     async fn last_exposure_start_time(&self) -> ASCOMResult<String> {
-        match *self.camera()?.state().await {
-            State::AfterExposure(Ok(SuccessfulExposure { start_utc, .. })) => {
-                // We need CCYY-MM-DDThh:mm:ss[.sss...]. This is close to RFC3339, but
-                // we need to remove the Z timezone suffix.
-                let mut result = start_utc.format(&Rfc3339).map_err(convert_err)?;
-                let last_char = result.pop();
-                debug_assert_eq!(last_char, Some('Z'));
-                Ok(result)
-            }
-            _ => Err(ASCOMError::INVALID_OPERATION),
-        }
+        let start_utc = self
+            .camera()?
+            .state()
+            .await
+            .as_successful_exposure()?
+            .start_utc;
+
+        // We need CCYY-MM-DDThh:mm:ss[.sss...]. This is close to RFC3339, but
+        // we need to remove the Z timezone suffix.
+        let mut result = start_utc.format(&Rfc3339).map_err(convert_err)?;
+        let last_char = result.pop();
+        debug_assert_eq!(last_char, Some('Z'));
+        Ok(result)
     }
 
     async fn max_adu(&self) -> ASCOMResult<i32> {
@@ -629,7 +649,10 @@ impl Camera for MyCameraDevice {
         if readout_mode == 0 {
             Ok(())
         } else {
-            Err(ASCOMError::INVALID_VALUE)
+            Err(ASCOMError::new(
+                ASCOMErrorCode::INVALID_VALUE,
+                "Invalid readout mode (only 0 is supported)",
+            ))
         }
     }
 
@@ -699,11 +722,8 @@ impl Camera for MyCameraDevice {
     }
 
     async fn start_exposure(&mut self, duration: f64, light: bool) -> ASCOMResult {
-        // TODO: use Duration::try_from_secs_f64(duration) once stable.
-        if !(0.0..Duration::MAX.as_secs_f64()).contains(&duration) {
-            return Err(ASCOMError::INVALID_VALUE);
-        }
-        let duration = Duration::from_secs_f64(duration);
+        let duration = Duration::try_from_secs_f64(duration)
+            .map_err(|err| ASCOMError::new(ASCOMErrorCode::INVALID_VALUE, err.to_string()))?;
         let camera = self.camera_mut()?;
         let context = camera.context.clone();
         let inner = camera.inner.clone();
@@ -739,10 +759,20 @@ impl Camera for MyCameraDevice {
                     .early_stop_sender
                     .take()
                     // `stop_exposure` was already called.
-                    .ok_or(ASCOMError::INVALID_OPERATION)?
+                    .ok_or_else(|| {
+                        ASCOMError::new(
+                            ASCOMErrorCode::INVALID_OPERATION,
+                            "exposure was already stopped",
+                        )
+                    })?
                     .send(())
                     // The exposure already finished or was aborted.
-                    .map_err(|_| ASCOMError::INVALID_OPERATION)
+                    .map_err(|_| {
+                        ASCOMError::new(
+                            ASCOMErrorCode::INVALID_OPERATION,
+                            "exposure was already finished or aborted",
+                        )
+                    })
             }
             // There is no exposure in progress.
             State::Idle | State::AfterExposure(_) => Ok(()),
