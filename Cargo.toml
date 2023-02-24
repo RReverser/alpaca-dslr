@@ -7,7 +7,7 @@ edition = "2021"
 anyhow = "1.0.66"
 ascom-alpaca-rs = { path = "./ascom-alpaca-rs" }
 axum = "0.5.16"
-gphoto2 = { version = "3.2.0", features = ["test"] }
+gphoto2 = { version = "3.2.0", features = ["test", "extended_logs"] }
 image = "0.24.4"
 tokio = { version = "1.21.2", features = ["rt-multi-thread", "macros"] }
 tower-http = { version = "0.3.4", features = ["trace"] }
