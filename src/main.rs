@@ -622,19 +622,24 @@ impl Camera for MyCameraDevice {
     }
 
     async fn readout_mode(&self) -> ASCOMResult<i32> {
-        Err(ASCOMError::NOT_IMPLEMENTED)
+        Ok(0)
     }
 
     async fn set_readout_mode(&mut self, readout_mode: i32) -> ASCOMResult {
-        Err(ASCOMError::NOT_IMPLEMENTED)
+        if readout_mode == 0 {
+            Ok(())
+        } else {
+            Err(ASCOMError::INVALID_VALUE)
+        }
     }
 
     async fn readout_modes(&self) -> ASCOMResult<Vec<String>> {
-        Err(ASCOMError::NOT_IMPLEMENTED)
+        // TODO: allow to configure preview/JPEG/RAW here.
+        Ok(vec!["As-is".to_owned()])
     }
 
     async fn sensor_name(&self) -> ASCOMResult<String> {
-        Err(ASCOMError::NOT_IMPLEMENTED)
+        Ok("Unknown".to_owned())
     }
 
     async fn sensor_type(&self) -> ASCOMResult<ascom_alpaca_rs::api::SensorTypeResponse> {
