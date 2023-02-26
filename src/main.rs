@@ -545,7 +545,7 @@ impl Camera for MyCameraDevice {
     async fn image_ready(&self) -> ASCOMResult<bool> {
         Ok(matches!(
             *self.camera()?.state().await,
-            State::AfterExposure { .. }
+            State::AfterExposure(Ok(_))
         ))
     }
 
