@@ -6,15 +6,14 @@ edition = "2021"
 [dependencies]
 anyhow = "1.0.66"
 ascom-alpaca-rs = { path = "./ascom-alpaca-rs" }
-axum = "0.5.16"
+axum = "0.6.11"
 gphoto2 = { version = "3.2.0", features = ["test", "extended_logs"] }
 image = "0.24.4"
 tokio = { version = "1.21.2", features = ["rt-multi-thread", "macros"] }
-tower-http = { version = "0.3.4", features = ["trace"] }
+tower-http = { version = "0.4.0", features = ["trace"] }
 tracing = "0.1.37"
 tracing-subscriber = { version = "0.3.16", features = ["env-filter"] }
 net-literals = "0.2.0"
-pin-project = "1.0.12"
 atomic = "0.5.1"
 time = { version = "0.3.17", features = ["formatting"] }
 ndarray = "0.15.6"
