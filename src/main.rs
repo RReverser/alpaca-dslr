@@ -825,5 +825,9 @@ async fn main() -> anyhow::Result<()> {
     tracing::debug!("Starting Alpaca discovery and main servers");
 
     // Start the discovery server only once we ensured that the Alpaca server is bound to a port successfully.
-    tokio::try_join!(discovery::start_server(addr.port()), alpaca_server).map(|_| ())
+    tokio::try_join!(
+        discovery::DiscoveryServer::new(addr.port()).start_server(),
+        alpaca_server
+    )
+    .map(|_| ())
 }
