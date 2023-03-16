@@ -5,7 +5,7 @@ edition = "2021"
 
 [dependencies]
 anyhow = "1.0.66"
-ascom-alpaca-rs = { path = "./ascom-alpaca-rs" }
+ascom-alpaca-rs = { path = "./ascom-alpaca-rs", features = ["camera"] }
 axum = "0.6.11"
 gphoto2 = { version = "3.2.0", features = ["test", "extended_logs"] }
 image = "0.24.4"
