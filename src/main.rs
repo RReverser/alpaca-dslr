@@ -1,7 +1,5 @@
-use ascom_alpaca_rs::api::{Camera, Device, ServerInfo};
-use ascom_alpaca_rs::{
-    discovery, ASCOMError, ASCOMErrorCode, ASCOMResult, CargoServerInfo, Devices,
-};
+use ascom_alpaca_rs::api::{Camera, CargoServerInfo, Device, ServerInfo};
+use ascom_alpaca_rs::{discovery, ASCOMError, ASCOMErrorCode, ASCOMResult, Devices};
 use async_trait::async_trait;
 use atomic::Atomic;
 use gphoto2::camera::CameraEvent;
