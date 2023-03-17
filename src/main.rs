@@ -788,7 +788,7 @@ async fn main() -> anyhow::Result<()> {
         info: CargoServerInfo!(),
         ..Default::default()
     };
-    MyCameraDevice::default().add_to(&mut server.devices);
+    server.devices.register(MyCameraDevice::default());
 
     tracing::debug!(?server.devices, "Registered Alpaca devices");
 
