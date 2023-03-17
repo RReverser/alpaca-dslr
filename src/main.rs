@@ -1,15 +1,12 @@
-use ascom_alpaca_rs::api::{Camera, CargoServerInfo, Device, ServerInfo};
-use ascom_alpaca_rs::{discovery, ASCOMError, ASCOMErrorCode, ASCOMResult, Devices};
+use ascom_alpaca_rs::api::{Camera, CargoServerInfo, Device};
+use ascom_alpaca_rs::{ASCOMError, ASCOMErrorCode, ASCOMResult, Server};
 use async_trait::async_trait;
 use atomic::Atomic;
 use gphoto2::camera::CameraEvent;
 use gphoto2::file::{CameraFile, CameraFilePath};
 use gphoto2::widget::ToggleWidget;
 use image::{DynamicImage, ImageBuffer, Pixel};
-use net_literals::addr;
 use std::borrow::Cow;
-use std::future::Future;
-use std::net::SocketAddr;
 use std::sync::Arc;
 use std::time::{Duration, Instant};
 use time::format_description::well_known::Rfc3339;
@@ -18,7 +15,6 @@ use tokio::select;
 use tokio::sync::{oneshot, Mutex};
 use tokio::task::JoinHandle;
 use tokio::time::sleep;
-use tower_http::trace::TraceLayer;
 use tracing_subscriber::prelude::*;
 
 const ERR_UNSUPPORTED_IMAGE_FORMAT: ASCOMError = ASCOMError {
@@ -778,26 +774,6 @@ impl Camera for MyCameraDevice {
     }
 }
 
-fn start_alpaca_server(
-    addr: SocketAddr,
-    devices: Devices,
-    server_info: ServerInfo,
-) -> anyhow::Result<impl Future<Output = anyhow::Result<()>>> {
-    let server = axum::Server::try_bind(&addr)?;
-
-    Ok(async move {
-        server
-            .serve(
-                devices
-                    .into_router(server_info)
-                    .layer(TraceLayer::new_for_http())
-                    .into_make_service(),
-            )
-            .await
-            .map_err(Into::into)
-    })
-}
-
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
     // initialize tracing
@@ -808,24 +784,13 @@ async fn main() -> anyhow::Result<()> {
 
     gphoto2::libgphoto2_sys::test_utils::set_env();
 
-    let mut devices = Devices::default();
-    MyCameraDevice::default().add_to(&mut devices);
+    let mut server = Server {
+        info: CargoServerInfo!(),
+        ..Default::default()
+    };
+    MyCameraDevice::default().add_to(&mut server.devices);
 
-    tracing::debug!(?devices, "Registered Alpaca devices");
+    tracing::debug!(?server.devices, "Registered Alpaca devices");
 
-    // run our app with hyper
-    let addr = addr!("[::]:3000");
-
-    tracing::info!(%addr, "Binding Alpaca server");
-
-    let alpaca_server = start_alpaca_server(addr, devices, CargoServerInfo!())?;
-
-    tracing::debug!("Starting Alpaca discovery and main servers");
-
-    // Start the discovery server only once we ensured that the Alpaca server is bound to a port successfully.
-    tokio::try_join!(
-        discovery::DiscoveryServer::new(addr.port()).start_server(),
-        alpaca_server
-    )
-    .map(|_| ())
+    server.start_server().await
 }
