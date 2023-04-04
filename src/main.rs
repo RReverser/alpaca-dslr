@@ -1,4 +1,7 @@
-use ascom_alpaca::api::{Camera, CargoServerInfo, Device};
+use ascom_alpaca::api::{
+    Camera, CameraStateResponse, CargoServerInfo, Device, ImageArrayResponse,
+    PutPulseGuideDirection, SensorTypeResponse,
+};
 use ascom_alpaca::{ASCOMError, ASCOMErrorCode, ASCOMResult, Server};
 use async_trait::async_trait;
 use atomic::Atomic;
@@ -382,18 +385,18 @@ impl Camera for MyCameraDevice {
         Ok(())
     }
 
-    async fn camera_state(&self) -> ASCOMResult<ascom_alpaca::api::CameraStateResponse> {
+    async fn camera_state(&self) -> ASCOMResult<CameraStateResponse> {
         // TODO: `Download` state
         Ok(match &*self.camera().await?.state().await {
-            State::Idle => ascom_alpaca::api::CameraStateResponse::Idle,
+            State::Idle => CameraStateResponse::Idle,
             State::InExposure(exposure) => match exposure.state.load(atomic::Ordering::Relaxed) {
-                ExposingState::Waiting => ascom_alpaca::api::CameraStateResponse::Waiting,
-                ExposingState::Exposing => ascom_alpaca::api::CameraStateResponse::Exposing,
-                ExposingState::Reading => ascom_alpaca::api::CameraStateResponse::Reading,
+                ExposingState::Waiting => CameraStateResponse::Waiting,
+                ExposingState::Exposing => CameraStateResponse::Exposing,
+                ExposingState::Reading => CameraStateResponse::Reading,
             },
             State::AfterExposure(result) => match result {
-                Ok(_) => ascom_alpaca::api::CameraStateResponse::Idle,
-                Err(_) => ascom_alpaca::api::CameraStateResponse::Error,
+                Ok(_) => CameraStateResponse::Idle,
+                Err(_) => CameraStateResponse::Error,
             },
         })
     }
@@ -511,7 +514,7 @@ impl Camera for MyCameraDevice {
         Err(ASCOMError::NOT_IMPLEMENTED)
     }
 
-    async fn image_array(&self) -> ASCOMResult<ascom_alpaca::api::ImageArrayResponse> {
+    async fn image_array(&self) -> ASCOMResult<ImageArrayResponse> {
         fn flat_samples<P: Pixel>(img: &ImageBuffer<P, Vec<P::Subpixel>>) -> (u8, Vec<i32>)
         where
             P::Subpixel: Into<i32>,
@@ -533,7 +536,7 @@ impl Camera for MyCameraDevice {
             _ => return Err(ERR_UNSUPPORTED_IMAGE_FORMAT),
         };
 
-        Ok(ascom_alpaca::api::ImageArrayResponse {
+        Ok(ImageArrayResponse {
             data: ndarray::Array::from_shape_vec(
                 (
                     image.width() as usize,
@@ -671,8 +674,8 @@ impl Camera for MyCameraDevice {
         Ok("Unknown".to_owned())
     }
 
-    async fn sensor_type(&self) -> ASCOMResult<ascom_alpaca::api::SensorTypeResponse> {
-        Ok(ascom_alpaca::api::SensorTypeResponse::Color)
+    async fn sensor_type(&self) -> ASCOMResult<SensorTypeResponse> {
+        Ok(SensorTypeResponse::Color)
     }
 
     async fn set_ccdtemperature(&self) -> ASCOMResult<f64> {
@@ -719,11 +722,7 @@ impl Camera for MyCameraDevice {
         }
     }
 
-    async fn pulse_guide(
-        &self,
-        direction: ascom_alpaca::api::PutPulseGuideDirection,
-        duration: i32,
-    ) -> ASCOMResult {
+    async fn pulse_guide(&self, direction: PutPulseGuideDirection, duration: i32) -> ASCOMResult {
         Err(ASCOMError::NOT_IMPLEMENTED)
     }
 
