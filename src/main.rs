@@ -12,13 +12,14 @@ use std::time::{Duration, Instant};
 use time::format_description::well_known::Rfc3339;
 use time::OffsetDateTime;
 use tokio::select;
-use tokio::sync::{oneshot, Mutex};
+use tokio::sync::{
+    oneshot, Mutex, RwLock, RwLockMappedWriteGuard, RwLockReadGuard, RwLockWriteGuard,
+};
 use tokio::task::JoinHandle;
 use tokio::time::sleep;
-use tracing_subscriber::prelude::*;
 
 const ERR_UNSUPPORTED_IMAGE_FORMAT: ASCOMError = ASCOMError {
-    code: ASCOMErrorCode::new_for_driver(0),
+    code: ASCOMErrorCode::new_for_driver::<0>(),
     message: Cow::Borrowed("Unsupported image format"),
 };
 
@@ -244,16 +245,18 @@ impl MyCamera {
 
 #[derive(Default, Debug)]
 struct MyCameraDevice {
-    camera: Option<MyCamera>,
+    camera: RwLock<Option<MyCamera>>,
 }
 
 impl MyCameraDevice {
-    fn camera(&self) -> ASCOMResult<&MyCamera> {
-        self.camera.as_ref().ok_or(ASCOMError::NOT_CONNECTED)
+    async fn camera(&self) -> ASCOMResult<RwLockReadGuard<'_, MyCamera>> {
+        RwLockReadGuard::try_map(self.camera.read().await, |camera| camera.as_ref())
+            .map_err(|_| ASCOMError::NOT_CONNECTED)
     }
 
-    fn camera_mut(&mut self) -> ASCOMResult<&mut MyCamera> {
-        self.camera.as_mut().ok_or(ASCOMError::NOT_CONNECTED)
+    async fn camera_mut(&self) -> ASCOMResult<RwLockMappedWriteGuard<'_, MyCamera>> {
+        RwLockWriteGuard::try_map(self.camera.write().await, |camera| camera.as_mut())
+            .map_err(|_| ASCOMError::NOT_CONNECTED)
     }
 }
 
@@ -269,48 +272,50 @@ impl Device for MyCameraDevice {
         "ffe84935-e951-45b3-9835-d532b04ee932"
     }
 
-    async fn action(&mut self, action: String, parameters: String) -> ASCOMResult<String> {
+    async fn action(&self, action: String, parameters: String) -> ASCOMResult<String> {
         Err(ASCOMError::NOT_IMPLEMENTED)
     }
 
-    async fn command_blind(&mut self, command: String, raw: String) -> ASCOMResult {
+    async fn command_blind(&self, command: String, raw: String) -> ASCOMResult {
         Err(ASCOMError::NOT_IMPLEMENTED)
     }
 
-    async fn command_bool(&mut self, command: String, raw: String) -> ASCOMResult<bool> {
+    async fn command_bool(&self, command: String, raw: String) -> ASCOMResult<bool> {
         Err(ASCOMError::NOT_IMPLEMENTED)
     }
 
-    async fn command_string(&mut self, command: String, raw: String) -> ASCOMResult<String> {
+    async fn command_string(&self, command: String, raw: String) -> ASCOMResult<String> {
         Err(ASCOMError::NOT_IMPLEMENTED)
     }
 
     async fn connected(&self) -> ASCOMResult<bool> {
-        Ok(self.camera.is_some())
+        Ok(self.camera().await.is_ok())
     }
 
-    async fn set_connected(&mut self, connected: bool) -> ASCOMResult {
-        if connected == self.camera.is_some() {
+    async fn set_connected(&self, connected: bool) -> ASCOMResult {
+        let mut camera = self.camera.write().await;
+
+        if connected == camera.is_some() {
             return Ok(());
         }
 
-        if connected {
+        *camera = if connected {
             let span = tracing::trace_span!("Connecting to camera");
             let _enter = span.enter();
 
             let context = gphoto2::Context::new().map_err(convert_err)?;
             let camera = context.autodetect_camera().await.map_err(convert_err)?;
 
-            self.camera = Some(MyCamera::new(camera, context).await.map_err(convert_err)?);
+            Some(MyCamera::new(camera, context).await.map_err(convert_err)?)
         } else {
-            self.camera = None;
-        }
+            None
+        };
 
         Ok(())
     }
 
     async fn description(&self) -> ASCOMResult<String> {
-        Ok(self.camera()?.abilities().model().into_owned())
+        Ok(self.camera().await?.abilities().model().into_owned())
     }
 
     async fn driver_info(&self) -> ASCOMResult<String> {
@@ -323,6 +328,10 @@ impl Device for MyCameraDevice {
 
     async fn interface_version(&self) -> ASCOMResult<i32> {
         Ok(3)
+    }
+
+    fn static_name(&self) -> &'static str {
+        "My Camera"
     }
 
     async fn name(&self) -> ASCOMResult<String> {
@@ -349,7 +358,7 @@ impl Camera for MyCameraDevice {
         Ok(1)
     }
 
-    async fn set_bin_x(&mut self, bin_x: i32) -> ASCOMResult {
+    async fn set_bin_x(&self, bin_x: i32) -> ASCOMResult {
         if bin_x != 1 {
             return Err(ASCOMError::new(
                 ASCOMErrorCode::INVALID_VALUE,
@@ -363,7 +372,7 @@ impl Camera for MyCameraDevice {
         Ok(1)
     }
 
-    async fn set_bin_y(&mut self, bin_y: i32) -> ASCOMResult {
+    async fn set_bin_y(&self, bin_y: i32) -> ASCOMResult {
         if bin_y != 1 {
             return Err(ASCOMError::new(
                 ASCOMErrorCode::INVALID_VALUE,
@@ -375,7 +384,7 @@ impl Camera for MyCameraDevice {
 
     async fn camera_state(&self) -> ASCOMResult<ascom_alpaca::api::CameraStateResponse> {
         // TODO: `Download` state
-        Ok(match &*self.camera()?.state().await {
+        Ok(match &*self.camera().await?.state().await {
             State::Idle => ascom_alpaca::api::CameraStateResponse::Idle,
             State::InExposure(exposure) => match exposure.state.load(atomic::Ordering::Relaxed) {
                 ExposingState::Waiting => ascom_alpaca::api::CameraStateResponse::Waiting,
@@ -390,11 +399,11 @@ impl Camera for MyCameraDevice {
     }
 
     async fn camera_xsize(&self) -> ASCOMResult<i32> {
-        Ok(self.camera()?.dimensions.0 as i32)
+        Ok(self.camera().await?.dimensions.0 as i32)
     }
 
     async fn camera_ysize(&self) -> ASCOMResult<i32> {
-        Ok(self.camera()?.dimensions.1 as i32)
+        Ok(self.camera().await?.dimensions.1 as i32)
     }
 
     async fn can_abort_exposure(&self) -> ASCOMResult<bool> {
@@ -433,7 +442,7 @@ impl Camera for MyCameraDevice {
         Err(ASCOMError::NOT_IMPLEMENTED)
     }
 
-    async fn set_cooler_on(&mut self, cooler_on: bool) -> ASCOMResult {
+    async fn set_cooler_on(&self, cooler_on: bool) -> ASCOMResult {
         Err(ASCOMError::NOT_IMPLEMENTED)
     }
 
@@ -466,7 +475,7 @@ impl Camera for MyCameraDevice {
         Err(ASCOMError::NOT_IMPLEMENTED)
     }
 
-    async fn set_fast_readout(&mut self, fast_readout: bool) -> ASCOMResult {
+    async fn set_fast_readout(&self, fast_readout: bool) -> ASCOMResult {
         Err(ASCOMError::NOT_IMPLEMENTED)
     }
 
@@ -478,7 +487,7 @@ impl Camera for MyCameraDevice {
         Err(ASCOMError::NOT_IMPLEMENTED)
     }
 
-    async fn set_gain(&mut self, gain: i32) -> ASCOMResult {
+    async fn set_gain(&self, gain: i32) -> ASCOMResult {
         Err(ASCOMError::NOT_IMPLEMENTED)
     }
 
@@ -513,7 +522,8 @@ impl Camera for MyCameraDevice {
             (channels, data)
         }
 
-        let state = self.camera()?.state().await;
+        let camera = self.camera().await?;
+        let state = camera.state().await;
         let image = &state.as_successful_exposure()?.image;
         let (channels, data) = match image {
             DynamicImage::ImageLuma8(image) => flat_samples(image),
@@ -538,7 +548,7 @@ impl Camera for MyCameraDevice {
 
     async fn image_ready(&self) -> ASCOMResult<bool> {
         Ok(matches!(
-            *self.camera()?.state().await,
+            *self.camera().await?.state().await,
             State::AfterExposure(Ok(_))
         ))
     }
@@ -549,7 +559,8 @@ impl Camera for MyCameraDevice {
 
     async fn last_exposure_duration(&self) -> ASCOMResult<f64> {
         Ok(self
-            .camera()?
+            .camera()
+            .await?
             .state()
             .await
             .as_successful_exposure()?
@@ -559,7 +570,8 @@ impl Camera for MyCameraDevice {
 
     async fn last_exposure_start_time(&self) -> ASCOMResult<String> {
         let start_utc = self
-            .camera()?
+            .camera()
+            .await?
             .state()
             .await
             .as_successful_exposure()?
@@ -586,20 +598,20 @@ impl Camera for MyCameraDevice {
     }
 
     async fn num_x(&self) -> ASCOMResult<i32> {
-        Ok(self.camera()?.subframe.width as i32)
+        Ok(self.camera().await?.subframe.width as i32)
     }
 
-    async fn set_num_x(&mut self, num_x: i32) -> ASCOMResult {
-        self.camera_mut()?.subframe.width = num_x as _;
+    async fn set_num_x(&self, num_x: i32) -> ASCOMResult {
+        self.camera_mut().await?.subframe.width = num_x as _;
         Ok(())
     }
 
     async fn num_y(&self) -> ASCOMResult<i32> {
-        Ok(self.camera()?.subframe.height as _)
+        Ok(self.camera().await?.subframe.height as _)
     }
 
-    async fn set_num_y(&mut self, num_y: i32) -> ASCOMResult {
-        self.camera_mut()?.subframe.height = num_y as _;
+    async fn set_num_y(&self, num_y: i32) -> ASCOMResult {
+        self.camera_mut().await?.subframe.height = num_y as _;
         Ok(())
     }
 
@@ -607,7 +619,7 @@ impl Camera for MyCameraDevice {
         Err(ASCOMError::NOT_IMPLEMENTED)
     }
 
-    async fn set_offset(&mut self, offset: i32) -> ASCOMResult {
+    async fn set_offset(&self, offset: i32) -> ASCOMResult {
         Err(ASCOMError::NOT_IMPLEMENTED)
     }
 
@@ -639,7 +651,7 @@ impl Camera for MyCameraDevice {
         Ok(0)
     }
 
-    async fn set_readout_mode(&mut self, readout_mode: i32) -> ASCOMResult {
+    async fn set_readout_mode(&self, readout_mode: i32) -> ASCOMResult {
         if readout_mode == 0 {
             Ok(())
         } else {
@@ -667,25 +679,25 @@ impl Camera for MyCameraDevice {
         Err(ASCOMError::NOT_IMPLEMENTED)
     }
 
-    async fn set_set_ccdtemperature(&mut self, set_ccdtemperature: f64) -> ASCOMResult {
+    async fn set_set_ccdtemperature(&self, set_ccdtemperature: f64) -> ASCOMResult {
         Err(ASCOMError::NOT_IMPLEMENTED)
     }
 
     async fn start_x(&self) -> ASCOMResult<i32> {
-        Ok(self.camera()?.subframe.x as _)
+        Ok(self.camera().await?.subframe.x as _)
     }
 
-    async fn set_start_x(&mut self, start_x: i32) -> ASCOMResult {
-        self.camera_mut()?.subframe.x = start_x as _;
+    async fn set_start_x(&self, start_x: i32) -> ASCOMResult {
+        self.camera_mut().await?.subframe.x = start_x as _;
         Ok(())
     }
 
     async fn start_y(&self) -> ASCOMResult<i32> {
-        Ok(self.camera()?.subframe.y as _)
+        Ok(self.camera().await?.subframe.y as _)
     }
 
-    async fn set_start_y(&mut self, start_y: i32) -> ASCOMResult {
-        self.camera_mut()?.subframe.y = start_y as _;
+    async fn set_start_y(&self, start_y: i32) -> ASCOMResult {
+        self.camera_mut().await?.subframe.y = start_y as _;
         Ok(())
     }
 
@@ -693,12 +705,12 @@ impl Camera for MyCameraDevice {
         Err(ASCOMError::NOT_IMPLEMENTED)
     }
 
-    async fn set_sub_exposure_duration(&mut self, sub_exposure_duration: f64) -> ASCOMResult {
+    async fn set_sub_exposure_duration(&self, sub_exposure_duration: f64) -> ASCOMResult {
         Err(ASCOMError::NOT_IMPLEMENTED)
     }
 
-    async fn abort_exposure(&mut self) -> ASCOMResult {
-        match &mut *self.camera_mut()?.state().await {
+    async fn abort_exposure(&self) -> ASCOMResult {
+        match &mut *self.camera_mut().await?.state().await {
             camera_state @ State::InExposure(_) => {
                 *camera_state = State::Idle;
                 Ok(())
@@ -708,17 +720,17 @@ impl Camera for MyCameraDevice {
     }
 
     async fn pulse_guide(
-        &mut self,
+        &self,
         direction: ascom_alpaca::api::PutPulseGuideDirection,
         duration: i32,
     ) -> ASCOMResult {
         Err(ASCOMError::NOT_IMPLEMENTED)
     }
 
-    async fn start_exposure(&mut self, duration: f64, light: bool) -> ASCOMResult {
+    async fn start_exposure(&self, duration: f64, light: bool) -> ASCOMResult {
         let duration = Duration::try_from_secs_f64(duration)
             .map_err(|err| ASCOMError::new(ASCOMErrorCode::INVALID_VALUE, err.to_string()))?;
-        let camera = self.camera_mut()?;
+        let camera = self.camera_mut().await?;
         let context = camera.context.clone();
         let inner = camera.inner.clone();
         let (stop_exposure_sender, stop_exposure_receiver) = oneshot::channel();
@@ -746,8 +758,8 @@ impl Camera for MyCameraDevice {
         Ok(())
     }
 
-    async fn stop_exposure(&mut self) -> ASCOMResult {
-        match &mut *self.camera_mut()?.state().await {
+    async fn stop_exposure(&self) -> ASCOMResult {
+        match &mut *self.camera_mut().await?.state().await {
             State::InExposure(current_exposure) => {
                 current_exposure
                     .early_stop_sender
