@@ -796,6 +796,7 @@ async fn main() -> anyhow::Result<()> {
         ..Default::default()
     };
     server.devices.register(MyCameraDevice::default());
+    server.listen_addr.set_port(3000);
 
     tracing::debug!(?server.devices, "Registered Alpaca devices");
 
