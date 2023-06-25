@@ -1,6 +1,5 @@
 use ascom_alpaca::api::{
-    Camera, CameraStateResponse, CargoServerInfo, Device, ImageArrayResponse,
-    PutPulseGuideDirection, SensorTypeResponse,
+    Camera, CameraState, CargoServerInfo, Device, ImageArray, PutPulseGuideDirection, SensorType,
 };
 use ascom_alpaca::{ASCOMError, ASCOMErrorCode, ASCOMResult, Server};
 use async_trait::async_trait;
@@ -9,22 +8,15 @@ use gphoto2::camera::CameraEvent;
 use gphoto2::file::{CameraFile, CameraFilePath};
 use gphoto2::widget::ToggleWidget;
 use image::{DynamicImage, ImageBuffer, Pixel};
-use std::borrow::Cow;
+use std::convert::Infallible;
 use std::sync::Arc;
-use std::time::{Duration, Instant};
-use time::format_description::well_known::Rfc3339;
-use time::OffsetDateTime;
+use std::time::{Duration, Instant, SystemTime};
 use tokio::select;
 use tokio::sync::{
     oneshot, Mutex, RwLock, RwLockMappedWriteGuard, RwLockReadGuard, RwLockWriteGuard,
 };
 use tokio::task::JoinHandle;
 use tokio::time::sleep;
-
-const ERR_UNSUPPORTED_IMAGE_FORMAT: ASCOMError = ASCOMError {
-    code: ASCOMErrorCode::new_for_driver::<0>(),
-    message: Cow::Borrowed("Unsupported image format"),
-};
 
 #[derive(Debug, Clone, Copy)]
 enum ExposingState {
@@ -34,8 +26,8 @@ enum ExposingState {
 }
 
 struct SuccessfulExposure {
-    image: DynamicImage,
-    start_utc: OffsetDateTime,
+    image: ImageArray,
+    start_utc: SystemTime,
     duration: Duration,
 }
 
@@ -104,10 +96,10 @@ async fn download_and_delete(
 async fn camera_file_to_image(
     camera_file: CameraFile,
     context: &gphoto2::Context,
-) -> anyhow::Result<image::io::Reader<impl std::io::BufRead + std::io::Seek>> {
+) -> eyre::Result<image::io::Reader<impl std::io::BufRead + std::io::Seek>> {
     let mime_type = camera_file.mime_type();
     let img_format = image::ImageFormat::from_mime_type(&mime_type)
-        .ok_or_else(|| anyhow::anyhow!("unsupported image format {mime_type}"))?;
+        .ok_or_else(|| eyre::eyre!("unsupported image format {mime_type}"))?;
 
     tracing::trace!(mime_type, ?img_format, "Determined image format");
 
@@ -117,6 +109,23 @@ async fn camera_file_to_image(
     ))
 }
 
+fn flat_samples<P: Pixel>(img: ImageBuffer<P, Vec<P::Subpixel>>) -> ImageArray
+where
+    ImageArray: From<ndarray::Array3<P::Subpixel>>,
+{
+    let flat_samples = img.into_flat_samples();
+    ndarray::Array::from_shape_vec(
+        (
+            flat_samples.layout.width as usize,
+            flat_samples.layout.height as usize,
+            flat_samples.layout.channels.into(),
+        ),
+        flat_samples.samples,
+    )
+    .expect("shape mismatch when creating image array")
+    .into()
+}
+
 async fn expose(
     camera: &gphoto2::Camera,
     context: &gphoto2::Context,
@@ -124,12 +133,12 @@ async fn expose(
     stop_exposure: oneshot::Receiver<()>,
     state: &Atomic<ExposingState>,
     subframe: image::math::Rect,
-) -> anyhow::Result<SuccessfulExposure> {
+) -> eyre::Result<SuccessfulExposure> {
     let bulb_toggle = camera.config_key::<ToggleWidget>("bulb").await?;
     bulb_toggle.set_toggled(true);
     camera.set_config(&bulb_toggle).await?;
     state.store(ExposingState::Exposing, atomic::Ordering::Relaxed);
-    let start_utc = OffsetDateTime::now_utc();
+    let start_utc = SystemTime::now();
     let start_instant = Instant::now();
     select! {
         _ = sleep(duration) => {},
@@ -145,20 +154,29 @@ async fn expose(
                 break path;
             }
             CameraEvent::Timeout => {
-                anyhow::bail!("Timeout while waiting for camera to finish exposing");
+                eyre::bail!("Timeout while waiting for camera to finish exposing");
             }
             _ => {}
         }
     };
     let camera_file = download_and_delete(camera, &path).await?;
     let image_reader = camera_file_to_image(camera_file, context).await?;
+
+    let image =
+        image_reader
+            .decode()?
+            .crop(subframe.x, subframe.y, subframe.width, subframe.height);
+
+    let image = match image {
+        DynamicImage::ImageLuma8(image) => flat_samples(image),
+        DynamicImage::ImageLuma16(image) => flat_samples(image),
+        DynamicImage::ImageRgb8(image) => flat_samples(image),
+        DynamicImage::ImageRgb16(image) => flat_samples(image),
+        _ => eyre::bail!("unsupported image format"),
+    };
+
     Ok(SuccessfulExposure {
-        image: image_reader.decode()?.crop_imm(
-            subframe.x,
-            subframe.y,
-            subframe.width,
-            subframe.height,
-        ),
+        image,
         start_utc,
         duration: elapsed,
     })
@@ -187,7 +205,7 @@ impl std::ops::Deref for MyCamera {
 }
 
 impl MyCamera {
-    pub async fn new(inner: gphoto2::Camera, context: gphoto2::Context) -> anyhow::Result<Self> {
+    pub async fn new(inner: gphoto2::Camera, context: gphoto2::Context) -> eyre::Result<Self> {
         let (width, height) = {
             let span = tracing::trace_span!("Determine dimensions");
             let _enter = span.enter();
@@ -214,7 +232,7 @@ impl MyCamera {
 
             let mime_type = camera_file.mime_type();
             let img_format = image::ImageFormat::from_mime_type(&mime_type)
-                .ok_or_else(|| anyhow::anyhow!("unknown image format {mime_type}"))?;
+                .ok_or_else(|| eyre::eyre!("unknown image format {mime_type}"))?;
 
             tracing::trace!(mime_type, ?img_format, "Test image format");
 
@@ -385,18 +403,18 @@ impl Camera for MyCameraDevice {
         Ok(())
     }
 
-    async fn camera_state(&self) -> ASCOMResult<CameraStateResponse> {
+    async fn camera_state(&self) -> ASCOMResult<CameraState> {
         // TODO: `Download` state
         Ok(match &*self.camera().await?.state().await {
-            State::Idle => CameraStateResponse::Idle,
+            State::Idle => CameraState::Idle,
             State::InExposure(exposure) => match exposure.state.load(atomic::Ordering::Relaxed) {
-                ExposingState::Waiting => CameraStateResponse::Waiting,
-                ExposingState::Exposing => CameraStateResponse::Exposing,
-                ExposingState::Reading => CameraStateResponse::Reading,
+                ExposingState::Waiting => CameraState::Waiting,
+                ExposingState::Exposing => CameraState::Exposing,
+                ExposingState::Reading => CameraState::Reading,
             },
             State::AfterExposure(result) => match result {
-                Ok(_) => CameraStateResponse::Idle,
-                Err(_) => CameraStateResponse::Error,
+                Ok(_) => CameraState::Idle,
+                Err(_) => CameraState::Error,
             },
         })
     }
@@ -429,7 +447,7 @@ impl Camera for MyCameraDevice {
         Ok(false)
     }
 
-    async fn can_set_ccdtemperature(&self) -> ASCOMResult<bool> {
+    async fn can_set_ccd_temperature(&self) -> ASCOMResult<bool> {
         Ok(false)
     }
 
@@ -437,7 +455,7 @@ impl Camera for MyCameraDevice {
         Ok(true)
     }
 
-    async fn ccdtemperature(&self) -> ASCOMResult<f64> {
+    async fn ccd_temperature(&self) -> ASCOMResult<f64> {
         Err(ASCOMError::NOT_IMPLEMENTED)
     }
 
@@ -514,39 +532,15 @@ impl Camera for MyCameraDevice {
         Err(ASCOMError::NOT_IMPLEMENTED)
     }
 
-    async fn image_array(&self) -> ASCOMResult<ImageArrayResponse> {
-        fn flat_samples<P: Pixel>(img: &ImageBuffer<P, Vec<P::Subpixel>>) -> (u8, Vec<i32>)
-        where
-            P::Subpixel: Into<i32>,
-        {
-            let flat_samples = img.as_flat_samples();
-            let channels = flat_samples.layout.channels;
-            let data = flat_samples.as_slice().iter().map(|&x| x.into()).collect();
-            (channels, data)
-        }
-
-        let camera = self.camera().await?;
-        let state = camera.state().await;
-        let image = &state.as_successful_exposure()?.image;
-        let (channels, data) = match image {
-            DynamicImage::ImageLuma8(image) => flat_samples(image),
-            DynamicImage::ImageLuma16(image) => flat_samples(image),
-            DynamicImage::ImageRgb8(image) => flat_samples(image),
-            DynamicImage::ImageRgb16(image) => flat_samples(image),
-            _ => return Err(ERR_UNSUPPORTED_IMAGE_FORMAT),
-        };
-
-        Ok(ImageArrayResponse {
-            data: ndarray::Array::from_shape_vec(
-                (
-                    image.width() as usize,
-                    image.height() as usize,
-                    channels.into(),
-                ),
-                data,
-            )
-            .expect("shape mismatch when creating image array"),
-        })
+    async fn image_array(&self) -> ASCOMResult<ImageArray> {
+        Ok(self
+            .camera()
+            .await?
+            .state()
+            .await
+            .as_successful_exposure()?
+            .image
+            .clone())
     }
 
     async fn image_ready(&self) -> ASCOMResult<bool> {
@@ -571,21 +565,14 @@ impl Camera for MyCameraDevice {
             .as_secs_f64())
     }
 
-    async fn last_exposure_start_time(&self) -> ASCOMResult<String> {
-        let start_utc = self
+    async fn last_exposure_start_time(&self) -> ASCOMResult<SystemTime> {
+        Ok(self
             .camera()
             .await?
             .state()
             .await
             .as_successful_exposure()?
-            .start_utc;
-
-        // We need CCYY-MM-DDThh:mm:ss[.sss...]. This is close to RFC3339, but
-        // we need to remove the Z timezone suffix.
-        let mut result = start_utc.format(&Rfc3339).map_err(convert_err)?;
-        let last_char = result.pop();
-        debug_assert_eq!(last_char, Some('Z'));
-        Ok(result)
+            .start_utc)
     }
 
     async fn max_adu(&self) -> ASCOMResult<i32> {
@@ -674,15 +661,15 @@ impl Camera for MyCameraDevice {
         Ok("Unknown".to_owned())
     }
 
-    async fn sensor_type(&self) -> ASCOMResult<SensorTypeResponse> {
-        Ok(SensorTypeResponse::Color)
+    async fn sensor_type(&self) -> ASCOMResult<SensorType> {
+        Ok(SensorType::Color)
     }
 
-    async fn set_ccdtemperature(&self) -> ASCOMResult<f64> {
+    async fn set_ccd_temperature(&self) -> ASCOMResult<f64> {
         Err(ASCOMError::NOT_IMPLEMENTED)
     }
 
-    async fn set_set_ccdtemperature(&self, set_ccdtemperature: f64) -> ASCOMResult {
+    async fn set_set_ccd_temperature(&self, set_ccdtemperature: f64) -> ASCOMResult {
         Err(ASCOMError::NOT_IMPLEMENTED)
     }
 
@@ -786,7 +773,7 @@ impl Camera for MyCameraDevice {
 }
 
 #[tokio::main]
-async fn main() -> anyhow::Result<()> {
+async fn main() -> eyre::Result<Infallible> {
     tracing_subscriber::fmt::init();
 
     gphoto2::libgphoto2_sys::test_utils::set_env();
@@ -800,5 +787,5 @@ async fn main() -> anyhow::Result<()> {
 
     tracing::debug!(?server.devices, "Registered Alpaca devices");
 
-    server.start_server().await
+    server.start().await
 }
