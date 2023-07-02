@@ -4,7 +4,7 @@ use async_trait::async_trait;
 use atomic::{Atomic, Ordering};
 use exif::Exif;
 use gphoto2::camera::CameraEvent;
-use gphoto2::file::{CameraFile, CameraFilePath};
+use gphoto2::file::CameraFilePath;
 use gphoto2::list::CameraDescriptor;
 use gphoto2::widget::{RadioWidget, ToggleWidget};
 use image::{DynamicImage, ImageBuffer, Pixel};
@@ -18,6 +18,7 @@ use tokio::sync::{
 use tokio::time::sleep;
 use tracing::Instrument;
 
+#[derive(Debug, Clone, Copy)]
 struct Size {
     width: u32,
     height: u32,
@@ -45,42 +46,14 @@ enum State {
     AfterExposure(ASCOMResult<SuccessfulExposure>),
 }
 
-impl State {
-    fn as_successful_exposure(&self) -> ASCOMResult<&SuccessfulExposure> {
-        match self {
-            State::AfterExposure(Ok(exposure)) => Ok(exposure),
-            State::AfterExposure(Err(err)) => Err(err.clone()),
-            State::Idle => Err(ASCOMError::invalid_operation("Camera is idle")),
-            State::InExposure(CurrentExposure { state, .. }) => {
-                Err(ASCOMError::invalid_operation(format_args!(
-                    "Camera is currently taking a picture (status: {:?})",
-                    state.load(Ordering::Relaxed)
-                )))
-            }
-        }
-    }
-
-    fn percent_completed(&self) -> i32 {
-        match self {
-            State::Idle => 0,
-            State::InExposure(CurrentExposure {
-                rough_start: start,
-                expected_duration,
-                ..
-            }) => {
-                let elapsed = start.elapsed().as_secs_f64();
-                let max = expected_duration.as_secs_f64();
-                (100.0 * (elapsed / max).min(1.0)).round() as i32
-            }
-            State::AfterExposure(_) => 100,
-        }
-    }
-}
-
-async fn download_and_delete(
+async fn camera_file_to_image(
+    context: &gphoto2::Context,
     camera: &gphoto2::Camera,
     path: &CameraFilePath,
-) -> gphoto2::Result<CameraFile> {
+) -> eyre::Result<(
+    Option<Exif>,
+    image::io::Reader<impl std::io::BufRead + std::io::Seek>,
+)> {
     let folder = path.folder();
     let folder = folder.as_ref();
 
@@ -90,41 +63,29 @@ async fn download_and_delete(
     async {
         let fs = camera.fs();
 
-        tracing::trace!("Downloading image");
         let camera_file = fs.download(folder, filename).await?;
 
-        tracing::trace!("Deleting image");
         fs.delete_file(folder, filename).await?;
 
-        Ok(camera_file)
+        let mime_type = camera_file.mime_type();
+        let img_format = image::ImageFormat::from_mime_type(&mime_type)
+            .ok_or_else(|| eyre::eyre!("unsupported image format {mime_type}"))?;
+
+        tracing::trace!(mime_type, ?img_format, "Determined image format");
+
+        let mut data = std::io::Cursor::new(camera_file.get_data(context).await?);
+
+        let exif = exif::Reader::new().read_from_container(&mut data).ok();
+        data.set_position(0);
+
+        Ok((exif, image::io::Reader::with_format(data, img_format)))
     }
-    .instrument(tracing::trace_span!(
-        "Download & delete image from camera",
-        folder,
-        filename
+    .instrument(tracing::error_span!(
+        "camera_file_to_image",
+        ?folder,
+        ?filename
     ))
     .await
-}
-
-async fn camera_file_to_image(
-    camera_file: CameraFile,
-    context: &gphoto2::Context,
-) -> eyre::Result<(
-    Option<Exif>,
-    image::io::Reader<impl std::io::BufRead + std::io::Seek>,
-)> {
-    let mime_type = camera_file.mime_type();
-    let img_format = image::ImageFormat::from_mime_type(&mime_type)
-        .ok_or_else(|| eyre::eyre!("unsupported image format {mime_type}"))?;
-
-    tracing::trace!(mime_type, ?img_format, "Determined image format");
-
-    let mut data = std::io::Cursor::new(camera_file.get_data(context).await?);
-
-    let exif = exif::Reader::new().read_from_container(&mut data).ok();
-    data.set_position(0);
-
-    Ok((exif, image::io::Reader::with_format(data, img_format)))
 }
 
 fn flat_samples<P: Pixel>(img: ImageBuffer<P, Vec<P::Subpixel>>) -> ImageArray
@@ -204,38 +165,37 @@ impl std::ops::Deref for MyCamera {
     }
 }
 
+#[tracing::instrument(skip(context, camera), ret, err)]
+async fn determine_dimensions(
+    context: &gphoto2::Context,
+    camera: &gphoto2::Camera,
+) -> eyre::Result<Size> {
+    let camera_file_path = camera.capture_image().await?;
+
+    let (_exif, image_reader) = camera_file_to_image(context, camera, &camera_file_path).await?;
+
+    let (width, height) = image_reader.into_dimensions()?;
+
+    Ok(Size { width, height })
+}
+
 impl MyCamera {
-    pub async fn new(camera: gphoto2::Camera, context: gphoto2::Context) -> eyre::Result<Self> {
-        let (width, height) = async {
-            let camera_file_path = camera.capture_image().await?;
-            let camera_file = download_and_delete(&camera, &camera_file_path).await?;
-
-            camera_file_to_image(camera_file, &context)
-                .await?
-                .1
-                .into_dimensions()
-                .map_err(eyre::Error::from)
-        }
-        .instrument(tracing::trace_span!(
-            "Capturing test image to determine dimensions"
-        ))
-        .await?;
-
-        tracing::info!(width, height, "Detected camera dimensions");
+    pub async fn new(context: gphoto2::Context, camera: gphoto2::Camera) -> eyre::Result<Self> {
+        let dimensions = determine_dimensions(&context, &camera).await?;
 
         Ok(Self {
             iso: camera.config_key::<RadioWidget>("iso").await?,
             bulb: BulbControl::new(&camera).await?,
+            dimensions,
             inner: camera,
             state: Arc::new(Mutex::new(State::Idle)),
-            dimensions: Size { width, height },
             last_exposure_start_time: Default::default(),
             last_exposure_duration: Default::default(),
             subframe: parking_lot::RwLock::new(image::math::Rect {
                 x: 0,
                 y: 0,
-                width,
-                height,
+                width: dimensions.width,
+                height: dimensions.height,
             }),
         })
     }
@@ -319,11 +279,11 @@ impl Device for MyCameraDevice {
         *camera = if connected {
             Some(
                 MyCamera::new(
+                    self.context.clone(),
                     self.context
                         .get_camera(&self.descriptor)
                         .await
                         .map_err(convert_err)?,
-                    self.context.clone(),
                 )
                 .await
                 .map_err(convert_err)?,
@@ -480,14 +440,10 @@ impl Camera for MyCameraDevice {
     }
 
     async fn image_array(&self) -> ASCOMResult<ImageArray> {
-        Ok(self
-            .camera()
-            .await?
-            .state()
-            .await
-            .as_successful_exposure()?
-            .image
-            .clone())
+        match &*self.camera().await?.state().await {
+            State::AfterExposure(Ok(exposure)) => Ok(exposure.image.clone()),
+            _ => Err(ASCOMError::INVALID_OPERATION),
+        }
     }
 
     async fn image_ready(&self) -> ASCOMResult<bool> {
@@ -558,7 +514,19 @@ impl Camera for MyCameraDevice {
     }
 
     async fn percent_completed(&self) -> ASCOMResult<i32> {
-        Ok(self.camera().await?.state().await.percent_completed())
+        Ok(match &*self.camera().await?.state().await {
+            State::Idle => 0,
+            State::InExposure(CurrentExposure {
+                rough_start: start,
+                expected_duration,
+                ..
+            }) => {
+                let elapsed = start.elapsed().as_secs_f64();
+                let max = expected_duration.as_secs_f64();
+                (100.0 * (elapsed / max).min(1.0)).round() as i32
+            }
+            State::AfterExposure(_) => 100,
+        })
     }
 
     async fn readout_mode(&self) -> ASCOMResult<i32> {
@@ -629,9 +597,9 @@ impl Camera for MyCameraDevice {
                 .map_err(|_| {
                     eyre::eyre!("Timeout while waiting for camera to finish exposing")
                 })??;
+
                 exposing_state.store(CameraState::Download, Ordering::Relaxed);
-                let camera_file = download_and_delete(&camera, &path).await?;
-                let (exif, image_reader) = camera_file_to_image(camera_file, &context).await?;
+                let (exif, image_reader) = camera_file_to_image(&context, &camera, &path).await?;
 
                 last_exposure_duration.store(
                     Some(
