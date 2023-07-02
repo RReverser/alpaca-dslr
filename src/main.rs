@@ -1,10 +1,8 @@
-use ascom_alpaca::api::{
-    Camera, CameraState, CargoServerInfo, Device, ImageArray, PutPulseGuideDirection, SensorType,
-};
-use ascom_alpaca::{ASCOMError, ASCOMErrorCode, ASCOMResult, Server};
+use ascom_alpaca::api::{Camera, CameraState, CargoServerInfo, Device, ImageArray, SensorType};
+use ascom_alpaca::{ASCOMError, ASCOMResult, Server};
 use async_trait::async_trait;
 use atomic::{Atomic, Ordering};
-use exif::{Exif, Tag};
+use exif::Exif;
 use gphoto2::camera::CameraEvent;
 use gphoto2::file::{CameraFile, CameraFilePath};
 use gphoto2::list::CameraDescriptor;
@@ -146,12 +144,47 @@ where
     .into()
 }
 
+#[derive(Debug, Clone)]
+enum BulbControl {
+    Standard(ToggleWidget),
+    EosRemoteRelease(RadioWidget),
+}
+
+impl BulbControl {
+    async fn new(camera: &gphoto2::Camera) -> eyre::Result<Self> {
+        Ok(if let Ok(toggle) = camera.config_key("bulb").await {
+            Self::Standard(toggle)
+        } else if let Ok(radio) = camera.config_key("eosremoterelease").await {
+            Self::EosRemoteRelease(radio)
+        } else {
+            eyre::bail!("Camera does not support bulb exposures")
+        })
+    }
+
+    async fn toggle(&self, camera: &gphoto2::Camera, on: bool) -> eyre::Result<()> {
+        camera
+            .set_config(match self {
+                Self::Standard(toggle) => {
+                    toggle.set_toggled(on);
+                    toggle
+                }
+                Self::EosRemoteRelease(radio) => {
+                    radio.set_choice(if on { "Immediate" } else { "Release Full" })?;
+                    radio
+                }
+            })
+            .await?;
+
+        Ok(())
+    }
+}
+
 struct MyCamera {
     inner: gphoto2::Camera,
     state: Arc<Mutex<State>>,
     dimensions: Size,
     iso: RadioWidget,
-    bulb: ToggleWidget,
+    bulb: BulbControl,
     last_exposure_start_time: Atomic<Option<SystemTime>>,
     last_exposure_duration: Arc<Atomic<Option<f64>>>,
     subframe: parking_lot::RwLock<image::math::Rect>,
@@ -174,47 +207,25 @@ impl std::ops::Deref for MyCamera {
 impl MyCamera {
     pub async fn new(camera: gphoto2::Camera, context: gphoto2::Context) -> eyre::Result<Self> {
         let (width, height) = async {
-            tracing::trace!("Capturing test image");
-            let capture_preview_task = camera.capture_preview();
-            let camera_file = match capture_preview_task.await {
-                Err(e) if e.kind() == gphoto2::error::ErrorKind::NotSupported => {
-                    tracing::warn!(
-                        "Preview capture not supported, falling back to full image capture"
-                    );
-                    let camera_file_path = camera.capture_image().await?;
-                    let folder = camera_file_path.folder();
-                    let name = camera_file_path.name();
-                    let fs = camera.fs();
-                    tracing::trace!("Downloading test image from the camera");
-                    let camera_file = fs.download(&folder, &name).await?;
-                    tracing::trace!("Deleting test image from the camera");
-                    fs.delete_file(&folder, &name).await?;
-                    camera_file
-                }
-                result => result?,
-            };
+            let camera_file_path = camera.capture_image().await?;
+            let camera_file = download_and_delete(&camera, &camera_file_path).await?;
 
-            let mime_type = camera_file.mime_type();
-            let img_format = image::ImageFormat::from_mime_type(&mime_type)
-                .ok_or_else(|| eyre::eyre!("unknown image format {mime_type}"))?;
-
-            tracing::trace!(mime_type, ?img_format, "Test image format");
-
-            image::io::Reader::with_format(
-                std::io::Cursor::new(camera_file.get_data(&context).await?),
-                img_format,
-            )
-            .into_dimensions()
-            .map_err(eyre::Error::from)
+            camera_file_to_image(camera_file, &context)
+                .await?
+                .1
+                .into_dimensions()
+                .map_err(eyre::Error::from)
         }
-        .instrument(tracing::trace_span!("Determine dimensions"))
+        .instrument(tracing::trace_span!(
+            "Capturing test image to determine dimensions"
+        ))
         .await?;
 
         tracing::info!(width, height, "Detected camera dimensions");
 
         Ok(Self {
             iso: camera.config_key::<RadioWidget>("iso").await?,
-            bulb: camera.config_key::<ToggleWidget>("bulb").await?,
+            bulb: BulbControl::new(&camera).await?,
             inner: camera,
             state: Arc::new(Mutex::new(State::Idle)),
             dimensions: Size { width, height },
@@ -282,9 +293,9 @@ impl MyCameraDevice {
     }
 }
 
-fn convert_err(err: impl std::string::ToString) -> ASCOMError {
+fn convert_err(err: impl std::fmt::Display) -> ASCOMError {
     // TODO: more granular error codes.
-    ASCOMError::new(ASCOMErrorCode::UNSPECIFIED, err.to_string())
+    ASCOMError::unspecified(format_args!("Camera error: {err:#}"))
 }
 
 #[allow(unused_variables)]
@@ -429,6 +440,10 @@ impl Camera for MyCameraDevice {
         Ok(0.1)
     }
 
+    async fn max_adu(&self) -> ASCOMResult<i32> {
+        Ok(u16::MAX.into())
+    }
+
     async fn full_well_capacity(&self) -> ASCOMResult<f64> {
         Ok(u16::MAX.into())
     }
@@ -497,10 +512,6 @@ impl Camera for MyCameraDevice {
             .last_exposure_start_time
             .load(Ordering::Relaxed)
             .ok_or(ASCOMError::INVALID_OPERATION)
-    }
-
-    async fn max_adu(&self) -> ASCOMResult<i32> {
-        Err(ASCOMError::NOT_IMPLEMENTED)
     }
 
     async fn max_bin_x(&self) -> ASCOMResult<i32> {
@@ -595,8 +606,7 @@ impl Camera for MyCameraDevice {
         let exposting_state_2 = Arc::clone(&exposing_state);
         tokio::task::spawn(async move {
             let result = async {
-                bulb_toggle.set_toggled(true);
-                camera.set_config(&bulb_toggle).await?;
+                bulb_toggle.toggle(&camera, true).await?;
                 exposing_state.store(CameraState::Exposing, Ordering::Relaxed);
                 let start_utc = SystemTime::now();
                 let start_instant = Instant::now();
@@ -605,8 +615,7 @@ impl Camera for MyCameraDevice {
                     Ok(stop) = stop_rx => stop.want_image,
                 };
                 let duration = start_instant.elapsed().as_secs_f64();
-                bulb_toggle.set_toggled(false);
-                camera.set_config(&bulb_toggle).await?;
+                bulb_toggle.toggle(&camera, false).await?;
                 exposing_state.store(CameraState::Reading, Ordering::Relaxed);
                 let path = tokio::time::timeout(Duration::from_secs(3), async {
                     loop {
@@ -687,9 +696,10 @@ impl Camera for MyCameraDevice {
 
 #[tokio::main]
 async fn main() -> eyre::Result<Infallible> {
+    color_eyre::install()?;
     tracing_subscriber::fmt::init();
 
-    gphoto2::libgphoto2_sys::test_utils::set_env();
+    // gphoto2::libgphoto2_sys::test_utils::set_env();
 
     let context = gphoto2::Context::new()?;
 
@@ -704,6 +714,9 @@ async fn main() -> eyre::Result<Infallible> {
             .register(MyCameraDevice::new(&context, camera_descriptor));
     }
 
+    server
+        .listen_addr
+        .set_ip(std::net::Ipv4Addr::LOCALHOST.into());
     server.listen_addr.set_port(3000);
 
     tracing::debug!(?server.devices, "Registered Alpaca devices");
