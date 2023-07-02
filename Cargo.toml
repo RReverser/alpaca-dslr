@@ -8,11 +8,15 @@ authors = ["Ingvar Stepanyan <me@rreverser.com>"]
 ascom-alpaca = { version = "1.0.0-beta.1", features = ["camera", "server"] }
 async-trait = "0.1.68"
 atomic = "0.5.3"
+custom_debug = "0.5.1"
 eyre = "0.6.8"
+futures-util = "0.3.28"
 gphoto2 = { version = "3.2.1", features = ["test", "extended_logs"] }
 image = "0.24.6"
+kamadak-exif = "0.5.5"
 ndarray = "0.15.6"
+parking_lot = "0.12.1"
 time = { version = "0.3.22", features = ["formatting"] }
-tokio = { version = "1.28.2", features = ["rt-multi-thread", "macros"] }
+tokio = { version = "1.29.1", features = ["rt-multi-thread", "macros"] }
 tracing = "0.1.37"
 tracing-subscriber = "0.3.17"

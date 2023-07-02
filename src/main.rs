@@ -3,32 +3,42 @@ use ascom_alpaca::api::{
 };
 use ascom_alpaca::{ASCOMError, ASCOMErrorCode, ASCOMResult, Server};
 use async_trait::async_trait;
-use atomic::Atomic;
+use atomic::{Atomic, Ordering};
+use exif::{Exif, Tag};
 use gphoto2::camera::CameraEvent;
 use gphoto2::file::{CameraFile, CameraFilePath};
-use gphoto2::widget::ToggleWidget;
+use gphoto2::list::CameraDescriptor;
+use gphoto2::widget::{RadioWidget, ToggleWidget};
 use image::{DynamicImage, ImageBuffer, Pixel};
 use std::convert::Infallible;
 use std::sync::Arc;
 use std::time::{Duration, Instant, SystemTime};
 use tokio::select;
 use tokio::sync::{
-    oneshot, Mutex, RwLock, RwLockMappedWriteGuard, RwLockReadGuard, RwLockWriteGuard,
+    oneshot, watch, Mutex, RwLock, RwLockMappedWriteGuard, RwLockReadGuard, RwLockWriteGuard,
 };
-use tokio::task::JoinHandle;
 use tokio::time::sleep;
+use tracing::Instrument;
 
-#[derive(Debug, Clone, Copy)]
-enum ExposingState {
-    Waiting,
-    Exposing,
-    Reading,
+struct Size {
+    width: u32,
+    height: u32,
+}
+
+struct StopExposure {
+    want_image: bool,
+}
+
+struct CurrentExposure {
+    rough_start: Instant,
+    state: Arc<Atomic<CameraState>>,
+    expected_duration: Duration,
+    stop_tx: Option<oneshot::Sender<StopExposure>>,
+    done_rx: watch::Receiver<bool>,
 }
 
 struct SuccessfulExposure {
     image: ImageArray,
-    start_utc: SystemTime,
-    duration: Duration,
 }
 
 enum State {
@@ -42,30 +52,30 @@ impl State {
         match self {
             State::AfterExposure(Ok(exposure)) => Ok(exposure),
             State::AfterExposure(Err(err)) => Err(err.clone()),
-            State::Idle => Err(ASCOMError::new(
-                ASCOMErrorCode::INVALID_OPERATION,
-                "Camera is idle",
-            )),
-            State::InExposure(CurrentExposure { state, .. }) => Err(ASCOMError::new(
-                ASCOMErrorCode::INVALID_OPERATION,
-                format!(
-                    "Camera is currently making a picture (status: {:?})",
-                    state.load(atomic::Ordering::Relaxed)
-                ),
-            )),
+            State::Idle => Err(ASCOMError::invalid_operation("Camera is idle")),
+            State::InExposure(CurrentExposure { state, .. }) => {
+                Err(ASCOMError::invalid_operation(format_args!(
+                    "Camera is currently taking a picture (status: {:?})",
+                    state.load(Ordering::Relaxed)
+                )))
+            }
         }
     }
-}
 
-struct CurrentExposure {
-    join_handle: JoinHandle<()>,
-    early_stop_sender: Option<oneshot::Sender<()>>,
-    state: Arc<Atomic<ExposingState>>,
-}
-
-impl Drop for CurrentExposure {
-    fn drop(&mut self) {
-        self.join_handle.abort();
+    fn percent_completed(&self) -> i32 {
+        match self {
+            State::Idle => 0,
+            State::InExposure(CurrentExposure {
+                rough_start: start,
+                expected_duration,
+                ..
+            }) => {
+                let elapsed = start.elapsed().as_secs_f64();
+                let max = expected_duration.as_secs_f64();
+                (100.0 * (elapsed / max).min(1.0)).round() as i32
+            }
+            State::AfterExposure(_) => 100,
+        }
     }
 }
 
@@ -79,34 +89,44 @@ async fn download_and_delete(
     let filename = path.name();
     let filename = filename.as_ref();
 
-    let span = tracing::trace_span!("Download & delete image from camera", folder, filename);
-    let _enter = span.enter();
+    async {
+        let fs = camera.fs();
 
-    let fs = camera.fs();
+        tracing::trace!("Downloading image");
+        let camera_file = fs.download(folder, filename).await?;
 
-    tracing::trace!("Downloading image");
-    let camera_file = fs.download(folder, filename).await?;
+        tracing::trace!("Deleting image");
+        fs.delete_file(folder, filename).await?;
 
-    tracing::trace!("Deleting image");
-    fs.delete_file(folder, filename).await?;
-
-    Ok(camera_file)
+        Ok(camera_file)
+    }
+    .instrument(tracing::trace_span!(
+        "Download & delete image from camera",
+        folder,
+        filename
+    ))
+    .await
 }
 
 async fn camera_file_to_image(
     camera_file: CameraFile,
     context: &gphoto2::Context,
-) -> eyre::Result<image::io::Reader<impl std::io::BufRead + std::io::Seek>> {
+) -> eyre::Result<(
+    Option<Exif>,
+    image::io::Reader<impl std::io::BufRead + std::io::Seek>,
+)> {
     let mime_type = camera_file.mime_type();
     let img_format = image::ImageFormat::from_mime_type(&mime_type)
         .ok_or_else(|| eyre::eyre!("unsupported image format {mime_type}"))?;
 
     tracing::trace!(mime_type, ?img_format, "Determined image format");
 
-    Ok(image::io::Reader::with_format(
-        std::io::Cursor::new(camera_file.get_data(context).await?),
-        img_format,
-    ))
+    let mut data = std::io::Cursor::new(camera_file.get_data(context).await?);
+
+    let exif = exif::Reader::new().read_from_container(&mut data).ok();
+    data.set_position(0);
+
+    Ok((exif, image::io::Reader::with_format(data, img_format)))
 }
 
 fn flat_samples<P: Pixel>(img: ImageBuffer<P, Vec<P::Subpixel>>) -> ImageArray
@@ -126,68 +146,15 @@ where
     .into()
 }
 
-async fn expose(
-    camera: &gphoto2::Camera,
-    context: &gphoto2::Context,
-    duration: Duration,
-    stop_exposure: oneshot::Receiver<()>,
-    state: &Atomic<ExposingState>,
-    subframe: image::math::Rect,
-) -> eyre::Result<SuccessfulExposure> {
-    let bulb_toggle = camera.config_key::<ToggleWidget>("bulb").await?;
-    bulb_toggle.set_toggled(true);
-    camera.set_config(&bulb_toggle).await?;
-    state.store(ExposingState::Exposing, atomic::Ordering::Relaxed);
-    let start_utc = SystemTime::now();
-    let start_instant = Instant::now();
-    select! {
-        _ = sleep(duration) => {},
-        _ = stop_exposure => {}
-    };
-    let elapsed = start_instant.elapsed();
-    bulb_toggle.set_toggled(false);
-    camera.set_config(&bulb_toggle).await?;
-    state.store(ExposingState::Reading, atomic::Ordering::Relaxed);
-    let path = loop {
-        match camera.wait_event(std::time::Duration::from_secs(3)).await? {
-            CameraEvent::NewFile(path) => {
-                break path;
-            }
-            CameraEvent::Timeout => {
-                eyre::bail!("Timeout while waiting for camera to finish exposing");
-            }
-            _ => {}
-        }
-    };
-    let camera_file = download_and_delete(camera, &path).await?;
-    let image_reader = camera_file_to_image(camera_file, context).await?;
-
-    let image =
-        image_reader
-            .decode()?
-            .crop(subframe.x, subframe.y, subframe.width, subframe.height);
-
-    let image = match image {
-        DynamicImage::ImageLuma8(image) => flat_samples(image),
-        DynamicImage::ImageLuma16(image) => flat_samples(image),
-        DynamicImage::ImageRgb8(image) => flat_samples(image),
-        DynamicImage::ImageRgb16(image) => flat_samples(image),
-        _ => eyre::bail!("unsupported image format"),
-    };
-
-    Ok(SuccessfulExposure {
-        image,
-        start_utc,
-        duration: elapsed,
-    })
-}
-
 struct MyCamera {
-    context: gphoto2::Context,
     inner: gphoto2::Camera,
     state: Arc<Mutex<State>>,
-    dimensions: (u32, u32),
-    subframe: image::math::Rect,
+    dimensions: Size,
+    iso: RadioWidget,
+    bulb: ToggleWidget,
+    last_exposure_start_time: Atomic<Option<SystemTime>>,
+    last_exposure_duration: Arc<Atomic<Option<f64>>>,
+    subframe: parking_lot::RwLock<image::math::Rect>,
 }
 
 impl std::fmt::Debug for MyCamera {
@@ -205,22 +172,19 @@ impl std::ops::Deref for MyCamera {
 }
 
 impl MyCamera {
-    pub async fn new(inner: gphoto2::Camera, context: gphoto2::Context) -> eyre::Result<Self> {
-        let (width, height) = {
-            let span = tracing::trace_span!("Determine dimensions");
-            let _enter = span.enter();
-
+    pub async fn new(camera: gphoto2::Camera, context: gphoto2::Context) -> eyre::Result<Self> {
+        let (width, height) = async {
             tracing::trace!("Capturing test image");
-            let capture_preview_task = inner.capture_preview();
+            let capture_preview_task = camera.capture_preview();
             let camera_file = match capture_preview_task.await {
                 Err(e) if e.kind() == gphoto2::error::ErrorKind::NotSupported => {
                     tracing::warn!(
                         "Preview capture not supported, falling back to full image capture"
                     );
-                    let camera_file_path = inner.capture_image().await?;
+                    let camera_file_path = camera.capture_image().await?;
                     let folder = camera_file_path.folder();
                     let name = camera_file_path.name();
-                    let fs = inner.fs();
+                    let fs = camera.fs();
                     tracing::trace!("Downloading test image from the camera");
                     let camera_file = fs.download(&folder, &name).await?;
                     tracing::trace!("Deleting test image from the camera");
@@ -241,21 +205,27 @@ impl MyCamera {
                 img_format,
             )
             .into_dimensions()
-        }?;
+            .map_err(eyre::Error::from)
+        }
+        .instrument(tracing::trace_span!("Determine dimensions"))
+        .await?;
 
         tracing::info!(width, height, "Detected camera dimensions");
 
         Ok(Self {
-            context,
-            inner,
+            iso: camera.config_key::<RadioWidget>("iso").await?,
+            bulb: camera.config_key::<ToggleWidget>("bulb").await?,
+            inner: camera,
             state: Arc::new(Mutex::new(State::Idle)),
-            dimensions: (width, height),
-            subframe: image::math::Rect {
+            dimensions: Size { width, height },
+            last_exposure_start_time: Default::default(),
+            last_exposure_duration: Default::default(),
+            subframe: parking_lot::RwLock::new(image::math::Rect {
                 x: 0,
                 y: 0,
                 width,
                 height,
-            },
+            }),
         })
     }
 
@@ -264,12 +234,23 @@ impl MyCamera {
     }
 }
 
-#[derive(Default, Debug)]
+#[derive(custom_debug::Debug)]
 struct MyCameraDevice {
+    #[debug(skip)]
+    context: gphoto2::Context,
+    descriptor: CameraDescriptor,
     camera: RwLock<Option<MyCamera>>,
 }
 
 impl MyCameraDevice {
+    fn new(context: &gphoto2::Context, descriptor: CameraDescriptor) -> Self {
+        Self {
+            context: context.clone(),
+            descriptor,
+            camera: Default::default(),
+        }
+    }
+
     async fn camera(&self) -> ASCOMResult<RwLockReadGuard<'_, MyCamera>> {
         RwLockReadGuard::try_map(self.camera.read().await, |camera| camera.as_ref())
             .map_err(|_| ASCOMError::NOT_CONNECTED)
@@ -278,6 +259,26 @@ impl MyCameraDevice {
     async fn camera_mut(&self) -> ASCOMResult<RwLockMappedWriteGuard<'_, MyCamera>> {
         RwLockWriteGuard::try_map(self.camera.write().await, |camera| camera.as_mut())
             .map_err(|_| ASCOMError::NOT_CONNECTED)
+    }
+
+    async fn stop(&self, want_image: bool) -> ASCOMResult {
+        // Make sure locks are not held when waiting for `done`.
+        let mut done_rx = match &mut *self.camera().await?.state().await {
+            State::InExposure(CurrentExposure {
+                stop_tx, done_rx, ..
+            }) => {
+                if let Some(stop_tx) = stop_tx.take() {
+                    let _ = stop_tx.send(StopExposure { want_image });
+                }
+                done_rx.clone()
+            }
+            _ => return Ok(()),
+        };
+        let done_res = done_rx.wait_for(|&done| done).await;
+        match done_res {
+            Ok(_) => Ok(()),
+            Err(_) => Err(ASCOMError::unspecified("Exposure failed to stop correctly")),
+        }
     }
 }
 
@@ -293,22 +294,6 @@ impl Device for MyCameraDevice {
         "ffe84935-e951-45b3-9835-d532b04ee932"
     }
 
-    async fn action(&self, action: String, parameters: String) -> ASCOMResult<String> {
-        Err(ASCOMError::NOT_IMPLEMENTED)
-    }
-
-    async fn command_blind(&self, command: String, raw: String) -> ASCOMResult {
-        Err(ASCOMError::NOT_IMPLEMENTED)
-    }
-
-    async fn command_bool(&self, command: String, raw: String) -> ASCOMResult<bool> {
-        Err(ASCOMError::NOT_IMPLEMENTED)
-    }
-
-    async fn command_string(&self, command: String, raw: String) -> ASCOMResult<String> {
-        Err(ASCOMError::NOT_IMPLEMENTED)
-    }
-
     async fn connected(&self) -> ASCOMResult<bool> {
         Ok(self.camera().await.is_ok())
     }
@@ -321,13 +306,17 @@ impl Device for MyCameraDevice {
         }
 
         *camera = if connected {
-            let span = tracing::trace_span!("Connecting to camera");
-            let _enter = span.enter();
-
-            let context = gphoto2::Context::new().map_err(convert_err)?;
-            let camera = context.autodetect_camera().await.map_err(convert_err)?;
-
-            Some(MyCamera::new(camera, context).await.map_err(convert_err)?)
+            Some(
+                MyCamera::new(
+                    self.context
+                        .get_camera(&self.descriptor)
+                        .await
+                        .map_err(convert_err)?,
+                    self.context.clone(),
+                )
+                .await
+                .map_err(convert_err)?,
+            )
         } else {
             None
         };
@@ -336,7 +325,8 @@ impl Device for MyCameraDevice {
     }
 
     async fn description(&self) -> ASCOMResult<String> {
-        Ok(self.camera().await?.abilities().model().into_owned())
+        // TODO: is there better description text? We already use model in the name.
+        Ok(self.descriptor.model.clone())
     }
 
     async fn driver_info(&self) -> ASCOMResult<String> {
@@ -347,20 +337,8 @@ impl Device for MyCameraDevice {
         Ok(env!("CARGO_PKG_VERSION").to_owned())
     }
 
-    async fn interface_version(&self) -> ASCOMResult<i32> {
-        Ok(3)
-    }
-
-    fn static_name(&self) -> &'static str {
-        "My Camera"
-    }
-
-    async fn name(&self) -> ASCOMResult<String> {
-        Ok("My Camera".to_owned())
-    }
-
-    async fn supported_actions(&self) -> ASCOMResult<Vec<String>> {
-        Ok(vec![])
+    fn static_name(&self) -> &str {
+        &self.descriptor.model
     }
 }
 
@@ -381,10 +359,7 @@ impl Camera for MyCameraDevice {
 
     async fn set_bin_x(&self, bin_x: i32) -> ASCOMResult {
         if bin_x != 1 {
-            return Err(ASCOMError::new(
-                ASCOMErrorCode::INVALID_VALUE,
-                "binning not supported",
-            ));
+            return Err(ASCOMError::invalid_value("binning not supported"));
         }
         Ok(())
     }
@@ -395,10 +370,7 @@ impl Camera for MyCameraDevice {
 
     async fn set_bin_y(&self, bin_y: i32) -> ASCOMResult {
         if bin_y != 1 {
-            return Err(ASCOMError::new(
-                ASCOMErrorCode::INVALID_VALUE,
-                "binning not supported",
-            ));
+            return Err(ASCOMError::invalid_value("binning not supported"));
         }
         Ok(())
     }
@@ -407,11 +379,7 @@ impl Camera for MyCameraDevice {
         // TODO: `Download` state
         Ok(match &*self.camera().await?.state().await {
             State::Idle => CameraState::Idle,
-            State::InExposure(exposure) => match exposure.state.load(atomic::Ordering::Relaxed) {
-                ExposingState::Waiting => CameraState::Waiting,
-                ExposingState::Exposing => CameraState::Exposing,
-                ExposingState::Reading => CameraState::Reading,
-            },
+            State::InExposure(exposure) => exposure.state.load(Ordering::Relaxed),
             State::AfterExposure(result) => match result {
                 Ok(_) => CameraState::Idle,
                 Err(_) => CameraState::Error,
@@ -420,54 +388,23 @@ impl Camera for MyCameraDevice {
     }
 
     async fn camera_xsize(&self) -> ASCOMResult<i32> {
-        Ok(self.camera().await?.dimensions.0 as i32)
+        Ok(self.camera().await?.dimensions.width as _)
     }
 
     async fn camera_ysize(&self) -> ASCOMResult<i32> {
-        Ok(self.camera().await?.dimensions.1 as i32)
+        Ok(self.camera().await?.dimensions.height as _)
     }
 
     async fn can_abort_exposure(&self) -> ASCOMResult<bool> {
         Ok(true)
     }
 
-    async fn can_asymmetric_bin(&self) -> ASCOMResult<bool> {
-        Ok(false)
-    }
-
-    async fn can_fast_readout(&self) -> ASCOMResult<bool> {
-        Ok(false)
-    }
-
-    async fn can_get_cooler_power(&self) -> ASCOMResult<bool> {
-        Ok(false)
-    }
-
-    async fn can_pulse_guide(&self) -> ASCOMResult<bool> {
-        Ok(false)
-    }
-
-    async fn can_set_ccd_temperature(&self) -> ASCOMResult<bool> {
-        Ok(false)
-    }
-
     async fn can_stop_exposure(&self) -> ASCOMResult<bool> {
         Ok(true)
     }
 
+    // TODO: maybe read this from raw for Canon at least.
     async fn ccd_temperature(&self) -> ASCOMResult<f64> {
-        Err(ASCOMError::NOT_IMPLEMENTED)
-    }
-
-    async fn cooler_on(&self) -> ASCOMResult<bool> {
-        Err(ASCOMError::NOT_IMPLEMENTED)
-    }
-
-    async fn set_cooler_on(&self, cooler_on: bool) -> ASCOMResult {
-        Err(ASCOMError::NOT_IMPLEMENTED)
-    }
-
-    async fn cooler_power(&self) -> ASCOMResult<f64> {
         Err(ASCOMError::NOT_IMPLEMENTED)
     }
 
@@ -492,44 +429,40 @@ impl Camera for MyCameraDevice {
         Ok(0.1)
     }
 
-    async fn fast_readout(&self) -> ASCOMResult<bool> {
-        Err(ASCOMError::NOT_IMPLEMENTED)
-    }
-
-    async fn set_fast_readout(&self, fast_readout: bool) -> ASCOMResult {
-        Err(ASCOMError::NOT_IMPLEMENTED)
-    }
-
     async fn full_well_capacity(&self) -> ASCOMResult<f64> {
         Ok(u16::MAX.into())
     }
 
     async fn gain(&self) -> ASCOMResult<i32> {
-        Err(ASCOMError::NOT_IMPLEMENTED)
+        let iso = self.camera().await?.iso.clone();
+        let choice_name = iso.choice();
+        iso.choices_iter()
+            .position(|choice| choice == choice_name)
+            .map(|index| index as _)
+            .ok_or_else(|| {
+                ASCOMError::unspecified(format_args!(
+                    "camera error: current ISO {choice_name} not found in the list of choices"
+                ))
+            })
     }
 
     async fn set_gain(&self, gain: i32) -> ASCOMResult {
-        Err(ASCOMError::NOT_IMPLEMENTED)
-    }
-
-    async fn gain_max(&self) -> ASCOMResult<i32> {
-        Err(ASCOMError::NOT_IMPLEMENTED)
-    }
-
-    async fn gain_min(&self) -> ASCOMResult<i32> {
-        Err(ASCOMError::NOT_IMPLEMENTED)
+        let camera = self.camera().await?;
+        let iso = camera.iso.clone();
+        let choice_name = iso.choices_iter().nth(gain as usize).ok_or_else(|| {
+            ASCOMError::invalid_value(format_args!("gain index {gain} is out of range"))
+        })?;
+        iso.set_choice(&choice_name).map_err(convert_err)?;
+        camera.set_config(&iso).await.map_err(convert_err)?;
+        Ok(())
     }
 
     async fn gains(&self) -> ASCOMResult<Vec<String>> {
-        Err(ASCOMError::NOT_IMPLEMENTED)
+        Ok(self.camera().await?.iso.choices_iter().collect())
     }
 
     async fn has_shutter(&self) -> ASCOMResult<bool> {
         Ok(true)
-    }
-
-    async fn heat_sink_temperature(&self) -> ASCOMResult<f64> {
-        Err(ASCOMError::NOT_IMPLEMENTED)
     }
 
     async fn image_array(&self) -> ASCOMResult<ImageArray> {
@@ -550,29 +483,20 @@ impl Camera for MyCameraDevice {
         ))
     }
 
-    async fn is_pulse_guiding(&self) -> ASCOMResult<bool> {
-        Err(ASCOMError::NOT_IMPLEMENTED)
-    }
-
     async fn last_exposure_duration(&self) -> ASCOMResult<f64> {
-        Ok(self
-            .camera()
+        self.camera()
             .await?
-            .state()
-            .await
-            .as_successful_exposure()?
-            .duration
-            .as_secs_f64())
+            .last_exposure_duration
+            .load(Ordering::Relaxed)
+            .ok_or(ASCOMError::INVALID_OPERATION)
     }
 
     async fn last_exposure_start_time(&self) -> ASCOMResult<SystemTime> {
-        Ok(self
-            .camera()
+        self.camera()
             .await?
-            .state()
-            .await
-            .as_successful_exposure()?
-            .start_utc)
+            .last_exposure_start_time
+            .load(Ordering::Relaxed)
+            .ok_or(ASCOMError::INVALID_OPERATION)
     }
 
     async fn max_adu(&self) -> ASCOMResult<i32> {
@@ -587,54 +511,44 @@ impl Camera for MyCameraDevice {
         Ok(1)
     }
 
+    async fn start_x(&self) -> ASCOMResult<i32> {
+        Ok(self.camera().await?.subframe.read().x as _)
+    }
+
+    async fn set_start_x(&self, start_x: i32) -> ASCOMResult {
+        self.camera().await?.subframe.write().x = start_x as _;
+        Ok(())
+    }
+
+    async fn start_y(&self) -> ASCOMResult<i32> {
+        Ok(self.camera().await?.subframe.read().y as _)
+    }
+
+    async fn set_start_y(&self, start_y: i32) -> ASCOMResult {
+        self.camera().await?.subframe.write().y = start_y as _;
+        Ok(())
+    }
+
     async fn num_x(&self) -> ASCOMResult<i32> {
-        Ok(self.camera().await?.subframe.width as i32)
+        Ok(self.camera().await?.subframe.read().x as _)
     }
 
     async fn set_num_x(&self, num_x: i32) -> ASCOMResult {
-        self.camera_mut().await?.subframe.width = num_x as _;
+        self.camera().await?.subframe.write().x = num_x as _;
         Ok(())
     }
 
     async fn num_y(&self) -> ASCOMResult<i32> {
-        Ok(self.camera().await?.subframe.height as _)
+        Ok(self.camera().await?.subframe.read().height as _)
     }
 
     async fn set_num_y(&self, num_y: i32) -> ASCOMResult {
-        self.camera_mut().await?.subframe.height = num_y as _;
+        self.camera().await?.subframe.write().height = num_y as _;
         Ok(())
     }
 
-    async fn offset(&self) -> ASCOMResult<i32> {
-        Err(ASCOMError::NOT_IMPLEMENTED)
-    }
-
-    async fn set_offset(&self, offset: i32) -> ASCOMResult {
-        Err(ASCOMError::NOT_IMPLEMENTED)
-    }
-
-    async fn offset_max(&self) -> ASCOMResult<i32> {
-        Err(ASCOMError::NOT_IMPLEMENTED)
-    }
-
-    async fn offset_min(&self) -> ASCOMResult<i32> {
-        Err(ASCOMError::NOT_IMPLEMENTED)
-    }
-
-    async fn offsets(&self) -> ASCOMResult<Vec<String>> {
-        Err(ASCOMError::NOT_IMPLEMENTED)
-    }
-
     async fn percent_completed(&self) -> ASCOMResult<i32> {
-        Err(ASCOMError::NOT_IMPLEMENTED)
-    }
-
-    async fn pixel_size_x(&self) -> ASCOMResult<f64> {
-        Err(ASCOMError::NOT_IMPLEMENTED)
-    }
-
-    async fn pixel_size_y(&self) -> ASCOMResult<f64> {
-        Err(ASCOMError::NOT_IMPLEMENTED)
+        Ok(self.camera().await?.state().await.percent_completed())
     }
 
     async fn readout_mode(&self) -> ASCOMResult<i32> {
@@ -645,8 +559,7 @@ impl Camera for MyCameraDevice {
         if readout_mode == 0 {
             Ok(())
         } else {
-            Err(ASCOMError::new(
-                ASCOMErrorCode::INVALID_VALUE,
+            Err(ASCOMError::invalid_value(
                 "Invalid readout mode (only 0 is supported)",
             ))
         }
@@ -662,113 +575,113 @@ impl Camera for MyCameraDevice {
     }
 
     async fn sensor_type(&self) -> ASCOMResult<SensorType> {
+        // TODO: use format to switch between Bayer and color.
         Ok(SensorType::Color)
     }
 
-    async fn set_ccd_temperature(&self) -> ASCOMResult<f64> {
-        Err(ASCOMError::NOT_IMPLEMENTED)
-    }
-
-    async fn set_set_ccd_temperature(&self, set_ccdtemperature: f64) -> ASCOMResult {
-        Err(ASCOMError::NOT_IMPLEMENTED)
-    }
-
-    async fn start_x(&self) -> ASCOMResult<i32> {
-        Ok(self.camera().await?.subframe.x as _)
-    }
-
-    async fn set_start_x(&self, start_x: i32) -> ASCOMResult {
-        self.camera_mut().await?.subframe.x = start_x as _;
-        Ok(())
-    }
-
-    async fn start_y(&self) -> ASCOMResult<i32> {
-        Ok(self.camera().await?.subframe.y as _)
-    }
-
-    async fn set_start_y(&self, start_y: i32) -> ASCOMResult {
-        self.camera_mut().await?.subframe.y = start_y as _;
-        Ok(())
-    }
-
-    async fn sub_exposure_duration(&self) -> ASCOMResult<f64> {
-        Err(ASCOMError::NOT_IMPLEMENTED)
-    }
-
-    async fn set_sub_exposure_duration(&self, sub_exposure_duration: f64) -> ASCOMResult {
-        Err(ASCOMError::NOT_IMPLEMENTED)
-    }
-
-    async fn abort_exposure(&self) -> ASCOMResult {
-        match &mut *self.camera_mut().await?.state().await {
-            camera_state @ State::InExposure(_) => {
-                *camera_state = State::Idle;
-                Ok(())
-            }
-            State::Idle | State::AfterExposure(_) => Ok(()),
-        }
-    }
-
-    async fn pulse_guide(&self, direction: PutPulseGuideDirection, duration: i32) -> ASCOMResult {
-        Err(ASCOMError::NOT_IMPLEMENTED)
-    }
-
     async fn start_exposure(&self, duration: f64, light: bool) -> ASCOMResult {
-        let duration = Duration::try_from_secs_f64(duration)
-            .map_err(|err| ASCOMError::new(ASCOMErrorCode::INVALID_VALUE, err.to_string()))?;
+        let duration = Duration::try_from_secs_f64(duration).map_err(ASCOMError::invalid_value)?;
         let camera = self.camera_mut().await?;
-        let context = camera.context.clone();
-        let inner = camera.inner.clone();
-        let (stop_exposure_sender, stop_exposure_receiver) = oneshot::channel();
         let state = Arc::clone(&camera.state);
-        let exposing_state = Arc::new(Atomic::new(ExposingState::Waiting));
-        let subframe = camera.subframe;
-        *camera.state().await = State::InExposure(CurrentExposure {
-            state: Arc::clone(&exposing_state),
-            join_handle: tokio::task::spawn(async move {
-                let result = expose(
-                    &inner,
-                    &context,
-                    duration,
-                    stop_exposure_receiver,
-                    &exposing_state,
-                    subframe,
-                )
+        let state2 = Arc::clone(&state);
+        let last_exposure_duration = Arc::clone(&camera.last_exposure_duration);
+        let bulb_toggle = camera.bulb.clone();
+        let subframe = *camera.subframe.read();
+        let context = self.context.clone();
+        let camera = camera.inner.clone();
+        let (stop_tx, stop_rx) = oneshot::channel::<StopExposure>();
+        let (done_tx, done_rx) = watch::channel(false);
+        let exposing_state = Arc::new(Atomic::new(CameraState::Waiting));
+        let exposting_state_2 = Arc::clone(&exposing_state);
+        tokio::task::spawn(async move {
+            let result = async {
+                bulb_toggle.set_toggled(true);
+                camera.set_config(&bulb_toggle).await?;
+                exposing_state.store(CameraState::Exposing, Ordering::Relaxed);
+                let start_utc = SystemTime::now();
+                let start_instant = Instant::now();
+                let want_image = select! {
+                    _ = sleep(duration) => true,
+                    Ok(stop) = stop_rx => stop.want_image,
+                };
+                let duration = start_instant.elapsed().as_secs_f64();
+                bulb_toggle.set_toggled(false);
+                camera.set_config(&bulb_toggle).await?;
+                exposing_state.store(CameraState::Reading, Ordering::Relaxed);
+                let path = tokio::time::timeout(Duration::from_secs(3), async {
+                    loop {
+                        if let CameraEvent::NewFile(path) =
+                            camera.wait_event(std::time::Duration::from_secs(3)).await?
+                        {
+                            break Ok::<_, eyre::Error>(path);
+                        }
+                    }
+                })
                 .await
-                .map_err(convert_err);
+                .map_err(|_| {
+                    eyre::eyre!("Timeout while waiting for camera to finish exposing")
+                })??;
+                exposing_state.store(CameraState::Download, Ordering::Relaxed);
+                let camera_file = download_and_delete(&camera, &path).await?;
+                let (exif, image_reader) = camera_file_to_image(camera_file, &context).await?;
 
-                *state.lock().await = State::AfterExposure(result);
-            }),
-            early_stop_sender: Some(stop_exposure_sender),
+                last_exposure_duration.store(
+                    Some(
+                        exif.as_ref()
+                            .and_then(|exif| {
+                                exif.get_field(exif::Tag::ExposureTime, exif::In::PRIMARY)
+                            })
+                            .and_then(|field| match &field.value {
+                                exif::Value::Rational(rational) if rational.len() == 1 => {
+                                    Some(rational[0].to_f64())
+                                }
+                                _ => None,
+                            })
+                            .unwrap_or(duration),
+                    ),
+                    Ordering::Relaxed,
+                );
+
+                let image = image_reader.decode()?.crop(
+                    subframe.x,
+                    subframe.y,
+                    subframe.width,
+                    subframe.height,
+                );
+
+                let image = match image {
+                    DynamicImage::ImageLuma8(image) => flat_samples(image),
+                    DynamicImage::ImageLuma16(image) => flat_samples(image),
+                    DynamicImage::ImageRgb8(image) => flat_samples(image),
+                    DynamicImage::ImageRgb16(image) => flat_samples(image),
+                    _ => eyre::bail!("unsupported image format"),
+                };
+
+                Ok(SuccessfulExposure { image })
+            }
+            .await
+            .map_err(convert_err);
+
+            *state.lock().await = State::AfterExposure(result);
+        });
+        *state2.lock().await = State::InExposure(CurrentExposure {
+            // this might slightly differ from actual start in the async task;
+            // we use this only for progress reporting
+            rough_start: Instant::now(),
+            state: exposting_state_2,
+            stop_tx: Some(stop_tx),
+            done_rx,
+            expected_duration: duration,
         });
         Ok(())
     }
 
     async fn stop_exposure(&self) -> ASCOMResult {
-        match &mut *self.camera_mut().await?.state().await {
-            State::InExposure(current_exposure) => {
-                current_exposure
-                    .early_stop_sender
-                    .take()
-                    // `stop_exposure` was already called.
-                    .ok_or_else(|| {
-                        ASCOMError::new(
-                            ASCOMErrorCode::INVALID_OPERATION,
-                            "exposure was already stopped",
-                        )
-                    })?
-                    .send(())
-                    // The exposure already finished or was aborted.
-                    .map_err(|_| {
-                        ASCOMError::new(
-                            ASCOMErrorCode::INVALID_OPERATION,
-                            "exposure was already finished or aborted",
-                        )
-                    })
-            }
-            // There is no exposure in progress.
-            State::Idle | State::AfterExposure(_) => Ok(()),
-        }
+        self.stop(true).await
+    }
+
+    async fn abort_exposure(&self) -> ASCOMResult {
+        self.stop(false).await
     }
 }
 
@@ -778,11 +691,19 @@ async fn main() -> eyre::Result<Infallible> {
 
     gphoto2::libgphoto2_sys::test_utils::set_env();
 
+    let context = gphoto2::Context::new()?;
+
     let mut server = Server {
         info: CargoServerInfo!(),
         ..Default::default()
     };
-    server.devices.register(MyCameraDevice::default());
+
+    for camera_descriptor in context.list_cameras().await? {
+        server
+            .devices
+            .register(MyCameraDevice::new(&context, camera_descriptor));
+    }
+
     server.listen_addr.set_port(3000);
 
     tracing::debug!(?server.devices, "Registered Alpaca devices");
