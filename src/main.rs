@@ -387,7 +387,6 @@ impl Camera for MyCameraDevice {
     }
 
     async fn camera_state(&self) -> ASCOMResult<CameraState> {
-        // TODO: `Download` state
         Ok(match &*self.camera().await?.state().await {
             State::Idle => CameraState::Idle,
             State::InExposure(exposure) => exposure.state.load(Ordering::Relaxed),
