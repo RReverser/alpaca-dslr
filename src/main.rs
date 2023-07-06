@@ -4,6 +4,7 @@ use ascom_alpaca::api::{Camera, CameraState, CargoServerInfo, Device, ImageArray
 use ascom_alpaca::{ASCOMError, ASCOMResult, Server};
 use async_trait::async_trait;
 use atomic::{Atomic, Ordering};
+use futures_util::TryFutureExt;
 use gphoto2::camera::CameraEvent;
 use gphoto2::file::CameraFilePath;
 use gphoto2::list::CameraDescriptor;
@@ -138,6 +139,7 @@ struct MyCamera {
     dimensions: Size,
     iso: RadioWidget,
     bulb: BulbControl,
+    image_format: RadioWidget,
     last_exposure_start_time: Atomic<Option<SystemTime>>,
     last_exposure_duration: Arc<Atomic<Option<f64>>>,
     subframe: parking_lot::RwLock<image::math::Rect>,
@@ -181,6 +183,10 @@ impl MyCamera {
         Ok(Self {
             iso: camera.config_key::<RadioWidget>("iso").await?,
             bulb: BulbControl::new(&camera).await?,
+            image_format: camera
+                .config_key::<RadioWidget>("imageformat")
+                .or_else(|_| camera.config_key::<RadioWidget>("imagequality"))
+                .await?,
             dimensions,
             inner: camera,
             state: Arc::new(Mutex::new(State::Idle)),
@@ -525,31 +531,60 @@ impl Camera for MyCameraDevice {
     }
 
     async fn readout_mode(&self) -> ASCOMResult<i32> {
-        Ok(0)
+        let format = self.camera().await?.image_format.clone();
+        let current_format = format.choice();
+        format
+            .choices_iter()
+            .position(|choice| choice == current_format)
+            .map(|index| index as _)
+            .ok_or_else(|| {
+                ASCOMError::unspecified(format_args!(
+                    "camera error: current format {current_format} not found in the list of choices"
+                ))
+            })
     }
 
     async fn set_readout_mode(&self, readout_mode: i32) -> ASCOMResult {
-        if readout_mode == 0 {
-            Ok(())
-        } else {
-            Err(ASCOMError::invalid_value(
-                "Invalid readout mode (only 0 is supported)",
-            ))
-        }
+        let format = self.camera().await?.image_format.clone();
+        let choice_name = format
+            .choices_iter()
+            .nth(readout_mode as usize)
+            .ok_or_else(|| {
+                ASCOMError::invalid_value(format_args!(
+                    "readout mode index {readout_mode} is out of range"
+                ))
+            })?;
+        format.set_choice(&choice_name).map_err(convert_err)?;
+        self.camera()
+            .await?
+            .set_config(&format)
+            .await
+            .map_err(convert_err)?;
+        Ok(())
     }
 
     async fn readout_modes(&self) -> ASCOMResult<Vec<String>> {
-        // TODO: allow to configure preview/JPEG/RAW here.
-        Ok(vec!["As-is".to_owned()])
+        Ok(self.camera().await?.image_format.choices_iter().collect())
     }
 
     async fn sensor_name(&self) -> ASCOMResult<String> {
-        Ok("Unknown".to_owned())
+        Ok(String::default())
     }
 
     async fn sensor_type(&self) -> ASCOMResult<SensorType> {
-        // TODO: use format to switch between Bayer and color.
-        Ok(SensorType::Color)
+        // Little crude but seems to match usual gphoto2 name in settinngs.
+        Ok(
+            match self
+                .camera()
+                .await?
+                .image_format
+                .choice()
+                .starts_with("RAW")
+            {
+                true => SensorType::RGGB,
+                false => SensorType::Color,
+            },
+        )
     }
 
     async fn start_exposure(&self, duration: f64, light: bool) -> ASCOMResult {
