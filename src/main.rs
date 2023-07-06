@@ -1,13 +1,15 @@
+mod img;
+
 use ascom_alpaca::api::{Camera, CameraState, CargoServerInfo, Device, ImageArray, SensorType};
 use ascom_alpaca::{ASCOMError, ASCOMResult, Server};
 use async_trait::async_trait;
 use atomic::{Atomic, Ordering};
-use exif::Exif;
 use gphoto2::camera::CameraEvent;
 use gphoto2::file::CameraFilePath;
 use gphoto2::list::CameraDescriptor;
 use gphoto2::widget::{RadioWidget, ToggleWidget};
 use image::{DynamicImage, ImageBuffer, Pixel};
+use img::ImgWithMetadata;
 use std::convert::Infallible;
 use std::sync::Arc;
 use std::time::{Duration, Instant, SystemTime};
@@ -50,10 +52,7 @@ async fn camera_file_to_image(
     context: &gphoto2::Context,
     camera: &gphoto2::Camera,
     path: &CameraFilePath,
-) -> eyre::Result<(
-    Option<Exif>,
-    image::io::Reader<impl std::io::BufRead + std::io::Seek>,
-)> {
+) -> eyre::Result<ImgWithMetadata> {
     let folder = path.folder();
     let folder = folder.as_ref();
 
@@ -67,18 +66,11 @@ async fn camera_file_to_image(
 
         fs.delete_file(folder, filename).await?;
 
-        let mime_type = camera_file.mime_type();
-        let img_format = image::ImageFormat::from_mime_type(&mime_type)
-            .ok_or_else(|| eyre::eyre!("unsupported image format {mime_type}"))?;
+        let data = camera_file.get_data(context).await?;
 
-        tracing::trace!(mime_type, ?img_format, "Determined image format");
+        let img = ImgWithMetadata::from_data(data.into())?;
 
-        let mut data = std::io::Cursor::new(camera_file.get_data(context).await?);
-
-        let exif = exif::Reader::new().read_from_container(&mut data).ok();
-        data.set_position(0);
-
-        Ok((exif, image::io::Reader::with_format(data, img_format)))
+        Ok(img)
     }
     .instrument(tracing::error_span!(
         "camera_file_to_image",
@@ -172,11 +164,14 @@ async fn determine_dimensions(
 ) -> eyre::Result<Size> {
     let camera_file_path = camera.capture_image().await?;
 
-    let (_exif, image_reader) = camera_file_to_image(context, camera, &camera_file_path).await?;
+    let rect = camera_file_to_image(context, camera, &camera_file_path)
+        .await?
+        .crop_area;
 
-    let (width, height) = image_reader.into_dimensions()?;
-
-    Ok(Size { width, height })
+    Ok(Size {
+        width: rect.width,
+        height: rect.height,
+    })
 }
 
 impl MyCamera {
@@ -581,7 +576,7 @@ impl Camera for MyCameraDevice {
                     _ = sleep(duration) => true,
                     Ok(stop) = stop_rx => stop.want_image,
                 };
-                let duration = start_instant.elapsed().as_secs_f64();
+                let duration = start_instant.elapsed();
                 bulb_toggle.toggle(&camera, false).await?;
                 exposing_state.store(CameraState::Reading, Ordering::Relaxed);
                 let path = tokio::time::timeout(Duration::from_secs(3), async {
@@ -599,38 +594,39 @@ impl Camera for MyCameraDevice {
                 })??;
 
                 exposing_state.store(CameraState::Download, Ordering::Relaxed);
-                let (exif, image_reader) = camera_file_to_image(&context, &camera, &path).await?;
+                let img = camera_file_to_image(&context, &camera, &path).await?;
 
                 last_exposure_duration.store(
-                    Some(
-                        exif.as_ref()
-                            .and_then(|exif| {
-                                exif.get_field(exif::Tag::ExposureTime, exif::In::PRIMARY)
-                            })
-                            .and_then(|field| match &field.value {
-                                exif::Value::Rational(rational) if rational.len() == 1 => {
-                                    Some(rational[0].to_f64())
-                                }
-                                _ => None,
-                            })
-                            .unwrap_or(duration),
-                    ),
+                    Some(img.exposure_time.unwrap_or(duration.as_secs_f64())),
                     Ordering::Relaxed,
                 );
 
-                let image = image_reader.decode()?.crop(
-                    subframe.x,
-                    subframe.y,
-                    subframe.width,
-                    subframe.height,
+                let mut crop_area = img.crop_area;
+
+                eyre::ensure!(
+                    subframe.x + subframe.width <= crop_area.width,
+                    "subframe right side is out of bounds"
                 );
+                crop_area.x += subframe.x;
+                crop_area.width = subframe.width;
+
+                eyre::ensure!(
+                    subframe.y + subframe.height <= crop_area.height,
+                    "subframe bottom side is out of bounds"
+                );
+                crop_area.y += subframe.y;
+                crop_area.height = subframe.height;
+
+                let image =
+                    img.image
+                        .crop_imm(crop_area.x, crop_area.y, crop_area.width, crop_area.height);
 
                 let image = match image {
                     DynamicImage::ImageLuma8(image) => flat_samples(image),
                     DynamicImage::ImageLuma16(image) => flat_samples(image),
                     DynamicImage::ImageRgb8(image) => flat_samples(image),
                     DynamicImage::ImageRgb16(image) => flat_samples(image),
-                    _ => eyre::bail!("unsupported image format"),
+                    _ => eyre::bail!("unsupported image colour format"),
                 };
 
                 Ok(SuccessfulExposure { image })

@@ -21,3 +21,5 @@ time = { version = "0.3.22", features = ["formatting"] }
 tokio = { version = "1.29.1", features = ["rt-multi-thread", "macros"] }
 tracing = "0.1.37"
 tracing-subscriber = "0.3.17"
+rawler = { git = "https://github.com/dnglab/dnglab", rev = "2577ee1e87d767e16e4be8816bf61f35f5b7af88" }
+bytes = "1.4.0"
