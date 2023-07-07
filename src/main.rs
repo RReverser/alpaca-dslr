@@ -86,16 +86,20 @@ where
     ImageArray: From<ndarray::Array3<P::Subpixel>>,
 {
     let flat_samples = img.into_flat_samples();
-    ndarray::Array::from_shape_vec(
+    let mut arr = ndarray::Array::from_shape_vec(
         (
-            flat_samples.layout.width as usize,
             flat_samples.layout.height as usize,
+            flat_samples.layout.width as usize,
             flat_samples.layout.channels.into(),
         ),
         flat_samples.samples,
     )
-    .expect("shape mismatch when creating image array")
-    .into()
+    .expect("shape mismatch when creating image array");
+
+    // From image layout (y * x * c) to algebraic matrix layout (x * y * c).
+    arr.swap_axes(0, 1);
+
+    arr.into()
 }
 
 #[derive(Debug, Clone)]
@@ -246,11 +250,9 @@ impl MyCameraDevice {
             }
             _ => return Ok(()),
         };
-        let done_res = done_rx.wait_for(|&done| done).await;
-        match done_res {
-            Ok(_) => Ok(()),
-            Err(_) => Err(ASCOMError::unspecified("Exposure failed to stop correctly")),
-        }
+        // if channel is already closed, this will return an error - ignore it as it still means that we're done
+        let _ = done_rx.wait_for(|&done| done).await;
+        Ok(())
     }
 }
 
@@ -574,13 +576,7 @@ impl Camera for MyCameraDevice {
     async fn sensor_type(&self) -> ASCOMResult<SensorType> {
         // Little crude but seems to match usual gphoto2 name in settinngs.
         Ok(
-            match self
-                .camera()
-                .await?
-                .image_format
-                .choice()
-                .starts_with("RAW")
-            {
+            match self.camera().await?.image_format.choice().contains("RAW") {
                 true => SensorType::RGGB,
                 false => SensorType::Color,
             },
@@ -614,7 +610,7 @@ impl Camera for MyCameraDevice {
                 let duration = start_instant.elapsed();
                 bulb_toggle.toggle(&camera, false).await?;
                 exposing_state.store(CameraState::Reading, Ordering::Relaxed);
-                let path = tokio::time::timeout(Duration::from_secs(3), async {
+                let path = tokio::time::timeout(Duration::from_secs(10), async {
                     loop {
                         if let CameraEvent::NewFile(path) =
                             camera.wait_event(std::time::Duration::from_secs(3)).await?
