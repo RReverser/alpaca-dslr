@@ -13,12 +13,19 @@ use gphoto2::widget::{RadioWidget, ToggleWidget};
 use image::{DynamicImage, ImageBuffer, Pixel};
 use img::ImgWithMetadata;
 use std::convert::Infallible;
-use std::sync::Arc;
+use std::sync::{Arc, OnceLock};
 use std::time::{Duration, Instant, SystemTime};
 use tokio::select;
 use tokio::sync::{oneshot, watch, Mutex, RwLock, RwLockReadGuard};
 use tokio::time::sleep;
 use tracing::Instrument;
+
+/// A singleton context for gphoto2 - we always need one throughout this app's lifetime,
+/// so it's easier to store it in a static variable rather than keep passing it around.
+fn gphoto2_context() -> &'static gphoto2::Context {
+    static CONTEXT: OnceLock<gphoto2::Context> = OnceLock::new();
+    CONTEXT.get_or_init(|| gphoto2::Context::new().unwrap())
+}
 
 #[derive(Debug, Clone, Copy)]
 struct Size {
@@ -49,7 +56,6 @@ enum State {
 }
 
 async fn camera_file_to_image(
-    context: &gphoto2::Context,
     camera: &gphoto2::Camera,
     path: &CameraFilePath,
 ) -> eyre::Result<ImgWithMetadata> {
@@ -66,7 +72,7 @@ async fn camera_file_to_image(
 
         fs.delete_file(folder, filename).await?;
 
-        let data = camera_file.get_data(context).await?;
+        let data = camera_file.get_data(gphoto2_context()).await?;
 
         let img = ImgWithMetadata::from_data(data.into())?;
 
@@ -162,14 +168,11 @@ impl std::ops::Deref for MyCamera {
     }
 }
 
-#[tracing::instrument(skip(context, camera), ret, err)]
-async fn determine_dimensions(
-    context: &gphoto2::Context,
-    camera: &gphoto2::Camera,
-) -> eyre::Result<Size> {
+#[tracing::instrument(skip(camera), ret, err)]
+async fn determine_dimensions(camera: &gphoto2::Camera) -> eyre::Result<Size> {
     let camera_file_path = camera.capture_image().await?;
 
-    let rect = camera_file_to_image(context, camera, &camera_file_path)
+    let rect = camera_file_to_image(camera, &camera_file_path)
         .await?
         .crop_area;
 
@@ -180,8 +183,8 @@ async fn determine_dimensions(
 }
 
 impl MyCamera {
-    pub async fn new(context: gphoto2::Context, camera: gphoto2::Camera) -> eyre::Result<Self> {
-        let dimensions = determine_dimensions(&context, &camera).await?;
+    pub async fn new(camera: gphoto2::Camera) -> eyre::Result<Self> {
+        let dimensions = determine_dimensions(&camera).await?;
 
         Ok(Self {
             iso: camera.config_key::<RadioWidget>("iso").await?,
@@ -209,18 +212,15 @@ impl MyCamera {
     }
 }
 
-#[derive(custom_debug::Debug)]
+#[derive(Debug)]
 struct MyCameraDevice {
-    #[debug(skip)]
-    context: gphoto2::Context,
     descriptor: CameraDescriptor,
     camera: RwLock<Option<MyCamera>>,
 }
 
 impl MyCameraDevice {
-    fn new(context: &gphoto2::Context, descriptor: CameraDescriptor) -> Self {
+    fn new(descriptor: CameraDescriptor) -> Self {
         Self {
-            context: context.clone(),
             descriptor,
             camera: Default::default(),
         }
@@ -276,8 +276,7 @@ impl Device for MyCameraDevice {
         *camera = if connected {
             Some(
                 MyCamera::new(
-                    self.context.clone(),
-                    self.context
+                    gphoto2_context()
                         .get_camera(&self.descriptor)
                         .await
                         .map_err(convert_err)?,
@@ -594,7 +593,6 @@ impl Camera for MyCameraDevice {
             .await
             .map_err(convert_err)?;
 
-        let context = self.context.clone();
         let camera = camera.inner.clone();
         let (stop_tx, stop_rx) = oneshot::channel::<StopExposure>();
         let (done_tx, done_rx) = watch::channel(false);
@@ -634,7 +632,7 @@ impl Camera for MyCameraDevice {
                 let path = path.context("Capture finished but didn't find file path")?;
 
                 exposing_state.store(CameraState::Download, Ordering::Relaxed);
-                let img = camera_file_to_image(&context, &camera, &path).await?;
+                let img = camera_file_to_image(&camera, &path).await?;
 
                 last_exposure_duration.store(
                     Some(img.exposure_time.unwrap_or(duration.as_secs_f64())),
@@ -704,19 +702,15 @@ async fn main() -> eyre::Result<Infallible> {
     color_eyre::install()?;
     tracing_subscriber::fmt::init();
 
-    // gphoto2::libgphoto2_sys::test_utils::set_env();
-
-    let context = gphoto2::Context::new()?;
-
     let mut server = Server {
         info: CargoServerInfo!(),
         ..Default::default()
     };
 
-    for camera_descriptor in context.list_cameras().await? {
+    for camera_descriptor in gphoto2_context().list_cameras().await? {
         server
             .devices
-            .register(MyCameraDevice::new(&context, camera_descriptor));
+            .register(MyCameraDevice::new(camera_descriptor));
     }
 
     server
