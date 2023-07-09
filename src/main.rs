@@ -4,7 +4,6 @@ use ascom_alpaca::api::{Camera, CameraState, CargoServerInfo, Device, ImageArray
 use ascom_alpaca::{ASCOMError, ASCOMResult, Server};
 use async_trait::async_trait;
 use atomic::{Atomic, Ordering};
-use eyre::ContextCompat;
 use futures_util::TryFutureExt;
 use gphoto2::camera::CameraEvent;
 use gphoto2::file::CameraFilePath;
@@ -621,7 +620,7 @@ impl Camera for MyCameraDevice {
                 let mut path = None;
 
                 loop {
-                    match camera.wait_event(std::time::Duration::from_secs(3)).await? {
+                    match camera.wait_event(std::time::Duration::from_secs(3)).await.map_err(convert_err)? {
                         CameraEvent::NewFile(new_file_path) => {
                             // Note: it's possible that we'll get multiple NewFile events for modes like RAW+JPG.
                             // User shouldn't set those modes, but might forget... for now we'll just take the last path
@@ -634,10 +633,13 @@ impl Camera for MyCameraDevice {
                     }
                 }
 
-                let path = path.context("Capture finished but didn't find file path")?;
+                let path = match path {
+                    Some(path) => path,
+                    None => return Err(ASCOMError::unspecified("Capture finished but didn't find file path")),
+                };
 
                 exposing_state.store(CameraState::Download, Ordering::Relaxed);
-                let img = camera_file_to_image(&camera, &path).await?;
+                let img = camera_file_to_image(&camera, &path).await.map_err(convert_err)?;
 
                 last_exposure_duration.store(
                     Some(img.exposure_time.unwrap_or(duration.as_secs_f64())),
