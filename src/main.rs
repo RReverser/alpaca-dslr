@@ -492,11 +492,11 @@ impl Camera for MyCameraDevice {
     }
 
     async fn num_x(&self) -> ASCOMResult<i32> {
-        Ok(self.camera().await?.subframe.read().x as _)
+        Ok(self.camera().await?.subframe.read().width as _)
     }
 
     async fn set_num_x(&self, num_x: i32) -> ASCOMResult {
-        self.camera().await?.subframe.write().x = num_x as _;
+        self.camera().await?.subframe.write().width = num_x as _;
         Ok(())
     }
 
