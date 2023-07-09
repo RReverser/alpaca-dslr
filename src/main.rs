@@ -4,6 +4,7 @@ use ascom_alpaca::api::{Camera, CameraState, CargoServerInfo, Device, ImageArray
 use ascom_alpaca::{ASCOMError, ASCOMResult, Server};
 use async_trait::async_trait;
 use atomic::{Atomic, Ordering};
+use eyre::ContextCompat;
 use futures_util::TryFutureExt;
 use gphoto2::camera::CameraEvent;
 use gphoto2::file::CameraFilePath;
@@ -15,9 +16,7 @@ use std::convert::Infallible;
 use std::sync::Arc;
 use std::time::{Duration, Instant, SystemTime};
 use tokio::select;
-use tokio::sync::{
-    oneshot, watch, Mutex, RwLock, RwLockMappedWriteGuard, RwLockReadGuard, RwLockWriteGuard,
-};
+use tokio::sync::{oneshot, watch, Mutex, RwLock, RwLockReadGuard};
 use tokio::time::sleep;
 use tracing::Instrument;
 
@@ -232,11 +231,6 @@ impl MyCameraDevice {
             .map_err(|_| ASCOMError::NOT_CONNECTED)
     }
 
-    async fn camera_mut(&self) -> ASCOMResult<RwLockMappedWriteGuard<'_, MyCamera>> {
-        RwLockWriteGuard::try_map(self.camera.write().await, |camera| camera.as_mut())
-            .map_err(|_| ASCOMError::NOT_CONNECTED)
-    }
-
     async fn stop(&self, want_image: bool) -> ASCOMResult {
         // Make sure locks are not held when waiting for `done`.
         let mut done_rx = match &mut *self.camera().await?.state().await {
@@ -430,7 +424,6 @@ impl Camera for MyCameraDevice {
             ASCOMError::invalid_value(format_args!("gain index {gain} is out of range"))
         })?;
         iso.set_choice(&choice_name).map_err(convert_err)?;
-        camera.set_config(&iso).await.map_err(convert_err)?;
         Ok(())
     }
 
@@ -557,11 +550,6 @@ impl Camera for MyCameraDevice {
                 ))
             })?;
         format.set_choice(&choice_name).map_err(convert_err)?;
-        self.camera()
-            .await?
-            .set_config(&format)
-            .await
-            .map_err(convert_err)?;
         Ok(())
     }
 
@@ -584,19 +572,35 @@ impl Camera for MyCameraDevice {
     }
 
     async fn start_exposure(&self, duration: f64, light: bool) -> ASCOMResult {
+        if duration < 0. {
+            return Err(ASCOMError::invalid_value("Duration must be non-negative"));
+        }
         let duration = Duration::try_from_secs_f64(duration).map_err(ASCOMError::invalid_value)?;
-        let camera = self.camera_mut().await?;
+        let camera = self.camera().await?;
         let state = Arc::clone(&camera.state);
-        let state2 = Arc::clone(&state);
+        let mut state_lock = camera.state().await;
+        if matches!(*state_lock, State::InExposure(_)) {
+            return Err(ASCOMError::invalid_operation("Camera is already exposing"));
+        }
         let last_exposure_duration = Arc::clone(&camera.last_exposure_duration);
         let bulb_toggle = camera.bulb.clone();
         let subframe = *camera.subframe.read();
+
+        // Do this before the shot - otherwise we risk trying to update camera config
+        // in the middle of a bulb exposure, which will result in a "camera busy" error.
+        camera.set_config(&camera.iso).await.map_err(convert_err)?;
+        camera
+            .set_config(&camera.image_format)
+            .await
+            .map_err(convert_err)?;
+
         let context = self.context.clone();
         let camera = camera.inner.clone();
         let (stop_tx, stop_rx) = oneshot::channel::<StopExposure>();
         let (done_tx, done_rx) = watch::channel(false);
         let exposing_state = Arc::new(Atomic::new(CameraState::Waiting));
         let exposting_state_2 = Arc::clone(&exposing_state);
+
         tokio::task::spawn(async move {
             let result = async {
                 bulb_toggle.toggle(&camera, true).await?;
@@ -610,19 +614,24 @@ impl Camera for MyCameraDevice {
                 let duration = start_instant.elapsed();
                 bulb_toggle.toggle(&camera, false).await?;
                 exposing_state.store(CameraState::Reading, Ordering::Relaxed);
-                let path = tokio::time::timeout(Duration::from_secs(10), async {
-                    loop {
-                        if let CameraEvent::NewFile(path) =
-                            camera.wait_event(std::time::Duration::from_secs(3)).await?
-                        {
-                            break Ok::<_, eyre::Error>(path);
+
+                let mut path = None;
+
+                loop {
+                    match camera.wait_event(std::time::Duration::from_secs(3)).await? {
+                        CameraEvent::NewFile(new_file_path) => {
+                            // Note: it's possible that we'll get multiple NewFile events for modes like RAW+JPG.
+                            // User shouldn't set those modes, but might forget... for now we'll just take the last path
+                            // but adjust behaviour here if it causes problems.
+                            path = Some(new_file_path);
                         }
+                        CameraEvent::Timeout => break,
+                        CameraEvent::Unknown(_) => {},
+                        e => tracing::trace!(event = ?e, "Ignoring event while waiting for exposure completion"),
                     }
-                })
-                .await
-                .map_err(|_| {
-                    eyre::eyre!("Timeout while waiting for camera to finish exposing")
-                })??;
+                }
+
+                let path = path.context("Capture finished but didn't find file path")?;
 
                 exposing_state.store(CameraState::Download, Ordering::Relaxed);
                 let img = camera_file_to_image(&context, &camera, &path).await?;
@@ -666,8 +675,10 @@ impl Camera for MyCameraDevice {
             .map_err(convert_err);
 
             *state.lock().await = State::AfterExposure(result);
+
+            let _ = done_tx.send(true);
         });
-        *state2.lock().await = State::InExposure(CurrentExposure {
+        *state_lock = State::InExposure(CurrentExposure {
             // this might slightly differ from actual start in the async task;
             // we use this only for progress reporting
             rough_start: Instant::now(),
