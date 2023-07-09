@@ -601,16 +601,21 @@ impl Camera for MyCameraDevice {
 
         tokio::task::spawn(async move {
             let result = async {
-                bulb_toggle.toggle(&camera, true).await?;
+                bulb_toggle.toggle(&camera, true).await.map_err(convert_err)?;
                 exposing_state.store(CameraState::Exposing, Ordering::Relaxed);
                 let start_utc = SystemTime::now();
                 let start_instant = Instant::now();
                 let want_image = select! {
                     _ = sleep(duration) => true,
-                    Ok(stop) = stop_rx => stop.want_image,
+                    Ok(stop) = stop_rx => stop.want_image
                 };
                 let duration = start_instant.elapsed();
-                bulb_toggle.toggle(&camera, false).await?;
+                bulb_toggle.toggle(&camera, false).await.map_err(convert_err)?;
+
+                if !want_image {
+                    return Err(ASCOMError::invalid_operation("Exposure was aborted"));
+                }
+
                 exposing_state.store(CameraState::Reading, Ordering::Relaxed);
 
                 let mut path = None;
@@ -641,17 +646,19 @@ impl Camera for MyCameraDevice {
 
                 let mut crop_area = img.crop_area;
 
-                eyre::ensure!(
-                    subframe.x + subframe.width <= crop_area.width,
-                    "subframe right side is out of bounds"
-                );
+                if subframe.x + subframe.width > crop_area.x + crop_area.width {
+                    return Err(ASCOMError::invalid_value(
+                        "Subframe right side is out of bounds",
+                    ));
+                }
                 crop_area.x += subframe.x;
                 crop_area.width = subframe.width;
 
-                eyre::ensure!(
-                    subframe.y + subframe.height <= crop_area.height,
-                    "subframe bottom side is out of bounds"
-                );
+                if subframe.y + subframe.height > crop_area.y + crop_area.height {
+                    return Err(ASCOMError::invalid_value(
+                        "Subframe bottom side is out of bounds",
+                    ));
+                }
                 crop_area.y += subframe.y;
                 crop_area.height = subframe.height;
 
@@ -664,13 +671,12 @@ impl Camera for MyCameraDevice {
                     DynamicImage::ImageLuma16(image) => flat_samples(image),
                     DynamicImage::ImageRgb8(image) => flat_samples(image),
                     DynamicImage::ImageRgb16(image) => flat_samples(image),
-                    _ => eyre::bail!("unsupported image colour format"),
+                    _ => return Err(ASCOMError::unspecified("unsupported image colour format")),
                 };
 
                 Ok(SuccessfulExposure { image })
             }
-            .await
-            .map_err(convert_err);
+            .await;
 
             *state.lock().await = State::AfterExposure(result);
 
