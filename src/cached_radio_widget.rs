@@ -1,8 +1,6 @@
 use super::convert_err;
-use ascom_alpaca::ASCOMError;
-use ascom_alpaca::ASCOMResult;
-use gphoto2::widget::RadioWidget;
-use gphoto2::widget::Widget;
+use ascom_alpaca::{ASCOMError, ASCOMResult};
+use gphoto2::widget::{RadioWidget, Widget};
 use std::ops::Deref;
 
 /// A wrapper around RadioWidget that doesn't re-read the list of choices on each get/set.

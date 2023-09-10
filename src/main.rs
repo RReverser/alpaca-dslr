@@ -1,18 +1,20 @@
+mod bulb_control;
 mod cached_radio_widget;
-mod img;
+mod convert_image;
+mod parse_image;
 
 use ascom_alpaca::api::{Camera, CameraState, CargoServerInfo, Device, ImageArray, SensorType};
 use ascom_alpaca::{ASCOMError, ASCOMResult, Server};
 use async_trait::async_trait;
 use atomic::{Atomic, Ordering};
+use bulb_control::BulbControl;
 use cached_radio_widget::CachedRadioWidget;
+use convert_image::convert_dynamic_image;
 use futures_util::TryFutureExt;
 use gphoto2::camera::CameraEvent;
 use gphoto2::file::CameraFilePath;
 use gphoto2::list::CameraDescriptor;
-use gphoto2::widget::{RadioWidget, ToggleWidget};
-use image::{DynamicImage, ImageBuffer, Pixel};
-use img::ImgWithMetadata;
+use parse_image::ImgWithMetadata;
 use std::convert::Infallible;
 use std::sync::{Arc, OnceLock};
 use std::time::{Duration, Instant, SystemTime};
@@ -102,62 +104,6 @@ async fn camera_file_to_image(
         ?filename
     ))
     .await
-}
-
-fn flat_samples<P: Pixel>(img: ImageBuffer<P, Vec<P::Subpixel>>) -> ImageArray
-where
-    ImageArray: From<ndarray::Array3<P::Subpixel>>,
-{
-    let flat_samples = img.into_flat_samples();
-    let mut arr = ndarray::Array::from_shape_vec(
-        (
-            flat_samples.layout.height as usize,
-            flat_samples.layout.width as usize,
-            flat_samples.layout.channels.into(),
-        ),
-        flat_samples.samples,
-    )
-    .expect("shape mismatch when creating image array");
-
-    // From image layout (y * x * c) to algebraic matrix layout (x * y * c).
-    arr.swap_axes(0, 1);
-
-    arr.into()
-}
-
-#[derive(Debug, Clone)]
-enum BulbControl {
-    Standard(ToggleWidget),
-    EosRemoteRelease(RadioWidget),
-}
-
-impl BulbControl {
-    async fn new(camera: &gphoto2::Camera) -> eyre::Result<Self> {
-        Ok(if let Ok(toggle) = camera.config_key("bulb").await {
-            Self::Standard(toggle)
-        } else if let Ok(radio) = camera.config_key("eosremoterelease").await {
-            Self::EosRemoteRelease(radio)
-        } else {
-            eyre::bail!("Camera does not support bulb exposures")
-        })
-    }
-
-    async fn toggle(&self, camera: &gphoto2::Camera, on: bool) -> eyre::Result<()> {
-        camera
-            .set_config(match self {
-                Self::Standard(toggle) => {
-                    toggle.set_toggled(on);
-                    toggle
-                }
-                Self::EosRemoteRelease(radio) => {
-                    radio.set_choice(if on { "Immediate" } else { "Release Full" })?;
-                    radio
-                }
-            })
-            .await?;
-
-        Ok(())
-    }
 }
 
 struct MyCamera {
@@ -596,7 +542,7 @@ impl Camera for MyCameraDevice {
 
         tokio::task::spawn(async move {
             let result = async {
-                bulb_toggle.toggle(&camera, true).await.map_err(convert_err)?;
+                let bulb_exposure = bulb_toggle.start().await.map_err(convert_err)?;
                 exposing_state.store(CameraState::Exposing, Ordering::Relaxed);
                 let start_utc = SystemTime::now();
                 let start_instant = Instant::now();
@@ -605,7 +551,7 @@ impl Camera for MyCameraDevice {
                     Ok(stop) = stop_rx => stop.want_image
                 };
                 let duration = start_instant.elapsed();
-                bulb_toggle.toggle(&camera, false).await.map_err(convert_err)?;
+                bulb_exposure.stop().await.map_err(convert_err)?;
 
                 if !want_image {
                     return Err(ASCOMError::invalid_operation("Exposure was aborted"));
@@ -629,10 +575,7 @@ impl Camera for MyCameraDevice {
                     }
                 }
 
-                let path = match path {
-                    Some(path) => path,
-                    None => return Err(ASCOMError::unspecified("Capture finished but didn't find file path")),
-                };
+                let path = path.ok_or_else(|| ASCOMError::unspecified("Capture finished but didn't find file path"))?;
 
                 exposing_state.store(CameraState::Download, Ordering::Relaxed);
                 let img = camera_file_to_image(&camera, &path).await.map_err(convert_err)?;
@@ -650,13 +593,7 @@ impl Camera for MyCameraDevice {
                     img.image
                         .crop_imm(crop_area.x, crop_area.y, crop_area.width, crop_area.height);
 
-                let image = match image {
-                    DynamicImage::ImageLuma8(image) => flat_samples(image),
-                    DynamicImage::ImageLuma16(image) => flat_samples(image),
-                    DynamicImage::ImageRgb8(image) => flat_samples(image),
-                    DynamicImage::ImageRgb16(image) => flat_samples(image),
-                    _ => return Err(ASCOMError::unspecified("unsupported image colour format")),
-                };
+                let image = convert_dynamic_image(image).map_err(convert_err)?;
 
                 Ok(SuccessfulExposure { image })
             }
