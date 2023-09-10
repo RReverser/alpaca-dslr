@@ -583,7 +583,7 @@ impl Camera for MyCameraDevice {
         let (stop_tx, stop_rx) = oneshot::channel::<StopExposure>();
         let (done_tx, done_rx) = watch::channel(false);
         let exposing_state = Arc::new(Atomic::new(CameraState::Waiting));
-        let exposting_state_2 = Arc::clone(&exposing_state);
+        let exposing_state_2 = Arc::clone(&exposing_state);
 
         tokio::task::spawn(async move {
             let result = async {
@@ -661,7 +661,7 @@ impl Camera for MyCameraDevice {
             // this might slightly differ from actual start in the async task;
             // we use this only for progress reporting
             rough_start: Instant::now(),
-            state: exposting_state_2,
+            state: exposing_state_2,
             stop_tx: Some(stop_tx),
             done_rx,
             expected_duration: duration,
