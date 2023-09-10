@@ -1,9 +1,11 @@
+mod cached_radio_widget;
 mod img;
 
 use ascom_alpaca::api::{Camera, CameraState, CargoServerInfo, Device, ImageArray, SensorType};
 use ascom_alpaca::{ASCOMError, ASCOMResult, Server};
 use async_trait::async_trait;
 use atomic::{Atomic, Ordering};
+use cached_radio_widget::CachedRadioWidget;
 use futures_util::TryFutureExt;
 use gphoto2::camera::CameraEvent;
 use gphoto2::file::CameraFilePath;
@@ -162,9 +164,9 @@ struct MyCamera {
     inner: gphoto2::Camera,
     state: Arc<Mutex<State>>,
     dimensions: Size,
-    iso: RadioWidget,
+    iso: CachedRadioWidget,
     bulb: BulbControl,
-    image_format: RadioWidget,
+    image_format: CachedRadioWidget,
     last_exposure_start_time: Atomic<Option<SystemTime>>,
     last_exposure_duration: Arc<Atomic<Option<f64>>>,
     subframe: parking_lot::RwLock<image::math::Rect>,
@@ -203,11 +205,11 @@ impl MyCamera {
         let dimensions = determine_dimensions(&camera).await?;
 
         Ok(Self {
-            iso: camera.config_key::<RadioWidget>("iso").await?,
+            iso: camera.config_key("iso").await?,
             bulb: BulbControl::new(&camera).await?,
             image_format: camera
-                .config_key::<RadioWidget>("imageformat")
-                .or_else(|_| camera.config_key::<RadioWidget>("imagequality"))
+                .config_key("imageformat")
+                .or_else(|_| camera.config_key("imagequality"))
                 .await?,
             dimensions,
             inner: camera,
@@ -420,30 +422,15 @@ impl Camera for MyCameraDevice {
     }
 
     async fn gain(&self) -> ASCOMResult<i32> {
-        let iso = self.camera().await?.iso.clone();
-        let choice_name = iso.choice();
-        iso.choices_iter()
-            .position(|choice| choice == choice_name)
-            .map(|index| index as _)
-            .ok_or_else(|| {
-                ASCOMError::unspecified(format_args!(
-                    "camera error: current ISO {choice_name} not found in the list of choices"
-                ))
-            })
+        self.camera().await?.iso.choice_idx()
     }
 
     async fn set_gain(&self, gain: i32) -> ASCOMResult {
-        let camera = self.camera().await?;
-        let iso = camera.iso.clone();
-        let choice_name = iso.choices_iter().nth(gain as usize).ok_or_else(|| {
-            ASCOMError::invalid_value(format_args!("gain index {gain} is out of range"))
-        })?;
-        iso.set_choice(&choice_name).map_err(convert_err)?;
-        Ok(())
+        self.camera().await?.iso.set_choice_idx(gain)
     }
 
     async fn gains(&self) -> ASCOMResult<Vec<String>> {
-        Ok(self.camera().await?.iso.choices_iter().collect())
+        Ok(self.camera().await?.iso.choices().to_vec())
     }
 
     async fn has_shutter(&self) -> ASCOMResult<bool> {
@@ -541,35 +528,18 @@ impl Camera for MyCameraDevice {
     }
 
     async fn readout_mode(&self) -> ASCOMResult<i32> {
-        let format = self.camera().await?.image_format.clone();
-        let current_format = format.choice();
-        format
-            .choices_iter()
-            .position(|choice| choice == current_format)
-            .map(|index| index as _)
-            .ok_or_else(|| {
-                ASCOMError::unspecified(format_args!(
-                    "camera error: current format {current_format} not found in the list of choices"
-                ))
-            })
+        self.camera().await?.image_format.choice_idx()
     }
 
     async fn set_readout_mode(&self, readout_mode: i32) -> ASCOMResult {
-        let format = self.camera().await?.image_format.clone();
-        let choice_name = format
-            .choices_iter()
-            .nth(readout_mode as usize)
-            .ok_or_else(|| {
-                ASCOMError::invalid_value(format_args!(
-                    "readout mode index {readout_mode} is out of range"
-                ))
-            })?;
-        format.set_choice(&choice_name).map_err(convert_err)?;
-        Ok(())
+        self.camera()
+            .await?
+            .image_format
+            .set_choice_idx(readout_mode)
     }
 
     async fn readout_modes(&self) -> ASCOMResult<Vec<String>> {
-        Ok(self.camera().await?.image_format.choices_iter().collect())
+        Ok(self.camera().await?.image_format.choices().to_vec())
     }
 
     async fn sensor_name(&self) -> ASCOMResult<String> {
