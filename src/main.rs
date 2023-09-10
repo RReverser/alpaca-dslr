@@ -26,6 +26,23 @@ fn gphoto2_context() -> &'static gphoto2::Context {
     CONTEXT.get_or_init(|| gphoto2::Context::new().unwrap())
 }
 
+macro_rules! crop_rect_side {
+    ($parent:ident, $child:ident, $start:ident, $len:ident) => {
+        match $child.$start.checked_add($child.$len) {
+            Some(child_end) if child_end <= $parent.$len => { /* in bounds */ }
+            _ => {
+                return Err(ASCOMError::invalid_value(format_args!(
+                    "Subframe {}+{} is out of image bounds",
+                    stringify!($start),
+                    stringify!($len)
+                )))
+            }
+        }
+        $child.$start += $parent.$start;
+        $child.$len = $parent.$len;
+    };
+}
+
 #[derive(Debug, Clone, Copy)]
 struct Size {
     width: u32,
@@ -647,22 +664,8 @@ impl Camera for MyCameraDevice {
                 );
 
                 let mut crop_area = img.crop_area;
-
-                if subframe.x + subframe.width > crop_area.x + crop_area.width {
-                    return Err(ASCOMError::invalid_value(
-                        "Subframe right side is out of bounds",
-                    ));
-                }
-                crop_area.x += subframe.x;
-                crop_area.width = subframe.width;
-
-                if subframe.y + subframe.height > crop_area.y + crop_area.height {
-                    return Err(ASCOMError::invalid_value(
-                        "Subframe bottom side is out of bounds",
-                    ));
-                }
-                crop_area.y += subframe.y;
-                crop_area.height = subframe.height;
+                crop_rect_side!(subframe, crop_area, x, width);
+                crop_rect_side!(subframe, crop_area, y, height);
 
                 let image =
                     img.image
