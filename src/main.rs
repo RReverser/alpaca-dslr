@@ -493,9 +493,10 @@ impl Camera for MyCameraDevice {
     }
 
     async fn sensor_type(&self) -> ASCOMResult<SensorType> {
-        // Little crude but seems to match usual gphoto2 name in settinngs.
+        let image_format = self.camera().await?.image_format.choice();
         Ok(
-            match self.camera().await?.image_format.choice().contains("RAW") {
+            // Little crude but seems to match usual gphoto2 RAW names in settinngs.
+            match image_format.contains("RAW") || image_format.contains("NEF") {
                 true => SensorType::RGGB,
                 false => SensorType::Color,
             },
