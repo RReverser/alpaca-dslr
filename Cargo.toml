@@ -5,11 +5,12 @@ edition = "2021"
 authors = ["Ingvar Stepanyan <me@rreverser.com>"]
 
 [dependencies]
-ascom-alpaca = { version = "1.0.0-beta.1", features = ["camera", "server"] }
+ascom-alpaca = { version = "1.0.0-beta.3", features = ["camera", "server"] }
 async-trait = "0.1.68"
-atomic = "0.5.3"
+atomic = "0.6.0"
+bytes = "1.4.0"
 color-eyre = "0.6.2"
-custom_debug = "0.5.1"
+custom_debug = "0.6.1"
 eyre = "0.6.8"
 futures-util = "0.3.28"
 gphoto2 = { version = "3.2.1", features = ["extended_logs"] }
@@ -17,9 +18,8 @@ image = "0.24.6"
 kamadak-exif = "0.5.5"
 ndarray = "0.15.6"
 parking_lot = "0.12.1"
+rawler = "0.6.0"
 time = { version = "0.3.22", features = ["formatting"] }
 tokio = { version = "1.29.1", features = ["rt-multi-thread", "macros"] }
 tracing = "0.1.37"
 tracing-subscriber = "0.3.17"
-rawler = { git = "https://github.com/dnglab/dnglab", rev = "2577ee1e87d767e16e4be8816bf61f35f5b7af88" }
-bytes = "1.4.0"
